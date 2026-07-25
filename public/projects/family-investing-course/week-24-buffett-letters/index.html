@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 24 週：大師心法——Buffett 股東信精讀｜給家人的投資課 · Matt Ye</title>
+  <meta name="description" content="52 週投資課第 24 週：開始讀原典——為什麼讀信不讀語錄、三遍讀法、1988 與 2008 兩封信的看點、四大原則與課程對應。附 takeaway 品檢器與四大原則對應卡。">
+  <meta name="author" content="Ching-Wei Ye">
+  <link rel="canonical" href="https://mattye.dev/projects/family-investing-course/week-24-buffett-letters/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="第 24 週：大師心法——Buffett 股東信精讀 — 給家人的投資課">
+  <meta property="og:description" content="六十年股東信免費公開，認真讀過的人極少——原典習慣是你和多數投資人的分水嶺。學會從原文萃取可操作原則。">
+  <meta property="og:url" content="https://mattye.dev/projects/family-investing-course/week-24-buffett-letters/">
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (e) {}
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+    })();
+  </script>
+<style>
+  :root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 三遍讀法 */
+  .steps3{counter-reset:st;margin:1.1rem 0;padding:0;list-style:none}
+  .steps3 li{position:relative;padding:.65rem 0 .65rem 2.6rem;border-bottom:1px dashed var(--line-soft);font-size:.95rem}
+  .steps3 li:last-child{border-bottom:none}
+  .steps3 li::before{counter-increment:st;content:counter(st);position:absolute;left:0;top:.7rem;width:1.7rem;height:1.7rem;border-radius:99px;background:var(--pine-soft);color:var(--pine);font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+  /* 信件看點卡 */
+  .letter{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .letter .ln{font-weight:800;font-size:1rem;color:var(--pine)}
+  .letter p{margin:.45rem 0 0;font-size:.93rem;color:var(--ink-2)}
+  .letter p b{color:var(--ink)}
+
+  /* takeaway 品檢器 */
+  .taq{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .taq h3{margin-top:0}
+  .titem{margin-top:.7rem;padding:.9rem 1rem;border-radius:12px;border:1.5px solid var(--line);background:var(--paper)}
+  .titem .tq{font-size:.95rem;font-weight:700}
+  .titem .tbtns{display:flex;gap:.5rem;margin-top:.6rem}
+  .titem .tbtns button{font:inherit;font-size:.85rem;padding:.4rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .titem .tbtns button:hover:not(:disabled){border-color:var(--pine);color:var(--pine)}
+  .titem .tbtns button:disabled{cursor:default;opacity:.55}
+  .titem .tbtns button.correct{background:var(--pine);border-color:var(--pine);color:var(--on-pine);opacity:1}
+  .titem .tbtns button.wrongpick{background:color-mix(in srgb,var(--down) 15%,transparent);border-color:var(--down);color:var(--down);opacity:1}
+  .titem .tans{display:none;margin-top:.6rem;padding-top:.6rem;border-top:1px dashed var(--line);font-size:.88rem;color:var(--ink-2)}
+  .titem .tans.show{display:block}
+  .titem .tans b{color:var(--pine)}
+  #tscore{margin-top:1rem;font-size:.9rem;font-weight:700;color:var(--pine);min-height:1.5em}
+
+  /* 四大原則卡 */
+  .prin{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .prin h3{margin-top:0}
+  .prow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem;margin:1rem 0 0}
+  .pcell{padding:.9rem .8rem;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);cursor:pointer;text-align:center;transition:border-color .15s;font:inherit}
+  .pcell:hover{border-color:var(--pine)}
+  .pcell.on{border-color:var(--pine);background:var(--pine-soft)}
+  .pcell .pn{font-size:.92rem;font-weight:800}
+  .pdetail{margin-top:.7rem;padding:1rem 1.2rem;background:var(--paper);border-radius:10px;border:1px dashed var(--line);font-size:.92rem;min-height:6em}
+  .pdetail b{color:var(--pine)}
+  .pdetail .dash{color:var(--ink-2);display:block;margin-top:.35rem;font-size:.87rem}
+  .pdetail a{color:var(--pine);text-decoration:none}
+  .pdetail a:hover{text-decoration:underline}
+  .pwarn{margin-top:.8rem;padding:.7rem 1rem;border-radius:9px;font-size:.88rem;background:var(--coin-soft);color:var(--ink-2)}
+  .pwarn b{color:var(--coin)}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 24</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q2 投資人季 · Week 24</p>
+  <h1>大師心法——Buffett 股東信精讀</h1>
+  <p class="lead" style="margin-top:.5rem">開始「讀原典」的習慣：不是收集名言，是學會從原文萃取可操作原則。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-21-margin-of-safety/">第 21–23 週</a></span><span class="chip">52 週 · 第 24 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>Buffett 六十年股東信是投資史上最完整的公開思想紀錄——而且免費。你會發現他的每條原則，都是前 23 週某一課的活體示範（或 W23 某個偏誤的解藥）。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週兩個實驗的結果——家人在擲硬幣和台北 101 實驗裡各中了哪個偏誤？護身三句記住了嗎。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">全世界最會投資的人，把六十年的思想全部免費公開在網路上。你猜「認真讀過原文」的投資人比例是？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">大多數認真的投資人都讀過</button>
+    <button data-g="b">大概一半</button>
+    <button data-g="c">極少數</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. 為什麼讀原典，而不是讀「巴菲特語錄」</h2>
+  <ol class="tasks">
+    <li><strong>語錄去掉了脈絡</strong>——「別人恐懼我貪婪」單獨看是雞湯；放回 2008 年 10 月（他在道瓊崩跌中發表 "Buy American. I Am." 時）才看得到判斷的依據與範圍</li>
+    <li><strong>原文有完整的推理鏈</strong>——他每年用真實部位解釋「為什麼買、為什麼不賣、哪裡看錯」；這是免費的投資決策案例庫，含<strong>認錯紀錄</strong>（語錄從不收錄認錯）</li>
+    <li><strong>建立資訊食物鏈的位置</strong>——讀二手詮釋的人，判斷永遠慢一手、且被詮釋者的偏誤污染（W23 ③）。原典習慣是你和多數投資人的分水嶺</li>
+  </ol>
+
+  <h2>2. 精讀方法：三遍讀法</h2>
+  <p>對每封信（每封約 20–30 頁，其實是一年一封的「散文財報」）：</p>
+  <ol class="steps3">
+    <li><strong>通讀（40 分）</strong>：不停頓讀完，標記三處「咦？」（反直覺、看不懂、想反駁的地方）</li>
+    <li><strong>精讀標記處（20 分）</strong>：對每處問——他的推理是什麼？前提是什麼？我的課程（W1–23）哪一週講過對應概念？</li>
+    <li><strong>萃取（15 分）</strong>：寫 5 條「可操作 takeaway」——標準：<strong>必須是行為指令</strong>（「當 X 時做 Y」），不是感想</li>
+  </ol>
+
+  <h2>3. 先練手感：takeaway 品檢器</h2>
+  <p>第三遍的萃取標準最容易失守——六條筆記，判斷哪些合格：</p>
+  </div>
+
+  <!-- takeaway 品檢器 -->
+  <div class="taq" id="taq">
+    <h3>takeaway 品檢器（合格＝行為指令，有觸發條件與動作）</h3>
+    <div id="tlist"></div>
+    <p id="tscore" aria-live="polite"></p>
+  </div>
+
+  <div class="prose">
+  <h2>4. 本週的兩封信與看點</h2>
+  <p class="muted">建議組合，可依興趣替換其他年份，方法不變。皆在官網免費取得——1977 年起全文公開。</p>
+  <div class="letter">
+    <p class="ln">信一：1988 年信（買入可口可樂的邏輯）</p>
+    <p><b>看點：</b>史上最著名的「寬護城河＋合理價格」實戰。注意他怎麼描述可口可樂的<b>定價權與全球分銷</b>（W22 的護城河三維）、為什麼願意付「看起來不便宜」的 P/E（W19「便宜有理由」的反面：<b>貴得有理由</b>）。</p>
+    <p><b>對照課程：</b>W22 質化 → W21「模糊的正確」——他從不出示精確 DCF，但對價值區間有強判斷。同場加映："we expect to hold these securities for a long time" 的持有哲學＝W1 複利＋W10 低周轉的合體。</p>
+  </div>
+  <div class="letter">
+    <p class="ln">信二：2008 年信（金融海嘯中的原則）</p>
+    <p><b>看點：</b>系統崩潰時他寫了什麼、做了什麼（高盛與 GE 的特別股交易）；他怎麼區分「價格波動」與「本金永久損失」（W15 侷限、W21 市場先生）；以及他公開承認的錯誤（ConocoPhillips 追高油價——<b>大師也會犯 W23 的近因效應</b>，看他怎麼處理）。</p>
+    <p><b>對照課程：</b>W12 循環與恐慌、W23 全部偏誤的反面示範。</p>
+  </div>
+
+  <h2>5. 四大原則與本課綱的對應</h2>
+  <p>點四張卡看對應——然後看穿它們的共同結構：</p>
+  </div>
+
+  <!-- 四大原則卡 -->
+  <div class="prin" id="prin">
+    <h3>四大原則對應卡</h3>
+    <div class="prow" id="prow">
+      <button class="pcell on" data-p="circle"><div class="pn">能力圈</div></button>
+      <button class="pcell" data-p="owner"><div class="pn">股票＝公司所有權</div></button>
+      <button class="pcell" data-p="mrmarket"><div class="pn">市場先生</div></button>
+      <button class="pcell" data-p="compound"><div class="pn">複利與時間</div></button>
+    </div>
+    <div class="pdetail" id="pdetail" aria-live="polite"></div>
+    <div class="pwarn"><b>共同結構：</b>四條全是「<strong>降低決策頻率、提高單次決策品質</strong>」——與 W23 的對策工程（減少讓系統一出場的機會）完全同構。大師心法不神祕，是行為紀律的極致版。</div>
+  </div>
+
+  <div class="prose">
+  <h2>6. 讀 Buffett 的三個警告</h2>
+  <ol class="tasks">
+    <li><strong>倖存者偏差</strong>：他是那個時代價值投資者中「活下來的最大樣本」；學原則，不要學「重壓單一標的」的膽識（他的容錯資本與資訊管道跟你不同）</li>
+    <li><strong>時代背景</strong>：他早年的「菸屁股」打法在今日資訊效率下幾乎絕跡——他自己也進化了（Munger 推動「合理價買偉大公司」）；讀信要看<strong>思想的演變</strong>，不是任一時點的教條</li>
+    <li><strong>規模差異</strong>：他現在的資金量只能買巨型公司；你的小資金反而是優勢（選擇多）——別照抄他的持股清單，抄他的<strong>流程</strong></li>
+  </ol>
+
+  <h2>7. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「Buffett 說不要分散，所以 ETF 是錯的」</p><p>他對「知道自己在做什麼的人」說集中，對其他所有人（包括他遺囑中給太太的指示）推薦<strong>低成本指數基金</strong>——W16 與 W18 的立場正是他的預設建議。</p></div>
+  <div class="myth"><p class="say">「他不看總經，所以總經沒用」</p><p>他不<strong>預測</strong>總經（W12 立場相同），但對利率與通膨的理解貫穿每封信——他稱利率是「資產價格的地心引力」，W3 就是這句話的展開。</p></div>
+  <div class="myth"><p class="say">「照他的話做就會富有」</p><p>他的話免費公開六十年，多數讀者仍然追漲殺跌——因為缺的從來不是知識，是 W23 的制度化紀律。</p></div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">主時數</span>
+    <div class="body"><b><a class="srclink" href="https://www.berkshirehathaway.com/letters/letters.html" target="_blank" rel="noopener">Berkshire 股東信官網 ↗</a>：<a class="srclink" href="https://www.berkshirehathaway.com/letters/1988.html" target="_blank" rel="noopener">1988 年信 ↗</a>＋<a class="srclink" href="https://www.berkshirehathaway.com/letters/2008ltr.pdf" target="_blank" rel="noopener">2008 年信（PDF）↗</a></b>
+      <p>用三遍讀法各走一次——這就是本週的主要時數。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">輔助</span>
+    <div class="body"><b>卡關時回對照表</b>
+      <p>讀信卡關就回四大原則卡找對應週次複習（例：讀到 float 看不懂，先跳過——那是保險商業模式，非本週重點）。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">選讀</span>
+    <div class="body"><b><a class="srclink" href="https://www.nytimes.com/2008/10/17/opinion/17buffett.html" target="_blank" rel="noopener">Buffett「Buy American. I Am.」(NYT, 2008/10) ↗</a></b>
+      <p>與 2008 年信對照，看「說」與「做」的一致性。（NYT 可能有付費牆，搜尋標題也可找到轉載。）</p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>萃取你的投資原則清單 v1（本週交付物）</h2>
+  <ol class="tasks">
+    <li><strong>每封信 5 條 takeaway</strong>（共 10 條）——嚴格用「行為指令」格式：<span class="num">當＿＿時，我做＿＿</span>；每條標註出處段落與對應課程週次</li>
+    <li><strong>合併去重</strong>：10 條中挑出你真心會執行的 5–7 條，寫成「<strong>我的投資原則清單 v1</strong>」（獨立文件）——這是 W26 投資論文的哲學章、也是日後每季複盤（W38）的對照標準</li>
+    <li><strong>反向測試</strong>：對每條原則問「過去的我哪次違反了它？」（連回 W23 任務 A）——答不出來的原則可能只是抄來的口號，考慮刪掉</li>
+  </ol>
+  <div class="verify">✅ <b>驗收標準：</b>10 條 takeaway 全部是行為指令格式且有出處；原則清單 v1 成為獨立文件（5–7 條）；每條通過「我違反過它」的反向測試。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w24-practice">
+    <li><label><input type="checkbox"><span>10 條 takeaway 全部是行為指令格式且有出處</span></label></li>
+    <li><label><input type="checkbox"><span>原則清單 v1 成為獨立文件（5–7 條）</span></label></li>
+    <li><label><input type="checkbox"><span>每條原則通過「我違反過它」的反向測試</span></label></li>
+  </ul>
+
+  <details class="bonus">
+    <summary>快問快答三題（先答，再展開對答案）</summary>
+    <div class="ans">
+      <p><b>Q1</b> 為什麼「能力圈的邊界比大小重要」？<br>→ 因為虧大錢的交易多數發生在<strong>圈外而不自知</strong>的地方——圈小但邊界清楚的人會說「不知道」而跳過（W21）；圈大但邊界模糊的人會在自以為懂的領域重倉。可操作版：對每筆投資先問「我憑什麼比賣方懂？」</p>
+      <p><b>Q2</b> Buffett 給一般人的實際建議是指數基金——這跟他自己集中持股矛盾嗎？<br>→ <strong>不矛盾，是同一套邏輯的兩種輸出</strong>：集中的前提是「深度理解＋時間投入＋情緒紀律」三者兼備；他誠實判斷多數人（含專業者，W16 SPIVA）不具備，所以預設建議是指數化。這正是「能力圈」原則應用在「選投資方式」上。</p>
+      <p><b>Q3</b> 讀 2008 年信時，哪一個行為最直接反駁了 W23 的損失趨避？<br>→ 在市場暴跌、帳面鉅虧之際<strong>繼續買進</strong>（高盛、GE 特別股與後續加碼）——損失趨避會驅使常人在浮虧時停止行動甚至清倉；他反向而行，因為決策依據是「價格 vs 價值」（W21）而非「痛不痛」（W23）。</p>
+    </div>
+  </details>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>一封信的重量</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（一封信的重量）</p>
+    <p>「全世界最會投資的人，每年寫一封信給股東，寫了六十年，全部免費公開在網路上。猜猜看認真讀過的人多不多？」（極少。）「今天我講兩個裡面的故事。」</p>
+  </div>
+  <div class="script">
+    <p class="who">故事一（可樂與排隊哲學）</p>
+    <p>「1988 年他花巨資買可口可樂。他的理由不是內線、不是線圖，是一個你也懂的觀察：<strong>全世界的人明天還是會喝可樂，而且漲價照喝</strong>（上上週的定價權！）。好投資的理由，通常簡單到可以講給家人聽——講不出來的，八成有問題。」</p>
+  </div>
+  <div class="script">
+    <p class="who">故事二（2008 年的反向）</p>
+    <p>「2008 年全世界恐慌逃命時，他公開寫文章說『我正在買美國股票』。不是他不怕，是他<strong>二十年前就寫好了規則</strong>：別人恐懼時的價格最便宜。他只是執行舊規則——跟我們家的那張規則卡（IPS）同一個道理。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動</p>
+    <p>「他有四條家訓：只碰看得懂的、買股票＝買公司、市場報價是服務不是命令、絕不打斷複利。你覺得我們家哪一條最難做到？」（讓家人選——通常選「別人恐懼我貪婪」相關的，正好收尾：「所以規則要現在寫，不是崩盤那天寫。」）</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那直接買他的公司（波克夏）不就好了？」</b><br>「這是一個合理選項之一！但他自己說了：他之後的波克夏不會再有過去的報酬率——規模太大了。學流程比抄答案耐用。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w24-final">
+    <li><label><input type="checkbox"><span>兩封信三遍讀法完成（有「咦？」標記與筆記）</span></label></li>
+    <li><label><input type="checkbox"><span>「我的投資原則清單 v1」完成（5–7 條行為指令）</span></label></li>
+    <li><label><input type="checkbox"><span>能說出四大原則與課程週次的對應</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 25：大師心法——Marks 備忘錄與週期思維</b>——另一位大師、另一種文體：Buffett 教你看<strong>公司</strong>，Marks 教你看<strong>週期與風險</strong>；兩者合起來才是完整的判斷力。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-23-behavioral-finance/">上一週：行為財務學</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "c"
+      ? "答對了——免費公開六十年，認真讀過原文的人仍是極少數，多數人只讀語錄和二手詮釋。這正是機會：原典習慣是你和多數投資人的分水嶺——讀二手的人判斷永遠慢一手，還被詮釋者的偏誤污染（W23 的確認偏誤）。"
+      : "比想像少得多——免費公開六十年，認真讀過原文的人仍是極少數，多數人只讀語錄和二手詮釋。這正是機會：原典習慣是你和多數投資人的分水嶺——讀二手的人判斷永遠慢一手，還被詮釋者的偏誤污染（W23 的確認偏誤）。";
+  });
+
+  /* ---------- takeaway 品檢器 ---------- */
+  var TAKES = [
+    { q: "「投資要有耐心。」", ok: false,
+      why: "感想，不是指令——沒有觸發條件、沒有動作。你在盤中焦慮時，這句話幫不了你。" },
+    { q: "「估值時，先假設自己十年不能賣出，再決定買不買。」", ok: true,
+      why: "合格——觸發條件（做估值時）＋具體動作（用十年不能賣的前提檢驗）。這是 1988 年信持有哲學的可操作版。" },
+    { q: "「別人恐懼我貪婪。」", ok: false,
+      why: "口號——聽起來像指令，但「恐懼」沒有客觀觸發標準、「貪婪」沒有具體動作。可操作版是 W18 的再平衡規則：偏離 ±5pp 時機械化買入低配那邊。" },
+    { q: "「當我無法用三句話講出這家公司怎麼賺錢時，直接跳過。」", ok: true,
+      why: "合格——能力圈原則的行為指令版：清楚的觸發測試（三句話講不出）＋明確動作（跳過）。" },
+    { q: "「要像巴菲特一樣長期思考。」", ok: false,
+      why: "感想——「長期思考」無法驗證有沒有做到。改寫成「任何賣出決定先寫下理由並隔 48 小時執行」才有約束力。" },
+    { q: "「按下買入鍵之前，先寫下這筆投資最強的一條反對理由。」", ok: true,
+      why: "合格——觸發（買入前）＋動作（寫反對理由），直接對抗 W23 的確認偏誤；也是 W26 論文反方章的日常版。" }
+  ];
+  var tlist = document.getElementById("tlist");
+  var tAnswered = 0, tCorrect = 0;
+  TAKES.forEach(function(t, idx){
+    var div = document.createElement("div");
+    div.className = "titem";
+    div.innerHTML = '<p class="tq">' + (idx+1) + '. ' + t.q + '</p>' +
+      '<div class="tbtns"><button data-a="true">合格</button><button data-a="false">不合格</button></div>' +
+      '<div class="tans"></div>';
+    var btns = div.querySelectorAll("button");
+    var ans = div.querySelector(".tans");
+    btns.forEach(function(b){
+      b.addEventListener("click", function(){
+        var pick = b.dataset.a === "true";
+        btns.forEach(function(x){
+          x.disabled = true;
+          var isOk = x.dataset.a === "true";
+          if (isOk === t.ok) x.classList.add("correct");
+          else if (x === b) x.classList.add("wrongpick");
+        });
+        var right = pick === t.ok;
+        tAnswered++; if (right) tCorrect++;
+        ans.innerHTML = (right ? "<b>答對。</b>" : "<b>不是——</b>") + t.why;
+        ans.classList.add("show");
+        var sc = document.getElementById("tscore");
+        sc.textContent = tAnswered === TAKES.length
+          ? "完成：" + tCorrect + " / " + TAKES.length + "——口訣：合格的 takeaway 一定有「觸發條件＋動作」，能被檢驗有沒有執行。"
+          : "已答 " + tAnswered + " / " + TAKES.length;
+      });
+    });
+    tlist.appendChild(div);
+  });
+
+  /* ---------- 四大原則卡 ---------- */
+  var PRIN = {
+    circle: { name:"能力圈", say:"只投資自己看得懂的生意；圈的邊界比大小重要。",
+      map:'對應課程：<a href="/projects/family-investing-course/week-21-margin-of-safety/">W21「跳過是選項」</a>、<a href="/projects/family-investing-course/week-22-moat-five-forces/">W22 質化能力</a>' },
+    owner: { name:"股票＝公司所有權", say:"買股票是買下企業的一部分，不是買代碼。",
+      map:'對應課程：<a href="/writing/family-investing-04-what-is-stock/">專欄 #4</a>、<a href="/projects/family-investing-course/week-05-income-statement/">W5–9 財報分析</a>的意義' },
+    mrmarket: { name:"市場先生", say:"報價是服務不是指令。",
+      map:'對應課程：<a href="/projects/family-investing-course/week-21-margin-of-safety/">W21</a>（Graham 直傳）' },
+    compound: { name:"複利與時間", say:"絕不打斷複利；聲譽與資本同理。",
+      map:'對應課程：<a href="/projects/family-investing-course/week-01-tvm/">W1</a>、<a href="/projects/family-investing-course/week-10-market-structure/">W10</a>、<a href="/projects/family-investing-course/week-17-entry-strategy/">W17</a>' }
+  };
+  var pdetail = document.getElementById("pdetail");
+  function showPrin(k){
+    var p = PRIN[k];
+    pdetail.innerHTML = "<b>" + p.name + "</b>：" + p.say + '<span class="dash">' + p.map + "</span>";
+  }
+  document.getElementById("prow").addEventListener("click", function(e){
+    var btn = e.target.closest(".pcell"); if(!btn) return;
+    this.querySelectorAll(".pcell").forEach(function(b){ b.classList.remove("on"); });
+    btn.classList.add("on");
+    showPrin(btn.dataset.p);
+  });
+  showPrin("circle");
+
+  /* ---------- 檢核持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w24-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w24-final"){
+          document.getElementById("checkdone").textContent = st.every(Boolean) ? "🎓 第 24 週完成——原典習慣已開張。下週見：Marks 備忘錄與週期思維。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w24-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 24 週完成——原典習慣已開張。下週見：Marks 備忘錄與週期思維。";
+    }
+  });
+})();
+</script>
+</body>
+</html>

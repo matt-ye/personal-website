@@ -212,4 +212,13 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     date: '2026-12-09',
     url: '/projects/family-investing-course/week-23-behavioral-finance/',
   },
+  {
+    slug: 'week-24-buffett-letters',
+    title: 'W24 大師心法——Buffett 股東信精讀',
+    titleEn: 'W24 Buffett Letters',
+    description: '開始讀原典：為什麼讀信不讀語錄、三遍讀法、1988（可口可樂）與 2008（海嘯中的原則）兩封信的看點、四大原則與前 23 週的對應。附 takeaway 品檢器（行為指令 vs 感想）與四大原則對應卡。',
+    tags: ['Q2 投資人季', '互動測驗'],
+    date: '2026-12-16',
+    url: '/projects/family-investing-course/week-24-buffett-letters/',
+  },
 ];
