@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import T from '../components/T.astro';
 import PostCard from '../components/PostCard.astro';
+import Tour from '../components/Tour.astro';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
@@ -162,6 +163,9 @@ const AWARDS_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
     )}
 
   </div>
+
+  <!-- 聚光燈導覽：只掛首頁，步驟目標都是 hero 與導覽列元素 -->
+  <Tour />
 </BaseLayout>
 
 <script>
