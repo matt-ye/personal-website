@@ -101,8 +101,25 @@ async function probe(url) {
   }
 }
 
-function verdict(r) {
-  if (r.status >= 200 && r.status < 300) return { icon: '✅', text: '正常' };
+/** 轉址後是否落到「別的頁面」——原頁面被移除時，很多站台會默默把你丟回首頁 */
+function redirectedAway(url, finalUrl) {
+  if (!finalUrl || finalUrl === url) return false;
+  try {
+    const from = new URL(url), to = new URL(finalUrl);
+    const seg = from.pathname.split('/').filter(Boolean).pop();
+    if (!seg) return false; // 原本就是首頁，轉到 /index 之類很正常
+    const key = seg.replace(/\.\w+$/, '');
+    return !to.href.includes(key);
+  } catch { return false; }
+}
+
+function verdict(r, url) {
+  if (r.status >= 200 && r.status < 300) {
+    if (redirectedAway(url, r.finalUrl)) {
+      return { icon: '⚠️', text: '轉址到別的頁面（原頁面可能已移除）' };
+    }
+    return { icon: '✅', text: '正常' };
+  }
   if (r.status === 401 || r.status === 403) return { icon: '⚠️', text: `${r.status}（付費牆或擋機器人，請人工點一次）` };
   if (r.status === 429) return { icon: '⚠️', text: '429（被限流，請人工點一次）' };
   if (r.status === 0) return { icon: '❌', text: `連不上：${r.error}` };
@@ -117,7 +134,7 @@ if (!ONLY_INTERNAL) {
     while (cursor < urls.length) {
       const url = urls[cursor++];
       const r = await probe(url);
-      externalResults.push({ url, pages: [...externalMap.get(url)].sort(), ...r, ...verdict(r) });
+      externalResults.push({ url, pages: [...externalMap.get(url)].sort(), ...r, ...verdict(r, url) });
     }
   });
   await Promise.all(workers);
