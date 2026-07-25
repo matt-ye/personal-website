@@ -1,0 +1,35 @@
+# 已知失效但尚未處理的連結（不讓 CI 一直紅，但仍會列在報告裡）
+#
+# 這是「待修清單」不是「不用修」：2026-07-25 第一次跑全站連結健檢時就已經失效，
+# 都在課程以外的 side project 頁面，屬於既有的連結腐爛。修好一條就從這裡刪一條。
+# 語法：一行一個網址，# 開頭是註解。
+
+# --- one-more-step / ga4-guide：Google 說明中心改版，answer id 已失效 ---
+https://analytics.google.com/analytics/web/demoAccount
+https://support.google.com/analytics/?hl=en
+https://support.google.com/analytics/?hl=en#topic=14090456
+https://support.google.com/analytics/answer/10104470?hl=en
+https://support.google.com/analytics/answer/14240153?hl=en
+https://support.google.com/analytics/answer/7029846
+https://support.google.com/analytics/answer/7029846?hl=en
+https://support.google.com/analytics/answer/7579450
+https://support.google.com/analytics/answer/7579450?hl=en
+https://support.google.com/analytics/answer/9327974?hl=en
+
+# --- one-more-step / boppps ---
+https://blogs.sjsu.edu/ecampus/2019/09/08/lesson-design-using-the-boppps-model/
+
+# --- one-more-step / quantum-photonics-investing：發布方站台改版 ---
+https://csrc.nist.gov/projects/post-quantum-cryptography/faqs
+https://gf.com/dresden-press-release/psiquantum-and-globalfoundries-build-worlds-first-full-scale-quantum-computer/
+https://gf.com/gf-press-release/globalfoundries-announces-next-generation-silicon-photonics-solutions-and/
+https://www.federalregister.gov/documents/2024/08/14/2024-17956/announcing-issuance-of-federal-information-processing-standards-fips-fips-203-module-lattice-based
+
+# --- marketing / faceless-pipeline ---
+https://newsroom.tiktok.com/en-us/new-labels-for-disclosing-ai-generated-content
+https://support.google.com/youtube/answer/14328491
+
+# --- marketing / tech-publishing：indiehackers 連續兩次 502／逾時，待確認是暫時或永久 ---
+https://www.indiehackers.com/post/front-page-of-hn-the-full-postmortem-traffic-lessons-surprises-cbe9e0a7f6
+https://www.indiehackers.com/post/lifestyle/is-this-the-end-of-build-in-public-heres-why-top-indie-hackers-are-suddenly-disappearing-IhSJQBnXNuNwSuNTuz4t
+https://www.indiehackers.com/post/what-is-building-in-public-explained-simply-6541c681e0

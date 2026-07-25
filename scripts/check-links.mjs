@@ -30,6 +30,17 @@ function collectHtml(dir, out = []) {
   return out;
 }
 
+/** 已知失效、還沒處理的網址：仍會列進報告，但不讓 CI 一直紅 */
+const IGNORE = new Set(
+  (fs.existsSync(path.join(ROOT, 'scripts', 'link-check-ignore.txt'))
+    ? fs.readFileSync(path.join(ROOT, 'scripts', 'link-check-ignore.txt'), 'utf8')
+    : ''
+  )
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith('#'))
+);
+
 const files = SCAN_DIRS.flatMap((d) => collectHtml(d)).sort();
 if (files.length === 0) {
   console.error('找不到任何 HTML 檔，請確認路徑。');
@@ -115,6 +126,9 @@ function redirectedAway(url, finalUrl) {
 }
 
 function verdict(r, url) {
+  if (IGNORE.has(url) && !(r.status >= 200 && r.status < 300)) {
+    return { icon: '🔕', text: `${r.status || r.error}（已知待修，見 link-check-ignore.txt）` };
+  }
   if (r.status >= 200 && r.status < 300) {
     if (redirectedAway(url, r.finalUrl)) {
       return { icon: '⚠️', text: '轉址到別的頁面（原頁面可能已移除）' };
@@ -158,7 +172,8 @@ if (ONLY_INTERNAL) {
 } else {
   const broken = externalResults.filter((r) => r.icon === '❌');
   const warn = externalResults.filter((r) => r.icon === '⚠️');
-  lines.push(`外部連結：${externalResults.length} 個｜正常 ${externalResults.length - broken.length - warn.length}｜需人工確認 ${warn.length}｜失效 ${broken.length}`);
+  const known = externalResults.filter((r) => r.icon === '🔕');
+  lines.push(`外部連結：${externalResults.length} 個｜正常 ${externalResults.length - broken.length - warn.length - known.length}｜需人工確認 ${warn.length}｜已知待修 ${known.length}｜新失效 ${broken.length}`);
   lines.push('');
   for (const r of externalResults) {
     lines.push(`  ${r.icon} ${r.text.padEnd(28)} ${r.url}`);
