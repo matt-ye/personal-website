@@ -46,7 +46,8 @@ for (const file of files) {
   const html = fs.readFileSync(file, 'utf8');
   const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
 
-  for (const m of html.matchAll(/href="([^"]+)"/g)) {
+  // 只看 <a> 的 href：<link rel="preconnect"> / canonical 之類不是給人點的連結
+  for (const m of html.matchAll(/<a\b[^>]*?href="([^"]+)"/g)) {
     const href = m[1];
     if (href.includes("' +")) continue; // JS 樣板字串組出來的連結，另行人工確認
 
@@ -91,8 +92,8 @@ async function probe(url) {
   };
   try {
     let r = await attempt('HEAD');
-    // 不少站台不接受 HEAD，改用 GET 再試一次
-    if (r.status === 405 || r.status === 403 || r.status === 501) {
+    // 不少站台不接受 HEAD（或用它擋機器人），改用 GET 再試一次
+    if ([400, 402, 403, 405, 406, 415, 501].includes(r.status)) {
       try { r = await attempt('GET'); } catch { /* 保留 HEAD 的結果 */ }
     }
     return r;
@@ -120,9 +121,12 @@ function verdict(r, url) {
     }
     return { icon: '✅', text: '正常' };
   }
-  if (r.status === 401 || r.status === 403) return { icon: '⚠️', text: `${r.status}（付費牆或擋機器人，請人工點一次）` };
-  if (r.status === 429) return { icon: '⚠️', text: '429（被限流，請人工點一次）' };
-  if (r.status === 0) return { icon: '❌', text: `連不上：${r.error}` };
+  // 這幾種回應分不出「頁面不在」還是「站台擋機器人」——交給人點一次，不當成失效。
+  // （實測：Investopedia 同一批網址每次跑回 402 或 403 都有，是反爬不是死連結。）
+  if ([401, 402, 403, 429, 451, 999].includes(r.status)) {
+    return { icon: '⚠️', text: `${r.status}（付費牆或擋機器人，請人工點一次）` };
+  }
+  if (r.status === 0) return { icon: '⚠️', text: `連不上：${r.error}（可能被擋，請人工點一次）` };
   return { icon: '❌', text: `HTTP ${r.status}` };
 }
 
