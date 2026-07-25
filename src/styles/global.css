@@ -203,13 +203,20 @@ nav a[aria-current="page"] {
 [data-lang="en"] .lang-en { display: inline; }
 
 @media (max-width: 640px) {
-  .nav-right { gap: 10px; }
-  nav { gap: 10px; }
+  /* 英文標籤（Speeches/Coaching/Projects）比中文寬得多，一行塞不下會把
+     主題切換鈕擠出畫面。允許換行，讓 nav 在放不下時自己掉到第二行：
+     中文仍是一行，英文自動變兩行，兩種語言都不會產生水平捲動。 */
+  header .container { flex-wrap: wrap; row-gap: 2px; }
+  .nav-right { gap: 12px; margin-left: auto; }
+  nav { gap: 14px; }
+  /* 觸控目標：上下各撐 11px 讓 hit area 達 44px（WCAG 2.5.5），
+     再用等量負 margin 抵銷，所以 header 的視覺高度不變。 */
+  nav a { padding: 11px 2px; margin: -11px -2px; }
 }
 @media (max-width: 400px) {
-  nav { gap: 6px; }
+  nav { gap: 10px; }
   nav a { font-size: 0.78rem; }
-  .nav-right { gap: 8px; }
+  .nav-right { gap: 10px; }
 }
 
 /* ===== Footer ===== */
