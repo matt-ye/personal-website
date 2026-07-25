@@ -163,6 +163,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -377,14 +380,21 @@
     <li><label><input type="checkbox"><span>150 字結論寫完</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> A 公司流動比 2.0，B 公司 1.2，B 一定比較危險嗎？<br>→ <strong>不一定</strong>——要看產業：超商、量販靠「先收現金、月結付供應商」營運，流動比常年 &lt; 1 也很健康（負營運資金模式，之後會深談）；比率脫離商業模式就沒有意義。</p>
-      <p><b>Q2</b> 為什麼「預收收入很多」通常是好事？<br>→ 預收＝客戶<strong>先付錢</strong>給你——現金已入袋、風險在客戶端，同時代表產品搶手（訂金、儲值、預售）；它雖列負債，卻是「欠貨不欠錢」的好負債。</p>
-      <p><b>Q3</b> 一家公司負債比 85%——什麼情況下這完全正常？<br>→ <strong>金融業</strong>（銀行、保險）：吸收存款本來就是負債，85% 是常態；一般製造業若 85% 就要高度警戒。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> A 公司流動比 2.0，B 公司 1.2，B 一定比較危險嗎？</summary>
+      <div class="ans"><p>→ <strong>不一定</strong>——要看產業：超商、量販靠「先收現金、月結付供應商」營運，流動比常年 &lt; 1 也很健康（負營運資金模式，之後會深談）；比率脫離商業模式就沒有意義。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 為什麼「預收收入很多」通常是好事？</summary>
+      <div class="ans"><p>→ 預收＝客戶<strong>先付錢</strong>給你——現金已入袋、風險在客戶端，同時代表產品搶手（訂金、儲值、預售）；它雖列負債，卻是「欠貨不欠錢」的好負債。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 一家公司負債比 85%——什麼情況下這完全正常？</summary>
+      <div class="ans"><p>→ <strong>金融業</strong>（銀行、保險）：吸收存款本來就是負債，85% 是常態；一般製造業若 85% 就要高度警戒。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

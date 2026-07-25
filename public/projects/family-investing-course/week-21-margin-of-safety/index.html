@@ -165,6 +165,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -364,14 +367,21 @@
     <li><label><input type="checkbox"><span>結論卡完成且行動欄有明確選擇</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 為什麼安全邊際對「越難預測的公司」要求越大？<br>→ 邊際吸收的是<strong>預測誤差</strong>——公司越難預測（新產業、高變動、無歷史），你的估值誤差分布越寬，需要越大的折扣才能讓「買貴」的機率降到可接受；穩定公司誤差窄，小邊際即可。</p>
-      <p><b>Q2</b> 市場先生寓言裡，什麼時候該交易、什麼時候該無視他？<br>→ <strong>該交易</strong>：他的報價與你的獨立估值出現極端偏離（跳樓價買進；瘋狂溢價時可考慮賣出）。<strong>該無視</strong>：報價落在你的估值區間內——模糊區不行動。前提永遠是你有自己的估值錨。</p>
-      <p><b>Q3</b> 「跳過」在什麼情況下是最好的估值結論？<br>→ 當公司落在你的<strong>能力圈外</strong>（商業模式看不懂、關鍵變數無法評估）——任何數字都是假精確，「我不知道」是最誠實也最賺錢的答案，因為它讓你把時間花在算得了的機會上。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼安全邊際對「越難預測的公司」要求越大？</summary>
+      <div class="ans"><p>→ 邊際吸收的是<strong>預測誤差</strong>——公司越難預測（新產業、高變動、無歷史），你的估值誤差分布越寬，需要越大的折扣才能讓「買貴」的機率降到可接受；穩定公司誤差窄，小邊際即可。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 市場先生寓言裡，什麼時候該交易、什麼時候該無視他？</summary>
+      <div class="ans"><p>→ <strong>該交易</strong>：他的報價與你的獨立估值出現極端偏離（跳樓價買進；瘋狂溢價時可考慮賣出）。<strong>該無視</strong>：報價落在你的估值區間內——模糊區不行動。前提永遠是你有自己的估值錨。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 「跳過」在什麼情況下是最好的估值結論？</summary>
+      <div class="ans"><p>→ 當公司落在你的<strong>能力圈外</strong>（商業模式看不懂、關鍵變數無法評估）——任何數字都是假精確，「我不知道」是最誠實也最賺錢的答案，因為它讓你把時間花在算得了的機會上。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

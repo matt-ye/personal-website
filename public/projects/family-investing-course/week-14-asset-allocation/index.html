@@ -163,6 +163,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -379,14 +382,21 @@
     <li><label><input type="checkbox"><span>配置比例加總 100% 且有三行理由</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 30 歲、收入穩定、15 年不用這筆錢，但 −20% 就睡不著——配置該遷就哪一個？<br>→ <strong>遷就心理承受</strong>（三取最保守）——能力再高，睡不著的人會在谷底賣光，一次行為錯誤抹掉十年配置紅利；先用較低股比開始，隨經驗再上調。</p>
-      <p><b>Q2</b> 為什麼「目標 4% 就達標的人」不該配 90% 股票？<br>→ 因為<strong>風險需求</strong>已滿足——多冒的險只買到「不需要的報酬」，卻真實承擔 −50% 與睡眠品質；投資是達成目標的工具，不是競賽。</p>
-      <p><b>Q3</b> 台灣人「全球化配置」主要在分散什麼風險？（三個層次）<br>→ ①單一股市風險（台股集中在電子業）②單一經濟體風險（薪水＋房產＋股票同綁台灣景氣）③地緣政治風險（極端情境下的資產存續）。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 30 歲、收入穩定、15 年不用這筆錢，但 −20% 就睡不著——配置該遷就哪一個？</summary>
+      <div class="ans"><p>→ <strong>遷就心理承受</strong>（三取最保守）——能力再高，睡不著的人會在谷底賣光，一次行為錯誤抹掉十年配置紅利；先用較低股比開始，隨經驗再上調。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 為什麼「目標 4% 就達標的人」不該配 90% 股票？</summary>
+      <div class="ans"><p>→ 因為<strong>風險需求</strong>已滿足——多冒的險只買到「不需要的報酬」，卻真實承擔 −50% 與睡眠品質；投資是達成目標的工具，不是競賽。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 台灣人「全球化配置」主要在分散什麼風險？（三個層次）</summary>
+      <div class="ans"><p>→ ①單一股市風險（台股集中在電子業）②單一經濟體風險（薪水＋房產＋股票同綁台灣景氣）③地緣政治風險（極端情境下的資產存續）。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

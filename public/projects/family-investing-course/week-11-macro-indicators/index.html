@@ -161,6 +161,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -363,14 +366,21 @@
     <li><label><input type="checkbox"><span>「本月定位」三行完成</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> PMI 從 58 降到 53——經濟在擴張還是收縮？該注意什麼？<br>→ <strong>仍在擴張</strong>（&gt;50），但<strong>動能減速</strong>（方向向下）——領先指標的方向轉變常是週期轉折的第一個訊號，該開始留意而非恐慌。</p>
-      <p><b>Q2</b> 為什麼「失業率創歷史新低」不是進場的好理由？<br>→ 失業率是<strong>落後指標</strong>——「創新低」描述的是已經走完的好日子，歷史上常出現在景氣頂部附近；它適合用來「確認衰退結束」，不適合當進場鈴。</p>
-      <p><b>Q3</b> 美國 CPI 公布 3.1%、市場原預期 2.9%，當天股市大概率怎麼反應？為什麼？<br>→ 大概率<strong>下跌</strong>——實際 &gt; 預期是「通膨驚奇」，市場上調升息（或延後降息）預期 → 折現率上升壓估值；重點永遠是與預期的差，不是絕對值。（拿上面的模擬器對一次。）</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> PMI 從 58 降到 53——經濟在擴張還是收縮？該注意什麼？</summary>
+      <div class="ans"><p>→ <strong>仍在擴張</strong>（&gt;50），但<strong>動能減速</strong>（方向向下）——領先指標的方向轉變常是週期轉折的第一個訊號，該開始留意而非恐慌。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 為什麼「失業率創歷史新低」不是進場的好理由？</summary>
+      <div class="ans"><p>→ 失業率是<strong>落後指標</strong>——「創新低」描述的是已經走完的好日子，歷史上常出現在景氣頂部附近；它適合用來「確認衰退結束」，不適合當進場鈴。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 美國 CPI 公布 3.1%、市場原預期 2.9%，當天股市大概率怎麼反應？為什麼？</summary>
+      <div class="ans"><p>→ 大概率<strong>下跌</strong>——實際 &gt; 預期是「通膨驚奇」，市場上調升息（或延後降息）預期 → 折現率上升壓估值；重點永遠是與預期的差，不是絕對值。（拿上面的模擬器對一次。）</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

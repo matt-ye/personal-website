@@ -179,6 +179,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -410,14 +413,21 @@
     <li><label><input type="checkbox"><span>能說出「DCA 是行為保險而非超額報酬來源」</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 為什麼「2/3 機率 LSI 勝」的根本原因，跟 W1、W12 學的是同一件事？<br>→ 因為<strong>市場長期向上</strong>（W1 複利、W12 循環的上升傾向）——LSI 讓錢早到位、早複利；DCA 平均持有較多低報酬的現金。三者是同一個「時間在市場裡」的道理。</p>
-      <p><b>Q2</b> DCA 在哪一種市場路徑會輸得最難看？<br>→ <strong>一路上漲</strong>的市場（情境 A／C 類）——DCA 每個月都買在更高的價格，等於持續追高，最後平均成本高於一次到位。</p>
-      <p><b>Q3</b> 持續型 DCA 需要做「LSI vs DCA」的決策嗎？<br>→ <strong>不需要</strong>——持續型 DCA 的錢每月才進帳，根本沒有「一次投入」的選項；照紀律投入即可，別被本週的辯論干擾。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼「2/3 機率 LSI 勝」的根本原因，跟 W1、W12 學的是同一件事？</summary>
+      <div class="ans"><p>→ 因為<strong>市場長期向上</strong>（W1 複利、W12 循環的上升傾向）——LSI 讓錢早到位、早複利；DCA 平均持有較多低報酬的現金。三者是同一個「時間在市場裡」的道理。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> DCA 在哪一種市場路徑會輸得最難看？</summary>
+      <div class="ans"><p>→ <strong>一路上漲</strong>的市場（情境 A／C 類）——DCA 每個月都買在更高的價格，等於持續追高，最後平均成本高於一次到位。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 持續型 DCA 需要做「LSI vs DCA」的決策嗎？</summary>
+      <div class="ans"><p>→ <strong>不需要</strong>——持續型 DCA 的錢每月才進帳，根本沒有「一次投入」的選項；照紀律投入即可，別被本週的辯論干擾。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

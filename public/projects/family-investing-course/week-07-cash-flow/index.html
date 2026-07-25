@@ -162,6 +162,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -348,14 +351,21 @@
     <li><label><input type="checkbox"><span>快問快答全對（見下）</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>任務 C｜快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 應收帳款大增，在間接法裡是加還是減？為什麼？<br>→ <strong>減</strong>——損益表已認列收入（推高淨利），但現金沒進來，所以從淨利往現金調整時要扣掉。</p>
-      <p><b>Q2</b> 一家公司 OCF 很漂亮，但主因是「應付帳款大增」——該高興嗎？<br>→ <strong>半喜半憂</strong>——現金確實留住了，但這是「拖著不付錢」擠出來的一次性效果，不可持續；供應商也可能因此縮短給你的帳期。</p>
-      <p><b>Q3</b> CapEx 連續三年只有折舊的一半，代表什麼？短期獲利會怎樣？長期呢？<br>→ 投資不足（低於資產耗損速度）。<strong>短期</strong>：折舊仍高但現金流出少，獲利與 FCF 都好看；<strong>長期</strong>：設備老化、競爭力下滑——是「吃老本」的財務特徵，資本密集業尤其危險。</p>
-    </div>
-  </details>
+  <p class="qalabel">任務 C｜快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 應收帳款大增，在間接法裡是加還是減？為什麼？</summary>
+      <div class="ans"><p>→ <strong>減</strong>——損益表已認列收入（推高淨利），但現金沒進來，所以從淨利往現金調整時要扣掉。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 一家公司 OCF 很漂亮，但主因是「應付帳款大增」——該高興嗎？</summary>
+      <div class="ans"><p>→ <strong>半喜半憂</strong>——現金確實留住了，但這是「拖著不付錢」擠出來的一次性效果，不可持續；供應商也可能因此縮短給你的帳期。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> CapEx 連續三年只有折舊的一半，代表什麼？短期獲利會怎樣？長期呢？</summary>
+      <div class="ans"><p>→ 投資不足（低於資產耗損速度）。<strong>短期</strong>：折舊仍高但現金流出少，獲利與 FCF 都好看；<strong>長期</strong>：設備老化、競爭力下滑——是「吃老本」的財務特徵，資本密集業尤其危險。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

@@ -166,6 +166,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -370,14 +373,21 @@
     <li><label><input type="checkbox"><span>一頁分析存檔（W26 論文直接取用）</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 為什麼「定價權」是護城河最好的單一試金石？<br>→ 因為定價權<strong>直接檢驗了所有五力的合力</strong>：敢漲價且客戶不跑，代表競爭者無法趁機搶客（①②）、替代品不夠好（③）、客戶離不開（④）——一個行為驗證了整個結構；且它直接反映在毛利率上（W5），可用財報驗證。</p>
-      <p><b>Q2</b> 一家 ROIC 25% 的公司，DCF 卻只敢給 g=2%——什麼質化判斷會導致這個組合？<br>→ 「<strong>現在很賺，但護城河在變窄</strong>」——例如技術典範轉移在即、專利即將到期、大客戶正在扶植第二供應商；高 ROIC 是過去式，質化判斷它撐不了太久，所以永續成長只敢給低值（甚至縮短優勢期）。</p>
-      <p><b>Q3</b> 五力中哪一力對台灣電子代工業通常最不利？<br>→ 通常是 <strong>④客戶議價力</strong>——代工模式客戶高度集中（少數國際品牌佔營收大宗），客戶掌握訂單與規格主導權，可要求年降（cost down）；這是同樣製造業中「品牌廠 vs 代工廠」利潤率差距的結構性原因。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼「定價權」是護城河最好的單一試金石？</summary>
+      <div class="ans"><p>→ 因為定價權<strong>直接檢驗了所有五力的合力</strong>：敢漲價且客戶不跑，代表競爭者無法趁機搶客（①②）、替代品不夠好（③）、客戶離不開（④）——一個行為驗證了整個結構；且它直接反映在毛利率上（W5），可用財報驗證。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 一家 ROIC 25% 的公司，DCF 卻只敢給 g=2%——什麼質化判斷會導致這個組合？</summary>
+      <div class="ans"><p>→ 「<strong>現在很賺，但護城河在變窄</strong>」——例如技術典範轉移在即、專利即將到期、大客戶正在扶植第二供應商；高 ROIC 是過去式，質化判斷它撐不了太久，所以永續成長只敢給低值（甚至縮短優勢期）。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 五力中哪一力對台灣電子代工業通常最不利？</summary>
+      <div class="ans"><p>→ 通常是 <strong>④客戶議價力</strong>——代工模式客戶高度集中（少數國際品牌佔營收大宗），客戶掌握訂單與規格主導權，可要求年降（cost down）；這是同樣製造業中「品牌廠 vs 代工廠」利潤率差距的結構性原因。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

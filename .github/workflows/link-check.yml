@@ -1,0 +1,33 @@
+# 教材頁連結健檢：站內連結／頁內錨點／外部網址是否還活著
+# 手動觸發：Actions → link-check → Run workflow
+# 也會在改動 public/projects/ 的 PR 上自動跑一次；結果看 job summary 表格。
+name: link-check
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - 'public/projects/**'
+      - 'scripts/check-links.mjs'
+  schedule:
+    - cron: '0 2 1 * *' # 每月 1 日 02:00 UTC＝台北 10:00，抓連結腐爛
+
+permissions:
+  contents: read
+
+concurrency:
+  group: link-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
+      - name: 檢查所有連結
+        run: node scripts/check-links.mjs

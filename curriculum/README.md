@@ -45,9 +45,17 @@
 2. 在 `src/data/familyInvestingCourse.ts` 加入該週 entry（陣列順序＝週次順序）
 3. 網頁固定要素：五區塊＋頂部黏性導航與閱讀進度、主題與主站同步（localStorage key `theme`、`:root[data-theme]` tokens）、返回課程首頁連結、檢核清單 localStorage 持久化（key 前綴 `fic-wNN-`）、canonical 與 og meta
    - 網頁版區塊④標題固定為「**分享這個概念 · 費曼學習法**」（導航縮寫「④ 分享」）——比單元 md 的「教家人腳本」更通用；內文腳本仍以家人為對象設計、註明對朋友同事同樣適用
-   - 區塊②導讀的每個資源**附來源超連結**（canonical URL；本環境無法連外驗證，owner 於 preview 點擊確認）
+   - 區塊②導讀的每個資源**附來源超連結**（canonical URL；claude.ai/code 環境的 egress 政策擋掉一般外站，無法就地驗證——改由 CI 驗證，見下）
+   - 快問快答做成**每題一個獨立 toggle**（`<p class="qalabel">` ＋ `<div class="qagroup">` 包三個 `details.bonus`，summary 放題目、內容放答案），不要三題共用一個 toggle
 4. 視覺系統沿用 W1 建立的「帳本」設計（松綠 `--pine` ＋金 `--coin`；圖表資料色 light `#1F8A5F`/`#A87B1F`、dark `#35A878`/`#BA8A25`——已通過對比與色覺無障礙驗證）；互動元素（計算機/猜謎/圖表）依該週內容設計，教家人開場盡量做成頁面互動
 5. 頁尾附「非投資建議」聲明；發佈走 PR（遵守根目錄 `CLAUDE.md` 工作流程）
+
+**連結健檢（`npm run check:links`）**：`scripts/check-links.mjs` 會掃描所有教材頁，檢查
+①站內連結是否指到真實頁面（比對 `dist/`，需先 `npm run build`）②頁內錨點是否存在
+③外部網址的 HTTP 狀態。`.github/workflows/link-check.yml` 會在動到 `public/projects/**` 的 PR 上
+自動跑一次、每月 1 日定期再跑（抓連結腐爛），結果看 Actions 的 job summary 表格。
+撰寫環境連不出去時，**以 CI 的結果為準，不要憑記憶改網址**——例如 Khan Academy 的
+`accounting-and-financial-stateme` 看似被截斷，其實是該站真實的 32 字元 slug。
 
 ## 如何產出一個「每週單元」
 

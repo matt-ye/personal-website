@@ -155,6 +155,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -366,14 +369,21 @@
     <li><label><input type="checkbox"><span>周轉天數計算用對分母（存貨÷成本）</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 兩家公司 ROE 都是 15%：A 是 ③高④低⑤低，B 是 ③低④中⑤高——升息環境下誰危險？<br>→ <strong>B 危險</strong>——⑤高＝債重，升息直接推高利息、咬小②，且景氣反轉時槓桿反向放大虧損；A 的風險在護城河長期侵蝕，但對利率不敏感。</p>
-      <p><b>Q2</b> 某公司 ROE 從 12% 升到 18%，但營業利益率持平、周轉持平——發生什麼事？該開心嗎？<br>→ ROE 上升來自<strong>⑤權益乘數</strong>（加槓桿）或①（減稅優惠）——本業（③④）沒變好；謹慎大於開心，去資產負債表查有息負債是否明顯增加。</p>
-      <p><b>Q3</b> 為什麼五因子的②「利息負擔」永遠 ≤ 1（正常情況下）？<br>→ 因為稅前淨利＝EBIT−利息（正常無大額業外時），有借款利息就有 稅前淨利 &lt; EBIT；等於 1 表示零借款（如帳上無債的公司）。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 兩家公司 ROE 都是 15%：A 是 ③高④低⑤低，B 是 ③低④中⑤高——升息環境下誰危險？</summary>
+      <div class="ans"><p>→ <strong>B 危險</strong>——⑤高＝債重，升息直接推高利息、咬小②，且景氣反轉時槓桿反向放大虧損；A 的風險在護城河長期侵蝕，但對利率不敏感。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 某公司 ROE 從 12% 升到 18%，但營業利益率持平、周轉持平——發生什麼事？該開心嗎？</summary>
+      <div class="ans"><p>→ ROE 上升來自<strong>⑤權益乘數</strong>（加槓桿）或①（減稅優惠）——本業（③④）沒變好；謹慎大於開心，去資產負債表查有息負債是否明顯增加。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 為什麼五因子的②「利息負擔」永遠 ≤ 1（正常情況下）？</summary>
+      <div class="ans"><p>→ 因為稅前淨利＝EBIT−利息（正常無大額業外時），有借款利息就有 稅前淨利 &lt; EBIT；等於 1 表示零借款（如帳上無債的公司）。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

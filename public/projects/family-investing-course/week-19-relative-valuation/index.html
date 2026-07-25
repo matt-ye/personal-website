@@ -167,6 +167,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -406,14 +409,21 @@
     <li><label><input type="checkbox"><span>能區分「便宜有理由」與「可能被錯殺」</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 為什麼 EV/EBITDA 的分子要用 EV 而不是市值？<br>→ 因為 EBITDA 是「支付利息給債主<strong>之前</strong>」的獲利，屬於股東＋債主共同的成果；分子必須用同樣涵蓋兩者的 <strong>EV（市值＋有息負債−現金）</strong>才對稱。用市值配 EBITDA 是分子分母口徑不一致。</p>
-      <p><b>Q2</b> A 公司 P/E 12、B 公司 P/E 30，什麼情況下 B 其實比 A 便宜？<br>→ 當 <strong>B 的成長顯著更快</strong>（或 ROIC 更高、獲利更穩）——例：A 成長 3%、B 成長 20%，B 的 PEG 遠低於 A，未來獲利會把高倍數「長回來」；孤立看 P/E 會誤判。</p>
-      <p><b>Q3</b> 相對估值最大的盲點是什麼？該用什麼方法補足？<br>→ 盲點：它只給<strong>相對</strong>貴賤，若整個產業／市場都高估，它會說「不算貴」但其實全錯。補足方法：用 <strong>W20 的 DCF（絕對估值）</strong>交叉驗證，兩者都指向便宜才可信。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼 EV/EBITDA 的分子要用 EV 而不是市值？</summary>
+      <div class="ans"><p>→ 因為 EBITDA 是「支付利息給債主<strong>之前</strong>」的獲利，屬於股東＋債主共同的成果；分子必須用同樣涵蓋兩者的 <strong>EV（市值＋有息負債−現金）</strong>才對稱。用市值配 EBITDA 是分子分母口徑不一致。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> A 公司 P/E 12、B 公司 P/E 30，什麼情況下 B 其實比 A 便宜？</summary>
+      <div class="ans"><p>→ 當 <strong>B 的成長顯著更快</strong>（或 ROIC 更高、獲利更穩）——例：A 成長 3%、B 成長 20%，B 的 PEG 遠低於 A，未來獲利會把高倍數「長回來」；孤立看 P/E 會誤判。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 相對估值最大的盲點是什麼？該用什麼方法補足？</summary>
+      <div class="ans"><p>→ 盲點：它只給<strong>相對</strong>貴賤，若整個產業／市場都高估，它會說「不算貴」但其實全錯。補足方法：用 <strong>W20 的 DCF（絕對估值）</strong>交叉驗證，兩者都指向便宜才可信。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

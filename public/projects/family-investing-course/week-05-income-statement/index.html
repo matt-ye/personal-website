@@ -150,6 +150,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -341,14 +344,21 @@
     <li><label><input type="checkbox"><span>能用一句話說出這家公司「錢主要在哪一層被拿走」</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 毛利率 55%、營業利益率 12%——中間 43 個百分點去哪了？該去財報哪裡查？<br>→ 被<strong>營業費用</strong>（推銷＋管理＋研發）吃掉了；查合併財報的「營業費用」明細附註，看三項各佔多少。</p>
-      <p><b>Q2</b> 某公司淨利年增 80%，但營業利益持平——最可能發生了什麼？<br>→ 淨利成長來自<strong>業外</strong>（處分資產、匯兌、轉投資），本業沒變好——去「營業外收入及支出」找一次性項目。（就是你在瀑布圖拉滑桿看到的效果。）</p>
-      <p><b>Q3</b> 平台公司把總額改記淨額，營收暴減 90% 但淨利不變——公司變差了嗎？<br>→ <strong>沒有變差</strong>，只是會計表達方式改變，毛利與淨利不動；但過去用總額營收講的「規模故事」要重新評估。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 毛利率 55%、營業利益率 12%——中間 43 個百分點去哪了？該去財報哪裡查？</summary>
+      <div class="ans"><p>→ 被<strong>營業費用</strong>（推銷＋管理＋研發）吃掉了；查合併財報的「營業費用」明細附註，看三項各佔多少。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 某公司淨利年增 80%，但營業利益持平——最可能發生了什麼？</summary>
+      <div class="ans"><p>→ 淨利成長來自<strong>業外</strong>（處分資產、匯兌、轉投資），本業沒變好——去「營業外收入及支出」找一次性項目。（就是你在瀑布圖拉滑桿看到的效果。）</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 平台公司把總額改記淨額，營收暴減 90% 但淨利不變——公司變差了嗎？</summary>
+      <div class="ans"><p>→ <strong>沒有變差</strong>，只是會計表達方式改變，毛利與淨利不動；但過去用總額營收講的「規模故事」要重新評估。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

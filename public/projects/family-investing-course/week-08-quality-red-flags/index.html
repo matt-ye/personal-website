@@ -170,6 +170,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -364,14 +367,21 @@
     <li><label><input type="checkbox"><span>100 字總結有具體疑慮或具體理由給高分</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>任務 C｜快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 營收 +30%、應收 +80%——給出兩種正當解釋與一種不正當解釋。<br>→ <strong>正當</strong>：①放寬帳期搶市佔的策略性決定（要看毛利有沒有守住）②接了大客戶長帳期訂單（集中度風險另計）。<strong>不正當</strong>：季底塞貨給經銷商虛增營收，貨其實沒賣到終端。</p>
-      <p><b>Q2</b> 為什麼「帳上現金很多＋大量借款」矛盾？<br>→ 現金若真實且自由，先還借款省利息才合理；<strong>不還</strong>代表現金可能被質押／限制用途／在海外拿不回，或根本不存在——資金成本上的矛盾就是可疑點。</p>
-      <p><b>Q3</b> 勾稽三條線中，哪一條最難被同時造假？為什麼？<br>→ <strong>線 3（期末現金）最難</strong>——現金餘額有銀行對帳單與函證把關，要造假需要外部共謀（博達正是買通了這關才撐了幾年，也因此一被戳破就全盤崩潰）；相較之下應收與存貨的「估計」空間大得多。</p>
-    </div>
-  </details>
+  <p class="qalabel">任務 C｜快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 營收 +30%、應收 +80%——給出兩種正當解釋與一種不正當解釋。</summary>
+      <div class="ans"><p>→ <strong>正當</strong>：①放寬帳期搶市佔的策略性決定（要看毛利有沒有守住）②接了大客戶長帳期訂單（集中度風險另計）。<strong>不正當</strong>：季底塞貨給經銷商虛增營收，貨其實沒賣到終端。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 為什麼「帳上現金很多＋大量借款」矛盾？</summary>
+      <div class="ans"><p>→ 現金若真實且自由，先還借款省利息才合理；<strong>不還</strong>代表現金可能被質押／限制用途／在海外拿不回，或根本不存在——資金成本上的矛盾就是可疑點。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 勾稽三條線中，哪一條最難被同時造假？為什麼？</summary>
+      <div class="ans"><p>→ <strong>線 3（期末現金）最難</strong>——現金餘額有銀行對帳單與函證把關，要造假需要外部共謀（博達正是買通了這關才撐了幾年，也因此一被戳破就全盤崩潰）；相較之下應收與存貨的「估計」空間大得多。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 
