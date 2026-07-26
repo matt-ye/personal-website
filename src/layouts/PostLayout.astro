@@ -7,16 +7,20 @@ interface Props {
   pubDate: Date;
   lang?: 'zh' | 'en';
   tags?: string[];
+  titleEn?: string;
+  descriptionEn?: string;
 }
 
-const { title, description, pubDate, lang = 'zh', tags } = Astro.props;
+const { title, description, pubDate, lang = 'zh', tags, titleEn, descriptionEn } = Astro.props;
+
+/* 有 titleEn 就是雙語文章：標題與日期跟著站上的語言切換，不再固定單一語言 */
+const bilingual = Boolean(titleEn);
 
 const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
 
-const dateFormatted = pubDate.toLocaleDateString(
-  lang === 'zh' ? 'zh-TW' : 'en-US',
-  { year: 'numeric', month: 'long', day: 'numeric' }
-);
+const dateZh = pubDate.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+const dateEn = pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const dateFormatted = lang === 'zh' ? dateZh : dateEn;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL('/OG.png', Astro.site).href;
@@ -44,10 +48,24 @@ const articleLd = {
   <a href="/writing" class="back-link">← Writing</a>
 
   <header class="post-page-header">
-    <h1>{title}</h1>
+    <h1>
+      {bilingual ? (
+        <>
+          <span class="lang-zh" lang="zh-TW">{title}</span><span class="lang-en" lang="en" hidden>{titleEn}</span>
+        </>
+      ) : title}
+    </h1>
     <div class="post-meta">
-      <time datetime={pubDate.toISOString()}>{dateFormatted}</time>
-      <span class="lang-badge">{lang === 'zh' ? '中' : 'EN'}</span>
+      <time datetime={pubDate.toISOString()}>
+        {bilingual ? (
+          <>
+            <span class="lang-zh" lang="zh-TW">{dateZh}</span><span class="lang-en" lang="en" hidden>{dateEn}</span>
+          </>
+        ) : dateFormatted}
+      </time>
+      {bilingual
+        ? <span class="lang-badge">中 · EN</span>
+        : <span class="lang-badge">{lang === 'zh' ? '中' : 'EN'}</span>}
       {tags && tags.length > 0 && (
         <div class="tags">
           {tags.map(tag => <span class="tag">{tag}</span>)}

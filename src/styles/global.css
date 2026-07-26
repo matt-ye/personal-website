@@ -205,7 +205,10 @@ nav a[aria-current="page"] {
 }
 .lang-toggle:hover { color: var(--color-text); border-color: var(--color-accent); }
 
-/* Language show/hide — default (no JS) shows zh; data-lang flips it */
+/* Language show/hide — default (no JS) shows zh; data-lang flips it.
+   <T> 的 en 區塊在 HTML 裡帶 hidden 屬性（給不套 CSS 的爬蟲判讀），
+   而 [hidden] 只是瀏覽器預設樣式，下面這條作者規則特異性較高會蓋過它，
+   所以切到英文時顯示正常；hidden 屬性本身由 Header 的 syncLangHidden 對調。 */
 .lang-en { display: none; }
 [data-lang="en"] .lang-zh { display: none; }
 [data-lang="en"] .lang-en { display: inline; }
