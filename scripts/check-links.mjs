@@ -101,16 +101,27 @@ async function probe(url) {
       clearTimeout(t);
     }
   };
-  try {
-    let r = await attempt('HEAD');
-    // 不少站台不接受 HEAD（或用它擋機器人），改用 GET 再試一次
-    if ([400, 402, 403, 405, 406, 415, 501].includes(r.status)) {
-      try { r = await attempt('GET'); } catch { /* 保留 HEAD 的結果 */ }
+  const once = async () => {
+    try {
+      let r = await attempt('HEAD');
+      // 不少站台不接受 HEAD（或用它擋機器人），改用 GET 再試一次
+      if ([400, 402, 403, 405, 406, 415, 501].includes(r.status)) {
+        try { r = await attempt('GET'); } catch { /* 保留 HEAD 的結果 */ }
+      }
+      return r;
+    } catch (e) {
+      return { status: 0, error: e.name === 'AbortError' ? '逾時' : String(e.message || e) };
     }
-    return r;
-  } catch (e) {
-    return { status: 0, error: e.name === 'AbortError' ? '逾時' : String(e.message || e) };
+  };
+
+  const r = await once();
+  // 會被判失效的，隔幾秒重試一次再定讞——對方站台抽風一分鐘不該讓 CI 變紅。
+  // （實測：goodinfo.tw 與 csrc.nist.gov 都出現過前三輪正常、第四輪 520／404。）
+  if (r.status >= 400 && ![401, 402, 403, 429, 451, 999].includes(r.status)) {
+    await new Promise((res) => setTimeout(res, 3000));
+    return await once();
   }
+  return r;
 }
 
 /** 轉址後是否落到「別的頁面」——原頁面被移除時，很多站台會默默把你丟回首頁 */
@@ -141,6 +152,8 @@ function verdict(r, url) {
     return { icon: '⚠️', text: `${r.status}（付費牆或擋機器人，請人工點一次）` };
   }
   if (r.status === 0) return { icon: '⚠️', text: `連不上：${r.error}（可能被擋，請人工點一次）` };
+  // 5xx 是「對方伺服器現在有問題」，不是「這個頁面不存在」——連結健檢不該為此變紅
+  if (r.status >= 500) return { icon: '⚠️', text: `${r.status}（對方伺服器異常，請人工點一次）` };
   return { icon: '❌', text: `HTTP ${r.status}` };
 }
 
