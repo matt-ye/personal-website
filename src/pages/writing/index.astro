@@ -9,7 +9,10 @@ import { essays } from '../../data/essays';
 // Blog posts → unified items
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).map(p => ({
   title: p.data.title,
-  titleEn: '',
+  titleEn: '',            // 留空：文章卡片不像 One More Step 那樣多印一行英文標題
+  /* 雙語文章改用「切換」而非「兩行並陳」：卡片標題與描述跟著站上的語言換。 */
+  titleAlt: p.data.titleEn ?? '',
+  descAlt: p.data.descriptionEn ?? '',
   desc: p.data.description,
   href: `/writing/${p.id}`,
   date: p.data.pubDate,
@@ -17,7 +20,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).map(p => 
           : p.data.series === 'hardcore-presentation' ? '硬核簡報'
           : p.data.series === 'management-3r' ? '管理專欄'
           : '隨筆',
-  badge: p.data.lang === 'zh' ? '中' : 'EN',
+  badge: p.data.titleEn ? '中 · EN' : (p.data.lang === 'zh' ? '中' : 'EN'),
   kind: 'post',
 }));
 
@@ -85,12 +88,16 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month:
     {items.map(it => (
       <li class="post-card" data-category={it.category}>
         <div class="post-card-header">
-          <a href={it.href} class="post-card-title">{it.title}</a>
+          <a href={it.href} class="post-card-title">
+            {it.titleAlt ? <T zh={it.title} en={it.titleAlt} /> : it.title}
+          </a>
           <span class="post-card-date"><time datetime={it.date.toISOString()}>{fmt(it.date)}</time></span>
           <span class={`lang-badge${it.kind === 'feature' ? ' feature-badge' : ''}`}>{it.badge}</span>
         </div>
         {it.titleEn && <p class="post-card-en">{it.titleEn}</p>}
-        <p class="post-card-desc">{it.desc}</p>
+        <p class="post-card-desc">
+          {it.descAlt ? <T zh={it.desc} en={it.descAlt} /> : it.desc}
+        </p>
       </li>
     ))}
   </ul>

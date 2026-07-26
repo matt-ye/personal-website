@@ -1,7 +1,19 @@
 ---
-// Bilingual text helper: renders both languages; CSS (data-lang on <html>) shows one.
-// Usage: <T zh="首頁" en="Home" />
+/*
+ * 雙語文字：兩種語言都會進 DOM，由 <html data-lang> + CSS 決定顯示哪一個。
+ * 用法：<T zh="首頁" en="Home" />
+ *
+ * 兩個屬性是刻意加的，不只是裝飾：
+ * - lang：告訴搜尋引擎與螢幕閱讀器「這一段是哪個語言」。沒有它，爬蟲看到的
+ *   是「首頁Home」這種兩種語言黏在一起的字串，語言判定會混亂。
+ * - hidden：CSS 的 display:none 只有在瀏覽器套用樣式後才成立，而許多爬蟲
+ *   （含 LLM）直接讀原始 HTML、不套 CSS。hidden 是 HTML 語義層級的宣告，
+ *   讓「這段預設不顯示」在沒有 CSS 的情況下也讀得出來。
+ *
+ * 預設輸出 zh 可見、en 隱藏（與 CSS 的預設一致）；切換語言時由 Header 的
+ * syncLangHidden() 對調 hidden，避免出現「看得到卻被輔助技術跳過」的狀態。
+ */
 interface Props { zh: string; en: string; }
 const { zh, en } = Astro.props;
 ---
-<span class="lang-zh">{zh}</span><span class="lang-en">{en}</span>
+<span class="lang-zh" lang="zh-TW">{zh}</span><span class="lang-en" lang="en" hidden>{en}</span>
