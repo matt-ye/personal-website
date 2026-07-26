@@ -1,7 +1,9 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
-const pageTitle = "智慧財產權對企業與治理的重要性 — One More Step — Matt Ye";
+/* 不要在這裡加站名後綴：BaseLayout 會自動接上「· 葉淨維 Matt Ye」，
+   自行加會變成 "… — Matt Ye · 葉淨維 Matt Ye"（署名重複兩次）。 */
+const pageTitle = "智慧財產權對企業與治理的重要性 — One More Step";
 const pageDescription = "探討人工智慧時代的智慧財產權治理架構，涵蓋著作權、專利、開源授權等核心議題。學習筆記整理自《全國律師》2026年5月號。";
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
@@ -24,6 +26,7 @@ const articleLd = {
   title={pageTitle}
   description={pageDescription}
   lang="zh-TW"
+  ogType="article"
 >
 
 <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleLd)} />

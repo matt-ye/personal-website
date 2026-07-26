@@ -17,7 +17,9 @@ const {
   description = '葉淨維 Ching-Wei (Matt) Ye 的個人網站',
   lang = 'zh-TW',
   ogType = 'website',
-  image = '/OG.png',
+  /* 預設分享圖用捕夢網 LOGO，不用本人照片——只有首頁需要把臉放在分享卡上，
+     子頁面全部是自己的臉會很奇怪。首頁自行傳 image="/OG.png" 覆寫。 */
+  image = '/og-logo.png',
 } = Astro.props;
 
 const siteURL = Astro.site ?? 'https://mattye.dev';

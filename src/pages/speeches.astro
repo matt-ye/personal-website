@@ -9,6 +9,7 @@ const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=
 <BaseLayout
   title="Speeches"
   description="葉淨維 Matt Ye 的演講、工作坊、競賽作品集。2020 年至今，涵蓋學術簡報、表達技巧、EMI教學等主題。"
+  image="/OG.png"
 >
   <script slot="head" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
@@ -255,7 +256,7 @@ function countUp(el, finalVal, dur) {
 /* ── State ── */
 const PAGE_SIZE = 24;
 const EXCLUDED_TYPES = new Set(['彩排', '教材製作']);
-const PALETTE = ['#8b6cff','#14e0ff','#ff5dd9','#ffd166','#4ade80','#ff7a59','#c8b0ff','#8ee0ff','#ffb3ee'];
+const PALETTE = ['#3b82f6','#22d3ee','#ff5dd9','#ffd166','#4ade80','#ff7a59','#c8b0ff','#8ee0ff','#ffb3ee'];
 let allData = [];
 let state = { search: '', types: new Set(), modes: new Set(), langs: new Set(), years: new Set(), sort: 'date-desc', page: 1 };
 
