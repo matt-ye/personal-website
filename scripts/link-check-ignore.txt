@@ -11,6 +11,9 @@
 # （目前清單是空的）
 #
 # 已處理：
-# - blogs.sjsu.edu BOPPPS 第 1 篇：站方移除，boppps 頁改連 #ISW 標籤頁（Part 2–4 都在）
-# - gf.com 矽光子新聞稿：網址少了一層，正確位置在 gf.com 根目錄不是 /gf-press-release/，已修正
+# - blogs.sjsu.edu BOPPPS 第 1 篇：站方移除。先改連 #ISW 標籤頁，但健檢回 404
+#   （WordPress 的標籤彙整頁應該是關掉了），改連確定還在的第 2 篇本文。
+# - gf.com 矽光子新聞稿：搜尋索引裡那筆 gf.com 根目錄的網址是舊的，實際會 302 到
+#   news-and-events/news/ 首頁——文章本身已從 gf.com 下架。改連 investors.gf.com
+#   的同一篇新聞稿（IR 站台會長期保存）。
 # - csrc.nist.gov/projects/post-quantum-cryptography/faqs：對方自己好了，健檢已回 200
