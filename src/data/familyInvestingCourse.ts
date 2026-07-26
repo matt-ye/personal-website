@@ -221,4 +221,13 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     date: '2026-12-16',
     url: '/projects/family-investing-course/week-24-buffett-letters/',
   },
+  {
+    slug: 'week-25-marks-cycles',
+    title: 'W25 大師心法——Marks 備忘錄與週期思維',
+    titleEn: 'W25 Marks & Market Cycles',
+    description: 'Buffett 教你看公司，Marks 教你看環境：第二層思考、風險是本金永久損失而非波動、心理鐘擺與信貸窗口——風險最高的時刻看起來最安全。附心理鐘擺互動與市場溫度計五指標評估。',
+    tags: ['Q2 投資人季', '互動評估'],
+    date: '2026-12-23',
+    url: '/projects/family-investing-course/week-25-marks-cycles/',
+  },
 ];
