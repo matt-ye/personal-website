@@ -21,6 +21,8 @@ https://blogs.sjsu.edu/ecampus/2019/09/08/lesson-design-using-the-boppps-model/
 
 # --- one-more-step / quantum-photonics-investing：發布方站台改版 ---
 https://csrc.nist.gov/projects/post-quantum-cryptography/faqs
+# 這條 2026-07-25 還是好的，2026-07-26 起持續 404（重試後仍然），NIST 應該是把頁面收掉了
+https://csrc.nist.gov/presentations/2025/fips-206-fn-dsa-falcon
 https://gf.com/dresden-press-release/psiquantum-and-globalfoundries-build-worlds-first-full-scale-quantum-computer/
 https://gf.com/gf-press-release/globalfoundries-announces-next-generation-silicon-photonics-solutions-and/
 
