@@ -168,6 +168,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -382,14 +385,21 @@
     <li><label><input type="checkbox"><span>200 字結論寫完</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 2022 年為什麼「衰退買債券」的劇本失靈？<br>→ 2022 是<strong>通膨驅動</strong>的趨緩：央行為壓通膨暴力升息 → 利率上升同時壓垮股票估值<strong>與</strong>債券價格（第 3 週的反向關係），股債同跌；「衰退買債」的前提是「衰退伴隨降息」，當年降息還遠。</p>
-      <p><b>Q2</b> 股市在衰退「數據最差」之前觸底——用預期機制解釋。<br>→ 股價＝未來現金流的折現。當市場判斷「最壞的情況已可估計」且央行開始救市（降息、QE），<strong>預期</strong>由「未知的壞」轉為「已知的壞＋將來的好」，價格就先回升——即使當下數據仍在惡化。</p>
-      <p><b>Q3</b> 循環知識對長期投資人的正確用途是什麼？（一句話）<br>→ <strong>定位與備戰，不是預測與進出</strong>（調整預備金、維持配置紀律、在極端區間檢查自己的貪婪與恐懼）。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 2022 年為什麼「衰退買債券」的劇本失靈？</summary>
+      <div class="ans"><p>→ 2022 是<strong>通膨驅動</strong>的趨緩：央行為壓通膨暴力升息 → 利率上升同時壓垮股票估值<strong>與</strong>債券價格（第 3 週的反向關係），股債同跌；「衰退買債」的前提是「衰退伴隨降息」，當年降息還遠。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 股市在衰退「數據最差」之前觸底——用預期機制解釋。</summary>
+      <div class="ans"><p>→ 股價＝未來現金流的折現。當市場判斷「最壞的情況已可估計」且央行開始救市（降息、QE），<strong>預期</strong>由「未知的壞」轉為「已知的壞＋將來的好」，價格就先回升——即使當下數據仍在惡化。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 循環知識對長期投資人的正確用途是什麼？（一句話）</summary>
+      <div class="ans"><p>→ <strong>定位與備戰，不是預測與進出</strong>（調整預備金、維持配置紀律、在極端區間檢查自己的貪婪與恐懼）。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

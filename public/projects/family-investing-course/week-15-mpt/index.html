@@ -183,6 +183,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -427,14 +430,21 @@
     <li><label><input type="checkbox"><span>找到 ρ=0 的最小波動點</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 兩資產 ρ＝+1 時，組合波動是什麼？免費午餐還在嗎？<br>→ σ<sub>p</sub> ＝ w·σ₁＋(1−w)·σ₂（恰好是加權平均）——第三項不再打折，<strong>免費午餐消失</strong>；完全同步的資產放再多也沒有分散效果。把繪圖器的 ρ 拉到 +1 看：曲線變成直線、貼上虛線。</p>
-      <p><b>Q2</b> 為什麼市場不補償非系統性風險？<br>→ 因為它<strong>免費就能消除</strong>（多買幾檔即可）——市場只補償「無法逃避」的承擔；不肯分散而承擔個股風險，是自願不領免費午餐，市場不會另發薪水。</p>
-      <p><b>Q3</b> 2008 年「股債分散」有用、「股票內部分散 50 檔」沒用——用兩層風險解釋。<br>→ 50 檔台股消除的是<strong>非系統性風險</strong>（個別公司），但 2008 是<strong>系統性風險</strong>（整個市場）——只有跨資產類別（股 vs 債）的分散碰得到系統性層次；而且即使如此，危機中 ρ 上升也會讓效果打折。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 兩資產 ρ＝+1 時，組合波動是什麼？免費午餐還在嗎？</summary>
+      <div class="ans"><p>→ σ<sub>p</sub> ＝ w·σ₁＋(1−w)·σ₂（恰好是加權平均）——第三項不再打折，<strong>免費午餐消失</strong>；完全同步的資產放再多也沒有分散效果。把繪圖器的 ρ 拉到 +1 看：曲線變成直線、貼上虛線。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 為什麼市場不補償非系統性風險？</summary>
+      <div class="ans"><p>→ 因為它<strong>免費就能消除</strong>（多買幾檔即可）——市場只補償「無法逃避」的承擔；不肯分散而承擔個股風險，是自願不領免費午餐，市場不會另發薪水。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 2008 年「股債分散」有用、「股票內部分散 50 檔」沒用——用兩層風險解釋。</summary>
+      <div class="ans"><p>→ 50 檔台股消除的是<strong>非系統性風險</strong>（個別公司），但 2008 是<strong>系統性風險</strong>（整個市場）——只有跨資產類別（股 vs 債）的分散碰得到系統性層次；而且即使如此，危機中 ρ 上升也會讓效果打折。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

@@ -175,6 +175,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -366,14 +369,21 @@
     <li><label><input type="checkbox"><span>每條原則通過「我違反過它」的反向測試</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 為什麼「能力圈的邊界比大小重要」？<br>→ 因為虧大錢的交易多數發生在<strong>圈外而不自知</strong>的地方——圈小但邊界清楚的人會說「不知道」而跳過（W21）；圈大但邊界模糊的人會在自以為懂的領域重倉。可操作版：對每筆投資先問「我憑什麼比賣方懂？」</p>
-      <p><b>Q2</b> Buffett 給一般人的實際建議是指數基金——這跟他自己集中持股矛盾嗎？<br>→ <strong>不矛盾，是同一套邏輯的兩種輸出</strong>：集中的前提是「深度理解＋時間投入＋情緒紀律」三者兼備；他誠實判斷多數人（含專業者，W16 SPIVA）不具備，所以預設建議是指數化。這正是「能力圈」原則應用在「選投資方式」上。</p>
-      <p><b>Q3</b> 讀 2008 年信時，哪一個行為最直接反駁了 W23 的損失趨避？<br>→ 在市場暴跌、帳面鉅虧之際<strong>繼續買進</strong>（高盛、GE 特別股與後續加碼）——損失趨避會驅使常人在浮虧時停止行動甚至清倉；他反向而行，因為決策依據是「價格 vs 價值」（W21）而非「痛不痛」（W23）。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼「能力圈的邊界比大小重要」？</summary>
+      <div class="ans"><p>→ 因為虧大錢的交易多數發生在<strong>圈外而不自知</strong>的地方——圈小但邊界清楚的人會說「不知道」而跳過（W21）；圈大但邊界模糊的人會在自以為懂的領域重倉。可操作版：對每筆投資先問「我憑什麼比賣方懂？」</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> Buffett 給一般人的實際建議是指數基金——這跟他自己集中持股矛盾嗎？</summary>
+      <div class="ans"><p>→ <strong>不矛盾，是同一套邏輯的兩種輸出</strong>：集中的前提是「深度理解＋時間投入＋情緒紀律」三者兼備；他誠實判斷多數人（含專業者，W16 SPIVA）不具備，所以預設建議是指數化。這正是「能力圈」原則應用在「選投資方式」上。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 讀 2008 年信時，哪一個行為最直接反駁了 W23 的損失趨避？</summary>
+      <div class="ans"><p>→ 在市場暴跌、帳面鉅虧之際<strong>繼續買進</strong>（高盛、GE 特別股與後續加碼）——損失趨避會驅使常人在浮虧時停止行動甚至清倉；他反向而行，因為決策依據是「價格 vs 價值」（W21）而非「痛不痛」（W23）。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

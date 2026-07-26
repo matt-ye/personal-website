@@ -178,6 +178,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -440,14 +443,21 @@
     <li><label><input type="checkbox"><span>能說出 T+2 與違約交割的關係</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>任務 C｜快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 為什麼證交稅只在賣出收，對「長期持有」是隱性獎勵？<br>→ 買進不課稅、賣出才課——<strong>不賣就不觸發</strong>；周轉越低、繳稅次數越少，制度天然偏袒長期持有者。</p>
-      <p><b>Q2</b> 市價單在什麼情境下特別危險？（舉兩個）<br>→ ①<strong>開盤瞬間</strong>（集合競價後價格跳動大）②<strong>冷門股／零股</strong>（掛單稀疏，市價單可能吃穿多檔成交在離譜價位）；另外漲跌停邊緣也危險。</p>
-      <p><b>Q3</b> 除息 3 元、除息日股價開盤跌 3 元——你賺了還是沒賺？<br>→ <strong>沒賺也沒虧</strong>（暫時）——3 元從股價搬進你的現金帳戶，總資產不變；之後「填息」漲回 3 元才是真的賺，貼息則是領了股利賠了價差。</p>
-    </div>
-  </details>
+  <p class="qalabel">任務 C｜快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼證交稅只在賣出收，對「長期持有」是隱性獎勵？</summary>
+      <div class="ans"><p>→ 買進不課稅、賣出才課——<strong>不賣就不觸發</strong>；周轉越低、繳稅次數越少，制度天然偏袒長期持有者。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 市價單在什麼情境下特別危險？（舉兩個）</summary>
+      <div class="ans"><p>→ ①<strong>開盤瞬間</strong>（集合競價後價格跳動大）②<strong>冷門股／零股</strong>（掛單稀疏，市價單可能吃穿多檔成交在離譜價位）；另外漲跌停邊緣也危險。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 除息 3 元、除息日股價開盤跌 3 元——你賺了還是沒賺？</summary>
+      <div class="ans"><p>→ <strong>沒賺也沒虧</strong>（暫時）——3 元從股價搬進你的現金帳戶，總資產不變；之後「填息」漲回 3 元才是真的賺，貼息則是領了股利賠了價差。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

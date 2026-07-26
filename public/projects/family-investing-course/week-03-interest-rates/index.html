@@ -196,6 +196,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.95rem}
   details.bonus .ans p{margin:.4rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -415,8 +418,8 @@
   </div>
   <div class="readitem">
     <span class="t num">選讀</span>
-    <div class="body"><b><a class="srclink" href="https://www.cbc.gov.tw/tw/cp-302-995-DBAFA-1.html" target="_blank" rel="noopener">中央銀行 理監事會後新聞稿 ↗</a></b>
-      <p>讀一次央行自己怎麼解釋利率決策（抓「對通膨與成長的判斷」兩段就好）。</p></div>
+    <div class="body"><b><a class="srclink" href="https://www.cbc.gov.tw/tw/mp-1.html" target="_blank" rel="noopener">中央銀行全球資訊網 ↗</a></b>
+      <p>從「新聞發布」找最近一次<strong>理監事會後記者會參考資料</strong>，讀一次央行自己怎麼解釋利率決策（抓「對通膨與成長的判斷」兩段就好）。</p></div>
   </div>
   </div>
 </section>
@@ -445,14 +448,21 @@
     <li><label><input type="checkbox"><span>快問快答全對（見下）</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>任務 C｜快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 為什麼長天期債券對利率更敏感？<br>→ 現金流離現在越遠，折現的指數效果放大越多（<span class="fx">(1+r)<sup>n</sup></span> 的 <span class="fx">n</span> 大）。</p>
-      <p><b>Q2</b> 殖利率曲線倒掛，市場在說什麼？<br>→ 市場預期經濟將轉弱、央行未來會降息，所以願意鎖住長天期的較低利率。</p>
-      <p><b>Q3</b> 升息環境下，高成長科技股為什麼常比金融股慘？<br>→ 成長股的獲利集中在遙遠未來（duration 長），折現率上升時現值縮水最多；金融股的放款利差反而可能受惠。</p>
-    </div>
-  </details>
+  <p class="qalabel">任務 C｜快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼長天期債券對利率更敏感？</summary>
+      <div class="ans"><p>→ 現金流離現在越遠，折現的指數效果放大越多（<span class="fx">(1+r)<sup>n</sup></span> 的 <span class="fx">n</span> 大）。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 殖利率曲線倒掛，市場在說什麼？</summary>
+      <div class="ans"><p>→ 市場預期經濟將轉弱、央行未來會降息，所以願意鎖住長天期的較低利率。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 升息環境下，高成長科技股為什麼常比金融股慘？</summary>
+      <div class="ans"><p>→ 成長股的獲利集中在遙遠未來（duration 長），折現率上升時現值縮水最多；金融股的放款利差反而可能受惠。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

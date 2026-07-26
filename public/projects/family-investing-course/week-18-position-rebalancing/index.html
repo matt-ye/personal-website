@@ -166,6 +166,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -392,14 +395,21 @@
     <li><label><input type="checkbox"><span>能解釋再平衡的本質是風險控制而非報酬增強</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 再平衡長期可能小幅「降低」報酬，為什麼還要做？<br>→ 因為它的產品不是報酬、是<strong>風險控制</strong>——不再平衡的組合會在牛市末端股票超載，然後在崩盤時損失超出你的承受度，可能導致恐慌性賣出（一次行為錯誤 &gt; 多年再平衡成本）。它在下次危機時才兌現價值。</p>
-      <p><b>Q2</b> 為什麼「用新資金補低配」比「賣高配買低配」更省成本？<br>→ 賣出會觸發交易成本、證交稅、可能的資本利得稅（W10、Q4 週 50）；用「還沒投入的新錢」直接買低配的一邊，只有買入手續費、<strong>不觸發任何賣出稅費</strong>，摩擦最小。</p>
-      <p><b>Q3</b> 買了台積電、聯發科、聯電、日月光、瑞昱五檔，算充分分散嗎？<br>→ <strong>不算</strong>——五檔全是半導體，共享同一產業風險（W15 的系統性／產業風險），景氣下行或產業逆風時會一起跌；分散要跨產業甚至跨資產類別，不是湊檔數。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 再平衡長期可能小幅「降低」報酬，為什麼還要做？</summary>
+      <div class="ans"><p>→ 因為它的產品不是報酬、是<strong>風險控制</strong>——不再平衡的組合會在牛市末端股票超載，然後在崩盤時損失超出你的承受度，可能導致恐慌性賣出（一次行為錯誤 &gt; 多年再平衡成本）。它在下次危機時才兌現價值。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 為什麼「用新資金補低配」比「賣高配買低配」更省成本？</summary>
+      <div class="ans"><p>→ 賣出會觸發交易成本、證交稅、可能的資本利得稅（W10、Q4 週 50）；用「還沒投入的新錢」直接買低配的一邊，只有買入手續費、<strong>不觸發任何賣出稅費</strong>，摩擦最小。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 買了台積電、聯發科、聯電、日月光、瑞昱五檔，算充分分散嗎？</summary>
+      <div class="ans"><p>→ <strong>不算</strong>——五檔全是半導體，共享同一產業風險（W15 的系統性／產業風險），景氣下行或產業逆風時會一起跌；分散要跨產業甚至跨資產類別，不是湊檔數。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

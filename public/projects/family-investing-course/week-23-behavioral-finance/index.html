@@ -170,6 +170,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -332,8 +335,8 @@
   </div>
   <div class="readitem">
     <span class="t num">20 分</span>
-    <div class="body"><b><a class="srclink" href="https://faculty.haas.berkeley.edu/odean/papers.html" target="_blank" rel="noopener">Barber et al. 台股研究（Odean 論文頁）↗</a></b>
-      <p>找 "Just How Much Do Individual Investors Lose by Trading?"，讀摘要與結論即可——看見「自己人」的數據。</p></div>
+    <div class="body"><b><a class="srclink" href="https://doi.org/10.1093/rfs/hhn046" target="_blank" rel="noopener">Barber, Lee, Liu &amp; Odean「Just How Much Do Individual Investors Lose by Trading?」↗</a></b>
+      <p>台股完整交易資料的研究（<em>Review of Financial Studies</em>, 2009）；讀摘要與結論即可——看見「自己人」的數據。</p></div>
   </div>
   <div class="readitem">
     <span class="t num">選讀</span>
@@ -366,14 +369,21 @@
     <li><label><input type="checkbox"><span>能不看講義背出六大偏誤</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 處分效應「賣盈抱虧」為什麼長期傷害報酬？<br>→ 它系統性地<strong>截斷贏家、放養輸家</strong>：上漲的好公司早早賣掉（錯過複利主升段，W1 的後段爆發），惡化的公司無限展期（虧損越滾越深）——長期組合裡留下的全是弱者。</p>
-      <p><b>Q2</b> 「跌回我的成本價就賣」犯了哪（幾）個偏誤？<br>→ <strong>錨定</strong>（成本價是與公司價值無關的數字）＋<strong>損失趨避</strong>（不肯把浮虧定案）；正確問題永遠是「以現價與現在的基本面，它值得持有嗎」。</p>
-      <p><b>Q3</b> 為什麼對策的主軸是「制度」而不是「更努力自省」？<br>→ 因為偏誤發作於<strong>情緒高張的當下</strong>，而那一刻自省能力恰好最弱（系統二離線）；制度的作用是把關鍵決策移到情緒到場之前（預先承諾）或強制通過關卡（清單），不依賴當下的你。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 處分效應「賣盈抱虧」為什麼長期傷害報酬？</summary>
+      <div class="ans"><p>→ 它系統性地<strong>截斷贏家、放養輸家</strong>：上漲的好公司早早賣掉（錯過複利主升段，W1 的後段爆發），惡化的公司無限展期（虧損越滾越深）——長期組合裡留下的全是弱者。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 「跌回我的成本價就賣」犯了哪（幾）個偏誤？</summary>
+      <div class="ans"><p>→ <strong>錨定</strong>（成本價是與公司價值無關的數字）＋<strong>損失趨避</strong>（不肯把浮虧定案）；正確問題永遠是「以現價與現在的基本面，它值得持有嗎」。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 為什麼對策的主軸是「制度」而不是「更努力自省」？</summary>
+      <div class="ans"><p>→ 因為偏誤發作於<strong>情緒高張的當下</strong>，而那一刻自省能力恰好最弱（系統二離線）；制度的作用是把關鍵決策移到情緒到場之前（預先承諾）或強制通過關卡（清單），不依賴當下的你。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 

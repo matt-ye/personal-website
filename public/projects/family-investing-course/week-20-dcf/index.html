@@ -166,6 +166,9 @@
   details.bonus summary{cursor:pointer;font-weight:700}
   details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
   details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
 
   footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
   footer.unit b{color:var(--pine)}
@@ -389,14 +392,21 @@
     <li><label><input type="checkbox"><span>能指出自己模型中「終值佔比」有多高</span></label></li>
   </ul>
 
-  <details class="bonus">
-    <summary>快問快答三題（先答，再展開對答案）</summary>
-    <div class="ans">
-      <p><b>Q1</b> 為什麼永續成長率 g 不能設得比長期經濟成長率高？<br>→ 因為永續成長是「直到永遠」——若 g &gt; 經濟成長率，這家公司終將大過整個經濟體，數學上不可能。所以 g 的上限是長期名目 GDP 成長（約略等於長期通膨＋實質成長，常取 2–3%）。</p>
-      <p><b>Q2</b> 終值佔 EV 的 77%，這對「該把力氣花在哪」有什麼提示？<br>→ 估值主要由「最遙遠、最不確定」的部分決定——提示：<strong>力氣要花在檢驗終值的假設（g 與 r）上</strong>，對它們做敏感度分析（W21），而不是糾結前 5 年 FCF 的第二位小數。</p>
-      <p><b>Q3</b> DCF 和 W19 相對估值，各自最大的優點與盲點是什麼？<br>→ <strong>DCF</strong>：優點＝絕對估值、逼你攤開假設；盲點＝終值主導、對假設極敏感、易假精確。<strong>相對估值</strong>：優點＝快、直覺、貼市場；盲點＝只給相對貴賤、產業泡沫時集體失真。兩者交叉使用互補。</p>
-    </div>
-  </details>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼永續成長率 g 不能設得比長期經濟成長率高？</summary>
+      <div class="ans"><p>→ 因為永續成長是「直到永遠」——若 g &gt; 經濟成長率，這家公司終將大過整個經濟體，數學上不可能。所以 g 的上限是長期名目 GDP 成長（約略等於長期通膨＋實質成長，常取 2–3%）。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 終值佔 EV 的 77%，這對「該把力氣花在哪」有什麼提示？</summary>
+      <div class="ans"><p>→ 估值主要由「最遙遠、最不確定」的部分決定——提示：<strong>力氣要花在檢驗終值的假設（g 與 r）上</strong>，對它們做敏感度分析（W21），而不是糾結前 5 年 FCF 的第二位小數。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> DCF 和 W19 相對估值，各自最大的優點與盲點是什麼？</summary>
+      <div class="ans"><p>→ <strong>DCF</strong>：優點＝絕對估值、逼你攤開假設；盲點＝終值主導、對假設極敏感、易假精確。<strong>相對估值</strong>：優點＝快、直覺、貼市場；盲點＝只給相對貴賤、產業泡沫時集體失真。兩者交叉使用互補。</p></div>
+    </details>
+  </div>
   </div>
 </section>
 
