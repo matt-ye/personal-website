@@ -44,5 +44,9 @@ https://newsroom.tiktok.com/en-us/new-labels-for-disclosing-ai-generated-content
 # （同網域的 /projects/post-quantum-cryptography/faqs 健檢是 200，所以不是整個網域被擋，
 #   是 /presentations/ 這條路徑對機器不友善）
 https://csrc.nist.gov/presentations/2025/fips-206-fn-dsa-falcon
-# 標題「PsiQuantum and GlobalFoundries to Build the World's First Full-scale Quantum Computer」
-https://gf.com/dresden-press-release/psiquantum-and-globalfoundries-build-worlds-first-full-scale-quantum-computer/
+
+# --- one-more-step / boppps ---
+# blogs.sjsu.edu 跟 Google 一樣對機房 IP 一律回 404：這篇 Part 2 在搜尋索引裡有完整
+# 標題與內文摘要（連 iClicker 那段內容都取得到），健檢卻回 404，所以是被擋不是不存在。
+# 同系列的 Part 1 則是四次不同搜尋都沒出現過網址，判定確實已被移除，連結才改指 Part 2。
+https://blogs.sjsu.edu/ecampus/2019/10/10/lesson-design-using-the-boppps-model-part-2-intended-learning-outcomes/

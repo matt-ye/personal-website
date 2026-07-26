@@ -11,9 +11,11 @@
 # （目前清單是空的）
 #
 # 已處理：
-# - blogs.sjsu.edu BOPPPS 第 1 篇：站方移除。先改連 #ISW 標籤頁，但健檢回 404
-#   （WordPress 的標籤彙整頁應該是關掉了），改連確定還在的第 2 篇本文。
-# - gf.com 矽光子新聞稿：搜尋索引裡那筆 gf.com 根目錄的網址是舊的，實際會 302 到
-#   news-and-events/news/ 首頁——文章本身已從 gf.com 下架。改連 investors.gf.com
-#   的同一篇新聞稿（IR 站台會長期保存）。
+# - blogs.sjsu.edu BOPPPS 第 1 篇：站方移除，改連確定還在的第 2 篇本文。
+#   （這個網域跟 Google 一樣對機房 IP 一律回 404，所以第 2 篇也驗不到，
+#     列在 link-check-verified.txt。）
+# - gf.com 兩篇新聞稿：GF 把舊新聞稿整批下架了。舊網址會 302 到新的
+#   /news-and-events/news/<slug>/，但那個位置一樣 404，等於文章本身不在了；
+#   investors.gf.com 上的版本則從 CI 逾時、驗不到。最後改引通訊社的原始稿
+#   （BusinessWire 2021、PRNewswire 2022），這種帶固定編號的稿件會長期保存。
 # - csrc.nist.gov/projects/post-quantum-cryptography/faqs：對方自己好了，健檢已回 200
