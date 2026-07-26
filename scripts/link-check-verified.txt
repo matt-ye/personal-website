@@ -40,10 +40,15 @@ https://support.google.com/youtube/answer/14328491
 https://newsroom.tiktok.com/en-us/new-labels-for-disclosing-ai-generated-content
 
 # --- one-more-step / quantum-photonics-investing ---
+# csrc.nist.gov 是「時好時壞」型的，不是穩定被擋也不是失效。決定性證據：連續兩輪 CI
+# 之間，下面這兩條網址的結果對調了——第 11 輪 Falcon 簡報頁回 2xx、PQC FAQ 回 404，
+# 前一輪剛好相反。同一個網域、相隔幾分鐘、兩條都是真實存在的 NIST 頁面，
+# 所以這是對方的流量管制，不是頁面不見了。兩條都留在這裡，不要因為某一輪剛好
+# 通過就把它從清單刪掉。
 # 標題「FIPS 206: FN-DSA (Falcon)」，2025 年第六屆 PQC 標準化會議的簡報頁
-# （同網域的 /projects/post-quantum-cryptography/faqs 健檢是 200，所以不是整個網域被擋，
-#   是 /presentations/ 這條路徑對機器不友善）
 https://csrc.nist.gov/presentations/2025/fips-206-fn-dsa-falcon
+# NIST 後量子密碼專案的官方 FAQ
+https://csrc.nist.gov/projects/post-quantum-cryptography/faqs
 
 # --- one-more-step / boppps ---
 # blogs.sjsu.edu 跟 Google 一樣對機房 IP 一律回 404：這篇 Part 2 在搜尋索引裡有完整

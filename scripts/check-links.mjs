@@ -210,10 +210,10 @@ if (ONLY_INTERNAL) {
     lines.push(`      使用於：${r.pages.join('、')}`);
     if (r.finalUrl && r.finalUrl !== r.url) lines.push(`      轉址到：${r.finalUrl}`);
   }
-  // 清單也會腐爛：已經自己好起來的網址提醒刪掉，免得清單愈積愈舊
-  const recovered = externalResults.filter(
-    (r) => r.icon === '✅' && (IGNORE.has(r.url) || VERIFIED.has(r.url))
-  );
+  // 待修清單也會腐爛：已經自己好起來的網址提醒刪掉，免得清單愈積愈舊。
+  // 只看 IGNORE——VERIFIED 收的本來就是「時好時壞、驗不到」的網址，
+  // 某一輪剛好回 2xx 不代表下一輪也會，提醒刪掉反而會害人把清單拆了。
+  const recovered = externalResults.filter((r) => r.icon === '✅' && IGNORE.has(r.url));
   if (recovered.length) {
     lines.push('');
     lines.push(`以下 ${recovered.length} 個網址現在自己回 2xx 了，可以從清單檔移除：`);
