@@ -1,34 +1,16 @@
-# 已知失效但尚未處理的連結（不讓 CI 一直紅，但仍會列在報告裡）
+# 已確認失效、還沒修好的連結（不讓 CI 一直紅，但仍會列在報告裡）
 #
-# 這是「待修清單」不是「不用修」：2026-07-25 第一次跑全站連結健檢時就已經失效，
-# 都在課程以外的 side project 頁面，屬於既有的連結腐爛。修好一條就從這裡刪一條。
+# 這是「待修清單」不是「不用修」。修好一條就從這裡刪一條。
 # 語法：一行一個網址，# 開頭是註解。
+#
+# 注意：不要把「健檢回非 2xx」直接當成失效。2026-07-26 逐條追查後，原本列在這裡的
+# 17 條有 14 條其實是好的，只是對方擋機器人或需要登入——那些已經移到
+# link-check-verified.txt。判斷前先想一件事：這個網域的其他網址健檢過得了嗎？
+# 如果連對方的首頁都「404」，那 404 的意思就不是頁面不存在。
 
-# --- one-more-step / ga4-guide：Google 說明中心改版，answer id 已失效 ---
-https://analytics.google.com/analytics/web/demoAccount
-https://support.google.com/analytics/?hl=en
-https://support.google.com/analytics/?hl=en#topic=14090456
-https://support.google.com/analytics/answer/10104470?hl=en
-https://support.google.com/analytics/answer/14240153?hl=en
-https://support.google.com/analytics/answer/7029846
-https://support.google.com/analytics/answer/7029846?hl=en
-https://support.google.com/analytics/answer/7579450
-https://support.google.com/analytics/answer/7579450?hl=en
-https://support.google.com/analytics/answer/9327974?hl=en
-
-# --- one-more-step / boppps ---
-https://blogs.sjsu.edu/ecampus/2019/09/08/lesson-design-using-the-boppps-model/
-
-# --- one-more-step / quantum-photonics-investing：發布方站台改版 ---
-https://csrc.nist.gov/projects/post-quantum-cryptography/faqs
-# 這條 2026-07-25 還是好的，2026-07-26 起持續 404（重試後仍然），NIST 應該是把頁面收掉了
-https://csrc.nist.gov/presentations/2025/fips-206-fn-dsa-falcon
-https://gf.com/dresden-press-release/psiquantum-and-globalfoundries-build-worlds-first-full-scale-quantum-computer/
-https://gf.com/gf-press-release/globalfoundries-announces-next-generation-silicon-photonics-solutions-and/
-
-# --- marketing / faceless-pipeline ---
-https://newsroom.tiktok.com/en-us/new-labels-for-disclosing-ai-generated-content
-https://support.google.com/youtube/answer/14328491
-
-# 註：federalregister.gov 與 indiehackers 那幾條當初是 5xx 進來的，現在 5xx 一律歸
-# 「需人工確認」不算失效（對方伺服器的問題不是連結的問題），所以從清單移除。
+# （目前清單是空的）
+#
+# 已處理：
+# - blogs.sjsu.edu BOPPPS 第 1 篇：站方移除，boppps 頁改連 #ISW 標籤頁（Part 2–4 都在）
+# - gf.com 矽光子新聞稿：網址少了一層，正確位置在 gf.com 根目錄不是 /gf-press-release/，已修正
+# - csrc.nist.gov/projects/post-quantum-cryptography/faqs：對方自己好了，健檢已回 200

@@ -1,0 +1,48 @@
+# 已人工確認正常、但這支健檢程式驗不到的網址
+#
+# 這裡的每一條都「是好的」——不要拿掉、不要改網址。列在這裡只是要讓報告說實話：
+# 健檢跑出來的非 2xx 是「對方不讓機器看」，不是「頁面不存在」。
+#
+# 為什麼需要這個清單：2026-07-26 追查時發現 support.google.com 對 GitHub Actions
+# 的機房 IP 一律回 **404**（不是 403）。決定性證據是 support.google.com/analytics/?hl=en
+# ——GA 說明中心的首頁——也回 404。首頁不可能不存在，所以這個 404 是擋機器人，
+# 光看狀態碼分不出「頁面不在」和「你不是真人」。
+#
+# 驗證方式：用搜尋索引比對，確認網址原封不動出現在結果裡、而且標題與頁面上的
+# 連結文字相符（例：answer/9327974 →「[GA4] Funnel exploration」，站上寫「漏斗探索官方說明」）。
+# 語法：一行一個網址，# 開頭是註解。
+
+# --- one-more-step / ga4-guide：Google 說明中心，機房 IP 一律 404 ---
+# 五個 answer id 都逐條比對過標題，與連結文字相符：
+#   7029846  → [GA4] BigQuery Export schema
+#   7579450  → [GA4] Get started with Explorations
+#   9327974  → [GA4] Funnel exploration
+#   10104470 → [GA4] Filter out internal traffic
+#   14240153 → [GA4] About custom dimensions and metrics
+https://support.google.com/analytics/?hl=en
+https://support.google.com/analytics/?hl=en#topic=14090456
+https://support.google.com/analytics/answer/10104470?hl=en
+https://support.google.com/analytics/answer/14240153?hl=en
+https://support.google.com/analytics/answer/7029846
+https://support.google.com/analytics/answer/7029846?hl=en
+https://support.google.com/analytics/answer/7579450
+https://support.google.com/analytics/answer/7579450?hl=en
+https://support.google.com/analytics/answer/9327974?hl=en
+
+# GA4 官方 Demo 帳號：要登入 Google 才進得去，任何沒帶登入狀態的請求都不會是 2xx。
+# 這條永遠驗不到，但對有登入的讀者是好的。
+https://analytics.google.com/analytics/web/demoAccount
+
+# --- marketing / faceless-pipeline ---
+# 標題「Disclosing use of altered or synthetic content」，與站上連結文字相符
+https://support.google.com/youtube/answer/14328491
+# 標題「New labels for disclosing AI-generated content」，搜尋結果第一筆就是這個網址
+https://newsroom.tiktok.com/en-us/new-labels-for-disclosing-ai-generated-content
+
+# --- one-more-step / quantum-photonics-investing ---
+# 標題「FIPS 206: FN-DSA (Falcon)」，2025 年第六屆 PQC 標準化會議的簡報頁
+# （同網域的 /projects/post-quantum-cryptography/faqs 健檢是 200，所以不是整個網域被擋，
+#   是 /presentations/ 這條路徑對機器不友善）
+https://csrc.nist.gov/presentations/2025/fips-206-fn-dsa-falcon
+# 標題「PsiQuantum and GlobalFoundries to Build the World's First Full-scale Quantum Computer」
+https://gf.com/dresden-press-release/psiquantum-and-globalfoundries-build-worlds-first-full-scale-quantum-computer/
