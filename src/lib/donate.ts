@@ -8,11 +8,30 @@
  */
 const WORKER_URL = 'https://dreamcatcher-worker.a0972210123.workers.dev';
 
-/* 金額由 worker 端白名單最終把關，這裡只是呈現同一組選項 */
+/* 建議金額。實際可接受的範圍由 worker 端把關，這裡只負責呈現 */
 export const DONATION_AMOUNTS: Record<string, number[]> = {
   twd: [50, 150, 300],
   usd: [2, 5, 10],
 };
+
+/* 自填金額的範圍，與 worker 的 DONATION_LIMITS 對齊。
+   前端先擋一次只是為了給即時提示；送出去仍由 worker 做最終驗證。 */
+export const DONATION_LIMITS: Record<string, { min: number; max: number }> = {
+  twd: { min: 30, max: 20000 },
+  usd: { min: 1,  max: 500   },
+};
+
+/* 回傳錯誤訊息字串，通過則回傳 null */
+export function checkAmount(cur: string, amt: number): string | null {
+  const lim = DONATION_LIMITS[cur];
+  if (!lim) return L('幣別不支援', 'Unsupported currency');
+  if (!Number.isInteger(amt)) return L('請輸入整數', 'Whole numbers only');
+  if (amt < lim.min || amt > lim.max) {
+    return L(`請輸入 ${lim.min}–${lim.max} 之間的金額`,
+             `Enter an amount between ${lim.min} and ${lim.max}`);
+  }
+  return null;
+}
 
 export const money = (cur: string, n: number) => (cur === 'twd' ? `NT$${n}` : `$${n}`);
 
