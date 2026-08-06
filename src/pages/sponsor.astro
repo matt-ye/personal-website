@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import T from '../components/T.astro';
+
+/* 獨立的贊助頁。footer 的 modal 仍然保留（順手贊助用），這頁的存在是為了
+   有一個可以直接分享、外部連結得到的網址——例如 GitHub profile README。
+   兩邊共用 src/lib/donate.ts，付款邏輯不重複實作。
+   ID 一律用 sp- 前綴：每頁的 footer 都有 modal，避免與它的 id 撞名。 */
+---
+<BaseLayout
+  title="贊助 Sponsor"
+  description="支持 mattye.dev 的工具與內容持續更新。支援台幣（綠界）與美金（Polar）付款。"
+>
+  <h1 class="sp-title"><T zh="請我喝杯咖啡" en="Buy me a coffee" /></h1>
+
+  <p class="sp-lead">
+    <T
+      zh="這個網站上的計算機、課程與筆記都是免費的，也不放廣告。如果哪個工具幫你省下了時間，可以用一杯咖啡的金額支持它繼續更新。"
+      en="The calculators, courses and notes on this site are free and ad-free. If one of them saved you some time, a coffee-sized contribution helps keep them updated."
+    />
+  </p>
+
+  <section class="sp-card">
+    <div class="sp-tabs" id="sp-tabs" role="group" aria-label="Currency">
+      <button type="button" class="sp-tab sel" data-cur="twd">TWD</button>
+      <button type="button" class="sp-tab" data-cur="usd">USD</button>
+    </div>
+
+    <div class="sp-amts" id="sp-amts"></div>
+
+    <button type="button" class="sp-pay" id="sp-pay">
+      <T zh="前往付款" en="Continue to payment" />
+    </button>
+
+    <p class="sp-note" id="sp-note"></p>
+  </section>
+
+  <section class="sp-faq">
+    <h2 class="section-heading"><T zh="幾件先說清楚的事" en="A few things worth knowing" /></h2>
+
+    <dl>
+      <dt><T zh="錢會用在哪裡？" en="Where does it go?" /></dt>
+      <dd><T
+        zh="網域、資料來源的 API 額度，以及維護這些工具的時間。純粹是支持，沒有任何回饋品或會員權益。"
+        en="Domains, API quota for the data sources, and the time it takes to maintain these tools. It is purely support — there are no rewards or membership perks."
+      /></dd>
+
+      <dt><T zh="付款方式" en="Payment methods" /></dt>
+      <dd><T
+        zh="台幣走綠界（信用卡），美金走 Polar。兩者都不會經過這個網站，卡號也不會進到我這邊。"
+        en="TWD via ECPay (credit card), USD via Polar. Neither flows through this site, and your card details never reach me."
+      /></dd>
+
+      <dt><T zh="付款完成後會跳到哪？" en="Where do I land afterwards?" /></dt>
+      <dd><T
+        zh="會落在 telaaurealab.com 的感謝頁。那也是我的網站（捕夢網產生器），兩邊共用同一套金流，所以感謝頁掛在那邊——看到它就表示付款成功了，不用擔心。"
+        en="On the thank-you page at telaaurealab.com. That is also my site (the Dreamcatcher Generator) — both share the same payment backend, so the thank-you page lives there. Seeing it means the payment went through."
+      /></dd>
+
+      <dt><T zh="可以退款嗎？" en="Refunds?" /></dt>
+      <dd><T
+        zh="贊助恕不退款。如果是誤觸或金額有誤，寄信到 chingweiye@mattye.dev 我會處理。"
+        en="Donations are non-refundable. If something went wrong, email chingweiye@mattye.dev and I will sort it out."
+      /></dd>
+    </dl>
+  </section>
+</BaseLayout>
+
+<style>
+  .sp-title { font-size: clamp(1.6rem, 4vw, 2.1rem); letter-spacing: -0.02em; margin-bottom: 0.6rem; }
+  .sp-lead { color: var(--color-text-muted); max-width: 42ch; margin-bottom: var(--spacing-lg); }
+
+  .sp-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    padding: 1.4rem 1.3rem 1.1rem;
+    max-width: 420px;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .sp-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.9rem; }
+  .sp-tab {
+    padding: 0.3rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .sp-tab.sel { border-color: #f59e0b; color: #d97706; background: rgba(251, 191, 36, 0.15); }
+  .sp-tab:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  .sp-amts { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  /* 金額按鈕由 JS 產生，scoped style 加不到 hash，所以用 :global */
+  .sp-amts :global(.sp-amt) {
+    flex: 1;
+    padding: 0.7rem 0.3rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .sp-amts :global(.sp-amt:hover) { border-color: #f59e0b; }
+  .sp-amts :global(.sp-amt.sel) { border-color: #f59e0b; color: #d97706; background: rgba(251, 191, 36, 0.15); }
+  .sp-amts :global(.sp-amt:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  /* 金色沿用 telaaurealab.com 的「贊助＝金色」跨站識別，刻意不跟主色走 */
+  .sp-pay {
+    display: block;
+    width: 100%;
+    padding: 0.7rem;
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    color: #451a03;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  .sp-pay:hover { filter: brightness(1.07); }
+  .sp-pay:disabled { opacity: 0.6; cursor: wait; }
+
+  .sp-note { font-size: 0.72rem; color: var(--color-text-muted); margin-top: 0.7rem; text-align: center; }
+
+  .sp-faq dt { font-weight: 650; margin-top: 1.1rem; font-size: 0.92rem; }
+  .sp-faq dd { margin: 0.3rem 0 0; color: var(--color-text-muted); font-size: 0.88rem; line-height: 1.75; }
+</style>
+
+<script>
+  import { DONATION_AMOUNTS, money, L, startDonation, track } from '../lib/donate';
+
+  const tabsEl = document.getElementById('sp-tabs');
+  const amtsEl = document.getElementById('sp-amts');
+  const payBtn = document.getElementById('sp-pay') as HTMLButtonElement | null;
+  const noteEl = document.getElementById('sp-note');
+
+  if (tabsEl && amtsEl && payBtn && noteEl) {
+    let cur = 'twd';
+    let selAmt: number | null = null;
+
+    function renderAmts() {
+      amtsEl!.innerHTML = '';
+      DONATION_AMOUNTS[cur].forEach((n, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'sp-amt' + (i === 1 ? ' sel' : ''); // 預選中間金額
+        b.textContent = money(cur, n);
+        b.addEventListener('click', () => {
+          amtsEl!.querySelectorAll('.sp-amt').forEach(x => x.classList.remove('sel'));
+          b.classList.add('sel');
+          selAmt = n;
+        });
+        amtsEl!.appendChild(b);
+      });
+      selAmt = DONATION_AMOUNTS[cur][1];
+    }
+
+    function renderText() {
+      payBtn!.textContent = L('前往付款', 'Continue to payment');
+      noteEl!.textContent = L('贊助恕不退款，感謝支持！', 'Donations are non-refundable — thank you!');
+    }
+
+    renderAmts();
+    renderText();
+    /* 語言切換時金額標示（NT$ / $）與按鈕文字都要跟著換 */
+    window.addEventListener('langchange', () => { renderAmts(); renderText(); });
+
+    tabsEl.addEventListener('click', e => {
+      const tab = (e.target as HTMLElement).closest('.sp-tab') as HTMLElement | null;
+      if (!tab || tab.dataset.cur === cur) return;
+      cur = tab.dataset.cur!;
+      tabsEl!.querySelectorAll('.sp-tab').forEach(x => x.classList.remove('sel'));
+      tab.classList.add('sel');
+      renderAmts();
+    });
+
+    payBtn.addEventListener('click', async () => {
+      if (selAmt == null) return;
+      payBtn!.disabled = true;
+      payBtn!.textContent = L('處理中…', 'Processing…');
+      try {
+        await startDonation(selAmt, cur, 'mattye_sponsor_page');
+      } catch (err: any) {
+        alert(L('付款連結建立失敗：', 'Could not create the payment link: ') + err.message);
+      }
+      payBtn!.disabled = false;
+      renderText();
+    });
+
+    track('sponsor_page_view', { source: 'mattye_sponsor_page' });
+  }
+</script>
