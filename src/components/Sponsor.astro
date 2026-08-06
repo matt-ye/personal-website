@@ -135,9 +135,8 @@ import T from './T.astro';
 </style>
 
 <script>
-  const WORKER_URL = 'https://dreamcatcher-worker.a0972210123.workers.dev';
-  const AMOUNTS: Record<string, number[]> = { twd: [50, 150, 300], usd: [2, 5, 10] };
-  const LABEL: Record<string, (n: number) => string> = { twd: n => `NT$${n}`, usd: n => `$${n}` };
+  /* 付款邏輯與金額選項集中在 src/lib/donate.ts，與 /sponsor 頁共用 */
+  import { DONATION_AMOUNTS as AMOUNTS, money, L, startDonation } from '../lib/donate';
 
   const modal  = document.getElementById('sponsor-modal');
   const amtsEl = document.getElementById('sponsor-amts');
@@ -147,8 +146,6 @@ import T from './T.astro';
   const closeBtn = document.getElementById('sponsor-close');
 
   if (modal && amtsEl && tabsEl && payBtn && openBtns.length && closeBtn) {
-    const L = (zh: string, en: string) =>
-      document.documentElement.getAttribute('data-lang') === 'en' ? en : zh;
     const track = (name: string, params: Record<string, unknown>) => {
       try { (window as any).gtag?.('event', name, params); } catch (e) {}
     };
@@ -163,7 +160,7 @@ import T from './T.astro';
         const b = document.createElement('button');
         b.className = 'sponsor-amt' + (i === 1 ? ' sel' : ''); // 預選中間金額
         b.type = 'button';
-        b.textContent = LABEL[cur](n);
+        b.textContent = money(cur, n);
         b.addEventListener('click', () => {
           amtsEl!.querySelectorAll('.sponsor-amt').forEach(x => x.classList.remove('sel'));
           b.classList.add('sel');
@@ -201,40 +198,11 @@ import T from './T.astro';
     });
 
     payBtn.addEventListener('click', async () => {
+      if (selAmt == null) return;
       payBtn!.disabled = true;
       payBtn!.textContent = L('處理中…', 'Processing…');
-      track('donate_start', { amount: selAmt, currency: cur, source: 'mattye' });
       try {
-        const res = await fetch(`${WORKER_URL}/create-donation`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: selAmt, currency: cur }),
-        });
-        const data = await res.json();
-        if (data.url) {
-          // Polar（USD）：直接開結帳頁；被擋就詢問後整頁前往
-          const popup = window.open(data.url, '_blank');
-          if (!popup) {
-            if (confirm(L('瀏覽器封鎖了新視窗，是否在本頁前往付款？', 'Popup blocked — continue to payment in this tab?'))) {
-              location.href = data.url;
-              return;
-            }
-          }
-        } else if (data.provider === 'ecpay' && data.html) {
-          // 綠界（TWD）：需要 form POST，寫入新視窗自動送出
-          const popup = window.open('', '_blank');
-          if (popup) {
-            popup.document.write(data.html);
-            popup.document.close();
-          } else {
-            if (confirm(L('瀏覽器封鎖了新視窗，是否在本頁前往綠界付款？', 'Popup blocked — continue to ECPay in this tab?'))) {
-              document.open(); document.write(data.html); document.close();
-              return;
-            }
-          }
-        } else {
-          throw new Error(data.error || 'Unexpected response');
-        }
+        await startDonation(selAmt, cur, 'mattye');
         closeModal();
       } catch (err: any) {
         alert(L('付款連結建立失敗：', 'Could not create the payment link: ') + err.message);
