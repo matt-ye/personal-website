@@ -127,7 +127,7 @@ GA4 Admin → Events → 等自訂事件出現後（通常 24h 內），將下�
   "github": {
     "configured": true,
     "repos": [{
-      "repo": "a0972210123/dreamcatcher", "label": { "zh": "捕夢網產生器", "en": "Dreamcatcher" },
+      "repo": "matt-ye/dreamcatcher", "label": { "zh": "捕夢網產生器", "en": "Dreamcatcher" },
       "site": "https://...", "stars": 5, "forks": 1, "watchers": 2, "openIssues": 0,
       "views14": { "count": 40, "uniques": 12 }, "clones14": { "count": 3, "uniques": 2 },
       "referrers": [{ "referrer": "mattye.dev", "count": 10, "uniques": 4 }]
@@ -142,7 +142,7 @@ GA4 Admin → Events → 等自訂事件出現後（通常 24h 內），將下�
 {"v":1,"date":"2026-07-23",
  "ga":{"users":12,"views":31,"sessions":14,"ev":{"click_github":2}},
  "cf":{"req":900,"pv":300,"uniq":80,"bytes":1,"cachedReq":700,"cachedBytes":1,"threats":0},
- "gh":{"a0972210123/dreamcatcher":{"v":10,"vu":4,"c":1,"cu":1,"stars":5}}}
+ "gh":{"matt-ye/dreamcatcher":{"v":10,"vu":4,"c":1,"cu":1,"stars":5}}}
 ```
 
 - 以日期為 key 做 per-source 冪等 upsert：GA 每次重寫近 90 天（GA 數據 48h 內會修正，自我修復）、
