@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import T from '../components/T.astro';
+import AmountPicker from '../components/AmountPicker.astro';
 
 /* 獨立的贊助頁。footer 的 modal 仍然保留（順手贊助用），這頁的存在是為了
    有一個可以直接分享、外部連結得到的網址——例如 GitHub profile README。
@@ -21,30 +22,7 @@ import T from '../components/T.astro';
   </p>
 
   <section class="sp-card">
-    <div class="sp-tabs" id="sp-tabs" role="group" aria-label="Currency">
-      <button type="button" class="sp-tab sel" data-cur="twd">TWD</button>
-      <button type="button" class="sp-tab" data-cur="usd">USD</button>
-    </div>
-
-    <div class="sp-amts" id="sp-amts"></div>
-
-    <div class="sp-custom">
-      <label class="sp-custom-label" for="sp-custom-input">
-        <T zh="或自訂金額" en="Or enter your own" />
-      </label>
-      <div class="sp-custom-row">
-        <span class="sp-cur" id="sp-cur">NT$</span>
-        <input
-          id="sp-custom-input"
-          type="number"
-          inputmode="numeric"
-          step="1"
-          class="sp-custom-input"
-          aria-describedby="sp-custom-hint"
-        />
-      </div>
-      <p class="sp-custom-hint" id="sp-custom-hint"></p>
-    </div>
+    <AmountPicker prefix="sp" />
 
     <button type="button" class="sp-pay" id="sp-pay">
       <T zh="前往付款" en="Continue to payment" />
@@ -98,40 +76,7 @@ import T from '../components/T.astro';
     margin-bottom: var(--spacing-xl);
   }
 
-  .sp-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.9rem; }
-  .sp-tab {
-    padding: 0.3rem 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    background: transparent;
-    color: var(--color-text-muted);
-    font-size: 0.8rem;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.12s;
-  }
-  .sp-tab.sel { border-color: #f59e0b; color: #d97706; background: rgba(251, 191, 36, 0.15); }
-  .sp-tab:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-
-  .sp-amts { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
   /* 金額按鈕由 JS 產生，scoped style 加不到 hash，所以用 :global */
-  .sp-amts :global(.sp-amt) {
-    flex: 1;
-    padding: 0.7rem 0.3rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--color-text);
-    font-size: 0.9rem;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.12s;
-  }
-  .sp-amts :global(.sp-amt:hover) { border-color: #f59e0b; }
-  .sp-amts :global(.sp-amt.sel) { border-color: #f59e0b; color: #d97706; background: rgba(251, 191, 36, 0.15); }
-  .sp-amts :global(.sp-amt:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
   /* 金色沿用 telaaurealab.com 的「贊助＝金色」跨站識別，刻意不跟主色走 */
   .sp-pay {
@@ -151,51 +96,7 @@ import T from '../components/T.astro';
   .sp-pay:hover { filter: brightness(1.07); }
   .sp-pay:disabled { opacity: 0.6; cursor: wait; }
 
-  .sp-custom { margin-bottom: 1rem; }
-  .sp-custom-label {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    margin-bottom: 0.35rem;
-  }
-  .sp-custom-row {
-    display: flex;
-    align-items: stretch;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .sp-custom-row:focus-within { border-color: #f59e0b; }
-  .sp-cur {
-    display: flex;
-    align-items: center;
-    padding: 0 0.7rem;
-    background: var(--color-surface);
-    color: var(--color-text-muted);
-    font-size: 0.85rem;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-  .sp-custom-input {
-    flex: 1;
-    min-width: 0;
-    border: none;
-    background: transparent;
-    color: var(--color-text);
-    font-family: inherit;
-    /* 16px 以上手機 Safari 才不會在聚焦時自動放大整頁 */
-    font-size: 1rem;
-    font-weight: 700;
-    /* 讓整列達到 44px 觸控目標（WCAG 2.5.5） */
-    padding: 0.7rem;
-    font-variant-numeric: tabular-nums;
-  }
-  .sp-custom-input:focus { outline: none; }
-  /* 自訂金額被選用時，用同一組金色標示，與金額按鈕的 .sel 一致 */
-  .sp-custom-row.active { border-color: #f59e0b; background: rgba(251, 191, 36, 0.08); }
-  .sp-custom-hint { font-size: 0.7rem; color: var(--color-text-muted); margin-top: 0.3rem; min-height: 1em; }
-  .sp-custom-hint.err { color: #d63b3b; }
-
+  
   .sp-note { font-size: 0.72rem; color: var(--color-text-muted); margin-top: 0.7rem; text-align: center; }
 
   .sp-faq dt { font-weight: 650; margin-top: 1.1rem; font-size: 0.92rem; }
@@ -203,127 +104,40 @@ import T from '../components/T.astro';
 </style>
 
 <script>
-  import { DONATION_AMOUNTS, DONATION_LIMITS, checkAmount, money, L, startDonation, track } from '../lib/donate';
+  /* 金額選擇（含自填與驗證）由 AmountPicker 負責，這裡只把它選到的金額送出。 */
+  import { L, startDonation, track } from '../lib/donate';
 
-  const tabsEl   = document.getElementById('sp-tabs');
-  const amtsEl   = document.getElementById('sp-amts');
-  const payBtn   = document.getElementById('sp-pay') as HTMLButtonElement | null;
-  const noteEl   = document.getElementById('sp-note');
-  const curEl    = document.getElementById('sp-cur');
-  const inputEl  = document.getElementById('sp-custom-input') as HTMLInputElement | null;
-  const hintEl   = document.getElementById('sp-custom-hint');
-  const customRow = inputEl?.closest('.sp-custom-row');
+  const payBtn = document.getElementById('sp-pay') as HTMLButtonElement | null;
+  const noteEl = document.getElementById('sp-note');
+  /* 這頁除了自己的 picker，footer 還有一個 modal 的 picker——要抓卡片內那個 */
+  const picker = document.querySelector<HTMLElement>('.sp-card [data-amount-picker]');
 
-  if (tabsEl && amtsEl && payBtn && noteEl && curEl && inputEl && hintEl && customRow) {
-    let cur = 'twd';
-    let selAmt: number | null = null;
-    let usingCustom = false;
-
-    /* 選了預設金額就清掉自訂欄位，反之亦然——同時亮兩個會讓人不知道要付多少 */
-    function pickPreset(n: number, btn: HTMLElement) {
-      amtsEl!.querySelectorAll('.sp-amt').forEach(x => x.classList.remove('sel'));
-      btn.classList.add('sel');
-      selAmt = n;
-      usingCustom = false;
-      customRow!.classList.remove('active');
-      inputEl!.value = '';
-      hintEl!.textContent = '';
-      hintEl!.classList.remove('err');
-      payBtn!.disabled = false;
-    }
-
-    function renderAmts() {
-      amtsEl!.innerHTML = '';
-      DONATION_AMOUNTS[cur].forEach((n, i) => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'sp-amt' + (!usingCustom && i === 1 ? ' sel' : ''); // 預選中間金額
-        b.textContent = money(cur, n);
-        b.addEventListener('click', () => pickPreset(n, b));
-        amtsEl!.appendChild(b);
-      });
-      if (!usingCustom) selAmt = DONATION_AMOUNTS[cur][1];
-    }
-
+  if (payBtn && noteEl && picker) {
+    function syncPay() { payBtn!.disabled = picker!.dataset.valid !== 'true'; }
     function renderText() {
-      const lim = DONATION_LIMITS[cur];
-      curEl!.textContent = cur === 'twd' ? 'NT$' : '$';
-      inputEl!.placeholder = `${lim.min}–${lim.max}`;
-      inputEl!.min = String(lim.min);
-      inputEl!.max = String(lim.max);
       payBtn!.textContent = L('前往付款', 'Continue to payment');
       noteEl!.textContent = L('贊助恕不退款，感謝支持！', 'Donations are non-refundable — thank you!');
     }
 
-    renderAmts();
+    picker.addEventListener('amountchange', syncPay);
+    window.addEventListener('langchange', renderText);
     renderText();
-    /* 語言切換：金額標示與按鈕文字由 renderText 處理；自訂欄位的提示是 input
-       事件寫進去的，不重跑驗證的話會留著上一個語言的字串。 */
-    window.addEventListener('langchange', () => {
-      renderAmts();
-      renderText();
-      if (inputEl!.value.trim() !== '') inputEl!.dispatchEvent(new Event('input'));
-    });
-
-    tabsEl.addEventListener('click', e => {
-      const tab = (e.target as HTMLElement).closest('.sp-tab') as HTMLElement | null;
-      if (!tab || tab.dataset.cur === cur) return;
-      cur = tab.dataset.cur!;
-      tabsEl!.querySelectorAll('.sp-tab').forEach(x => x.classList.remove('sel'));
-      tab.classList.add('sel');
-      /* 換幣別時清掉自訂金額：NT$300 換成 $300 是完全不同的意思 */
-      usingCustom = false;
-      inputEl!.value = '';
-      customRow!.classList.remove('active');
-      hintEl!.textContent = '';
-      hintEl!.classList.remove('err');
-      payBtn!.disabled = false;
-      renderAmts();
-      renderText();
-    });
-
-    inputEl.addEventListener('input', () => {
-      const raw = inputEl!.value.trim();
-      if (raw === '') {
-        // 清空就回到預設金額，不要讓使用者卡在沒有可付金額的狀態
-        usingCustom = false;
-        customRow!.classList.remove('active');
-        hintEl!.textContent = '';
-        hintEl!.classList.remove('err');
-        renderAmts();
-        payBtn!.disabled = false;
-        return;
-      }
-      usingCustom = true;
-      customRow!.classList.add('active');
-      amtsEl!.querySelectorAll('.sp-amt').forEach(x => x.classList.remove('sel'));
-
-      const n = Number(raw);
-      const err = checkAmount(cur, n);
-      if (err) {
-        hintEl!.textContent = err;
-        hintEl!.classList.add('err');
-        selAmt = null;
-        payBtn!.disabled = true;
-      } else {
-        hintEl!.textContent = L(`將贊助 ${money(cur, n)}`, `Sponsoring ${money(cur, n)}`);
-        hintEl!.classList.remove('err');
-        selAmt = n;
-        payBtn!.disabled = false;
-      }
-    });
+    syncPay();
 
     payBtn.addEventListener('click', async () => {
-      if (selAmt == null) return;
+      const amt = Number(picker!.dataset.amount);
+      const cur = (picker!.querySelector('.ap-tab.sel') as HTMLElement | null)?.dataset.cur || 'twd';
+      const custom = !picker!.querySelector('.ap-amt.sel');
+      if (!Number.isFinite(amt) || picker!.dataset.valid !== 'true') return;
       payBtn!.disabled = true;
       payBtn!.textContent = L('處理中…', 'Processing…');
       try {
-        await startDonation(selAmt, cur, usingCustom ? 'mattye_sponsor_custom' : 'mattye_sponsor_page');
+        await startDonation(amt, cur, custom ? 'mattye_sponsor_custom' : 'mattye_sponsor_page');
       } catch (err: any) {
         alert(L('付款連結建立失敗：', 'Could not create the payment link: ') + err.message);
       }
-      payBtn!.disabled = false;
       renderText();
+      syncPay();
     });
 
     track('sponsor_page_view', { source: 'mattye_sponsor_page' });

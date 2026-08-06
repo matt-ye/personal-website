@@ -7,6 +7,7 @@
  * 付款完成後落在 telaaurealab.com/success.html?thanks=1（已知取捨，return URL 為 worker 白名單）。
  */
 import T from './T.astro';
+import AmountPicker from './AmountPicker.astro';
 ---
 <button type="button" class="sponsor-entry" data-sponsor-open data-source="mattye_footer">☕ <T zh="贊助我" en="Sponsor" /></button>
 
@@ -15,11 +16,7 @@ import T from './T.astro';
     <div class="sponsor-ico">☕</div>
     <h3><T zh="贊助 Matt" en="Sponsor Matt" /></h3>
     <p class="sponsor-desc"><T zh="喜歡這裡的內容嗎？請我喝杯咖啡，支持網站持續更新。" en="Enjoying the content? Buy me a coffee and help keep this site going." /></p>
-    <div class="sponsor-tabs" id="sponsor-tabs">
-      <button type="button" class="sponsor-tab sel" data-cur="twd">TWD</button>
-      <button type="button" class="sponsor-tab" data-cur="usd">USD</button>
-    </div>
-    <div class="sponsor-amts" id="sponsor-amts"></div>
+    <AmountPicker prefix="sponsor" compact />
     <button type="button" class="sponsor-pay" id="sponsor-pay"><T zh="前往付款" en="Continue to payment" /></button>
     <button type="button" class="sponsor-later" id="sponsor-close"><T zh="下次再說" en="Maybe later" /></button>
     <p class="sponsor-note"><T zh="贊助恕不退款，感謝支持！" en="Donations are non-refundable — thank you!" /></p>
@@ -69,38 +66,6 @@ import T from './T.astro';
   .sponsor-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.45rem; }
   .sponsor-desc { font-size: 0.83rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 0.9rem; }
 
-  .sponsor-tabs { display: flex; gap: 0.4rem; justify-content: center; margin-bottom: 0.7rem; }
-  .sponsor-tab {
-    padding: 0.25rem 0.9rem;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    background: transparent;
-    color: var(--color-text-muted);
-    font-size: 0.78rem;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.12s;
-  }
-  .sponsor-tab.sel { border-color: #f59e0b; color: #d97706; background: rgba(251, 191, 36, 0.15); }
-
-  .sponsor-amts { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-  .sponsor-amts :global(.sponsor-amt) {
-    flex: 1;
-    padding: 0.6rem 0.3rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--color-text);
-    font-size: 0.85rem;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.12s;
-  }
-  .sponsor-amts :global(.sponsor-amt:hover) { border-color: #f59e0b; }
-  .sponsor-amts :global(.sponsor-amt.sel) { border-color: #f59e0b; color: #d97706; background: rgba(251, 191, 36, 0.15); }
-
   .sponsor-pay {
     display: block;
     width: 100%;
@@ -135,46 +100,33 @@ import T from './T.astro';
 </style>
 
 <script>
-  /* 付款邏輯與金額選項集中在 src/lib/donate.ts，與 /sponsor 頁共用 */
-  import { DONATION_AMOUNTS as AMOUNTS, money, L, startDonation } from '../lib/donate';
+  /* 金額選擇（含自填與驗證）交給 AmountPicker，付款交給 donate.ts，
+     這裡只負責 modal 的開關與把 picker 選到的金額送出去。 */
+  import { L, startDonation } from '../lib/donate';
 
-  const modal  = document.getElementById('sponsor-modal');
-  const amtsEl = document.getElementById('sponsor-amts');
-  const tabsEl = document.getElementById('sponsor-tabs');
-  const payBtn = document.getElementById('sponsor-pay') as HTMLButtonElement | null;
+  const modal    = document.getElementById('sponsor-modal');
+  const payBtn   = document.getElementById('sponsor-pay') as HTMLButtonElement | null;
   const openBtns = document.querySelectorAll<HTMLElement>('[data-sponsor-open]');
   const closeBtn = document.getElementById('sponsor-close');
+  const picker   = modal?.querySelector<HTMLElement>('[data-amount-picker]');
 
-  if (modal && amtsEl && tabsEl && payBtn && openBtns.length && closeBtn) {
+  if (modal && payBtn && openBtns.length && closeBtn && picker) {
     const track = (name: string, params: Record<string, unknown>) => {
       try { (window as any).gtag?.('event', name, params); } catch (e) {}
     };
 
-    let cur = 'twd'; // 個人站無既有幣別系統，預設 TWD
-    let selAmt: number | null = null;
     const payBtnHtml = payBtn.innerHTML;
 
-    function renderAmts() {
-      amtsEl!.innerHTML = '';
-      AMOUNTS[cur].forEach((n, i) => {
-        const b = document.createElement('button');
-        b.className = 'sponsor-amt' + (i === 1 ? ' sel' : ''); // 預選中間金額
-        b.type = 'button';
-        b.textContent = money(cur, n);
-        b.addEventListener('click', () => {
-          amtsEl!.querySelectorAll('.sponsor-amt').forEach(x => x.classList.remove('sel'));
-          b.classList.add('sel');
-          selAmt = n;
-        });
-        amtsEl!.appendChild(b);
-      });
-      selAmt = AMOUNTS[cur][1];
+    /* picker 只回報金額有效與否，付款按鈕的可用狀態由這裡決定 */
+    function syncPay() {
+      payBtn!.disabled = picker!.dataset.valid !== 'true';
     }
+    picker.addEventListener('amountchange', syncPay);
+    syncPay();
 
     function openModal(source: string) {
-      renderAmts();
-      payBtn!.disabled = false;
       payBtn!.innerHTML = payBtnHtml;
+      syncPay();
       modal!.classList.add('show');
       track('donate_open', { source });
     }
@@ -188,27 +140,20 @@ import T from './T.astro';
       if (e.key === 'Escape' && modal!.classList.contains('show')) closeModal();
     });
 
-    tabsEl.addEventListener('click', e => {
-      const tab = (e.target as HTMLElement).closest('.sponsor-tab') as HTMLElement | null;
-      if (!tab || tab.dataset.cur === cur) return;
-      cur = tab.dataset.cur!;
-      tabsEl!.querySelectorAll('.sponsor-tab').forEach(x => x.classList.remove('sel'));
-      tab.classList.add('sel');
-      renderAmts();
-    });
-
     payBtn.addEventListener('click', async () => {
-      if (selAmt == null) return;
+      const amt = Number(picker!.dataset.amount);
+      const cur = (picker!.querySelector('.ap-tab.sel') as HTMLElement | null)?.dataset.cur || 'twd';
+      if (!Number.isFinite(amt) || picker!.dataset.valid !== 'true') return;
       payBtn!.disabled = true;
       payBtn!.textContent = L('處理中…', 'Processing…');
       try {
-        await startDonation(selAmt, cur, 'mattye');
+        await startDonation(amt, cur, 'mattye');
         closeModal();
       } catch (err: any) {
         alert(L('付款連結建立失敗：', 'Could not create the payment link: ') + err.message);
       }
-      payBtn!.disabled = false;
       payBtn!.innerHTML = payBtnHtml;
+      syncPay();
     });
   }
 </script>
