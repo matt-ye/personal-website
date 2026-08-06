@@ -14,25 +14,25 @@ export const GA4_EVENTS = [
 // publish:false 的 repo 完全不抓取、不寫入 gist（連名字都不落地）
 export const REPOS = [
   {
-    repo: 'a0972210123/personal-website',
+    repo: 'matt-ye/personal-website',
     label: { zh: '個人網站', en: 'Personal Website' },
     site: 'https://mattye.dev',
     publish: true,
   },
   {
-    repo: 'a0972210123/dreamcatcher',
+    repo: 'matt-ye/dreamcatcher',
     label: { zh: '捕夢網產生器', en: 'Dreamcatcher' },
-    site: 'https://a0972210123.github.io/dreamcatcher/',
+    site: 'https://telaaurealab.com/',
     publish: true,
   },
   {
-    repo: 'a0972210123/brain-exposome',
+    repo: 'matt-ye/brain-exposome',
     label: { zh: '腦健康 Exposome', en: 'Brain Exposome' },
     site: 'https://brain-exposome.mattye.dev',
     publish: true,
   },
   {
-    repo: 'a0972210123/The-Golden-Lag-Engine',
+    repo: 'matt-ye/The-Golden-Lag-Engine',
     label: { zh: 'The Golden Lag Engine', en: 'The Golden Lag Engine' },
     site: null,
     publish: true,

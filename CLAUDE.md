@@ -3,7 +3,7 @@
 ## 專案概覽
 
 **Owner：** 葉淨維 Ching-Wei (Matt) Ye  
-**GitHub：** https://github.com/a0972210123/personal-website  
+**GitHub：** https://github.com/matt-ye/personal-website  
 **部署：** Cloudflare Pages（連接 GitHub `main` branch，push 自動 deploy）  
 **網域：** https://mattye.dev（自訂網域，preview: personal-website-1m7.pages.dev）  
 **Tech stack：** Astro 6 (static) · Plain CSS · Markdown content collections

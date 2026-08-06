@@ -1,5 +1,5 @@
 # The dementia-exposome brain-health tool moved to its own site (2026-07):
-#   https://brain-exposome.mattye.dev  (repo: a0972210123/brain-exposome)
+#   https://brain-exposome.mattye.dev  (repo: matt-ye/brain-exposome)
 # 301 the old path so existing links / SEO carry over.
 /projects/dementia-exposome      https://brain-exposome.mattye.dev/   301
 /projects/dementia-exposome/*    https://brain-exposome.mattye.dev/   301
