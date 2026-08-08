@@ -201,7 +201,9 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
           <span class="project-tag"><T zh="價值投資" en="Value Investing" /></span>
           <span class="project-tag"><T zh="總體經濟" en="Macroeconomics" /></span>
         </div>
-        <a href="/writing?series=family-investing" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
+        <!-- ?series= 的值必須與 /writing 卡片的 data-category 完全相同（中文），
+             篩選是直接字串比對；llms.txt 也是用中文值當正式網址。 -->
+        <a href="/writing?series=投資專欄" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
       </div>
     </div>
 
@@ -236,7 +238,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
           <span class="project-tag"><T zh="策略" en="Strategy" /></span>
           <span class="project-tag"><T zh="組織" en="Organization" /></span>
         </div>
-        <a href="/writing?series=management-3r" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
+        <a href="/writing?series=管理專欄" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
       </div>
     </div>
   </div>
