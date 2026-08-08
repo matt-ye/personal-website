@@ -18,7 +18,7 @@ const dateFormatted = pubDate.toLocaleDateString('en-US', {
 ---
 <li class="post-card" data-series={series ?? ''}>
   <div class="post-card-header">
-    <a href={`/writing/${id}`} class="post-card-title">{title}</a>
+    <a href={`/writing/${id}/`} class="post-card-title">{title}</a>
     <span class="post-card-date">
       <time datetime={pubDate.toISOString()}>{dateFormatted}</time>
     </span>

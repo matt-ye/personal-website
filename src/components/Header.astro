@@ -8,10 +8,10 @@ const pathname = Astro.url.pathname;
     <div class="nav-right">
       <nav>
         <a href="/" aria-current={pathname === '/' ? 'page' : undefined}><T zh="首頁" en="Home" /></a>
-        <a href="/speeches" aria-current={pathname.startsWith('/speeches') ? 'page' : undefined}><T zh="演講" en="Speeches" /></a>
-        <a href="/coaching" aria-current={pathname.startsWith('/coaching') ? 'page' : undefined}><T zh="培訓" en="Coaching" /></a>
-        <a href="/writing" aria-current={pathname.startsWith('/writing') ? 'page' : undefined}><T zh="寫作" en="Writing" /></a>
-        <a href="/projects" aria-current={pathname.startsWith('/projects') ? 'page' : undefined}><T zh="專案" en="Projects" /></a>
+        <a href="/speeches/" aria-current={pathname.startsWith('/speeches') ? 'page' : undefined}><T zh="演講" en="Speeches" /></a>
+        <a href="/coaching/" aria-current={pathname.startsWith('/coaching') ? 'page' : undefined}><T zh="培訓" en="Coaching" /></a>
+        <a href="/writing/" aria-current={pathname.startsWith('/writing') ? 'page' : undefined}><T zh="寫作" en="Writing" /></a>
+        <a href="/projects/" aria-current={pathname.startsWith('/projects') ? 'page' : undefined}><T zh="專案" en="Projects" /></a>
       </nav>
       <button class="lang-toggle" id="lang-toggle" aria-label="切換語言 / Switch language">
         <span class="lang-zh">EN</span><span class="lang-en">中</span>

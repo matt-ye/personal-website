@@ -24,7 +24,7 @@ const projects = [
     description: '把複雜的東西搞懂，然後寫下來。學習筆記集，涵蓋 IP 治理、電商創業等主題。',
     descriptionEn: 'Understanding complex topics, then writing them down — a collection of learning notes spanning IP governance, e-commerce entrepreneurship, and more.',
     status: 'live',
-    url: '/projects/one-more-step',
+    url: '/projects/one-more-step/',
     tags: ['學習筆記'],
     tagsEn: ['Learning Notes'],
     internal: true,
@@ -36,7 +36,7 @@ const projects = [
     description: '52 週行銷學習地圖的公開筆記：平台演算法、短影音、開發者行銷到品牌策略，每週一個可實作的單元。',
     descriptionEn: 'Public notes from a 52-week marketing learning roadmap — platform algorithms, short video, developer marketing, and brand strategy, one actionable unit at a time.',
     status: 'in-progress',
-    url: '/projects/marketing',
+    url: '/projects/marketing/',
     tags: ['行銷', '學習筆記'],
     tagsEn: ['Marketing', 'Learning Notes'],
     internal: true,
@@ -48,7 +48,7 @@ const projects = [
     description: '52 週投資學習地圖的每週教材：複利、財報、估值到資產配置，含互動計算機與「教家人腳本」——與「寫給家人的投資入門」專欄連動。',
     descriptionEn: 'Weekly units from a 52-week investing curriculum — compounding, financial statements, valuation, and asset allocation, with interactive calculators and family-teaching scripts. Companion to the Family Investing column.',
     status: 'in-progress',
-    url: '/projects/family-investing-course',
+    url: '/projects/family-investing-course/',
     tags: ['投資', '學習筆記', '互動工具'],
     tagsEn: ['Investing', 'Learning Notes', 'Interactive Tool'],
     internal: true,
@@ -60,7 +60,7 @@ const projects = [
     description: '以台灣 DRIs 第八版、ISSN、ACSM 文獻為基礎，估算 BMR、TDEE、巨量營養素與碳循環週計畫。純前端計算，不上傳不儲存。',
     descriptionEn: 'BMR, TDEE, macro, and carb-cycling calculator grounded in Taiwan DRIs 8th ed., ISSN, and ACSM literature. Fully client-side — nothing is uploaded or stored.',
     status: 'live',
-    url: '/projects/diet-calculator',
+    url: '/projects/diet-calculator/',
     tags: ['健康工具', '文獻實證'],
     tagsEn: ['Health Tool', 'Evidence-Based'],
     internal: true,
@@ -151,7 +151,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
             const dateStr = post.data.pubDate.toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' });
             return (
               <li class="series-mini-item">
-                <a href={`/writing/${post.id}`} class="series-mini-title">{post.data.title}</a>
+                <a href={`/writing/${post.id}/`} class="series-mini-title">{post.data.title}</a>
                 <span class="series-mini-date">{dateStr}</span>
               </li>
             );
@@ -166,7 +166,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
           <span class="project-tag"><T zh="認知科學" en="Cognitive Science" /></span>
           <span class="project-tag"><T zh="表達" en="Communication" /></span>
         </div>
-        <a href="/writing?series=硬核簡報" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
+        <a href="/writing/?series=硬核簡報" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
       </div>
     </div>
 
@@ -186,7 +186,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
             const dateStr = post.data.pubDate.toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' });
             return (
               <li class="series-mini-item">
-                <a href={`/writing/${post.id}`} class="series-mini-title">{post.data.title}</a>
+                <a href={`/writing/${post.id}/`} class="series-mini-title">{post.data.title}</a>
                 <span class="series-mini-date">{dateStr}</span>
               </li>
             );
@@ -203,7 +203,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
         </div>
         <!-- ?series= 的值必須與 /writing 卡片的 data-category 完全相同（中文），
              篩選是直接字串比對；llms.txt 也是用中文值當正式網址。 -->
-        <a href="/writing?series=投資專欄" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
+        <a href="/writing/?series=投資專欄" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
       </div>
     </div>
 
@@ -223,7 +223,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
             const dateStr = post.data.pubDate.toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' });
             return (
               <li class="series-mini-item">
-                <a href={`/writing/${post.id}`} class="series-mini-title">{post.data.title}</a>
+                <a href={`/writing/${post.id}/`} class="series-mini-title">{post.data.title}</a>
                 <span class="series-mini-date">{dateStr}</span>
               </li>
             );
@@ -238,7 +238,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
           <span class="project-tag"><T zh="策略" en="Strategy" /></span>
           <span class="project-tag"><T zh="組織" en="Organization" /></span>
         </div>
-        <a href="/writing?series=管理專欄" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
+        <a href="/writing/?series=管理專欄" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
       </div>
     </div>
   </div>
