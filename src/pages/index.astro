@@ -4,6 +4,7 @@ import T from '../components/T.astro';
 import PostCard from '../components/PostCard.astro';
 import Tour from '../components/Tour.astro';
 import { getCollection } from 'astro:content';
+import { projects } from '../data/projects';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
@@ -144,7 +145,27 @@ const AWARDS_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
       <a href="/speeches/" class="section-cta" style="margin-top:1rem"><T zh="查看所有演講 →" en="View all speeches →" /></a>
     </section>
 
-    <!-- ⑥ Recent Writing -->
+    <!-- ⑥ Projects — 首頁原本完全沒有指向專案的連結，各個 hub 只能經由
+         導覽列的 /projects 再點一層才到得了（子頁更深一層）。這一區直接連到
+         每個 hub，把它們拉到首頁的一次點擊之內。 -->
+    <section style="margin-top: var(--spacing-xl)">
+      <p class="section-heading"><T zh="工具與專案" en="Tools & Projects" /></p>
+      <div class="home-projects">
+        {projects.map(p => (
+          <a
+            href={p.url}
+            class="home-project"
+            {...(p.internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+          >
+            <span class="home-project-title"><T zh={p.title} en={p.titleEn} /></span>
+            <span class="home-project-desc"><T zh={p.description} en={p.descriptionEn} /></span>
+          </a>
+        ))}
+      </div>
+      <a href="/projects/" class="section-cta" style="margin-top:1rem"><T zh="查看所有專案 →" en="View all projects →" /></a>
+    </section>
+
+    <!-- ⑦ Recent Writing -->
     {posts.length > 0 && (
       <section style="margin-top: var(--spacing-xl)">
         <p class="section-heading"><T zh="近期文章" en="Recent Writing" /></p>
