@@ -16,7 +16,9 @@
 
 import { createSign } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { GA4_EVENTS, REPOS, HOSTS } from './analytics-config.mjs';
+import {
+  GA4_EVENTS, FEATURED, EXCLUDE, INCLUDE_FORKS, INCLUDE_ARCHIVED, HOSTS,
+} from './analytics-config.mjs';
 
 const SCHEMA_VERSION = 1;
 const env = (k) => (process.env[k] ?? '').trim() || null;
@@ -367,36 +369,90 @@ async function ghGet(path, token) {
   return res.json();
 }
 
+// 純函式：從 /user/repos 的清單挑出要追蹤的 repo 並排序。
+// featured 一律保留且依 config 順序置頂；其餘依 fork/archived/EXCLUDE 過濾、stars desc 排序。
+export function selectRepos(list, featured, exclude, { includeForks, includeArchived }) {
+  const featuredIndex = new Map(featured.map((f, i) => [f.repo, i]));
+  const excludeSet = new Set(exclude);
+  const picked = list.filter((r) => {
+    if (featuredIndex.has(r.full_name)) return true;
+    if (excludeSet.has(r.full_name)) return false;
+    if (!includeForks && r.fork) return false;
+    if (!includeArchived && r.archived) return false;
+    return true;
+  });
+  picked.sort((a, b) => {
+    const fa = featuredIndex.get(a.full_name) ?? Infinity;
+    const fb = featuredIndex.get(b.full_name) ?? Infinity;
+    if (fa !== fb) return fa - fb;
+    return num(b.stargazers_count) - num(a.stargazers_count);
+  });
+  // API 清單裡沒有的 featured repo（例如改名、打錯）仍要保留卡片位置以顯示錯誤
+  const missing = featured.filter((f) => !picked.some((r) => r.full_name === f.repo));
+  return { picked, missing };
+}
+
+// 自動發現 owner 名下所有 repo（token 需授權 All repositories）
+async function discoverRepos() {
+  const all = [];
+  for (let page = 1; page <= 10; page++) {
+    const batch = await ghGet(
+      `/user/repos?affiliation=owner&per_page=100&sort=pushed&page=${page}`,
+      GH_TRAFFIC_TOKEN
+    );
+    all.push(...batch);
+    if (batch.length < 100) break;
+  }
+  return all;
+}
+
 async function fetchGithub() {
   const repos = [];
   const dailyTraffic = {}; // repo → date → {v,vu,c,cu}
-  for (const cfg of REPOS.filter((r) => r.publish !== false)) {
-    const entry = { repo: cfg.repo, label: cfg.label, site: cfg.site };
-    try {
-      const meta = await ghGet(`/repos/${cfg.repo}`, GH_TRAFFIC_TOKEN);
-      entry.stars = num(meta.stargazers_count);
-      entry.forks = num(meta.forks_count);
-      entry.watchers = num(meta.subscribers_count);
-      entry.openIssues = num(meta.open_issues_count);
-      entry.pushedAt = meta.pushed_at;
-    } catch (err) {
-      entry.error = `repo: ${err.message}`;
-      repos.push(entry);
-      continue;
-    }
+  const featuredByName = new Map(FEATURED.map((f) => [f.repo, f]));
+
+  const discovered = await discoverRepos();
+  const { picked, missing } = selectRepos(discovered, FEATURED, EXCLUDE, {
+    includeForks: INCLUDE_FORKS,
+    includeArchived: INCLUDE_ARCHIVED,
+  });
+  console.log(`  GitHub: 發現 ${discovered.length} 個 repo，追蹤 ${picked.length} 個（排除 fork/archived/EXCLUDE）`);
+  for (const f of missing) {
+    repos.push({ repo: f.repo, label: f.label, site: f.site, error: 'repo: not found in /user/repos（改名？token 權限？）' });
+  }
+
+  for (const meta of picked) {
+    const cfg = featuredByName.get(meta.full_name);
+    const name = meta.full_name;
+    const entry = {
+      repo: name,
+      label: cfg?.label ?? null,                    // 非 featured 用 repo 名顯示
+      site: cfg?.site ?? (meta.homepage || null),
+      description: meta.description || null,
+      private: !!meta.private,
+      archived: !!meta.archived,
+      // /user/repos 的每筆已含 meta，不需再打 /repos/{r}。
+      // 注意：清單 API 的 watchers_count 其實等於 stars（GitHub API 歷史包袱），
+      // 真正的 watchers（subscribers_count）只有單-repo API 才有——不值得每 repo 多一次呼叫，直接不顯示。
+      stars: num(meta.stargazers_count),
+      forks: num(meta.forks_count),
+      watchers: null,
+      openIssues: num(meta.open_issues_count),
+      pushedAt: meta.pushed_at,
+    };
     // traffic 需要 push-level access；403 時保留 stars 區塊
     try {
       const [views, clones, referrers] = await Promise.all([
-        ghGet(`/repos/${cfg.repo}/traffic/views?per=day`, GH_TRAFFIC_TOKEN),
-        ghGet(`/repos/${cfg.repo}/traffic/clones?per=day`, GH_TRAFFIC_TOKEN),
-        ghGet(`/repos/${cfg.repo}/traffic/popular/referrers`, GH_TRAFFIC_TOKEN),
+        ghGet(`/repos/${name}/traffic/views?per=day`, GH_TRAFFIC_TOKEN),
+        ghGet(`/repos/${name}/traffic/clones?per=day`, GH_TRAFFIC_TOKEN),
+        ghGet(`/repos/${name}/traffic/popular/referrers`, GH_TRAFFIC_TOKEN),
       ]);
       entry.views14 = { count: num(views.count), uniques: num(views.uniques) };
       entry.clones14 = { count: num(clones.count), uniques: num(clones.uniques) };
       entry.referrers = (referrers ?? [])
         .slice(0, 8)
         .map((r) => ({ referrer: r.referrer, count: num(r.count), uniques: num(r.uniques) }));
-      const t = (dailyTraffic[cfg.repo] ??= {});
+      const t = (dailyTraffic[name] ??= {});
       for (const v of views.views ?? []) {
         const date = v.timestamp.slice(0, 10);
         (t[date] ??= {}).v = num(v.count);

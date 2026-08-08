@@ -38,8 +38,7 @@ GitHub API  ──┘        (GitHub Actions)         ↑ 每日 upsert，長期
 ### 3. GitHub tokens（~7 分鐘，需要兩把）
 
 1. **fine-grained PAT**（[github.com/settings/personal-access-tokens](https://github.com/settings/personal-access-tokens)）：
-   - Repository access：選 `scripts/analytics-config.mjs` 裡列的 repos
-     （personal-website、dreamcatcher、brain-exposome、The-Golden-Lag-Engine）
+   - Repository access：**All repositories**（pipeline 會自動發現 owner 名下所有 repo）
    - Permissions：**Administration: Read-only** + **Metadata: Read-only**
      （traffic API 需要 push-level access，Administration read 即可）
    - 注意：fine-grained PAT 最長一年，到期要重發並更新 secret
@@ -155,7 +154,10 @@ GA4 Admin → Events → 等自訂事件出現後（通常 24h 內），將下�
 
 ## 維運備忘
 
-- **改追蹤清單**：編輯 `scripts/analytics-config.mjs` 的 `REPOS` / `HOSTS`（`publish:false` = 完全不抓）
+- **追蹤清單**：pipeline 自動發現 owner 名下所有 repo（預設排除 fork 與 archived）。
+  要隱藏個別 repo → 加進 `scripts/analytics-config.mjs` 的 `EXCLUDE`；
+  要給中英標籤 / 自訂 site / 置頂 → 加進 `FEATURED`；
+  fork / archived 要不要納入 → `INCLUDE_FORKS` / `INCLUDE_ARCHIVED`
 - **改排程**：`.github/workflows/analytics.yml` 的 cron（UTC）
 - **立即更新資料**：Actions → analytics → Run workflow
 - **PAT 到期**（fine-grained 最長一年）：重發後更新 `GH_TRAFFIC_TOKEN` secret

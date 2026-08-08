@@ -19,8 +19,9 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      # v5 系列跑在 Node 24 runner 上，消除 Node 20 deprecation 警告
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       - name: Fetch analytics and publish to gist
@@ -35,7 +36,7 @@ jobs:
         run: node scripts/fetch-analytics.mjs
       - name: Upload snapshot artifact (debug)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: analytics-snapshot
           path: out/
