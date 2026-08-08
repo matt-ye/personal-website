@@ -143,7 +143,7 @@ const DATA_BASE = import.meta.env.PUBLIC_ANALYTICS_DATA_BASE ?? '';
 
       <!-- GitHub 專案 -->
       <section id="sec-gh">
-        <p class="section-heading"><T zh="GitHub 專案" en="GitHub projects" /></p>
+        <p class="section-heading"><T zh="GitHub 專案" en="GitHub projects" /> <span class="chart-badge" id="badge-repos"></span></p>
         <div class="dash-sec-body">
           <div class="dash-repos" id="repos-grid"></div>
         </div>
@@ -544,9 +544,11 @@ function renderCf() {
 function renderRepos() {
   const gh = summary.github;
   if (!sectionOk('sec-gh', !!(gh && gh.configured && gh.repos && !gh.error), ...NOT_CONFIGURED)) return;
+  const badge = document.getElementById('badge-repos');
+  if (badge) badge.textContent = String(gh.repos.length);
   const grid = document.getElementById('repos-grid');
   grid.innerHTML = gh.repos.map((r, i) => {
-    const name = L(r.label?.zh ?? r.repo, r.label?.en ?? r.repo);
+    const name = L(r.label?.zh ?? r.repo.split('/')[1] ?? r.repo, r.label?.en ?? r.repo.split('/')[1] ?? r.repo);
     const traffic = r.views14
       ? `${L('瀏覽', 'Views')} <b>${fmtNum(r.views14.count)}</b> (${r.views14.uniques} uniq) · Clones <b>${fmtNum(r.clones14?.count ?? 0)}</b>`
       : `<span class="dash-muted">${esc(r.traffic?.error ?? r.error ?? L('無 traffic 數據', 'no traffic data'))}</span>`;
@@ -554,11 +556,12 @@ function renderRepos() {
     return `
       <div class="dash-repo-card">
         <div class="dash-repo-head">
-          <a href="https://github.com/${esc(r.repo)}" target="_blank" rel="noopener">${esc(name)}</a>
+          <a href="https://github.com/${esc(r.repo)}" target="_blank" rel="noopener">${r.private ? '🔒 ' : ''}${esc(name)}</a>
           ${r.site ? `<a class="dash-repo-site" href="${esc(r.site)}" target="_blank" rel="noopener">↗ site</a>` : ''}
         </div>
+        ${r.description ? `<div class="dash-repo-desc">${esc(r.description)}</div>` : ''}
         <div class="dash-repo-stats">
-          ★ <b>${r.stars ?? '—'}</b> · Forks <b>${r.forks ?? '—'}</b> · Watchers <b>${r.watchers ?? '—'}</b>
+          ★ <b>${r.stars ?? '—'}</b> · Forks <b>${r.forks ?? '—'}</b> · Issues <b>${r.openIssues ?? '—'}</b>
         </div>
         <div class="dash-repo-traffic">${traffic} <span class="dash-muted">· 14d</span></div>
         <div class="dash-spark-wrap"><canvas id="spark-${i}"></canvas></div>
@@ -635,6 +638,7 @@ init();
 }
 .dash-repo-head { align-items: baseline; display: flex; gap: 10px; justify-content: space-between; }
 .dash-repo-head > a { font-weight: 600; }
+.dash-repo-desc { color: var(--color-text-muted); font-size: 0.8rem; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dash-repo-site { color: var(--color-text-muted); font-size: 0.78rem; white-space: nowrap; }
 .dash-repo-stats { color: var(--color-text-muted); font-size: 0.82rem; margin-top: 8px; }
 .dash-repo-stats b, .dash-repo-traffic b { color: var(--color-text); }
