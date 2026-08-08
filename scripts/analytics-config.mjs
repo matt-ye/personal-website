@@ -45,3 +45,15 @@ export const INCLUDE_ARCHIVED = false; // 封存的 repo 已停更，預設排�
 
 // GA4 hostName 切分要保留的 host（其餘如 localhost、*.pages.dev 會被過濾）
 export const HOSTS = ['mattye.dev', 'brain-exposome.mattye.dev'];
+
+// 主站以外、有自己 GA4 property 的網站。
+// 前置（owner 手動）：把 service account 加為該 property 的 Viewer，
+// 並把「數字 property ID」存進對應的 Actions secret；secret 未設 → 該站自動跳過。
+export const GA4_EXTRA_SITES = [
+  {
+    key: 'dreamcatcher',
+    env: 'GA4_PROPERTY_ID_2', // 捕夢網（G-4MY30R916S 所屬 property 的數字 ID）
+    label: { zh: '捕夢網 Tela Aurea', en: 'Dreamcatcher · Tela Aurea' },
+    site: 'https://telaaurealab.com',
+  },
+];

@@ -58,6 +58,7 @@ repo Settings → Secrets and variables → Actions → New repository secret：
 | `GH_TRAFFIC_TOKEN` | fine-grained PAT（名稱不能以 `GITHUB_` 開頭，是 Actions 的保留字） |
 | `GIST_TOKEN` | classic PAT（gist scope） |
 | `GIST_ID` | 首次執行後補（見下一步） |
+| `GA4_PROPERTY_ID_2` | （可選）捕夢網 property 數字 ID（見第 9 步） |
 
 ### 5. 首次執行（~3 分鐘）
 
@@ -94,6 +95,19 @@ Pages 專案 → Settings → Environment variables →
 GA4 Admin → Events → 等自訂事件出現後（通常 24h 內），將下列標為 **key event**：
 `click_github`、`click_project`、`donate_start`（其餘視需要）。
 
+### 9. 其他網站的 GA4 property（捕夢網，~5 分鐘）
+
+dashboard 可同時顯示其他有自己 GA4 property 的網站（config：`analytics-config.mjs` 的 `GA4_EXTRA_SITES`）。
+以捕夢網（`G-4MY30R916S` 所屬 property）為例：
+
+1. GA4 左上切到**捕夢網的 property** → Admin → **Property Access Management** →
+   加入**同一個** service account email，角色 **Viewer**
+2. 該 property 的 Admin → Property Settings → 記下**數字 Property ID**
+3. 存成 Actions secret **`GA4_PROPERTY_ID_2`** → Run workflow → dashboard「其他網站」區出現捕夢網卡片
+   （KPI、90 天趨勢、top pages、站方自己的熱門事件如購買）
+
+再加更多網站：`GA4_EXTRA_SITES` 加一項（key/env/label/site）+ workflow env 加對應 secret 即可。
+
 ---
 
 ## 資料格式
@@ -116,6 +130,12 @@ GA4 Admin → Events → 等自訂事件出現後（通常 24h 內），將下�
     "hosts": [{ "host": "mattye.dev", "users": 70, "views": 150, "sessions": 80 }],
     "events": [{ "name": "click_github", "d28": 12, "d90": 31, "topPages": [{ "path": "/", "count": 5 }] }]
   },
+  "ga4Sites": [{                     // 其他網站的 GA4 property（GA4_EXTRA_SITES）
+    "key": "dreamcatcher", "label": { "zh": "捕夢網 Tela Aurea", "en": "Dreamcatcher · Tela Aurea" },
+    "site": "https://telaaurealab.com", "configured": true,
+    "totals": { "d7": {}, "d28": {}, "d90": {} }, "daily": [], "topPages": [],
+    "channels": [], "countries": [], "topEvents": [{ "name": "purchase", "count": 3 }]
+  }],
   "cloudflare": {
     "configured": true,
     "daily": [{ "date": "2026-07-23", "req": 900, "pv": 300, "uniq": 80, "bytes": 1, "cachedReq": 700, "cachedBytes": 1, "threats": 0 }],
@@ -140,6 +160,7 @@ GA4 Admin → Events → 等自訂事件出現後（通常 24h 內），將下�
 ```jsonc
 {"v":1,"date":"2026-07-23",
  "ga":{"users":12,"views":31,"sessions":14,"ev":{"click_github":2}},
+ "gx":{"dreamcatcher":{"u":30,"v":80,"s":35}},
  "cf":{"req":900,"pv":300,"uniq":80,"bytes":1,"cachedReq":700,"cachedBytes":1,"threats":0},
  "gh":{"matt-ye/dreamcatcher":{"v":10,"vu":4,"c":1,"cu":1,"stars":5}}}
 ```

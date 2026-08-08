@@ -122,6 +122,14 @@ const DATA_BASE = import.meta.env.PUBLIC_ANALYTICS_DATA_BASE ?? '';
         <div class="dash-note" style="display:none"></div>
       </section>
 
+      <!-- 其他網站(額外 GA4 property,例如捕夢網) -->
+      <section id="sec-sites" style="display:none">
+        <p class="section-heading"><T zh="其他網站" en="Other sites" /></p>
+        <div class="dash-sec-body">
+          <div id="sites-wrap"></div>
+        </div>
+      </section>
+
       <!-- Cloudflare -->
       <section id="sec-cf">
         <p class="section-heading"><T zh="Cloudflare 邊緣數據（28 天）" en="Cloudflare edge (28 days)" /></p>
@@ -266,8 +274,84 @@ function renderAll() {
   renderGa();
   renderTopPages();
   renderConversions();
+  renderExtraSites();
   renderCf();
   renderRepos();
+}
+
+/* 其他網站(額外 GA4 property):每站一張卡 = KPI 列 + 90 天趨勢 + top pages + 站方事件 */
+function renderExtraSites() {
+  const sites = summary.ga4Sites ?? [];
+  const sec = document.getElementById('sec-sites');
+  if (!sec) return;
+  if (!sites.length) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+
+  const wrap = document.getElementById('sites-wrap');
+  wrap.innerHTML = sites.map((s, i) => {
+    const name = L(s.label?.zh ?? s.key, s.label?.en ?? s.key);
+    const head = `
+      <div class="dash-repo-head">
+        <span class="dash-site-name">${esc(name)}</span>
+        ${s.site ? `<a class="dash-repo-site" href="${esc(s.site)}" target="_blank" rel="noopener">↗ site</a>` : ''}
+      </div>`;
+    if (!s.configured || s.error || !s.totals) {
+      const msg = s.error
+        ? `${L('本次抓取失敗:', 'Fetch failed: ')}${esc(s.error)}`
+        : L('尚未設定——請把 service account 加為該 GA4 property 的 Viewer,並將數字 Property ID 存成 secret(見 docs/analytics-pipeline.md)。',
+            'Not configured — grant the service account Viewer on this GA4 property and store its numeric ID as a secret (see docs/analytics-pipeline.md).');
+      return `<div class="dash-site-card">${head}<div class="dash-note" style="display:block">${msg}</div></div>`;
+    }
+    const t28 = s.totals.d28 ?? {};
+    const t7 = s.totals.d7 ?? {};
+    const kpis = [
+      ['Visitors', fmtNum(t28.users ?? 0), `7d ${fmtNum(t7.users ?? 0)}`],
+      ['Views', fmtNum(t28.views ?? 0), `7d ${fmtNum(t7.views ?? 0)}`],
+      ['Sessions', fmtNum(t28.sessions ?? 0), L(`新訪客 ${fmtNum(t28.newUsers ?? 0)}`, `${fmtNum(t28.newUsers ?? 0)} new`)],
+      ['Engagement', `${Math.round((t28.engagementRate ?? 0) * 100)}%`, L('互動率', 'rate')],
+    ].map(([label, numv, sub]) => `
+      <div class="dash-site-kpi">
+        <div class="bento-card-label">${label}</div>
+        <div class="dash-site-kpi-num">${numv}</div>
+        <div class="bento-card-sub">${sub}</div>
+      </div>`).join('');
+    const pages = (s.topPages ?? []).slice(0, 5).map((p) =>
+      `<div class="dash-site-page"><span class="dash-path">${esc(p.path)}</span><b>${fmtNum(p.views)}</b></div>`).join('');
+    const events = (s.topEvents ?? []).slice(0, 6).map((e) =>
+      `<span class="chip dash-ref">${esc(e.name)} · ${fmtNum(e.count)}</span>`).join('');
+    return `
+      <div class="dash-site-card">
+        ${head}
+        <div class="dash-site-kpis">${kpis}</div>
+        <div class="dash-site-trend"><canvas id="site-trend-${i}"></canvas></div>
+        ${pages ? `<div class="dash-site-pages">${pages}</div>` : ''}
+        ${events ? `<div class="dash-ref-chips">${events}</div>` : ''}
+      </div>`;
+  }).join('');
+
+  if (!hasChart()) return;
+  sites.forEach((s, i) => {
+    if (!s.configured || !s.daily?.length) return;
+    const ctx = document.getElementById(`site-trend-${i}`);
+    if (!ctx) return;
+    chartInstances.push(new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: s.daily.map((d) => fmtDay(d.date)),
+        datasets: [
+          { label: 'Views', data: s.daily.map((d) => d.views), borderColor: PALETTE[2], backgroundColor: PALETTE[2] + '22', fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2 },
+          { label: 'Visitors', data: s.daily.map((d) => d.users), borderColor: PALETTE[5], backgroundColor: 'transparent', tension: 0.35, pointRadius: 0, borderWidth: 2 },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        animation: { duration: 1000, easing: 'easeOutQuart' },
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle' } } },
+        scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }, y: { beginAtZero: true, ticks: { precision: 0 } } },
+      },
+    }));
+  });
 }
 
 function gaReady() {
@@ -639,6 +723,20 @@ init();
 .dash-repo-head { align-items: baseline; display: flex; gap: 10px; justify-content: space-between; }
 .dash-repo-head > a { font-weight: 600; }
 .dash-repo-desc { color: var(--color-text-muted); font-size: 0.8rem; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.dash-site-card {
+  background: var(--card-bg, var(--color-surface));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-top: 12px;
+  padding: 20px;
+}
+.dash-site-name { font-size: 1rem; font-weight: 600; }
+.dash-site-kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); margin-top: 14px; }
+.dash-site-kpi-num { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.dash-site-trend { height: 160px; margin-top: 16px; position: relative; }
+.dash-site-pages { display: grid; gap: 6px; margin-top: 14px; }
+.dash-site-page { border-bottom: 1px dashed var(--color-border); display: flex; font-size: 0.82rem; justify-content: space-between; padding-bottom: 4px; }
 .dash-repo-site { color: var(--color-text-muted); font-size: 0.78rem; white-space: nowrap; }
 .dash-repo-stats { color: var(--color-text-muted); font-size: 0.82rem; margin-top: 8px; }
 .dash-repo-stats b, .dash-repo-traffic b { color: var(--color-text); }
