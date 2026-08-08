@@ -298,6 +298,38 @@ footer .container {
 }
 .section-cta:hover { text-decoration: underline; }
 
+/* ===== Home: Projects nav ===== */
+.home-projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.5rem;
+  margin-top: var(--spacing-sm);
+}
+.home-project {
+  display: block;
+  /* min-width:0 讓格線項目可以收窄，不然 min-content 會撐爆版面（org-row 同一個坑） */
+  min-width: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.home-project:hover { border-color: var(--color-accent); transform: translateX(3px); text-decoration: none; }
+.home-project-title { display: block; font-weight: 650; font-size: 0.92rem; color: var(--color-text); }
+.home-project-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;          /* 描述長度不一，統一裁成兩行讓卡片等高 */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+  line-height: 1.6;
+}
+
 /* ===== Post Card ===== */
 .post-list { list-style: none; display: flex; flex-direction: column; gap: var(--spacing-lg); }
 
