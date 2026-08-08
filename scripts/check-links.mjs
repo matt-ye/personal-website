@@ -30,16 +30,27 @@ function collectHtml(dir, out = []) {
   return out;
 }
 
-/** 已知失效、還沒處理的網址：仍會列進報告，但不讓 CI 一直紅 */
-const IGNORE = new Set(
-  (fs.existsSync(path.join(ROOT, 'scripts', 'link-check-ignore.txt'))
-    ? fs.readFileSync(path.join(ROOT, 'scripts', 'link-check-ignore.txt'), 'utf8')
-    : ''
-  )
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith('#'))
-);
+/** 讀一行一個網址的清單檔（# 開頭是註解） */
+function readUrlList(name) {
+  const p = path.join(ROOT, 'scripts', name);
+  return new Set(
+    (fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '')
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l && !l.startsWith('#'))
+  );
+}
+
+/** 已確認失效、還沒修的網址：仍會列進報告，但不讓 CI 一直紅 */
+const IGNORE = readUrlList('link-check-ignore.txt');
+
+/**
+ * 已人工確認正常、但這支程式驗不到的網址。
+ * 有些站台（support.google.com 最明顯）對機房 IP 一律回 404——注意是 404 不是 403，
+ * 所以光看狀態碼分不出「頁面不存在」和「你不是真人」。這類網址列在這裡，
+ * 讓報告說實話：不是壞掉，是驗不到。
+ */
+const VERIFIED = readUrlList('link-check-verified.txt');
 
 const files = SCAN_DIRS.flatMap((d) => collectHtml(d)).sort();
 if (files.length === 0) {
@@ -137,7 +148,11 @@ function redirectedAway(url, finalUrl) {
 }
 
 function verdict(r, url) {
-  if (IGNORE.has(url) && !(r.status >= 200 && r.status < 300)) {
+  const is2xx = r.status >= 200 && r.status < 300;
+  if (VERIFIED.has(url) && !is2xx) {
+    return { icon: '🔎', text: `${r.status || r.error}（機器驗不到，已人工確認正常）` };
+  }
+  if (IGNORE.has(url) && !is2xx) {
     return { icon: '🔕', text: `${r.status || r.error}（已知待修，見 link-check-ignore.txt）` };
   }
   if (r.status >= 200 && r.status < 300) {
@@ -186,12 +201,23 @@ if (ONLY_INTERNAL) {
   const broken = externalResults.filter((r) => r.icon === '❌');
   const warn = externalResults.filter((r) => r.icon === '⚠️');
   const known = externalResults.filter((r) => r.icon === '🔕');
-  lines.push(`外部連結：${externalResults.length} 個｜正常 ${externalResults.length - broken.length - warn.length - known.length}｜需人工確認 ${warn.length}｜已知待修 ${known.length}｜新失效 ${broken.length}`);
+  const unverifiable = externalResults.filter((r) => r.icon === '🔎');
+  const ok = externalResults.length - broken.length - warn.length - known.length - unverifiable.length;
+  lines.push(`外部連結：${externalResults.length} 個｜正常 ${ok}｜需人工確認 ${warn.length}｜機器驗不到（已確認正常）${unverifiable.length}｜已知待修 ${known.length}｜新失效 ${broken.length}`);
   lines.push('');
   for (const r of externalResults) {
     lines.push(`  ${r.icon} ${r.text.padEnd(28)} ${r.url}`);
     lines.push(`      使用於：${r.pages.join('、')}`);
     if (r.finalUrl && r.finalUrl !== r.url) lines.push(`      轉址到：${r.finalUrl}`);
+  }
+  // 待修清單也會腐爛：已經自己好起來的網址提醒刪掉，免得清單愈積愈舊。
+  // 只看 IGNORE——VERIFIED 收的本來就是「時好時壞、驗不到」的網址，
+  // 某一輪剛好回 2xx 不代表下一輪也會，提醒刪掉反而會害人把清單拆了。
+  const recovered = externalResults.filter((r) => r.icon === '✅' && IGNORE.has(r.url));
+  if (recovered.length) {
+    lines.push('');
+    lines.push(`以下 ${recovered.length} 個網址現在自己回 2xx 了，可以從清單檔移除：`);
+    for (const r of recovered) lines.push(`  · ${r.url}`);
   }
 }
 console.log(lines.join('\n'));
