@@ -1,0 +1,454 @@
+<!DOCTYPE html><html lang="zh-TW"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v6.4.2"><!-- Prevent flash of wrong theme (runs before render) --><script>
+      (function () {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved ?? (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script><!-- Language preference (runs before render; default zh) --><script>
+      (function () {
+        const lang = localStorage.getItem('lang') === 'en' ? 'en' : 'zh';
+        document.documentElement.setAttribute('data-lang', lang);
+        document.documentElement.lang = lang === 'en' ? 'en' : 'zh-TW';
+      })();
+    </script><title>Dashboard · 葉淨維 Matt Ye</title><meta name="description" content="流量儀表板（私人頁面）"><link rel="canonical" href="https://mattye.dev/dashboard/"><meta name="author" content="Ching-Wei (Matt) Ye"><meta property="og:type" content="website"><meta property="og:title" content="Dashboard · 葉淨維 Matt Ye"><meta property="og:description" content="流量儀表板（私人頁面）"><meta property="og:url" content="https://mattye.dev/dashboard/"><meta property="og:site_name" content="葉淨維 Matt Ye"><meta property="og:image" content="https://mattye.dev/og-logo.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Dashboard · 葉淨維 Matt Ye"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Dashboard · 葉淨維 Matt Ye"><meta name="twitter:description" content="流量儀表板（私人頁面）"><meta name="twitter:image" content="https://mattye.dev/og-logo.png"><meta name="twitter:creator" content="@mattye_dev"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://mattye.dev/#person","name":"Ching-Wei (Matt) Ye","alternateName":"葉淨維","url":"https://mattye.dev","jobTitle":"PhD Candidate · Presentation Coach","alumniOf":{"@type":"CollegeOrUniversity","name":"National Taiwan University"},"sameAs":["https://www.linkedin.com/in/ching-wei-ye"]},{"@type":"WebSite","@id":"https://mattye.dev/#website","name":"葉淨維 Matt Ye","url":"https://mattye.dev","inLanguage":"zh-TW","datePublished":"2026-05-31","copyrightYear":2026,"publisher":{"@id":"https://mattye.dev/#person"}}]}</script><link rel="icon" type="image/svg+xml" href="/favicon.svg"><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script><meta name="robots" content="noindex, nofollow"><!-- Google Analytics 4 --><script async src="https://www.googletagmanager.com/gtag/js?id=G-1RKL72DPPW"></script><script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1RKL72DPPW');
+    </script><style>.dash-note{background:var(--card-bg, var(--color-surface));border:1px dashed var(--color-border);border-radius:var(--radius-md);color:var(--color-text-muted);font-size:.85rem;padding:20px;text-align:center;margin-top:8px}.dash-chart-note{color:var(--color-text-muted);font-size:.75rem;padding:8px 0;text-align:center}.dash-path{font-family:var(--font-mono);font-size:.85em}.dash-muted{color:var(--color-text-muted)}.dash-footnote{color:var(--color-text-muted);font-size:.78rem;margin:40px 0 8px;text-align:center}.dash-funnels{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:16px}.dash-funnel{background:var(--card-bg, var(--color-surface));border:1px solid var(--color-border);border-radius:var(--radius-md);padding:18px}.dash-funnel-title{font-size:.85rem;font-weight:600;margin-bottom:6px}.dash-funnel-row{align-items:center;display:flex;gap:10px;margin-top:10px}.dash-funnel-label{color:var(--color-text-muted);flex-shrink:0;font-size:.78rem;width:108px}.dash-funnel-n{font-variant-numeric:tabular-nums;min-width:34px;text-align:right}.dash-funnel-pct{color:var(--color-accent);font-size:.75rem;min-width:36px;text-align:right}.dash-repos{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));margin-top:8px}.dash-repo-card{background:var(--card-bg, var(--color-surface));border:1px solid var(--color-border);border-radius:var(--radius-md);padding:18px}.dash-repo-head{align-items:baseline;display:flex;gap:10px;justify-content:space-between}.dash-repo-head>a{font-weight:600}.dash-repo-site{color:var(--color-text-muted);font-size:.78rem;white-space:nowrap}.dash-repo-stats{color:var(--color-text-muted);font-size:.82rem;margin-top:8px}.dash-repo-stats b,.dash-repo-traffic b{color:var(--color-text)}.dash-repo-traffic{color:var(--color-text-muted);font-size:.82rem;margin-top:4px}.dash-spark-wrap{height:56px;margin-top:12px;position:relative}.dash-ref-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.dash-ref{cursor:default;font-size:.7rem}
+</style>
+<link rel="stylesheet" href="/_astro/BaseLayout.CYiTQLJi.css"></head> <body> <header> <div class="container"> <a href="/" class="site-name">Matt Ye</a> <div class="nav-right"> <nav> <a href="/"><span class="lang-zh" lang="zh-TW">首頁</span><span class="lang-en" lang="en" hidden>Home</span></a> <a href="/speeches"><span class="lang-zh" lang="zh-TW">演講</span><span class="lang-en" lang="en" hidden>Speeches</span></a> <a href="/coaching"><span class="lang-zh" lang="zh-TW">培訓</span><span class="lang-en" lang="en" hidden>Coaching</span></a> <a href="/writing"><span class="lang-zh" lang="zh-TW">寫作</span><span class="lang-en" lang="en" hidden>Writing</span></a> <a href="/projects"><span class="lang-zh" lang="zh-TW">專案</span><span class="lang-en" lang="en" hidden>Projects</span></a> </nav> <button class="lang-toggle" id="lang-toggle" aria-label="切換語言 / Switch language"> <span class="lang-zh">EN</span><span class="lang-en">中</span> </button> <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode"> <!-- Sun icon (shown in dark mode) --> <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <circle cx="12" cy="12" r="5"></circle> <line x1="12" y1="1" x2="12" y2="3"></line> <line x1="12" y1="21" x2="12" y2="23"></line> <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line> <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line> <line x1="1" y1="12" x2="3" y2="12"></line> <line x1="21" y1="12" x2="23" y2="12"></line> <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line> <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line> </svg> <!-- Moon icon (shown in light mode) --> <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path> </svg> </button> </div> </div> </header> <script type="module">const d=document.getElementById("theme-toggle");d?.addEventListener("click",()=>{const t=(document.documentElement.getAttribute("data-theme")??"light")==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",t),localStorage.setItem("theme",t)});function c(e){const t=e==="en";document.querySelectorAll(".lang-zh").forEach(n=>n.toggleAttribute("hidden",t)),document.querySelectorAll(".lang-en").forEach(n=>n.toggleAttribute("hidden",!t))}c(document.documentElement.getAttribute("data-lang")??"zh");const o=document.getElementById("lang-toggle");o?.addEventListener("click",()=>{const t=(document.documentElement.getAttribute("data-lang")??"zh")==="en"?"zh":"en";document.documentElement.setAttribute("data-lang",t),document.documentElement.lang=t==="en"?"en":"zh-TW",localStorage.setItem("lang",t),c(t),window.dispatchEvent(new Event("langchange"))});</script> <main>  <div class="container">    <div class="container-wide"> <section class="speeches-hero"> <h1><span class="lang-zh" lang="zh-TW">流量</span><span class="lang-en" lang="en" hidden>Site</span> <span class="accent-text"><span class="lang-zh" lang="zh-TW">儀表板</span><span class="lang-en" lang="en" hidden>Dashboard</span></span></h1> <p class="subtitle" id="dash-updated"><span class="lang-zh" lang="zh-TW">每日更新的網站流量、轉換與專案數據。</span><span class="lang-en" lang="en" hidden>Daily traffic, conversion, and project metrics.</span></p> </section> <div id="dash-state" class="data-loading"><span class="lang-zh" lang="zh-TW">資料載入中…</span><span class="lang-en" lang="en" hidden>Loading data…</span></div> <div id="dash-main" style="display:none"> <!-- GA4 KPI --> <section id="sec-kpi"> <div class="dash-sec-body"> <div class="bento-grid"> <div class="bento-card"> <div class="bento-card-label">Visitors · 28d</div> <div class="bento-card-num" id="val-users">—</div> <div class="bento-card-sub" id="sub-users">—</div> </div> <div class="bento-card"> <div class="bento-card-label">Page Views · 28d</div> <div class="bento-card-num" id="val-views">—</div> <div class="bento-card-sub" id="sub-views">—</div> </div> <div class="bento-card"> <div class="bento-card-label">Sessions · 28d</div> <div class="bento-card-num" id="val-sessions">—</div> <div class="bento-card-sub" id="sub-sessions">—</div> </div> <div class="bento-card"> <div class="bento-card-label">Engagement</div> <div class="bento-card-num" id="val-eng">—</div> <div class="bento-card-sub"><span class="lang-zh" lang="zh-TW">互動率（28 天）</span><span class="lang-en" lang="en" hidden>Engagement rate (28d)</span></div> </div> <div class="bento-card"> <div class="bento-card-label">Read Completes</div> <div class="bento-card-num" id="val-reads">—</div> <div class="bento-card-sub"><span class="lang-zh" lang="zh-TW">文章完讀（28 天）</span><span class="lang-en" lang="en" hidden>Articles read (28d)</span></div> </div> <div class="bento-card"> <div class="bento-card-label">Total Stars</div> <div class="bento-card-num" id="val-stars">—</div> <div class="bento-card-sub"><span class="lang-zh" lang="zh-TW">全專案 GitHub Stars</span><span class="lang-en" lang="en" hidden>GitHub stars, all projects</span></div> </div> </div> </div> <div class="dash-note" style="display:none"></div> </section> <!-- GA4 趨勢與分佈 --> <section class="charts-section" id="sec-ga"> <div class="dash-sec-body"> <div class="year-chart-card"> <div class="year-chart-head"> <div> <div class="chart-card-title"><span class="lang-zh" lang="zh-TW">90 天流量趨勢</span><span class="lang-en" lang="en" hidden>90-day traffic trend</span></div> <div class="year-peak" id="trend-peak">—</div> </div> </div> <div class="year-chart-wrap"><canvas id="chart-trend"></canvas></div> <div class="dash-chart-note" style="display:none"></div> </div> <div class="charts-grid"> <div class="chart-card"> <div class="chart-card-head"><span class="chart-card-title"><span class="lang-zh" lang="zh-TW">流量管道</span><span class="lang-en" lang="en" hidden>Channels</span></span><span class="chart-badge" id="badge-channels">—</span></div> <div class="chart-biggest" id="biggest-channels">—</div> <div class="chart-wrap"><canvas id="chart-channels"></canvas></div> </div> <div class="chart-card"> <div class="chart-card-head"><span class="chart-card-title"><span class="lang-zh" lang="zh-TW">裝置</span><span class="lang-en" lang="en" hidden>Devices</span></span><span class="chart-badge" id="badge-devices">—</span></div> <div class="chart-biggest" id="biggest-devices">—</div> <div class="chart-wrap"><canvas id="chart-devices"></canvas></div> </div> <div class="chart-card" id="card-hosts" style="display:none"> <div class="chart-card-head"><span class="chart-card-title"><span class="lang-zh" lang="zh-TW">站點</span><span class="lang-en" lang="en" hidden>Sites</span></span><span class="chart-badge" id="badge-hosts">—</span></div> <div class="chart-biggest" id="biggest-hosts">—</div> <div class="chart-wrap"><canvas id="chart-hosts"></canvas></div> </div> <div class="chart-card"> <div class="chart-card-head"><span class="chart-card-title"><span class="lang-zh" lang="zh-TW">國家</span><span class="lang-en" lang="en" hidden>Countries</span></span><span class="chart-badge" id="badge-countries">—</span></div> <div class="chart-biggest" id="biggest-countries">—</div> <div class="chart-wrap"><canvas id="chart-countries"></canvas></div> </div> </div> </div> <div class="dash-note" style="display:none"></div> </section> <!-- Top pages --> <section id="sec-pages"> <p class="section-heading"><span class="lang-zh" lang="zh-TW">子頁面成效（28 天）</span><span class="lang-en" lang="en" hidden>Top pages (28 days)</span></p> <div class="dash-sec-body"> <div class="orgs-scroll-wrap"> <div class="orgs-grid" id="pages-grid"></div> </div> </div> <div class="dash-note" style="display:none"></div> </section> <!-- 轉換 --> <section id="sec-conv"> <p class="section-heading"><span class="lang-zh" lang="zh-TW">轉換</span><span class="lang-en" lang="en" hidden>Conversions</span></p> <div class="dash-sec-body"> <div class="bento-grid" id="conv-grid"></div> <div class="dash-funnels" id="funnels"></div> </div> <div class="dash-note" style="display:none"></div> </section> <!-- Cloudflare --> <section id="sec-cf"> <p class="section-heading"><span class="lang-zh" lang="zh-TW">Cloudflare 邊緣數據（28 天）</span><span class="lang-en" lang="en" hidden>Cloudflare edge (28 days)</span></p> <div class="dash-sec-body"> <div class="bento-grid" id="cf-kpis"></div> <div class="year-chart-card"> <div class="year-chart-head"> <div> <div class="chart-card-title"><span class="lang-zh" lang="zh-TW">每日 requests 與 unique visitors</span><span class="lang-en" lang="en" hidden>Daily requests &amp; unique visitors</span></div> <div class="year-peak" id="cf-peak">—</div> </div> </div> <div class="year-chart-wrap"><canvas id="chart-cf"></canvas></div> <div class="dash-chart-note" style="display:none"></div> </div> </div> <div class="dash-note" style="display:none"></div> </section> <!-- GitHub 專案 --> <section id="sec-gh"> <p class="section-heading"><span class="lang-zh" lang="zh-TW">GitHub 專案</span><span class="lang-en" lang="en" hidden>GitHub projects</span></p> <div class="dash-sec-body"> <div class="dash-repos" id="repos-grid"></div> </div> <div class="dash-note" style="display:none"></div> </section> <p class="dash-footnote"> <span class="lang-zh" lang="zh-TW">資料來源：GA4 Data API · Cloudflare GraphQL Analytics · GitHub REST API。每日 09:30（台北）更新；GA4 近 48 小時數據為暫定值。</span><span class="lang-en" lang="en" hidden>Sources: GA4 Data API · Cloudflare GraphQL Analytics · GitHub REST API. Updated daily 09:30 Asia/Taipei; GA4 figures for the last 48h are provisional.</span> </p> </div> </div>  </div> </main> <footer> <div class="container"> <span>© 2026 葉淨維 Matt Ye</span> <div class="footer-links"> <a href="https://github.com/matt-ye" target="_blank" rel="noopener">GitHub</a> <button type="button" class="sponsor-entry" data-sponsor-open data-source="mattye_footer" data-astro-cid-rgrc2333>☕ <span class="lang-zh" lang="zh-TW">贊助我</span><span class="lang-en" lang="en" hidden>Sponsor</span></button> <div id="sponsor-modal" role="dialog" aria-modal="true" aria-label="Sponsor" data-astro-cid-rgrc2333> <div class="sponsor-card" data-astro-cid-rgrc2333> <div class="sponsor-ico" data-astro-cid-rgrc2333>☕</div> <h3 data-astro-cid-rgrc2333><span class="lang-zh" lang="zh-TW">贊助 Matt</span><span class="lang-en" lang="en" hidden>Sponsor Matt</span></h3> <p class="sponsor-desc" data-astro-cid-rgrc2333><span class="lang-zh" lang="zh-TW">喜歡這裡的內容嗎？請我喝杯咖啡，支持網站持續更新。</span><span class="lang-en" lang="en" hidden>Enjoying the content? Buy me a coffee and help keep this site going.</span></p> <div data-amount-picker data-amount="" data-valid="false" class="ap ap-compact" data-astro-cid-ku4p6wgl> <div class="ap-tabs" data-ap-tabs role="group" aria-label="Currency" data-astro-cid-ku4p6wgl> <button type="button" class="ap-tab sel" data-cur="twd" data-astro-cid-ku4p6wgl>TWD</button> <button type="button" class="ap-tab" data-cur="usd" data-astro-cid-ku4p6wgl>USD</button> </div> <div class="ap-amts" data-ap-amts data-astro-cid-ku4p6wgl></div> <div class="ap-custom" data-astro-cid-ku4p6wgl> <label class="ap-custom-label" for="sponsor-custom-input" data-ap-label data-astro-cid-ku4p6wgl></label> <div class="ap-custom-row" data-ap-row data-astro-cid-ku4p6wgl> <span class="ap-cur" data-ap-cur data-astro-cid-ku4p6wgl>NT$</span> <input id="sponsor-custom-input" data-ap-input type="number" inputmode="numeric" step="1" class="ap-custom-input" aria-describedby="sponsor-custom-hint" data-astro-cid-ku4p6wgl> </div> <p class="ap-custom-hint" id="sponsor-custom-hint" data-ap-hint data-astro-cid-ku4p6wgl></p> </div> </div>  <script type="module" src="/_astro/AmountPicker.astro_astro_type_script_index_0_lang.41RalgjF.js"></script> <button type="button" class="sponsor-pay" id="sponsor-pay" data-astro-cid-rgrc2333><span class="lang-zh" lang="zh-TW">前往付款</span><span class="lang-en" lang="en" hidden>Continue to payment</span></button> <button type="button" class="sponsor-later" id="sponsor-close" data-astro-cid-rgrc2333><span class="lang-zh" lang="zh-TW">下次再說</span><span class="lang-en" lang="en" hidden>Maybe later</span></button> <p class="sponsor-note" data-astro-cid-rgrc2333><span class="lang-zh" lang="zh-TW">贊助恕不退款，感謝支持！</span><span class="lang-en" lang="en" hidden>Donations are non-refundable — thank you!</span></p> </div> </div>  <script type="module" src="/_astro/Sponsor.astro_astro_type_script_index_0_lang.DKHKGOad.js"></script> </div> </div> </footer> <script type="module">const c=(o,n)=>{try{window.gtag?.("event",o,n)}catch{}},r=[{host:"telaaurealab.com",project:"dreamcatcher"},{host:"brain-exposome.mattye.dev",project:"brain-exposome"}];document.addEventListener("click",o=>{const n=o.target?.closest?.("a[href]");if(!(n instanceof HTMLAnchorElement))return;let t;try{t=new URL(n.href,location.href)}catch{return}const e=location.pathname;if(t.protocol==="mailto:"){c("click_contact",{method:"email",page:e});return}if(!t.hostname||t.hostname===location.hostname)return;const a=r.find(i=>t.hostname===i.host&&(!i.path||t.pathname.startsWith(i.path)));a?c("click_project",{project:a.project,link_url:t.href,page:e}):t.hostname==="github.com"||t.hostname.endsWith(".github.com")?c("click_github",{link_url:t.href,page:e}):t.hostname.endsWith("linkedin.com")?c("click_contact",{method:"linkedin",page:e}):t.hostname.endsWith("instagram.com")&&c("click_contact",{method:"instagram",page:e})},!0);if(/^\/writing\/[^/]+\/?$/.test(location.pathname)){let o=!1,n=!1;const t=()=>{n||(n=!0,requestAnimationFrame(e))},e=()=>{if(n=!1,o)return;const a=document.documentElement.scrollHeight;a>0&&(window.scrollY+window.innerHeight)/a>=.9&&(o=!0,window.removeEventListener("scroll",t),c("read_complete",{page:location.pathname}))};window.addEventListener("scroll",t,{passive:!0}),window.addEventListener("load",e),e()}</script> <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2807244ee01f88a',t:'MTc4NjIxMjI5Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html> <script>(function(){const DATA_BASE = "";
+
+/* ── helpers（骨架沿用 speeches.astro）─────────────── */
+const lang = () => document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
+const L = (zh, en) => lang() === 'en' ? en : zh;
+const PALETTE = ['#3b82f6','#22d3ee','#ff5dd9','#ffd166','#4ade80','#ff7a59','#c8b0ff','#8ee0ff','#ffb3ee'];
+const hasChart = () => typeof Chart !== 'undefined';
+let chartInstances = [];
+function destroyCharts() { chartInstances.forEach(c => { try { c.destroy(); } catch (e) {} }); chartInstances = []; }
+
+function countUp(el, finalVal, dur) {
+  if (!el || isNaN(finalVal)) return;
+  const fmt = finalVal >= 1000
+    ? v => `${(v / 1000).toFixed(1)}K`
+    : v => String(Math.round(v));
+  const start = performance.now();
+  const step = now => {
+    const t = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = fmt(finalVal * ease);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = fmt(finalVal);
+  };
+  requestAnimationFrame(step);
+}
+
+const fmtNum = n => n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
+const fmtGB = bytes => `${(bytes / 1e9).toFixed(bytes >= 1e10 ? 0 : 1)} GB`;
+const fmtDay = iso => iso.slice(5).replace('-', '/');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ── state ──────────────────────────────────────────── */
+let summary = null;
+let history = [];
+
+/* ── init ───────────────────────────────────────────── */
+async function init() {
+  const state = document.getElementById('dash-state');
+  if (!DATA_BASE) {
+    state.className = 'data-error';
+    state.innerHTML = L(
+      '⚠️ 尚未設定資料來源。<br><small>請依 docs/analytics-pipeline.md 完成 pipeline 首跑，並在 Cloudflare Pages 設定 PUBLIC_ANALYTICS_DATA_BASE 環境變數。</small>',
+      '⚠️ Data source not configured.<br><small>Run the pipeline once and set the PUBLIC_ANALYTICS_DATA_BASE env var on Cloudflare Pages (see docs/analytics-pipeline.md).</small>'
+    );
+    return;
+  }
+  try {
+    const bust = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const base = DATA_BASE.replace(/\/+$/, '');
+    const [sRes, hRes] = await Promise.all([
+      fetch(`${base}/summary.json?t=${bust}`),
+      fetch(`${base}/history.ndjson?t=${bust}`),
+    ]);
+    if (!sRes.ok) throw new Error(`summary HTTP ${sRes.status}`);
+    summary = await sRes.json();
+    if ((summary.schemaVersion ?? 0) > 1) throw new Error(`unknown schemaVersion ${summary.schemaVersion}`);
+    history = hRes.ok
+      ? (await hRes.text()).split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean)
+      : [];
+    state.style.display = 'none';
+    document.getElementById('dash-main').style.display = '';
+    renderAll();
+  } catch (err) {
+    state.className = 'data-error';
+    state.innerHTML = `⚠️ ${L('資料尚未產生或載入失敗——pipeline 首次執行成功後才會有資料。', 'No data yet — it appears after the first successful pipeline run.')}<br><small>${esc(err.message)}</small>`;
+    console.error('Dashboard data error:', err);
+  }
+}
+
+/* ── section 容錯 ───────────────────────────────────── */
+function sectionOk(id, ok, msgZh, msgEn) {
+  const sec = document.getElementById(id);
+  if (!sec) return false;
+  const body = sec.querySelector('.dash-sec-body');
+  const note = sec.querySelector('.dash-note');
+  body.style.display = ok ? '' : 'none';
+  note.style.display = ok ? 'none' : '';
+  if (!ok) note.textContent = L(msgZh, msgEn);
+  return ok;
+}
+const NOT_CONFIGURED = ['此區資料來源尚未設定（見 docs/analytics-pipeline.md）。', 'This data source is not configured yet (see docs/analytics-pipeline.md).'];
+
+/* ── render ─────────────────────────────────────────── */
+function renderAll() {
+  destroyCharts();
+  if (hasChart()) {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    Chart.defaults.color = isDark ? '#8b93bf' : '#666666';
+    Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+    Chart.defaults.font.size = 11;
+    Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.06)';
+  }
+  document.querySelectorAll('.dash-chart-note').forEach(el => {
+    el.style.display = hasChart() ? 'none' : '';
+    if (!hasChart()) el.textContent = L('圖表元件載入失敗（CDN 無法連線），數字仍為正確資料。', 'Chart library failed to load (CDN unreachable); the numbers above are still accurate.');
+  });
+
+  const updated = document.getElementById('dash-updated');
+  if (summary.generatedAt && updated) {
+    const dt = new Date(summary.generatedAt);
+    updated.textContent = L(`資料更新於 ${dt.toLocaleString('zh-TW')}`, `Data updated ${dt.toLocaleString('en-US')}`);
+  }
+
+  renderGa();
+  renderTopPages();
+  renderConversions();
+  renderCf();
+  renderRepos();
+}
+
+function gaReady() {
+  const ga = summary.ga4;
+  return !!(ga && ga.configured && ga.totals && !ga.error);
+}
+
+function renderGa() {
+  const ok = gaReady();
+  sectionOk('sec-kpi', ok, ...NOT_CONFIGURED);
+  sectionOk('sec-ga', ok, ...NOT_CONFIGURED);
+  const gh = summary.github;
+  if (gh?.repos) {
+    const stars = gh.repos.reduce((s, r) => s + (r.stars ?? 0), 0);
+    countUp(document.getElementById('val-stars'), stars, 1200);
+  }
+  if (!ok) return;
+  const ga = summary.ga4;
+  const t28 = ga.totals.d28 ?? {};
+  const t7 = ga.totals.d7 ?? {};
+
+  countUp(document.getElementById('val-users'), t28.users ?? 0, 1400);
+  countUp(document.getElementById('val-views'), t28.views ?? 0, 1400);
+  countUp(document.getElementById('val-sessions'), t28.sessions ?? 0, 1400);
+  document.getElementById('sub-users').textContent = L(`近 7 天 ${fmtNum(t7.users ?? 0)}`, `${fmtNum(t7.users ?? 0)} in last 7d`);
+  document.getElementById('sub-views').textContent = L(`近 7 天 ${fmtNum(t7.views ?? 0)}`, `${fmtNum(t7.views ?? 0)} in last 7d`);
+  document.getElementById('sub-sessions').textContent = L(`新訪客 ${fmtNum(t28.newUsers ?? 0)}`, `${fmtNum(t28.newUsers ?? 0)} new visitors`);
+  document.getElementById('val-eng').textContent = `${Math.round((t28.engagementRate ?? 0) * 100)}%`;
+  const reads = (ga.events ?? []).find(e => e.name === 'read_complete');
+  countUp(document.getElementById('val-reads'), reads?.d28 ?? 0, 1200);
+
+  /* 趨勢 */
+  const daily = ga.daily ?? [];
+  const peak = [...daily].sort((a, b) => b.views - a.views)[0];
+  if (peak) document.getElementById('trend-peak').textContent = `Peak: ${fmtDay(peak.date)} · ${peak.views} views`;
+  if (hasChart() && daily.length) {
+    const ctx = document.getElementById('chart-trend');
+    chartInstances.push(new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: daily.map(d => fmtDay(d.date)),
+        datasets: [
+          { label: 'Views', data: daily.map(d => d.views), borderColor: PALETTE[0], backgroundColor: PALETTE[0] + '22', fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2 },
+          { label: 'Visitors', data: daily.map(d => d.users), borderColor: PALETTE[1], backgroundColor: 'transparent', tension: 0.35, pointRadius: 0, borderWidth: 2 },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        animation: { duration: 1000, easing: 'easeOutQuart' },
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle' } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } },
+          y: { beginAtZero: true, ticks: { precision: 0 } },
+        },
+      },
+    }));
+  }
+
+  /* 分佈 */
+  donut('chart-channels', 'biggest-channels', 'badge-channels', (ga.channels ?? []).map(c => [c.channel, c.sessions]), L('sessions', 'sessions'));
+  donut('chart-devices', 'biggest-devices', 'badge-devices', (ga.devices ?? []).map(d => [d.device, d.users]), L('人', 'users'));
+
+  const hosts = ga.hosts ?? [];
+  const hostCard = document.getElementById('card-hosts');
+  hostCard.style.display = hosts.length > 1 ? '' : 'none';
+  if (hosts.length > 1) {
+    donut('chart-hosts', 'biggest-hosts', 'badge-hosts', hosts.map(h => [h.host, h.users]), L('人', 'users'));
+  }
+
+  const countries = (ga.countries ?? []).slice(0, 8);
+  const cBadge = document.getElementById('badge-countries');
+  const cBig = document.getElementById('biggest-countries');
+  if (countries.length) {
+    cBadge.textContent = `${(ga.countries ?? []).length}`;
+    const total = countries.reduce((s, c) => s + c.users, 0);
+    cBig.textContent = `${countries[0].country} · ${Math.round(countries[0].users / (total || 1) * 100)}%`;
+    if (hasChart()) {
+      const ctx = document.getElementById('chart-countries');
+      chartInstances.push(new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: countries.map(c => c.country),
+          datasets: [{ data: countries.map(c => c.users), backgroundColor: countries.map((_, i) => PALETTE[i % PALETTE.length]), borderRadius: 4, borderSkipped: false, maxBarThickness: 16 }],
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true, maintainAspectRatio: false,
+          animation: { duration: 1000, easing: 'easeOutQuart' },
+          plugins: { legend: { display: false } },
+          scales: { x: { beginAtZero: true, ticks: { precision: 0 } }, y: { grid: { display: false } } },
+        },
+      }));
+    }
+  }
+}
+
+function donut(canvasId, biggestId, badgeId, entries, unit) {
+  const data = entries.filter(([, v]) => v > 0);
+  const total = data.reduce((s, [, v]) => s + v, 0);
+  const biggestEl = document.getElementById(biggestId);
+  const badgeEl = document.getElementById(badgeId);
+  if (!data.length) {
+    if (biggestEl) biggestEl.textContent = '—';
+    if (badgeEl) badgeEl.textContent = '0';
+    return;
+  }
+  const sorted = [...data].sort((a, b) => b[1] - a[1]);
+  if (biggestEl) biggestEl.textContent = `${sorted[0][0]} · ${Math.round(sorted[0][1] / total * 100)}%`;
+  if (badgeEl) badgeEl.textContent = String(data.length);
+  if (!hasChart()) return;
+  chartInstances.push(new Chart(document.getElementById(canvasId), {
+    type: 'doughnut',
+    data: {
+      labels: data.map(([k]) => k),
+      datasets: [{ data: data.map(([, v]) => v), backgroundColor: data.map((_, i) => PALETTE[i % PALETTE.length]), borderWidth: 0, borderRadius: 3, spacing: 1, hoverOffset: 8 }],
+    },
+    options: {
+      cutout: '68%',
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 1000, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 8, boxHeight: 8, padding: 8, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' } },
+        tooltip: { callbacks: { label: c => ` ${c.label} · ${c.parsed} ${unit} (${(c.parsed / total * 100).toFixed(1)}%)` } },
+      },
+    },
+  }));
+}
+
+function renderTopPages() {
+  if (!sectionOk('sec-pages', gaReady(), ...NOT_CONFIGURED)) return;
+  const pages = (summary.ga4.topPages ?? []).slice(0, 10);
+  const grid = document.getElementById('pages-grid');
+  grid.innerHTML = '';
+  if (!pages.length) {
+    grid.innerHTML = `<div class="data-error">${L('尚無頁面數據', 'No page data yet')}</div>`;
+    return;
+  }
+  const max = pages[0].views || 1;
+  pages.forEach((p, i) => {
+    const avgSec = p.views ? Math.round(p.engagementSec / p.views) : 0;
+    const row = document.createElement('div');
+    row.className = 'org-row';
+    row.innerHTML = `
+      <span class="org-rank${i < 3 ? ' org-rank-top' : ''}">${String(i + 1).padStart(2, '0')}</span>
+      <span class="org-name">
+        <span class="org-name-zh dash-path">${esc(p.path)}</span>
+        <span class="org-name-en">${fmtNum(p.users)} ${L('人', 'users')} · ${L('平均', 'avg')} ${avgSec}s</span>
+      </span>
+      <span class="org-bar-bg"><span class="org-bar" data-width="${(p.views / max) * 100}"></span></span>
+      <span class="org-count">${fmtNum(p.views)}</span>
+    `;
+    grid.appendChild(row);
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    grid.querySelectorAll('.org-bar').forEach(b => { b.style.width = b.dataset.width + '%'; });
+  }));
+}
+
+function renderConversions() {
+  if (!sectionOk('sec-conv', gaReady(), ...NOT_CONFIGURED)) return;
+  const ga = summary.ga4;
+  const events = ga.events ?? [];
+  const byName = Object.fromEntries(events.map(e => [e.name, e]));
+  const t28 = ga.totals.d28 ?? {};
+
+  const EVENT_LABELS = {
+    click_github: ['點擊 GitHub', 'GitHub clicks'],
+    click_project: ['點擊專案', 'Project clicks'],
+    click_contact: ['聯繫點擊', 'Contact clicks'],
+    read_complete: ['文章完讀', 'Read completes'],
+    donate_open: ['開啟贊助', 'Donate opens'],
+    donate_start: ['送出贊助', 'Donate starts'],
+  };
+
+  const grid = document.getElementById('conv-grid');
+  grid.innerHTML = events.map(e => {
+    const [zh, en] = EVENT_LABELS[e.name] ?? [e.name, e.name];
+    const top = e.topPages?.[0];
+    return `
+      <div class="bento-card">
+        <div class="bento-card-label">${esc(e.name)}</div>
+        <div class="bento-card-num">${fmtNum(e.d28)}</div>
+        <div class="bento-card-sub">${L(zh, en)} · 90d ${fmtNum(e.d90)}${top ? `<br><span class="dash-path">${esc(top.path)}</span>` : ''}</div>
+      </div>
+    `;
+  }).join('');
+
+  /* 漏斗（文章→專案、贊助） */
+  const articleViews = (ga.topPages ?? [])
+    .filter(p => /^\/writing\/[^/]+/.test(p.path))
+    .reduce((s, p) => s + p.views, 0);
+  const projClicks = (byName.click_project?.d28 ?? 0) + (byName.click_github?.d28 ?? 0);
+  const funnels = [
+    {
+      title: L('內容 → 專案', 'Content → Projects'),
+      stages: [
+        { label: L('文章瀏覽', 'Article views'), n: articleViews },
+        { label: L('完讀', 'Read complete'), n: byName.read_complete?.d28 ?? 0 },
+        { label: L('點擊專案/GitHub', 'Project/GitHub click'), n: projClicks },
+      ],
+    },
+    {
+      title: L('贊助漏斗', 'Donation funnel'),
+      stages: [
+        { label: L('整站瀏覽', 'All page views'), n: t28.views ?? 0 },
+        { label: L('開啟贊助', 'Donate open'), n: byName.donate_open?.d28 ?? 0 },
+        { label: L('送出贊助', 'Donate start'), n: byName.donate_start?.d28 ?? 0 },
+      ],
+    },
+  ];
+  const funnelEl = document.getElementById('funnels');
+  funnelEl.innerHTML = funnels.map(f => {
+    const max = f.stages[0].n || 1;
+    return `<div class="dash-funnel"><div class="dash-funnel-title">${f.title}</div>` +
+      f.stages.map((s, i) => {
+        const pct = i === 0 ? '' : `<span class="dash-funnel-pct">${f.stages[i - 1].n ? Math.round(s.n / f.stages[i - 1].n * 100) : 0}%</span>`;
+        return `<div class="dash-funnel-row">
+          <span class="dash-funnel-label">${s.label}</span>
+          <span class="org-bar-bg"><span class="org-bar" style="width:${Math.max(s.n / max * 100, s.n ? 2 : 0)}%"></span></span>
+          <b class="dash-funnel-n">${fmtNum(s.n)}</b>${pct}
+        </div>`;
+      }).join('') + '</div>';
+  }).join('');
+}
+
+function renderCf() {
+  const cf = summary.cloudflare;
+  const cfDays = history.filter(r => r.cf).slice(-28);
+  const ok = !!(cf && cf.configured && !cf.error) || cfDays.length > 0;
+  if (!sectionOk('sec-cf', ok, ...NOT_CONFIGURED)) return;
+
+  const sum = key => cfDays.reduce((s, r) => s + (r.cf[key] ?? 0), 0);
+  const req = sum('req');
+  const cached = sum('cachedReq');
+  const tiles = [
+    ['Requests', fmtNum(req), L(`${cfDays.length} 天邊緣請求`, `${cfDays.length}-day edge requests`)],
+    ['Unique Visitors', fmtNum(sum('uniq')), L('每日 unique 加總', 'sum of daily uniques')],
+    ['Cache Hit', req ? `${Math.round(cached / req * 100)}%` : '—', L('快取命中率', 'cache hit ratio')],
+    ['Bandwidth', fmtGB(sum('bytes')), L('傳輸量', 'data served')],
+  ];
+  document.getElementById('cf-kpis').innerHTML = tiles.map(([label, num, sub]) => `
+    <div class="bento-card">
+      <div class="bento-card-label">${label}</div>
+      <div class="bento-card-num">${num}</div>
+      <div class="bento-card-sub">${sub}</div>
+    </div>
+  `).join('');
+
+  const trendDays = history.filter(r => r.cf).slice(-90);
+  const peak = [...trendDays].sort((a, b) => (b.cf.req ?? 0) - (a.cf.req ?? 0))[0];
+  document.getElementById('cf-peak').textContent = peak ? `Peak: ${fmtDay(peak.date)} · ${fmtNum(peak.cf.req)} req` : '—';
+  if (hasChart() && trendDays.length) {
+    chartInstances.push(new Chart(document.getElementById('chart-cf'), {
+      type: 'line',
+      data: {
+        labels: trendDays.map(r => fmtDay(r.date)),
+        datasets: [
+          { label: 'Requests', data: trendDays.map(r => r.cf.req ?? 0), borderColor: PALETTE[3], backgroundColor: PALETTE[3] + '22', fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2 },
+          { label: 'Uniques', data: trendDays.map(r => r.cf.uniq ?? 0), borderColor: PALETTE[4], backgroundColor: 'transparent', tension: 0.35, pointRadius: 0, borderWidth: 2 },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        animation: { duration: 1000, easing: 'easeOutQuart' },
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle' } } },
+        scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } }, y: { beginAtZero: true, ticks: { precision: 0 } } },
+      },
+    }));
+  }
+}
+
+function renderRepos() {
+  const gh = summary.github;
+  if (!sectionOk('sec-gh', !!(gh && gh.configured && gh.repos && !gh.error), ...NOT_CONFIGURED)) return;
+  const grid = document.getElementById('repos-grid');
+  grid.innerHTML = gh.repos.map((r, i) => {
+    const name = L(r.label?.zh ?? r.repo, r.label?.en ?? r.repo);
+    const traffic = r.views14
+      ? `${L('瀏覽', 'Views')} <b>${fmtNum(r.views14.count)}</b> (${r.views14.uniques} uniq) · Clones <b>${fmtNum(r.clones14?.count ?? 0)}</b>`
+      : `<span class="dash-muted">${esc(r.traffic?.error ?? r.error ?? L('無 traffic 數據', 'no traffic data'))}</span>`;
+    const refs = (r.referrers ?? []).slice(0, 5).map(ref => `<span class="chip dash-ref">${esc(ref.referrer)} · ${ref.count}</span>`).join('');
+    return `
+      <div class="dash-repo-card">
+        <div class="dash-repo-head">
+          <a href="https://github.com/${esc(r.repo)}" target="_blank" rel="noopener">${esc(name)}</a>
+          ${r.site ? `<a class="dash-repo-site" href="${esc(r.site)}" target="_blank" rel="noopener">↗ site</a>` : ''}
+        </div>
+        <div class="dash-repo-stats">
+          ★ <b>${r.stars ?? '—'}</b> · Forks <b>${r.forks ?? '—'}</b> · Watchers <b>${r.watchers ?? '—'}</b>
+        </div>
+        <div class="dash-repo-traffic">${traffic} <span class="dash-muted">· 14d</span></div>
+        <div class="dash-spark-wrap"><canvas id="spark-${i}"></canvas></div>
+        ${refs ? `<div class="dash-ref-chips">${refs}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  /* traffic sparkline（來自 history 累積，超越 14 天窗口） */
+  if (!hasChart()) return;
+  gh.repos.forEach((r, i) => {
+    const days = history
+      .filter(row => row.gh?.[r.repo]?.v !== undefined)
+      .slice(-60)
+      .map(row => ({ date: row.date, v: row.gh[r.repo].v }));
+    if (days.length < 2) return;
+    chartInstances.push(new Chart(document.getElementById(`spark-${i}`), {
+      type: 'line',
+      data: {
+        labels: days.map(d => fmtDay(d.date)),
+        datasets: [{ label: 'views', data: days.map(d => d.v), borderColor: PALETTE[i % PALETTE.length], backgroundColor: PALETTE[i % PALETTE.length] + '22', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 1.5 }],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        animation: false,
+        plugins: { legend: { display: false }, tooltip: { intersect: false, mode: 'index' } },
+        scales: { x: { display: false }, y: { display: false, beginAtZero: true } },
+      },
+    }));
+  });
+}
+
+window.addEventListener('langchange', () => { if (summary) renderAll(); });
+init();
+})();</script>

@@ -60,6 +60,45 @@ import AmountPicker from '../components/AmountPicker.astro';
       /></dd>
     </dl>
   </section>
+
+  <!-- 這頁原本是孤兒頁（零內部連結指向），Google 只能靠 sitemap 發現。
+       這一區同時解決兩件事：給訪客後續去處，也把這頁接回站內連結網絡。 -->
+  <section class="sp-more">
+    <h2 class="section-heading"><T zh="我在做的其他事" en="Where else to find me" /></h2>
+
+    <div class="sp-links">
+      <a href="/" class="sp-link">
+        <span class="sp-link-t"><T zh="關於我" en="About" /></span>
+        <span class="sp-link-d"><T zh="職能治療師、NTU 博士候選人，做研究也做簡報教學" en="Occupational therapist and NTU PhD candidate, working on research and presentation education" /></span>
+      </a>
+      <a href="/speeches/" class="sp-link">
+        <span class="sp-link-t"><T zh="演講紀錄" en="Speeches" /></span>
+        <span class="sp-link-d"><T zh="2020 年至今 150+ 場，可依主題與對象篩選" en="150+ talks since 2020, filterable by topic and audience" /></span>
+      </a>
+      <a href="/coaching/" class="sp-link">
+        <span class="sp-link-t"><T zh="競賽培訓" en="Coaching" /></span>
+        <span class="sp-link-d"><T zh="ATCC 全國冠軍、Falling Walls Lab 等隊伍的培訓紀錄" en="Coaching records including the ATCC national champions and Falling Walls Lab teams" /></span>
+      </a>
+      <a href="/projects/" class="sp-link">
+        <span class="sp-link-t"><T zh="工具與專案" en="Projects" /></span>
+        <span class="sp-link-d"><T zh="體態管理計算機、腦健康檢測等可實際操作的工具" en="Hands-on tools including the body composition calculator and brain-health check-in" /></span>
+      </a>
+      <a href="/writing/" class="sp-link">
+        <span class="sp-link-t"><T zh="文章與筆記" en="Writing" /></span>
+        <span class="sp-link-d"><T zh="投資專欄、硬核簡報系列與 One More Step 學習筆記" en="The investing column, the presentation series, and One More Step learning notes" /></span>
+      </a>
+    </div>
+
+    <p class="sp-social-label"><T zh="社群與學術連結" en="Social & academic" /></p>
+    <div class="sp-social">
+      <a href="https://www.linkedin.com/in/ching-wei-ye" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://x.com/MattChingWeiYe" target="_blank" rel="noopener">X</a>
+      <a href="https://www.instagram.com/brown.yeh" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://github.com/matt-ye" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://orcid.org/0009-0001-6085-8303" target="_blank" rel="noopener">ORCID</a>
+      <a href="mailto:chingweiye@mattye.dev">Email</a>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
@@ -101,6 +140,42 @@ import AmountPicker from '../components/AmountPicker.astro';
 
   .sp-faq dt { font-weight: 650; margin-top: 1.1rem; font-size: 0.92rem; }
   .sp-faq dd { margin: 0.3rem 0 0; color: var(--color-text-muted); font-size: 0.88rem; line-height: 1.75; }
+
+  .sp-more { margin-top: var(--spacing-xl); }
+  .sp-links { display: grid; gap: 0.5rem; margin-top: var(--spacing-sm); }
+  .sp-link {
+    display: block;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--card-bg);
+    text-decoration: none;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .sp-link:hover { border-color: var(--color-accent); transform: translateX(3px); text-decoration: none; }
+  .sp-link-t { display: block; font-weight: 650; font-size: 0.92rem; color: var(--color-text); }
+  .sp-link-d { display: block; font-size: 0.82rem; color: var(--color-text-muted); margin-top: 0.15rem; line-height: 1.6; }
+
+  .sp-social-label {
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin: var(--spacing-md) 0 0.5rem;
+  }
+  .sp-social { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .sp-social a {
+    /* 上下 padding 讓觸控區達 44px（WCAG 2.5.5），視覺仍維持小 pill */
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .sp-social a:hover { color: var(--color-accent); border-color: var(--color-accent); text-decoration: none; }
 </style>
 
 <script>

@@ -14,7 +14,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).map(p => 
   titleAlt: p.data.titleEn ?? '',
   descAlt: p.data.descriptionEn ?? '',
   desc: p.data.description,
-  href: `/writing/${p.id}`,
+  href: `/writing/${p.id}/`,
   date: p.data.pubDate,
   category: p.data.series === 'family-investing' ? '投資專欄'
           : p.data.series === 'hardcore-presentation' ? '硬核簡報'
@@ -29,7 +29,7 @@ const features = oneMoreStep.map(d => ({
   title: d.title,
   titleEn: d.titleEn,
   desc: d.description,
-  href: d.url ?? `/projects/one-more-step/${d.slug}`,
+  href: d.url ?? `/projects/one-more-step/${d.slug}/`,
   date: new Date(d.date),
   category: 'One More Step',
   badge: 'One More Step',
@@ -41,7 +41,7 @@ const marketingItems = marketingUnits.map(d => ({
   title: d.title,
   titleEn: d.titleEn,
   desc: d.description,
-  href: d.url ?? `/projects/marketing/${d.slug}`,
+  href: d.url ?? `/projects/marketing/${d.slug}/`,
   date: new Date(d.date),
   category: '行銷專欄',
   badge: '行銷專欄',

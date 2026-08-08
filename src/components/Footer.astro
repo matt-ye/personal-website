@@ -1,5 +1,6 @@
 ---
 import Sponsor from './Sponsor.astro';
+import T from './T.astro';
 const year = new Date().getFullYear();
 ---
 <footer>
@@ -7,6 +8,9 @@ const year = new Date().getFullYear();
     <span>© {year} 葉淨維 Matt Ye</span>
     <div class="footer-links">
       <a href="https://github.com/matt-ye" target="_blank" rel="noopener">GitHub</a>
+      {/* 這個文字連結是 /sponsor 唯一的站內入口——旁邊的金色按鈕只開 modal，
+          不是連結，Google 無法沿著它發現該頁。 */}
+      <a href="/sponsor/"><T zh="贊助說明" en="Sponsorship" /></a>
       <Sponsor />
     </div>
   </div>

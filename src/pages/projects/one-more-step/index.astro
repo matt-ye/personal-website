@@ -8,14 +8,14 @@ import { oneMoreStep as docs } from '../../../data/oneMoreStep';
   description="One More Step：葉淨維 Matt Ye 的學習文件集，把複雜的東西搞懂，然後寫下來。"
 >
   <section class="oms-hero">
-    <a href="/projects" class="back-link"><T zh="← 其他作品" en="← Side Projects" /></a>
+    <a href="/projects/" class="back-link"><T zh="← 其他作品" en="← Side Projects" /></a>
     <h1>One More <span class="accent-text">Step</span></h1>
     <p class="oms-subtitle"><T zh="把複雜的東西搞懂，然後寫下來。" en="Understand complex things, then write them down." /></p>
   </section>
 
   <div class="docs-grid">
     {docs.map(doc => (
-      <a href={doc.url ?? `/projects/one-more-step/${doc.slug}`} class="doc-card">
+      <a href={doc.url ?? `/projects/one-more-step/${doc.slug}/`} class="doc-card">
         <div class="doc-card-body">
           <h2 class="doc-title"><T zh={doc.title} en={doc.titleEn} /></h2>
           <p class="doc-desc">{doc.description}</p>
