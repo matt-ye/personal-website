@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 26 週：Q2 Capstone——個股投資論文｜給家人的投資課 · Matt Ye</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="description" content="52 週投資課第 26 週：把 Q1 財報分析與 Q2 估值質化組裝成一份投資論文——七章結構、反方論證三來源、可驗證的認錯觸發條件。附觸發條件健檢與 Rubric 自評計分器。">
+  <meta name="author" content="Ching-Wei Ye">
+  <link rel="canonical" href="https://mattye.dev/projects/family-investing-course/week-26-q2-capstone-thesis/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="第 26 週：Q2 Capstone——個股投資論文 — 給家人的投資課">
+  <meta property="og:description" content="投資論文不是報告，是一份寫給一年後自己的決策合約——它記錄你為什麼買，以及什麼證據出現時你承認自己錯了。">
+  <meta property="og:url" content="https://mattye.dev/projects/family-investing-course/week-26-q2-capstone-thesis/">
+  <meta property="og:site_name" content="葉淨維 Matt Ye">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:image" content="https://mattye.dev/og-logo.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="第 26 週：Q2 Capstone——個股投資論文 — 給家人的投資課">
+  <meta name="twitter:description" content="投資論文不是報告，是一份寫給一年後自己的決策合約——它記錄你為什麼買，以及什麼證據出現時你承認自己錯了。">
+  <meta name="twitter:image" content="https://mattye.dev/og-logo.png">
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (e) {}
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+    })();
+  </script>
+<style>
+  :root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 七章結構卡 */
+  .chapnum{display:inline-block;min-width:1.6rem;font-weight:900;color:var(--pine)}
+  table.data td .src{display:block;font-size:.8rem;color:var(--ink-3);margin-top:.15rem}
+  table.data td .src a{color:var(--pine);text-decoration:none}
+  table.data td .src a:hover{text-decoration:underline}
+
+  /* 觸發條件健檢 */
+  .tgame{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .tgame h3{margin-top:0}
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.05rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.7;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.9rem;padding:.5rem 1.2rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+
+  /* Rubric 計分器 */
+  .rubric{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .rubric h3{margin-top:0}
+  .rrow{margin-top:.85rem;padding-top:.85rem;border-top:1px dashed var(--line-soft)}
+  .rrow:first-of-type{border-top:none;padding-top:0}
+  .rrow .rn{font-size:.92rem;font-weight:700}
+  .rrow .rn small{display:block;color:var(--ink-3);font-weight:400;font-size:.82rem;margin-top:.1rem}
+  .rbtns{display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap}
+  .rbtns button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .rbtns button:hover{border-color:var(--pine);color:var(--pine)}
+  .rbtns button.on{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  .rtotal{margin-top:1.2rem;display:flex;align-items:baseline;gap:.6rem}
+  .rtotal .big{font-size:2.1rem;font-weight:900;color:var(--pine)}
+  .rtotal .of{font-size:.9rem;color:var(--ink-3)}
+  .rbar{height:.7rem;border-radius:99px;background:var(--line-soft);overflow:hidden;margin-top:.5rem;position:relative}
+  .rbar i{display:block;height:100%;background:var(--pine);width:0;transition:width .25s}
+  .rbar u{position:absolute;top:-4px;bottom:-4px;left:81.25%;width:0;border-left:2px dashed var(--ink-3)}
+  .rpass{margin-top:.35rem;font-size:.75rem;color:var(--ink-3);text-align:right}
+  .rverdict{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .rverdict b{color:var(--coin)}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "第 26 週：Q2 Capstone——個股投資論文 — 給家人的投資課",
+    "description": "投資論文不是報告，是一份寫給一年後自己的決策合約——它記錄你為什麼買，以及什麼證據出現時你承認自己錯了。",
+    "url": "https://mattye.dev/projects/family-investing-course/week-26-q2-capstone-thesis/",
+    "inLanguage": "zh-TW",
+    "image": "https://mattye.dev/og-logo.png",
+    "author": {
+      "@id": "https://mattye.dev/#person"
+    },
+    "publisher": {
+      "@id": "https://mattye.dev/#person"
+    },
+    "mainEntityOfPage": "https://mattye.dev/projects/family-investing-course/week-26-q2-capstone-thesis/",
+    "isPartOf": {
+      "@type": "Course",
+      "name": "給家人的投資課 Family Investing Course",
+      "url": "https://mattye.dev/projects/family-investing-course/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 26</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q2 投資人季 · Week 26</p>
+  <h1>Q2 Capstone——個股投資論文</h1>
+  <p class="lead" style="margin-top:.5rem">W13 的健檢問「值得研究嗎」；投資論文問的是<strong>買不買、多少錢買、什麼情況下我認錯</strong>。素材你其實都寫好了——本週的工作是組裝、補強，和最難的那一章。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-13-q1-capstone/">第 13</a>、<a href="/projects/family-investing-course/week-19-relative-valuation/">19</a>–<a href="/projects/family-investing-course/week-25-marks-cycles/">25 週</a></span><span class="chip">52 週 · 第 26 週</span><span class="chip">Q2 結業驗收</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>Q2 的期末考，也是半年學習的總驗收。投資論文是專業機構的標準文件——寫得出來，代表你已具備「獨立分析一家公司並做出附帶認錯機制的決策」的能力。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的市場溫度計，家人這個「情緒感測器」給了什麼讀數——那個讀數會影響你論文第⑦章的部署節奏，但不該影響第①章的論點本身。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">一份投資論文裡，最難寫、也最值錢的是哪一章？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">估值——算出它到底值多少</button>
+    <button data-g="b">反方論證——為什麼聰明人正在賣</button>
+    <button data-g="c">商業模式——把生意講清楚</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 1 小時</p>
+  <div class="prose">
+  <h2>論文的定位：一份寫給「一年後的自己」的合約</h2>
+  <p>投資論文（investment thesis）不是報告作業，是<strong>決策合約</strong>。它記錄三件事：你買入（或不買）的完整理由、你付的價格隱含了什麼假設、以及<strong>什麼證據出現時你承認自己錯了</strong>。</p>
+  <p>一年後回頭讀它（W38 季度複盤、W52 年度驗收都會回來對照），你評價的<strong>不是賺賠</strong>，是「當時的推理成不成立」。這正是 W23 講的 resulting——用結果評價決策，是投資最常見的認知錯誤之一。賺錢的爛決策和賠錢的好決策都存在，只有寫下來的推理能讓你分辨。</p>
+  <div class="quote">寫不出來，就是還沒想清楚。一句話說不明白的論點，通常是自己也不確定的論點。</div>
+  </div>
+
+  <div class="prose">
+  <h2>七章結構與素材來源</h2>
+  <p>好消息是：七章裡有四章的素材，你在過去十三週已經寫完了。本週真正要新寫的只有①⑥⑦——而其中⑥是主戰場。</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>章</th><th>內容</th><th>素材來源</th><th>頁幅</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="f"><span class="chapnum">①</span>一句話論點</td>
+          <td>「以 ＿ 價格買入 ＿，因為市場低估了 ＿；預期 ＿ 年內 ＿」</td>
+          <td>新寫<span class="src">最後才寫</span></td>
+          <td>2 行</td>
+        </tr>
+        <tr>
+          <td class="f"><span class="chapnum">②</span>商業模式</td>
+          <td>這家公司怎麼賺錢：賣什麼、賣給誰、憑什麼收錢</td>
+          <td>W13 健檢＋年報<span class="src"><a href="/projects/family-investing-course/week-13-q1-capstone/">第 13 週</a></span></td>
+          <td>0.3 頁</td>
+        </tr>
+        <tr>
+          <td class="f"><span class="chapnum">③</span>護城河與五力</td>
+          <td>來源 × 寬度 × 趨勢，加上產業地形</td>
+          <td>W22 一頁質化分析<span class="src"><a href="/projects/family-investing-course/week-22-moat-five-forces/">第 22 週</a></span></td>
+          <td>0.5 頁</td>
+        </tr>
+        <tr>
+          <td class="f"><span class="chapnum">④</span>財務健檢摘要</td>
+          <td>三率、杜邦、現金流三線、紅旗掃描結論</td>
+          <td>W13 健檢報告<span class="src">更新到最新一季</span></td>
+          <td>0.4 頁</td>
+        </tr>
+        <tr>
+          <td class="f"><span class="chapnum">⑤</span>估值</td>
+          <td>comps 相對位置＋DCF 區間＋安全邊際＋買價上限</td>
+          <td>W19 comps＋W21 結論卡<span class="src"><a href="/projects/family-investing-course/week-19-relative-valuation/">第 19</a>、<a href="/projects/family-investing-course/week-21-margin-of-safety/">21 週</a></span></td>
+          <td>0.5 頁</td>
+        </tr>
+        <tr>
+          <td class="f"><span class="chapnum">⑥</span>風險與反方論證</td>
+          <td>一個聰明人為什麼此刻正在賣出</td>
+          <td>新寫<span class="src">本週主戰場</span></td>
+          <td>0.5 頁</td>
+        </tr>
+        <tr>
+          <td class="f"><span class="chapnum">⑦</span>結論與觸發條件</td>
+          <td>行動（買／等／跳過）＋倉位＋認錯觸發條件</td>
+          <td>新寫<span class="src">倉位受 <a href="/projects/family-investing-course/week-18-position-rebalancing/">W18</a> 上限約束</span></td>
+          <td>0.3 頁</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+  <h2>反方論證：最難也最值錢的一章</h2>
+  <p>規則只有一條：<strong>你必須寫出「一個聰明、消息靈通的人為什麼此刻正在賣出這檔股票」的最強版本</strong>——寫到你自己讀了會動搖，才算合格。</p>
+  <p>草稿的強度直接反映你確認偏誤（W23）的程度。如果你的反方論證看起來像稻草人——「風險是總體經濟可能不好」這種誰都能說的話——那不是反方論證，是形式主義。</p>
+
+  <h3>三個找反方的來源</h3>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>來源</th><th>問法</th><th>為什麼有效</th></tr></thead>
+      <tbody>
+        <tr><td class="f">市價反推<span class="src"><a href="/projects/family-investing-course/week-21-margin-of-safety/">W21</a></span></td>
+            <td>如果市場是對的，它在擔心什麼？</td>
+            <td>估值偏低通常不是市場瞎了，是它<strong>給某個風險定了價</strong>。找出那個風險。</td></tr>
+        <tr><td class="f">五力與趨勢<span class="src"><a href="/projects/family-investing-course/week-22-moat-five-forces/">W22</a></span></td>
+            <td>護城河三訊號裡最弱那個，往壞處推演兩年會怎樣？</td>
+            <td>護城河是動態的。最弱的一環兩年後可能已經破了。</td></tr>
+        <tr><td class="f">賣方視角</td>
+            <td>誰在賣？大股東申讓？外資連續賣超？</td>
+            <td>他們可能知道或相信什麼你不知道的事。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>寫完反方後，問自己一個決定性的問題：<strong>「我的買入論點在反方成立時還剩多少？」</strong></p>
+  <ul>
+    <li>答案是「<strong>全毀</strong>」→ 倉位該縮小，或直接放棄</li>
+    <li>答案是「<strong>傷但不死</strong>」（因為估值已含安全邊際）→ 論點才夠強壯</li>
+  </ul>
+
+  <div class="myth">
+    <p class="say">「我有寫風險章節啊——市場波動、政策不確定性、匯率風險。」</p>
+    <p>這是免責聲明，不是反方論證。差別在於：<strong>反方論證必須具體到能被驗證，而且針對這家公司</strong>。「匯率風險」適用於所有出口商；「最大客戶正在自建產線，佔營收 38% 的訂單兩年內可能歸零」才是反方。</p>
+  </div>
+  </div>
+
+  <div class="prose">
+  <h2>觸發條件：把「認錯」寫成合約條款</h2>
+  <p>模糊的「看情況再說」是死抱虧損的溫床——這正是 W23 處分效應最愛的土壤。觸發條件必須<strong>可驗證</strong>，而且<strong>不能是純價格</strong>。</p>
+  <p>為什麼不能用價格？因為價格下跌本身<strong>不是論點錯誤的證據</strong>。它可能只是市場先生在鬧脾氣——而市場先生鬧脾氣的時候，正是你該買更多的時候，不是認錯的時候。用價格當觸發條件，等於把裁判權交給你原本要利用的那個情緒。</p>
+  <p>同場要寫「<strong>加碼條件</strong>」：什麼證據出現時值得加碼（在 W18 上限內）。這一條的作用是防止你在下跌時的加碼是<strong>攤平</strong>（情緒），而不是<strong>決策</strong>（論點更便宜了）。</p>
+  </div>
+
+  <!-- 互動 1：觸發條件健檢 -->
+  <div class="tgame">
+    <h3>觸發條件健檢：這條寫得合格嗎？</h3>
+    <p class="muted" style="margin-top:-.2rem">合格的標準只有兩個：<strong>可驗證</strong>（有明確數字或事件，不是感覺）＋<strong>非純價格</strong>（不是靠股價漲跌來判斷論點對錯）。六題。</p>
+    <div class="tcard">
+      <p class="tq" id="tq">第 1 / 6 題</p>
+      <p class="tt" id="tt">—</p>
+    </div>
+    <div class="tbtnrow" id="tbtns">
+      <button data-v="1">✓ 合格</button>
+      <button data-v="0">✕ 不合格</button>
+    </div>
+    <div id="tfeed" aria-live="polite"></div>
+    <p id="tscore">目前答對 0 題</p>
+  </div>
+
+  <div class="prose">
+  <h2>自評 Rubric：8 分才算 Q2 畢業</h2>
+  <p>寫完之後自己打分。<strong>七章各一項，加上「全文」一項，共八項</strong>；每項 0–2 分，滿分 16 分，<strong>13 分以上算過關</strong>（沿用原本 80% 的標準）。</p>
+  <p class="muted">②③④是組裝既有素材的章節，看似最容易，但也最容易因為「素材沒更新到最新一季」而失分——它們一樣要評分，否則整份論文的地基可以是空的。</p>
+  <div class="example">
+    <p class="tag">最重要的一句</p>
+    <p><strong>結論寫「跳過」的論文，一樣可以拿滿分。</strong>「以此價格不買」是完全合法、而且非常常見的專業結論（W21）。Rubric 評的是<strong>推理品質</strong>，不是你有沒有下單。分析師寫 sell 或 hold 的報告，跟寫 buy 的一樣專業。</p>
+  </div>
+  </div>
+
+  <!-- 互動 2：Rubric 自評計分器 -->
+  <div class="rubric">
+    <h3>Rubric 自評計分器</h3>
+    <p class="muted" style="margin-top:-.2rem">照你剛寫完的論文誠實給分。低分的項目就是你這週剩下時間該補的地方。</p>
+    <div id="rlist"></div>
+    <div class="rtotal"><span class="big" id="rbig">0</span><span class="of">／ 16 分</span></div>
+    <div class="rbar"><i id="rfill"></i><u></u></div>
+    <p class="rpass">↑ 虛線＝13 分及格線</p>
+    <div class="rverdict" id="rverdict">先給每一項打分。</div>
+  </div>
+
+  <div class="prose">
+  <h2>三個常見的自我欺騙</h2>
+  <div class="myth">
+    <p class="say">「估值我寫了一個目標價 185 元。」</p>
+    <p>單點目標價是<strong>假精確</strong>。DCF 對假設極度敏感（W20 的 r−g 分母），給區間才誠實：「合理區間 150–210，我的買價上限 135（含 30% 邊際）。」買價上限比目標價有用得多——它是<strong>可執行的紀律</strong>。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「觸發條件我寫：如果基本面轉壞就賣。」</p>
+    <p>「基本面轉壞」不可驗證，等於沒寫。改成：「毛利率<strong>連兩季</strong>低於 32%」「最大客戶佔比突破 45%」——一年後的你可以打開財報，用五分鐘判定它有沒有發生。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「反方論證我請 AI 幫我寫了三點。」</p>
+    <p>可以用來找盲點，但<strong>不能取代你自己想</strong>。反方論證的價值在於它會改變你的倉位決策——如果你讀完自己寫的反方毫無感覺，那代表你根本沒相信它，那一章就白寫了。標準始終是：<strong>寫到自己會動搖</strong>。</p>
+  </div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>本週要讀的，是你自己寫的東西</h2>
+  <p class="muted" style="margin-top:-.3rem">Capstone 週沒有新知識。閱讀清單就是你過去十三週的產出——這也是一次檢查：當初寫的東西，現在還站得住嗎？</p>
+
+  <div class="readitem">
+    <div class="t">各 5 分鐘</div>
+    <div class="body"><b>重讀你的 W13 健檢、W19 comps、W21 結論卡、W22 質化分析</b>
+      <p>重點不是複習，是<strong>查核數據是否需要更新到最新一季</strong>。財報每季更新，三個月前的三率可能已經變了——用過期數字寫論文，第④⑤章直接失效。</p>
+    </div>
+  </div>
+  <div class="readitem">
+    <div class="t">5 分鐘</div>
+    <div class="body"><b>重讀 W24–25 的原則清單 v1.1</b>
+      <p>論文結論<strong>不得違反自己的原則</strong>。如果違反了，必須改其中一邊——要嘛改結論，要嘛改原則並寫下為什麼。兩者都可以，但不能假裝沒看到。</p>
+    </div>
+  </div>
+  <div class="readitem">
+    <div class="t">選讀</div>
+    <div class="body"><b>大師對單一投資的完整論證，當作文體範本</b>
+      <p>Buffett 1988 年關於可口可樂的段落是經典範例：商業模式、護城河、價格、以及他為什麼願意重壓。注意他<strong>用多少篇幅講生意、多少篇幅講數字</strong>——比例可能跟你想的不一樣。<a class="srclink" href="https://www.berkshirehathaway.com/letters/1988.html" target="_blank" rel="noopener">1988 年股東信 ↗</a></p>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 2.5 小時</p>
+  <div class="prose">
+  <h2>寫出你的第一份投資論文</h2>
+  <p>對象可以沿用 W13 的健檢公司，也可以換一家新的（換新的話，②③④要重做，會花比較久）。</p>
+
+  <h3>任務 A｜組裝與補強（1 小時）</h3>
+  <ol class="tasks">
+    <li>按七章結構把既有素材貼進來，先求齊全不求好看</li>
+    <li>④⑤的財務數據<strong>更新到最新一季</strong></li>
+    <li>②商業模式<strong>用自己的話重寫</strong>——禁止複製公司官網說法，寫到家人能懂的程度</li>
+  </ol>
+
+  <h3>任務 B｜反方論證與觸發條件（1 小時）</h3>
+  <ol class="tasks">
+    <li>用三來源法寫反方：<strong>至少兩個具體反方論點，各自附證據</strong></li>
+    <li>寫 3–5 條認錯觸發條件——每一條都要通過上面健檢的兩個標準</li>
+    <li>寫 1–2 條加碼條件</li>
+    <li>回答那個決定性問題：反方成立時，我的論點還剩多少？把答案寫進⑦的倉位決定裡</li>
+  </ol>
+
+  <h3>任務 C｜收尾（30 分鐘）</h3>
+  <ol class="tasks">
+    <li><strong>最後</strong>才寫①一句話論點——前面都想清楚了，這句話會自己浮出來</li>
+    <li>跑一次 Rubric 自評</li>
+    <li>低於 8 分的章節補強</li>
+  </ol>
+
+  <div class="verify">
+    <b>怎麼知道做對了：</b>把論文給一個沒讀過這家公司的人看五分鐘，他能複述出「這家公司怎麼賺錢」和「作者可能錯在哪」。如果他只記得目標價，代表你把論文寫成了推薦函。
+  </div>
+
+  <p class="muted">產出請存成<strong>獨立文件</strong>——W38 季度複盤與 W52 年度驗收都會回來對照它。可轉為專欄文章；發布版建議去除具體買賣建議、保留分析框架。</p>
+
+  <ul class="checks" data-key="w26-practice">
+    <li><label><input type="checkbox"><span>七章齊全，且④⑤數據為最新一季</span></label></li>
+    <li><label><input type="checkbox"><span>反方論證讓自己動搖過</span></label></li>
+    <li><label><input type="checkbox"><span>觸發條件可驗證、非純價格（3–5 條）</span></label></li>
+    <li><label><input type="checkbox"><span>加碼條件 1–2 條</span></label></li>
+    <li><label><input type="checkbox"><span>Rubric 自評 ≥ 13 分（滿分 16）</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼「跌 20% 就停損」對長期投資人是壞的觸發條件？</summary>
+      <div class="ans"><p>→ 因為價格下跌<strong>不是論點錯誤的證據</strong>。它可能只是市場先生鬧脾氣——而那正是你該考慮加碼的時候。用價格當認錯依據，等於把裁判權交給你原本要利用的情緒。好的觸發條件應該問「我當初的<strong>推理</strong>被推翻了嗎」，例如毛利率連兩季低於某個水準、最大客戶流失，這些才是論點的地基。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 反方論證寫完後，發現「反方成立我的論點就全毀」，該怎麼辦？</summary>
+      <div class="ans"><p>→ 這代表論點<strong>脆弱</strong>，不代表一定不能買，但倉位必須縮小（甚至放棄）。健康的狀態是「傷但不死」——因為買價已含安全邊際（W21），就算反方部分成立，你付的價格仍留有緩衝。<strong>安全邊際的真正用途就在這裡</strong>：它不是讓你賺更多，是讓你在判斷錯了一部分時還活著。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 結論是「跳過，不買」，這份論文算失敗嗎？</summary>
+      <div class="ans"><p>→ 完全不算，而且可以拿滿分。「以此價格不買」是專業分析最常見的結論之一。Rubric 評的是<strong>推理品質</strong>不是有沒有下單。真正的失敗是：分析完得出「不該買」卻還是買了（W23 的沉沒成本＋確認偏誤），或是寫不出買價上限所以永遠在等。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>五分鐘電梯簡報</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。這一週的分享是 Q2 總驗收——規則同 W13 但升級了：<strong>檢驗重點是反方論證</strong>。</p>
+  <div class="script">
+    <p class="who">五分鐘的順序</p>
+    <p>這家公司怎麼賺錢（②）→ 為什麼別人搶不走（③）→ 值多少、現在貴嗎（⑤）→ <strong>我可能錯在哪</strong>（⑥）→ 所以我打算怎麼做（⑦）</p>
+    <p class="aside">注意順序：先講生意，最後才講數字和決定。反過來講會變成推銷。</p>
+  </div>
+  <div class="script">
+    <p class="who">檢驗方式（本週的重點）</p>
+    <p>講完之後，請家人<strong>複述「你可能錯在哪」</strong>。</p>
+    <p class="aside">如果家人記得住你的反方論證，代表你講得誠實又清楚——那是這半年最值得驕傲的一件事。如果他們只記得「你說會漲」，那第⑥章要重寫。</p>
+  </div>
+  <div class="script">
+    <p class="who">聽不懂的地方＝要重寫的地方</p>
+    <p>家人卡住的每一處都記下來，回論文把那段重寫。<strong>聽不懂通常不是家人的問題，是你用行話掩蓋了沒想透的地方。</strong></p>
+  </div>
+  <div class="script">
+    <p class="who">收尾</p>
+    <p>「這就是我這半年學的東西的樣子——從看懂報表，到敢寫下自己可能錯在哪。」</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「所以到底買不買？」</b><br>照論文⑦誠實回答，含倉位上限。若結論是「等待」，解釋買價上限的邏輯——就像阿嬤買菜，看到喜歡的菜也要等它降到合理價（W21）。</p>
+    <p class="qa"><b>「你講得頭頭是道，萬一還是錯了呢？」</b><br>「所以才有第⑥章和觸發條件——<strong>錯不可恥，錯了不認才燒錢</strong>。我已經先寫好什麼情況下我要承認自己錯，這樣到時候才不會找藉口。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w26-final">
+    <li><label><input type="checkbox"><span>投資論文 2–3 頁完成並獨立存檔</span></label></li>
+    <li><label><input type="checkbox"><span>七章齊全，反方論證含至少兩個具體論點</span></label></li>
+    <li><label><input type="checkbox"><span>認錯觸發條件 3–5 條，全部可驗證且非純價格</span></label></li>
+    <li><label><input type="checkbox"><span>Rubric ≥ 13 分（或已列出補強計畫）</span></label></li>
+    <li><label><input type="checkbox"><span>家人／朋友能複述你的反方論證</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 27：Q3 操盤手季開場——模擬組合上線</b>——鏡頭要從「一家公司」換成「一個組合」。你寫完了單一標的的完整判斷，下一季要面對的問題完全不同：這些標的放在一起會怎樣？風險怎麼量？績效怎麼歸因？第一件事——讓你的模擬組合正式上線開始記錄。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-25-marks-cycles/">上一週：大師心法——Marks 備忘錄</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——反方論證。估值和商業模式都有現成方法可循，但反方論證要求你主動攻擊自己的結論，這違反人的本能（W23 確認偏誤）。它也最值錢：它決定你的倉位該多大，以及你錯的時候還剩多少。"
+      : "這一章確實重要，但不是最難的——它有現成方法可循。最難的是第⑥章反方論證：你必須寫出「一個聰明人為什麼此刻正在賣」的最強版本，強到自己讀了會動搖。它違反本能，卻決定了你的倉位該多大。";
+  });
+
+  /* ---------- 互動 1：觸發條件健檢 ---------- */
+  var TRIGGERS = [
+    { t: "股價從我的成本價下跌 20%", ok: false,
+      why: "純價格。價格下跌不是論點錯誤的證據——可能只是市場先生鬧脾氣，而那正是該考慮加碼的時候。用它認錯，等於把裁判權交給你原本要利用的情緒。" },
+    { t: "毛利率連續兩季低於 32%", ok: true,
+      why: "可驗證（打開財報五分鐘就能判定）、非價格、而且針對這家公司的核心假設。「連續兩季」這個限定也很好——避免單季雜訊誤觸發。" },
+    { t: "公司的基本面明顯轉壞", ok: false,
+      why: "不可驗證。「明顯轉壞」沒有標準，一年後的你會用當下的情緒去解釋它——想賣的時候什麼都是轉壞，捨不得賣的時候什麼都是暫時。必須換成具體指標。" },
+    { t: "最大客戶佔營收比重突破 45%", ok: true,
+      why: "可驗證（年報有揭露）、非價格。而且它直接對應一個真實風險：集中度過高時，失去一個客戶就足以推翻整個論點。" },
+    { t: "本益比跌到 10 倍以下", ok: false,
+      why: "仍然是價格驅動。本益比下跌可能是因為股價跌（市場情緒），也可能是因為 E 上升（基本面變好）——它不能告訴你論點對錯。這比較適合當「加碼條件」的參考，不是認錯條件。" },
+    { t: "新廠稼動率連兩季低於 60%", ok: true,
+      why: "可驗證（法說會與財報會揭露）、非價格。它檢驗的正是當初買入論點裡「Capex 會帶來報酬」這個假設——假設被推翻，論點就該重新檢視。" }
+  ];
+  var ti = 0, tcorrect = 0, tanswered = false;
+  var ttEl = document.getElementById("tt"), tqEl = document.getElementById("tq");
+  var tfeed = document.getElementById("tfeed"), tscore = document.getElementById("tscore");
+  var tbtns = document.getElementById("tbtns");
+
+  function renderTrigger(){
+    var cur = TRIGGERS[ti];
+    tqEl.textContent = "第 " + (ti + 1) + " / " + TRIGGERS.length + " 題";
+    ttEl.textContent = "「" + cur.t + "」";
+    tfeed.classList.remove("show", "bad");
+    tanswered = false;
+    tbtns.querySelectorAll("button").forEach(function(b){
+      b.disabled = false; b.style.display = "";
+      b.textContent = b.dataset.v === "1" ? "✓ 合格" : "✕ 不合格";
+    });
+  }
+  tbtns.addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    if (tanswered) {   // 第二次點＝下一題
+      ti = (ti + 1) % TRIGGERS.length;
+      if (ti === 0) { tcorrect = 0; tscore.textContent = "重新開始——目前答對 0 題"; }
+      renderTrigger();
+      return;
+    }
+    var cur = TRIGGERS[ti];
+    var said = btn.dataset.v === "1";
+    var right = said === cur.ok;
+    if (right) tcorrect++;
+    tanswered = true;
+    tfeed.className = "show" + (cur.ok ? "" : " bad");
+    tfeed.innerHTML = "<b>" + (right ? "答對——" : "再想想——") + "這條" + (cur.ok ? "合格" : "不合格") + "。</b><br>" + cur.why +
+      (ti + 1 < TRIGGERS.length
+        ? "<br><span style=\"font-size:.85em;color:var(--ink-3)\">（點上面的「下一題」繼續）</span>"
+        : "<br><span style=\"font-size:.85em;color:var(--ink-3)\">（六題結束——想再練一次就點「再玩一次」）</span>");
+    tscore.textContent = "目前答對 " + tcorrect + " 題";
+    // 答完後只留一顆「下一題」，不要兩顆一樣的按鈕
+    tbtns.querySelectorAll("button").forEach(function(b, i){
+      if (i === 0) { b.textContent = ti + 1 < TRIGGERS.length ? "下一題 →" : "再玩一次 ↺"; }
+      else { b.style.display = "none"; }
+    });
+  });
+  renderTrigger();
+
+  /* ---------- 互動 2：Rubric 自評計分器 ---------- */
+  var RUBRIC = [
+    { n: "①一句話論點", d: "具體，而且說得出「市場錯在哪」" },
+    { n: "②商業模式", d: "用自己的話寫清楚賣什麼、賣給誰、憑什麼收錢——家人聽得懂" },
+    { n: "③護城河與五力", d: "來源 × 寬度 × 趨勢，每個判斷附證據而非形容詞" },
+    { n: "④財務健檢摘要", d: "三率、杜邦、現金流三線、紅旗結論，數據為最新一季" },
+    { n: "⑤估值", d: "有區間、有安全邊際、有買價上限（不是單點目標價）" },
+    { n: "⑥反方論證", d: "強到自己讀了會動搖" },
+    { n: "⑦結論與觸發條件", d: "行動與倉位明確；觸發條件可驗證、非純價格" },
+    { n: "全文", d: "每個主張都有數字或出處，不是形容詞堆疊" }
+  ];
+  var RPASS = 13, RMAX = RUBRIC.length * 2;
+  var rscores = RUBRIC.map(function(){ return null; });
+  var rlist = document.getElementById("rlist");
+  RUBRIC.forEach(function(item, i){
+    var div = document.createElement("div");
+    div.className = "rrow";
+    div.innerHTML = '<p class="rn">' + item.n + '<small>' + item.d + '</small></p>' +
+      '<div class="rbtns" data-i="' + i + '">' +
+        '<button data-v="0">0 分 · 沒做到</button>' +
+        '<button data-v="1">1 分 · 部分做到</button>' +
+        '<button data-v="2">2 分 · 完全做到</button>' +
+      '</div>';
+    rlist.appendChild(div);
+  });
+  function runRubric(){
+    var done = rscores.every(function(s){ return s !== null; });
+    var total = rscores.reduce(function(a,b){ return a + (b || 0); }, 0);
+    document.getElementById("rbig").textContent = total;
+    document.getElementById("rfill").style.width = (total / RMAX * 100) + "%";
+    var v = document.getElementById("rverdict");
+    if (!done) { v.innerHTML = "先給每一項打分（還有 " + rscores.filter(function(s){ return s === null; }).length + " 項未評）。"; return; }
+    var weak = RUBRIC.filter(function(_, i){ return rscores[i] <= 1; }).map(function(x){ return x.n; });
+    if (total >= RPASS) {
+      v.innerHTML = "<b>" + total + " / " + RMAX + " 分 · Q2 畢業。</b>你已經具備「獨立分析一家公司並做出附帶認錯機制的決策」的能力。" +
+        (weak.length ? "行有餘力可再補強：" + weak.join("、") + "。" : "八項全部紮實，把論文存好——W38 複盤會回來對照它。");
+    } else if (total >= 10) {
+      v.innerHTML = "<b>" + total + " / " + RMAX + " 分 · 差一點。</b>把這幾項補到 2 分就過關：" + weak.join("、") +
+        "。通常最快的補強是⑥反方論證——它一強，⑦觸發條件會跟著具體起來。";
+    } else {
+      v.innerHTML = "<b>" + total + " / " + RMAX + " 分 · 還要再一輪。</b>弱項：" + weak.join("、") +
+        "。建議順序：先把⑥反方論證寫到自己會動搖，再回頭修⑤估值的區間與買價上限，②③④若弱多半是素材沒更新到最新一季，最後重寫①。①永遠最後寫。";
+    }
+  }
+  rlist.addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    var wrap = btn.parentNode, i = +wrap.dataset.i;
+    wrap.querySelectorAll("button").forEach(function(b){ b.classList.remove("on"); });
+    btn.classList.add("on");
+    rscores[i] = +btn.dataset.v;
+    runRubric();
+  });
+  runRubric();
+
+  /* ---------- 檢核清單持久化 ---------- */
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w26-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w26-final") {
+        var all = state.every(Boolean);
+        document.getElementById("checkdone").textContent = all
+          ? "🎓 Q2 投資人季完課——你已經能獨立分析一家公司，並寫下自己可能錯在哪。下週進入 Q3 操盤手季。"
+          : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>
+</body>
+</html>
