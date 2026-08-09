@@ -13,11 +13,19 @@ ORCID: 0009-0001-6085-8303
 ## Pages
 
 - Homepage: https://mattye.dev/
-- Speeches: https://mattye.dev/speeches
-- Coaching: https://mattye.dev/coaching
-- Writing: https://mattye.dev/writing
+- Speeches: https://mattye.dev/speeches/
+- Coaching: https://mattye.dev/coaching/
+- Writing: https://mattye.dev/writing/
+- Projects: https://mattye.dev/projects/
 
 ## Writing Columns
 
-- Hardcore Presentation (硬核簡報): A column on the science of presentation and communication, drawing on cognitive science, neuroaesthetics, linguistics, design theory, and occupational therapy. Each piece moves from practical technique to applied scenario to underlying theory and cited literature. https://mattye.dev/writing?series=硬核簡報
-- Investing for Family (投資專欄): A beginner-friendly column on investing mindset and lifelong learning. https://mattye.dev/writing?series=投資專欄
+- Hardcore Presentation (硬核簡報): A column on the science of presentation and communication, drawing on cognitive science, neuroaesthetics, linguistics, design theory, and occupational therapy. Each piece moves from practical technique to applied scenario to underlying theory and cited literature. https://mattye.dev/writing/?series=硬核簡報
+- Investing for Family (投資專欄): A beginner-friendly column on investing mindset and lifelong learning. https://mattye.dev/writing/?series=投資專欄
+
+## AI Agent Skills
+
+Open-source skills that package repeatable workflows for AI agents to run directly. Claude-first, generalizing to other agent formats over time.
+
+- Toutour: Adds a verified spotlight onboarding tour to any website — analyzes the layout, interviews the developer, generates steps, and verifies each with Playwright. https://github.com/matt-ye/Toutour
+- EndNote to Zotero Migration: Migrates an EndNote library to Zotero with PDF attachments and the full group hierarchy intact. https://github.com/matt-ye/endnote-to-zotero-migration
