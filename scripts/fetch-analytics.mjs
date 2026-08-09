@@ -18,6 +18,7 @@ import { createSign } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import {
   GA4_EVENTS, FEATURED, EXCLUDE, INCLUDE_FORKS, INCLUDE_ARCHIVED, HOSTS,
+  MAIN_STREAM_ID, GA4_EXTRA_SITES,
 } from './analytics-config.mjs';
 
 const SCHEMA_VERSION = 1;
@@ -72,9 +73,9 @@ async function googleToken(sa) {
   return (await res.json()).access_token;
 }
 
-async function ga4Report(token, label, body) {
+async function ga4Report(token, label, body, propertyId = GA4_PROPERTY_ID) {
   const res = await fetch(
-    `https://analyticsdata.googleapis.com/v1beta/properties/${GA4_PROPERTY_ID}:runReport`,
+    `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
     {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -85,12 +86,24 @@ async function ga4Report(token, label, body) {
   return res.json();
 }
 
+// 站別範圍過濾：streamId + hostName 雙重條件（可再 and 上其他條件，如事件白名單）。
+// 雙重過濾的原因見 analytics-config.mjs 的 MAIN_STREAM_ID 註解。
+function gaScope(streamId, hosts, ...extra) {
+  const expressions = [
+    { filter: { fieldName: 'streamId', inListFilter: { values: [streamId] } } },
+    { filter: { fieldName: 'hostName', inListFilter: { values: hosts } } },
+    ...extra,
+  ];
+  return { andGroup: { expressions } };
+}
+
 async function fetchGa4() {
   const token = await googleToken(JSON.parse(GA4_SA_KEY));
   const D28 = [{ startDate: '28daysAgo', endDate: 'today' }];
   const dims = (...names) => names.map((name) => ({ name }));
   const mets = (...names) => names.map((name) => ({ name }));
   const byMetricDesc = (name) => [{ metric: { metricName: name }, desc: true }];
+  const SCOPE = gaScope(MAIN_STREAM_ID, HOSTS);
 
   // 1) 7/28/90 天總覽（單請求三個 dateRanges；rows 帶 dateRange 維度 date_range_N）
   const totalsRes = await ga4Report(token, 'totals', {
@@ -103,6 +116,7 @@ async function fetchGa4() {
       'activeUsers', 'newUsers', 'sessions', 'screenPageViews',
       'engagementRate', 'userEngagementDuration'
     ),
+    dimensionFilter: SCOPE,
     returnPropertyQuota: true,
   });
   const totals = { d7: null, d28: null, d90: null };
@@ -126,6 +140,7 @@ async function fetchGa4() {
     dimensions: dims('date'),
     metrics: mets('activeUsers', 'screenPageViews', 'sessions'),
     orderBys: [{ dimension: { dimensionName: 'date' } }],
+    dimensionFilter: SCOPE,
     limit: 100,
   });
   const daily = (dailyRes.rows ?? []).map((r) => ({
@@ -141,6 +156,7 @@ async function fetchGa4() {
     dimensions: dims('pagePath'),
     metrics: mets('screenPageViews', 'activeUsers', 'userEngagementDuration'),
     orderBys: byMetricDesc('screenPageViews'),
+    dimensionFilter: SCOPE,
     limit: 30,
   });
   const topPages = (pagesRes.rows ?? []).map((r) => ({
@@ -156,6 +172,7 @@ async function fetchGa4() {
     dimensions: dims('sessionDefaultChannelGroup'),
     metrics: mets('sessions', 'activeUsers'),
     orderBys: byMetricDesc('sessions'),
+    dimensionFilter: SCOPE,
   });
   const channels = (channelsRes.rows ?? []).map((r) => ({
     channel: r.dimensionValues[0].value,
@@ -167,6 +184,7 @@ async function fetchGa4() {
     dimensions: dims('sessionSource', 'sessionMedium'),
     metrics: mets('sessions'),
     orderBys: byMetricDesc('sessions'),
+    dimensionFilter: SCOPE,
     limit: 15,
   });
   const sources = (sourcesRes.rows ?? []).map((r) => ({
@@ -181,6 +199,7 @@ async function fetchGa4() {
     dimensions: dims('country'),
     metrics: mets('activeUsers'),
     orderBys: byMetricDesc('activeUsers'),
+    dimensionFilter: SCOPE,
     limit: 12,
   });
   const countries = (countriesRes.rows ?? []).map((r) => ({
@@ -191,6 +210,7 @@ async function fetchGa4() {
     dateRanges: D28,
     dimensions: dims('deviceCategory'),
     metrics: mets('activeUsers'),
+    dimensionFilter: SCOPE,
   });
   const devices = (devicesRes.rows ?? []).map((r) => ({
     device: r.dimensionValues[0].value,
@@ -201,6 +221,7 @@ async function fetchGa4() {
   const eventFilter = {
     filter: { fieldName: 'eventName', inListFilter: { values: GA4_EVENTS } },
   };
+  const scopedEventFilter = gaScope(MAIN_STREAM_ID, HOSTS, eventFilter);
   const eventsRes = await ga4Report(token, 'events', {
     dateRanges: [
       { startDate: '28daysAgo', endDate: 'today' },
@@ -208,7 +229,7 @@ async function fetchGa4() {
     ],
     dimensions: dims('eventName', 'pagePath'),
     metrics: mets('eventCount'),
-    dimensionFilter: eventFilter,
+    dimensionFilter: scopedEventFilter,
     limit: 250,
   });
   const events = {};
@@ -234,6 +255,7 @@ async function fetchGa4() {
     dateRanges: D28,
     dimensions: dims('hostName'),
     metrics: mets('activeUsers', 'screenPageViews', 'sessions'),
+    dimensionFilter: SCOPE,
   });
   const hosts = (hostsRes.rows ?? [])
     .map((r) => ({
@@ -249,7 +271,7 @@ async function fetchGa4() {
     dateRanges: [{ startDate: '90daysAgo', endDate: 'today' }],
     dimensions: dims('date', 'eventName'),
     metrics: mets('eventCount'),
-    dimensionFilter: eventFilter,
+    dimensionFilter: scopedEventFilter,
     limit: 1000,
   });
   const dailyEvents = {}; // date → { eventName: count }
@@ -264,6 +286,103 @@ async function fetchGa4() {
     totals, daily, topPages, channels, sources, countries, devices,
     hosts, events: Object.values(events), dailyEvents,
   };
+}
+
+// 同 property 底下其他網站的輕量報表組（例如捕夢網）：
+// 以 streamId + hostName 切分；總覽 + 90 天逐日 + top pages + 管道 + 國家 + 站方熱門事件
+async function fetchGa4Site(site) {
+  const token = await googleToken(JSON.parse(GA4_SA_KEY));
+  const D28 = [{ startDate: '28daysAgo', endDate: 'today' }];
+  const dims = (...names) => names.map((name) => ({ name }));
+  const mets = (...names) => names.map((name) => ({ name }));
+  const byMetricDesc = (name) => [{ metric: { metricName: name }, desc: true }];
+  const SCOPE = gaScope(site.streamId, site.hosts);
+  const report = (label, body) =>
+    ga4Report(token, `${label}@${site.key}`, { ...body, dimensionFilter: body.dimensionFilter ?? SCOPE });
+
+  const totalsRes = await report('totals', {
+    dateRanges: [
+      { startDate: '7daysAgo', endDate: 'today' },
+      { startDate: '28daysAgo', endDate: 'today' },
+      { startDate: '90daysAgo', endDate: 'today' },
+    ],
+    metrics: mets('activeUsers', 'newUsers', 'sessions', 'screenPageViews', 'engagementRate'),
+  });
+  const totals = { d7: null, d28: null, d90: null };
+  for (const row of totalsRes.rows ?? []) {
+    const key = { date_range_0: 'd7', date_range_1: 'd28', date_range_2: 'd90' }[
+      row.dimensionValues?.[0]?.value
+    ];
+    if (!key) continue;
+    const m = row.metricValues.map((v) => num(v.value));
+    totals[key] = { users: m[0], newUsers: m[1], sessions: m[2], views: m[3], engagementRate: m[4] };
+  }
+
+  const dailyRes = await report('daily', {
+    dateRanges: [{ startDate: '90daysAgo', endDate: 'today' }],
+    dimensions: dims('date'),
+    metrics: mets('activeUsers', 'screenPageViews', 'sessions'),
+    orderBys: [{ dimension: { dimensionName: 'date' } }],
+    limit: 100,
+  });
+  const daily = (dailyRes.rows ?? []).map((r) => ({
+    date: gaDate(r.dimensionValues[0].value),
+    users: num(r.metricValues[0].value),
+    views: num(r.metricValues[1].value),
+    sessions: num(r.metricValues[2].value),
+  }));
+
+  const pagesRes = await report('topPages', {
+    dateRanges: D28,
+    dimensions: dims('pagePath'),
+    metrics: mets('screenPageViews', 'activeUsers'),
+    orderBys: byMetricDesc('screenPageViews'),
+    limit: 15,
+  });
+  const topPages = (pagesRes.rows ?? []).map((r) => ({
+    path: r.dimensionValues[0].value,
+    views: num(r.metricValues[0].value),
+    users: num(r.metricValues[1].value),
+  }));
+
+  const channelsRes = await report('channels', {
+    dateRanges: D28,
+    dimensions: dims('sessionDefaultChannelGroup'),
+    metrics: mets('sessions'),
+    orderBys: byMetricDesc('sessions'),
+  });
+  const channels = (channelsRes.rows ?? []).map((r) => ({
+    channel: r.dimensionValues[0].value,
+    sessions: num(r.metricValues[0].value),
+  }));
+
+  const countriesRes = await report('countries', {
+    dateRanges: D28,
+    dimensions: dims('country'),
+    metrics: mets('activeUsers'),
+    orderBys: byMetricDesc('activeUsers'),
+    limit: 8,
+  });
+  const countries = (countriesRes.rows ?? []).map((r) => ({
+    country: r.dimensionValues[0].value,
+    users: num(r.metricValues[0].value),
+  }));
+
+  const eventsRes = await report('topEvents', {
+    dateRanges: D28,
+    dimensions: dims('eventName'),
+    metrics: mets('eventCount'),
+    orderBys: byMetricDesc('eventCount'),
+    limit: 20,
+  });
+  // 濾掉每站都有的雜訊事件，留下站方自己的（例如購買、加入購物車）
+  const NOISE = new Set(['page_view', 'session_start', 'first_visit', 'user_engagement', 'scroll']);
+  const topEvents = (eventsRes.rows ?? [])
+    .map((r) => ({ name: r.dimensionValues[0].value, count: num(r.metricValues[0].value) }))
+    .filter((e) => !NOISE.has(e.name))
+    .slice(0, 8);
+
+  return { configured: true, totals, daily, topPages, channels, countries, topEvents };
 }
 
 /* ── Cloudflare ──────────────────────────────────────── */
@@ -531,7 +650,7 @@ async function gistWrite(summaryJson, historyNdjson) {
 
 /* ── History merge（冪等 upsert）────────────────────── */
 
-function mergeHistory(prevText, ga4, cf, gh) {
+function mergeHistory(prevText, ga4, cf, gh, extraSites = []) {
   const byDate = new Map();
   for (const line of (prevText ?? '').split('\n')) {
     const trimmed = line.trim();
@@ -559,6 +678,15 @@ function mergeHistory(prevText, ga4, cf, gh) {
     for (const d of cf.daily) {
       const { date, ...rest } = d;
       rowFor(date).cf = rest;
+    }
+  }
+  // 額外 GA4 property（gx.<key>），與主站 ga 相同的 90 天全窗口自我修復
+  for (const s of extraSites) {
+    if (!s?.daily) continue;
+    for (const d of s.daily) {
+      const row = rowFor(d.date);
+      row.gx ??= {};
+      row.gx[s.key] = { u: d.users, v: d.views, s: d.sessions };
     }
   }
   if (gh?.dailyTraffic) {
@@ -607,6 +735,15 @@ const ga4 = await runSource('GA4', GA4_SA_KEY && GA4_PROPERTY_ID, fetchGa4);
 const cloudflare = await runSource('Cloudflare', CF_API_TOKEN && CF_ZONE_ID, fetchCloudflare);
 const github = await runSource('GitHub', GH_TRAFFIC_TOKEN, fetchGithub);
 
+// 同 property 的其他網站(config 驅動;與主站共用憑證,主站 GA 未設定時一併跳過)
+const ga4Sites = [];
+for (const site of GA4_EXTRA_SITES) {
+  const result = await runSource(
+    `GA4:${site.key}`, GA4_SA_KEY && GA4_PROPERTY_ID, () => fetchGa4Site(site)
+  );
+  ga4Sites.push({ key: site.key, label: site.label, site: site.site, ...result });
+}
+
 let prevHistory = null;
 try {
   prevHistory = await gistRead();
@@ -615,7 +752,7 @@ try {
   console.error(`- gist read error — ${err.message}（本次視為無歷史）`);
 }
 
-const history = mergeHistory(prevHistory, ga4, cloudflare, github);
+const history = mergeHistory(prevHistory, ga4, cloudflare, github, ga4Sites);
 
 // summary 不含 script 內部用的中間資料
 const { dailyEvents: _e, ...ga4Out } = ga4;
@@ -624,6 +761,7 @@ const summary = {
   schemaVersion: SCHEMA_VERSION,
   generatedAt: new Date().toISOString(),
   ga4: ga4Out,
+  ga4Sites,
   cloudflare,
   github: githubOut,
 };

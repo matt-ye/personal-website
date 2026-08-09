@@ -94,6 +94,23 @@ Pages 專案 → Settings → Environment variables →
 GA4 Admin → Events → 等自訂事件出現後（通常 24h 內），將下列標為 **key event**：
 `click_github`、`click_project`、`donate_start`（其餘視需要）。
 
+### 9. 同 property 的其他網站（捕夢網）——零額外設定
+
+實際的 GA4 結構是**一個 property（個人網站流量）底下兩個 data stream**：
+`Matt的個人網站`（G-1RKL72DPPW，stream 14990442923）與
+`Tela Aurea Lab`（G-4MY30R916S，stream 15024877509）。
+
+pipeline 以 **streamId + hostName 雙重過濾**在同一個 property 內切分兩站——
+**不需要**額外的 secret 或 service account 授權，主站 GA4 設定完成後
+dashboard「其他網站」區自動出現捕夢網卡片（KPI、90 天趨勢、top pages、站方熱門事件如購買）。
+
+再加網站：GA4 為該站建 data stream → `GA4_EXTRA_SITES` 加一項（key / label / site / streamId / hosts）。
+
+> ⚠️ **重要（2026-08 事故記錄）**：Google 代碼曾被「合併」為單一代碼、兩個目的地
+> （G-1RKL72DPPW + G-4MY30R916S），導致 6/8 起兩站事件互灌、同站事件寫入兩個 stream。
+> 已於 GA4 管理 Google 代碼頁移除多餘目的地拆開。**日後 Google 建議「合併代碼」時一律拒絕。**
+> streamId + hostName 雙重過濾可回溯排除跨站污染；合併期間同站的重複計數則無法修復（GA 資料不可改）。
+
 ---
 
 ## 資料格式
@@ -116,6 +133,12 @@ GA4 Admin → Events → 等自訂事件出現後（通常 24h 內），將下�
     "hosts": [{ "host": "mattye.dev", "users": 70, "views": 150, "sessions": 80 }],
     "events": [{ "name": "click_github", "d28": 12, "d90": 31, "topPages": [{ "path": "/", "count": 5 }] }]
   },
+  "ga4Sites": [{                     // 其他網站的 GA4 property（GA4_EXTRA_SITES）
+    "key": "dreamcatcher", "label": { "zh": "捕夢網 Tela Aurea", "en": "Dreamcatcher · Tela Aurea" },
+    "site": "https://telaaurealab.com", "configured": true,
+    "totals": { "d7": {}, "d28": {}, "d90": {} }, "daily": [], "topPages": [],
+    "channels": [], "countries": [], "topEvents": [{ "name": "purchase", "count": 3 }]
+  }],
   "cloudflare": {
     "configured": true,
     "daily": [{ "date": "2026-07-23", "req": 900, "pv": 300, "uniq": 80, "bytes": 1, "cachedReq": 700, "cachedBytes": 1, "threats": 0 }],
@@ -140,6 +163,7 @@ GA4 Admin → Events → 等自訂事件出現後（通常 24h 內），將下�
 ```jsonc
 {"v":1,"date":"2026-07-23",
  "ga":{"users":12,"views":31,"sessions":14,"ev":{"click_github":2}},
+ "gx":{"dreamcatcher":{"u":30,"v":80,"s":35}},
  "cf":{"req":900,"pv":300,"uniq":80,"bytes":1,"cachedReq":700,"cachedBytes":1,"threats":0},
  "gh":{"matt-ye/dreamcatcher":{"v":10,"vu":4,"c":1,"cu":1,"stars":5}}}
 ```
