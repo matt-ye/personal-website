@@ -155,6 +155,9 @@ https://sparktoro.com/blog/in-2026-less-than-one-third-of-google-searches-still-
 # 標題「Clarify Brand Message with the StoryBrand SB7 Framework」與頁面主題相符。
 https://umbrex.com/resources/frameworks/marketing-frameworks/storybrand-sb7-framework/
 
+# 註：iswnetwork.ca 已從 BOPPPS 頁換成 Internet Archive 快照（官方站源站無回應），
+# 所以這份清單裡沒有它——它不是「驗不到但正常」，是真的連不上。
+
 # ── 2026-08-09（續）：對腳本 403／逾時、對真人 200 的 9 條 ──
 #
 # 這批我用瀏覽器 UA（含 Accept-Language 與 Referer）逐條實打，全部回 200，
@@ -177,3 +180,11 @@ https://www.shs-conferences.org/articles/shsconf/pdf/2023/28/shsconf_ichess2023_
 https://www.umc.com/en/News/press_release/Content/technology_related/20251208
 # title: GA4 Explore Reports: Understanding Behavioral Analysis - e-dialog
 https://e-dialog.group/en/blog/ga4-explore-reports-understanding-behavioral-analysis/
+
+# Product Hunt 對腳本 403，瀏覽器 UA 實打 200，
+# title 為「Prepare for your Product Hunt launch」，與連結文字相符。
+https://www.producthunt.com/launch/preparing-for-launch
+
+# TSMC 研究網頁對腳本時而 200 時而 403，瀏覽器 UA 實打 200，
+# title 為「Heterogeneous Integration of a Compact Universal Photonic Engine」。
+https://research.tsmc.com/page/on-chip-interconnect/14.html
