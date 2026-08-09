@@ -92,15 +92,30 @@ function autoLinkWeekRefs() {
           const html = readFileSync(file, 'utf8');
 
           let pageLinks = 0;
+          const self = parseInt(selfWeek[1], 10);
+          const wrap = (label, week) => {
+            const url = urlByWeek.get(week);
+            if (!url || week === self) return label;
+            pageLinks++;
+            return `<a class="wref" href="${url}">${label}</a>`;
+          };
+          // 「W12」「第 12 週」以及範圍寫法「W19–20」「W14–18」「第 21–23 週」
+          // （分隔號 en-dash 與 hyphen 都有人寫）。範圍的起訖各自成為連結，中間
+          // 週次不展開——自動改寫散文（W14–18 → W14、W15…）會動到文意，不做。
+          // 必須用單一 regex 一次掃完：分成多次 replace 的話，前一輪產生的
+          // <a>W19</a> 會被下一輪當成新的 W19 再包一層，變成巢狀連結。
+          // 「W15：20」「W13/W19」這類不是範圍，分隔號字元類故意不含 ：與 /。
           const linkify = (text) =>
-            // 「W12」與「第 12 週」兩種寫法；範圍寫法（W19–21）只有起點會成為連結
-            text.replace(/\bW(\d{1,2})\b|第\s?(\d{1,2})\s?週/g, (whole, a, b) => {
-              const week = parseInt(a || b, 10);
-              const url = urlByWeek.get(week);
-              if (!url || week === parseInt(selfWeek[1], 10)) return whole;
-              pageLinks++;
-              return `<a class="wref" href="${url}">${whole}</a>`;
-            });
+            text.replace(
+              /\bW(?<ra>\d{1,2})(?<rsep>\s?[–—-]\s?)(?<rb>\d{1,2})\b|第(?<ds1>\s?)(?<da>\d{1,2})(?<dsep>\s?[–—-]\s?)(?<db>\d{1,2})(?<ds2>\s?)週|\bW(?<sa>\d{1,2})\b|第\s?(?<sb>\d{1,2})\s?週/g,
+              (...args) => {
+                const whole = args[0], g = args[args.length - 1];
+                if (g.ra) return wrap('W' + g.ra, +g.ra) + g.rsep + wrap(g.rb, +g.rb);
+                if (g.da) return '第' + g.ds1 + wrap(g.da, +g.da) + g.dsep + wrap(g.db, +g.db) + g.ds2 + '週';
+                if (g.sa) return wrap(whole, +g.sa);
+                return wrap(whole, +g.sb);
+              }
+            );
 
           // 以標籤為界切開，僅改「不在任何 SKIP 容器內」的文字片段
           const depth = {};
