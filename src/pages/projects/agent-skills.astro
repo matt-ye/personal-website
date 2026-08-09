@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import T from '../../components/T.astro';
+import { agentSkills } from '../../data/agentSkills';
+
+/* AI Agent Skills 的完整說明頁。/projects 卡片只列標題，點卡進到這裡；
+   每個 skill 一段 150–200 字的長描述（agentSkills.ts 的 descriptionLong），
+   各段落有 id=slug 供卡片內標題深連結。 */
+---
+<BaseLayout
+  title="AI Agent Skills"
+  description="葉淨維 Matt Ye 開源的 AI agent skills：Toutour 聚光燈導覽產生器、EndNote → Zotero 文獻搬家工具。通用 SKILL.md 格式，附完整說明與 GitHub 連結。"
+>
+  <h1 class="ask-title">AI <span class="accent-text">Agent Skills</span></h1>
+
+  <p class="ask-lead">
+    <T
+      zh="把重複的工作流程包成 AI agent 能直接執行的 skill，開源發布。採通用 SKILL.md 格式——不綁定單一平台，Claude Code、Cursor、Gemini CLI、Codex CLI 都能用。"
+      en="Repeatable workflows packaged as skills AI agents can run directly, published as open source. Written in the universal SKILL.md format — not tied to one platform; they work in Claude Code, Cursor, Gemini CLI and Codex CLI."
+    />
+  </p>
+
+  {agentSkills.map(s => (
+    <section class="ask-skill" id={s.slug}>
+      <div class="ask-head">
+        <h2 class="ask-name"><T zh={s.title} en={s.titleEn} /></h2>
+        <div class="ask-tags">
+          {s.tags.map((tag, i) => <span class="ask-tag"><T zh={tag} en={s.tagsEn[i]} /></span>)}
+        </div>
+      </div>
+
+      <p class="ask-desc"><T zh={s.descriptionLong} en={s.descriptionLongEn} /></p>
+
+      <div class="ask-actions">
+        <a href={s.repoUrl} target="_blank" rel="noopener noreferrer" class="ask-repo">
+          GitHub <span aria-hidden="true">↗</span>
+        </a>
+        {s.links.map(l => (
+          <a href={l.url} target="_blank" rel="noopener noreferrer" class="ask-link">
+            <T zh={l.label} en={l.labelEn} /> <span aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <p class="ask-back"><a href="/projects/" class="section-cta"><T zh="← 回所有專案" en="← All projects" /></a></p>
+</BaseLayout>
+
+<style>
+  .ask-title { font-size: clamp(1.8rem, 4.5vw, 2.4rem); font-weight: 700; margin: 2.5rem 0 0.6rem; }
+  .ask-lead { color: var(--color-text-muted); line-height: 1.8; max-width: 46ch; margin-bottom: var(--spacing-xl); }
+
+  .ask-skill {
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface);
+    padding: 1.5rem;
+    margin-bottom: var(--spacing-lg);
+    /* 錨點跳轉時別被固定 header 蓋住 */
+    scroll-margin-top: 5rem;
+  }
+  .ask-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+  .ask-name { font-size: 1.25rem; font-weight: 650; margin: 0; }
+  .ask-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+  .ask-tag {
+    font-size: 0.72rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+    background: var(--color-border);
+    color: var(--color-text-muted);
+  }
+  .ask-desc { line-height: 1.9; margin: 0.9rem 0 1.1rem; }
+
+  .ask-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .ask-repo, .ask-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: filter 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .ask-repo { background: var(--color-accent); color: var(--color-accent-fg, #fff); }
+  .ask-repo:hover { filter: brightness(1.1); text-decoration: none; }
+  .ask-link { border: 1px solid var(--color-border); color: var(--color-text-muted); }
+  .ask-link:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+
+  .ask-back { margin-top: var(--spacing-lg); }
+</style>

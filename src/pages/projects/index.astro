@@ -34,7 +34,10 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
 
   <div class="projects-grid">
     {projects.map(p => (
-      <div class={`project-card ${p.status === 'in-progress' ? 'card-wip' : ''}`}>
+      <div
+        class={`project-card ${p.status === 'in-progress' ? 'card-wip' : ''}`}
+        {...(p.url ? { 'data-href': p.url, ...(p.internal ? {} : { 'data-external': 'true' }) } : {})}
+      >
         <div class="project-card-header">
           <div>
             <h2 class="project-title"><T zh={p.title} en={p.titleEn} /></h2>
@@ -61,9 +64,10 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
       </div>
     ))}
 
-    <!-- AI Agent Skills：公開發布的 agent skill repo。子卡直連 GitHub，
-         清單在 src/data/agentSkills.ts。id 供外部深連結 /projects/#agent-skills -->
-    <div class="project-card" id="agent-skills">
+    <!-- AI Agent Skills：仿寫作系列卡的「標題清單」寫法，卡片不放描述。
+         完整說明在 /projects/agent-skills/，清單資料在 src/data/agentSkills.ts。
+         id 供外部深連結 /projects/#agent-skills -->
+    <div class="project-card" id="agent-skills" data-href="/projects/agent-skills/">
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="AI Agent Skills" en="AI Agent Skills" /></h2>
@@ -72,37 +76,25 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
         <span class="project-badge badge-skill"><T zh="開源" en="Open Source" /></span>
       </div>
 
-      <p class="project-desc"><T
-        zh="把重複的工作流程包成 AI agent 能直接執行的 skill，開源發布。目前以 Claude 格式為主，逐步通用到其他 agent。"
-        en="Repeatable workflows packaged as skills AI agents can run directly, published as open source. Claude-first for now, generalizing to other agents over time."
-      /></p>
-
-      <div class="skill-list">
+      <ul class="series-mini-list">
         {agentSkills.map(s => (
-          <a href={s.repoUrl} target="_blank" rel="noopener noreferrer" class="skill-sub">
-            <span class="skill-sub-head">
-              <span class="skill-sub-title"><T zh={s.title} en={s.titleEn} /></span>
-              <span class="skill-sub-ext" aria-hidden="true">↗</span>
-            </span>
-            <span class="skill-sub-desc"><T zh={s.description} en={s.descriptionEn} /></span>
-            <span class="skill-sub-tags">
-              {s.tags.map((tag, i) => <span class="project-tag"><T zh={tag} en={s.tagsEn[i]} /></span>)}
-            </span>
-          </a>
+          <li class="series-mini-item">
+            <a href={`/projects/agent-skills/#${s.slug}`} class="series-mini-title"><T zh={s.title} en={s.titleEn} /></a>
+          </li>
         ))}
-      </div>
+      </ul>
 
       <div class="project-footer">
         <div class="project-tags">
           <span class="project-tag"><T zh="AI Agent" en="AI Agent" /></span>
           <span class="project-tag"><T zh="開源工具" en="Open-Source Tools" /></span>
         </div>
-        <a href="https://github.com/matt-ye" target="_blank" rel="noopener noreferrer" class="project-link">GitHub →</a>
+        <a href="/projects/agent-skills/" class="project-link"><T zh="完整說明 →" en="Details →" /></a>
       </div>
     </div>
 
     <!-- Hardcore Presentation Series Card -->
-    <div class="project-card">
+    <div class="project-card" data-href="/writing/?series=硬核簡報">
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="人、環境、職能：硬核簡報的科學" en="Hardcore Presentation" /></h2>
@@ -137,7 +129,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
     </div>
 
     <!-- Investing Series Card -->
-    <div class="project-card">
+    <div class="project-card" data-href="/writing/?series=投資專欄">
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="寫給家人：投資心態" en="Letters to Family: An Investing Mindset" /></h2>
@@ -174,7 +166,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
     </div>
 
     <!-- Management 3R Series Card -->
-    <div class="project-card">
+    <div class="project-card" data-href="/writing/?series=管理專欄">
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="天時、地利、人和：現代管理者的 3R 實踐指南" en="Right Time, Right Place, Right People" /></h2>
@@ -300,27 +292,8 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
     color: #5b21b6;
   }
 
-  .skill-list { display: grid; gap: 0.6rem; }
-  .skill-sub {
-    display: block;
-    padding: 0.7rem 0.85rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    text-decoration: none;
-    transition: border-color 0.15s, transform 0.15s;
-  }
-  .skill-sub:hover { border-color: var(--color-accent); transform: translateX(3px); text-decoration: none; }
-  .skill-sub-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
-  .skill-sub-title { font-weight: 650; font-size: 0.92rem; color: var(--color-text); }
-  .skill-sub-ext { color: var(--color-text-muted); font-size: 0.85rem; }
-  .skill-sub-desc {
-    display: block;
-    font-size: 0.82rem;
-    color: var(--color-text-muted);
-    line-height: 1.6;
-    margin-top: 0.15rem;
-  }
-  .skill-sub-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+  /* 整卡可點：有 data-href 的卡片游標提示；實際導頁在 <script> 委派處理 */
+  .project-card[data-href] { cursor: pointer; }
 
   .badge-series {
     background: #dbeafe;
@@ -413,3 +386,23 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
     flex-shrink: 0;
   }
 </style>
+
+<script>
+  /* 整卡可點。用事件委派：點到卡內既有的 <a>（文章、skill、前往）時讓連結
+     自己處理，不攔截；點到卡片其他區域才走 data-href。外部連結開新分頁，
+     與卡內「前往 →」的 target=_blank 行為一致。
+     文字選取不算點擊——按下與放開位置有位移就跳過，避免選字誤觸導頁。 */
+  let downAt: [number, number] | null = null;
+  document.addEventListener('pointerdown', e => { downAt = [e.clientX, e.clientY]; });
+
+  document.addEventListener('click', e => {
+    const target = e.target as HTMLElement;
+    if (target.closest('a')) return;
+    const card = target.closest<HTMLElement>('.project-card[data-href]');
+    if (!card) return;
+    if (downAt && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return;
+    const url = card.dataset.href!;
+    if (card.dataset.external === 'true') window.open(url, '_blank', 'noopener');
+    else window.location.assign(url);
+  });
+</script>

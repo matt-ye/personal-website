@@ -25,7 +25,7 @@ ORCID: 0009-0001-6085-8303
 
 ## AI Agent Skills
 
-Open-source skills that package repeatable workflows for AI agents to run directly. Claude-first, generalizing to other agent formats over time.
+Open-source skills that package repeatable workflows for AI agents to run directly, written in the universal SKILL.md format (works in Claude Code, Cursor, Gemini CLI, Codex CLI). Details: https://mattye.dev/projects/agent-skills/
 
 - Toutour: Adds a verified spotlight onboarding tour to any website — analyzes the layout, interviews the developer, generates steps, and verifies each with Playwright. https://github.com/matt-ye/Toutour
 - EndNote to Zotero Migration: Migrates an EndNote library to Zotero with PDF attachments and the full group hierarchy intact. https://github.com/matt-ye/endnote-to-zotero-migration
