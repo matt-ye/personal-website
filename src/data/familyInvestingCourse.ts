@@ -230,4 +230,13 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     date: '2026-12-23',
     url: '/projects/family-investing-course/week-25-marks-cycles/',
   },
+  {
+    slug: 'week-26-q2-capstone-thesis',
+    title: 'W26 Q2 Capstone——個股投資論文',
+    titleEn: 'W26 Q2 Capstone: Investment Thesis',
+    description: 'Q2 期末驗收：把 W13 健檢、W19–21 估值、W22 質化分析組裝成完整投資論文。七章結構、反方論證三來源、可驗證的認錯觸發條件。附觸發條件健檢與 Rubric 自評計分器。',
+    tags: ['Q2 投資人季', 'Capstone', '互動評估'],
+    date: '2026-12-30',
+    url: '/projects/family-investing-course/week-26-q2-capstone-thesis/',
+  },
 ];
