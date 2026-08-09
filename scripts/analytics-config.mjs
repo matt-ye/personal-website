@@ -46,14 +46,19 @@ export const INCLUDE_ARCHIVED = false; // 封存的 repo 已停更，預設排�
 // GA4 hostName 切分要保留的 host（其餘如 localhost、*.pages.dev 會被過濾）
 export const HOSTS = ['mattye.dev', 'brain-exposome.mattye.dev'];
 
-// 主站以外、有自己 GA4 property 的網站。
-// 前置（owner 手動）：把 service account 加為該 property 的 Viewer，
-// 並把「數字 property ID」存進對應的 Actions secret；secret 未設 → 該站自動跳過。
+// 主站的 data stream ID（GA4 Admin → 資料串流 →「Matt的個人網站」）。
+// 主站報表以 streamId + hostName 雙重過濾：property 裡還有其他網站的 stream，
+// 且 2026-06-08 起 Google 代碼曾被合併（兩個目的地互灌），雙重過濾可回溯排除污染。
+export const MAIN_STREAM_ID = '14990442923';
+
+// 同一個 GA4 property 底下、有自己 data stream 的其他網站。
+// 不需要額外 secret——與主站共用 GA4_SA_KEY / GA4_PROPERTY_ID，以 streamId + hostName 切分。
 export const GA4_EXTRA_SITES = [
   {
     key: 'dreamcatcher',
-    env: 'GA4_PROPERTY_ID_2', // 捕夢網（G-4MY30R916S 所屬 property 的數字 ID）
     label: { zh: '捕夢網 Tela Aurea', en: 'Dreamcatcher · Tela Aurea' },
     site: 'https://telaaurealab.com',
+    streamId: '15024877509', // 資料串流「Tela Aurea Lab - Dreamcatcher Generator」
+    hosts: ['telaaurealab.com', 'www.telaaurealab.com'],
   },
 ];

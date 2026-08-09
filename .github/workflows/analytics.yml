@@ -28,7 +28,6 @@ jobs:
         env:
           GA4_SA_KEY: ${{ secrets.GA4_SA_KEY }}
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
-          GA4_PROPERTY_ID_2: ${{ secrets.GA4_PROPERTY_ID_2 }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
           GH_TRAFFIC_TOKEN: ${{ secrets.GH_TRAFFIC_TOKEN }}

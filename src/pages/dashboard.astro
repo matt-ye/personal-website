@@ -298,8 +298,8 @@ function renderExtraSites() {
     if (!s.configured || s.error || !s.totals) {
       const msg = s.error
         ? `${L('本次抓取失敗:', 'Fetch failed: ')}${esc(s.error)}`
-        : L('尚未設定——請把 service account 加為該 GA4 property 的 Viewer,並將數字 Property ID 存成 secret(見 docs/analytics-pipeline.md)。',
-            'Not configured — grant the service account Viewer on this GA4 property and store its numeric ID as a secret (see docs/analytics-pipeline.md).');
+        : L('與主站共用 GA4 設定——完成主站 GA4 設定後此區自動出現數據(見 docs/analytics-pipeline.md)。',
+            'Shares the main GA4 credentials — data appears once the main GA4 setup is done (see docs/analytics-pipeline.md).');
       return `<div class="dash-site-card">${head}<div class="dash-note" style="display:block">${msg}</div></div>`;
     }
     const t28 = s.totals.d28 ?? {};
