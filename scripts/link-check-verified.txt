@@ -61,3 +61,30 @@ https://csrc.nist.gov/projects/post-quantum-cryptography/faqs
 # 標題與內文摘要（連 iClicker 那段內容都取得到），健檢卻回 404，所以是被擋不是不存在。
 # 同系列的 Part 1 則是四次不同搜尋都沒出現過網址，判定確實已被移除，連結才改指 Part 2。
 https://blogs.sjsu.edu/ecampus/2019/10/10/lesson-design-using-the-boppps-model-part-2-intended-learning-outcomes/
+
+# ── 2026-08-09：全站掃描新納入的網址（原本只掃教材頁） ──
+#
+# deming.org 整個網域走 Cloudflare 挑戰：連首頁都回 403，回應內容是
+# <title>Just a moment...</title> + cf 挑戰腳本。不是頁面不存在。
+https://deming.org/explore/pdsa/
+
+# ScienceDirect（Elsevier）對機房 IP 一律出 captcha 牆，回 403 但 body 有
+# 1.2MB 的挑戰頁；連 sciencedirect.com 首頁都回 400。文章本身存在：
+# Crossref 查 PII S0024630123000110 = "The origins of SWOT analysis"，
+# Long Range Planning 2023，DOI 10.1016/j.lrp.2023.102304——標題與站上的
+# 連結文字「The origins of SWOT analysis」完全相符。
+https://www.sciencedirect.com/science/article/pii/S0024630123000110
+
+# LinkedIn 對未登入請求回 999（自訂碼，非標準 HTTP）。owner 已確認正常。
+https://www.linkedin.com/in/ching-wei-ye
+
+# TSMC 投資人關係站整站走 Cloudflare 挑戰（回 403 + "Just a moment..."）。
+# 年報清單頁確實存在、列出 1994–2025 各年度（含站上引用的 2023）；
+# 同站的 2023 年報 PDF 也實際抓到過一次（200、16MB），之後才被限流。
+# 原本站上寫的是 ir.tsmc.com——那個主機是 NXDOMAIN，已改成這個。
+https://investor.tsmc.com/english/annual-reports
+
+# 亞洲大學企管系：這個網址在三輪掃描分別回 200 / 連不上 / 403，是對重複請求限流。
+# 用瀏覽器 UA 連測三次都 200，且頁面 <title> 為「管理五要：生產、行銷、人資、研發、
+# 財務」，與站上的連結文字相符。不是失效。
+https://ba.au.edu.tw/p/404-1043-63549.php
