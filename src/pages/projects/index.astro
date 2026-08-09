@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import T from '../../components/T.astro';
 import { getCollection } from 'astro:content';
 import { projects } from '../../data/projects';
+import { agentSkills } from '../../data/agentSkills';
 
 const investingPosts = (await getCollection('blog', ({ data }) =>
   !data.draft && data.series === 'family-investing'
@@ -24,7 +25,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
 ---
 <BaseLayout
   title="Projects — Matt Ye"
-  description="葉淨維 Matt Ye 的 Side Projects — 互動工具、實驗性作品，以及 One More Step 學習筆記。"
+  description="葉淨維 Matt Ye 的 Side Projects — 互動工具、開源 AI agent skills、實驗性作品，以及 One More Step 學習筆記。"
 >
   <section class="projects-hero">
     <h1><T zh="個人" en="Side" /> <span class="accent-text"><T zh="專案" en="Projects" /></span></h1>
@@ -33,7 +34,10 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
 
   <div class="projects-grid">
     {projects.map(p => (
-      <div class={`project-card ${p.status === 'in-progress' ? 'card-wip' : ''}`}>
+      <div
+        class={`project-card ${p.status === 'in-progress' ? 'card-wip' : ''}`}
+        {...(p.url ? { 'data-href': p.url, ...(p.internal ? {} : { 'data-external': 'true' }) } : {})}
+      >
         <div class="project-card-header">
           <div>
             <h2 class="project-title"><T zh={p.title} en={p.titleEn} /></h2>
@@ -60,8 +64,37 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
       </div>
     ))}
 
+    <!-- AI Agent Skills：仿寫作系列卡的「標題清單」寫法，卡片不放描述。
+         完整說明在 /projects/agent-skills/，清單資料在 src/data/agentSkills.ts。
+         id 供外部深連結 /projects/#agent-skills -->
+    <div class="project-card" id="agent-skills" data-href="/projects/agent-skills/">
+      <div class="project-card-header">
+        <div>
+          <h2 class="project-title"><T zh="AI Agent Skills" en="AI Agent Skills" /></h2>
+          <p class="project-title-en">Open-source skills for AI agents</p>
+        </div>
+        <span class="project-badge badge-skill"><T zh="開源" en="Open Source" /></span>
+      </div>
+
+      <ul class="series-mini-list">
+        {agentSkills.map(s => (
+          <li class="series-mini-item">
+            <a href={`/projects/agent-skills/#${s.slug}`} class="series-mini-title"><T zh={s.title} en={s.titleEn} /></a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="project-footer">
+        <div class="project-tags">
+          <span class="project-tag"><T zh="AI Agent" en="AI Agent" /></span>
+          <span class="project-tag"><T zh="開源工具" en="Open-Source Tools" /></span>
+        </div>
+        <a href="/projects/agent-skills/" class="project-link"><T zh="完整說明 →" en="Details →" /></a>
+      </div>
+    </div>
+
     <!-- Hardcore Presentation Series Card -->
-    <div class="project-card">
+    <div class="project-card" data-href="/writing/?series=硬核簡報">
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="人、環境、職能：硬核簡報的科學" en="Hardcore Presentation" /></h2>
@@ -96,7 +129,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
     </div>
 
     <!-- Investing Series Card -->
-    <div class="project-card">
+    <div class="project-card" data-href="/writing/?series=投資專欄">
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="寫給家人：投資心態" en="Letters to Family: An Investing Mindset" /></h2>
@@ -133,7 +166,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
     </div>
 
     <!-- Management 3R Series Card -->
-    <div class="project-card">
+    <div class="project-card" data-href="/writing/?series=管理專欄">
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="天時、地利、人和：現代管理者的 3R 實踐指南" en="Right Time, Right Place, Right People" /></h2>
@@ -254,6 +287,14 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
     color: var(--color-text-muted);
   }
 
+  .badge-skill {
+    background: #ede9fe;
+    color: #5b21b6;
+  }
+
+  /* 整卡可點：有 data-href 的卡片游標提示；實際導頁在 <script> 委派處理 */
+  .project-card[data-href] { cursor: pointer; }
+
   .badge-series {
     background: #dbeafe;
     color: #1e40af;
@@ -345,3 +386,23 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
     flex-shrink: 0;
   }
 </style>
+
+<script>
+  /* 整卡可點。用事件委派：點到卡內既有的 <a>（文章、skill、前往）時讓連結
+     自己處理，不攔截；點到卡片其他區域才走 data-href。外部連結開新分頁，
+     與卡內「前往 →」的 target=_blank 行為一致。
+     文字選取不算點擊——按下與放開位置有位移就跳過，避免選字誤觸導頁。 */
+  let downAt: [number, number] | null = null;
+  document.addEventListener('pointerdown', e => { downAt = [e.clientX, e.clientY]; });
+
+  document.addEventListener('click', e => {
+    const target = e.target as HTMLElement;
+    if (target.closest('a')) return;
+    const card = target.closest<HTMLElement>('.project-card[data-href]');
+    if (!card) return;
+    if (downAt && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return;
+    const url = card.dataset.href!;
+    if (card.dataset.external === 'true') window.open(url, '_blank', 'noopener');
+    else window.location.assign(url);
+  });
+</script>
