@@ -44,6 +44,97 @@ function injectGaIntoStaticHtml() {
   };
 }
 
+// 投資課 26+ 週的內文密集互相引用（「W12」「第 21 週」），但手刻 HTML 裡多數
+// 引用是純文字——逐頁手改近兩百處不可行，之後每週還會新增。所以 build 後把
+// 課程頁內文的週次引用自動轉成站內連結：
+//   - 對照表從 src/data/familyInvestingCourse.ts 讀（單一事實來源，該檔每週
+//     上線時本來就要新增 entry），且只連結 dist 裡「目標頁真的存在」的週次——
+//     內文提到還沒上線的 W38 會保持純文字，等那週上線，下次 build 自動補上
+//   - 只動文字節點。<script>（互動 JS 與 JSON-LD 裡有大量 WNN 字串，注入
+//     HTML 會直接弄壞互動）、<style>、<title>、既有 <a>、<summary>／<button>／
+//     <label>（點連結會蓋掉展開／作答／勾選的行為）一律跳過；屬性值天然不在
+//     文字節點裡，不會被碰到
+//   - 不連結「本頁自己的週次」（W25 頁裡的 W25 連自己沒有意義）
+// 寫作慣例因此不變：新單元照常寫「（W18）」，build 完自動變連結。
+function autoLinkWeekRefs() {
+  const COURSE = 'projects/family-investing-course';
+  // 點連結會與原本的互動行為衝突、或本來就不該動的容器
+  const SKIP = new Set(['script', 'style', 'title', 'a', 'summary', 'button', 'label']);
+  const WREF_CSS =
+    'a.wref{color:var(--pine);text-decoration:none}a.wref:hover{text-decoration:underline}';
+
+  return {
+    name: 'auto-link-week-refs',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        const courseDir = join(root, ...COURSE.split('/'));
+
+        // 週次 → URL 對照表：讀 data 檔（理由同 sitemap 的 readPairs：不 import .ts），
+        // 並要求 dist 裡目標頁確實存在——自動產生的連結不經過人眼，必須自我驗證。
+        const urlByWeek = new Map();
+        let src = '';
+        try { src = readFileSync(join(__dirname, 'src/data/familyInvestingCourse.ts'), 'utf-8'); } catch {}
+        for (const m of src.matchAll(/slug:\s*'(week-(\d{2})[^']*)'/g)) {
+          const slug = m[1], week = parseInt(m[2], 10);
+          try {
+            statSync(join(courseDir, slug, 'index.html'));
+            urlByWeek.set(week, `/${COURSE}/${slug}/`);
+          } catch { /* 目標頁不在 dist，不連 */ }
+        }
+        if (urlByWeek.size === 0) { logger.warn('no week pages found, skipped'); return; }
+
+        let pages = 0, links = 0;
+        for (const entry of readdirSync(courseDir)) {
+          const selfWeek = entry.match(/^week-(\d{2})/);
+          if (!selfWeek) continue;
+          const file = join(courseDir, entry, 'index.html');
+          const html = readFileSync(file, 'utf8');
+
+          let pageLinks = 0;
+          const linkify = (text) =>
+            // 「W12」與「第 12 週」兩種寫法；範圍寫法（W19–21）只有起點會成為連結
+            text.replace(/\bW(\d{1,2})\b|第\s?(\d{1,2})\s?週/g, (whole, a, b) => {
+              const week = parseInt(a || b, 10);
+              const url = urlByWeek.get(week);
+              if (!url || week === parseInt(selfWeek[1], 10)) return whole;
+              pageLinks++;
+              return `<a class="wref" href="${url}">${whole}</a>`;
+            });
+
+          // 以標籤為界切開，僅改「不在任何 SKIP 容器內」的文字片段
+          const depth = {};
+          let inSkip = 0;
+          const out = html.split(/(<[^>]*>)/).map((tok) => {
+            if (tok.startsWith('<')) {
+              const t = tok.match(/^<\s*(\/?)([a-zA-Z][a-zA-Z0-9-]*)/);
+              if (t && SKIP.has(t[2].toLowerCase()) && !tok.endsWith('/>')) {
+                const name = t[2].toLowerCase();
+                depth[name] = (depth[name] || 0) + (t[1] ? -1 : 1);
+                inSkip += t[1] ? -1 : 1;
+              }
+              return tok;
+            }
+            return inSkip > 0 ? tok : linkify(tok);
+          }).join('');
+
+          if (pageLinks > 0) {
+            // 連結樣式跟頁面的 a.srclink 一致；規則附掛在頁面既有 <style> 尾端。
+            // 先檢查再插入，重跑同一份 dist 也不會重複。
+            const styled = out.includes(WREF_CSS)
+              ? out
+              : out.replace('</style>', WREF_CSS + '</style>');
+            writeFileSync(file, styled);
+            pages++;
+            links += pageLinks;
+          }
+        }
+        logger.info(`linked ${links} week reference(s) across ${pages} course page(s)`);
+      },
+    },
+  };
+}
+
 function findPublicHtmlPages(publicDir, siteUrl) {
   const pages = [];
   function scan(dir) {
@@ -152,5 +243,6 @@ export default defineConfig({
       },
     }),
     injectGaIntoStaticHtml(),
+    autoLinkWeekRefs(),
   ],
 });
