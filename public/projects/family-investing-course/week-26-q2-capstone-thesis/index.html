@@ -133,7 +133,7 @@
   .rtotal .of{font-size:.9rem;color:var(--ink-3)}
   .rbar{height:.7rem;border-radius:99px;background:var(--line-soft);overflow:hidden;margin-top:.5rem;position:relative}
   .rbar i{display:block;height:100%;background:var(--pine);width:0;transition:width .25s}
-  .rbar u{position:absolute;top:-4px;bottom:-4px;left:80%;width:0;border-left:2px dashed var(--ink-3)}
+  .rbar u{position:absolute;top:-4px;bottom:-4px;left:81.25%;width:0;border-left:2px dashed var(--ink-3)}
   .rpass{margin-top:.35rem;font-size:.75rem;color:var(--ink-3);text-align:right}
   .rverdict{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
   .rverdict b{color:var(--coin)}
@@ -374,7 +374,8 @@
 
   <div class="prose">
   <h2>自評 Rubric：8 分才算 Q2 畢業</h2>
-  <p>寫完之後自己打分。每項 0–2 分，滿分 10 分，8 分以上算過關。</p>
+  <p>寫完之後自己打分。<strong>七章各一項，加上「全文」一項，共八項</strong>；每項 0–2 分，滿分 16 分，<strong>13 分以上算過關</strong>（沿用原本 80% 的標準）。</p>
+  <p class="muted">②③④是組裝既有素材的章節，看似最容易，但也最容易因為「素材沒更新到最新一季」而失分——它們一樣要評分，否則整份論文的地基可以是空的。</p>
   <div class="example">
     <p class="tag">最重要的一句</p>
     <p><strong>結論寫「跳過」的論文，一樣可以拿滿分。</strong>「以此價格不買」是完全合法、而且非常常見的專業結論（W21）。Rubric 評的是<strong>推理品質</strong>，不是你有沒有下單。分析師寫 sell 或 hold 的報告，跟寫 buy 的一樣專業。</p>
@@ -386,9 +387,9 @@
     <h3>Rubric 自評計分器</h3>
     <p class="muted" style="margin-top:-.2rem">照你剛寫完的論文誠實給分。低分的項目就是你這週剩下時間該補的地方。</p>
     <div id="rlist"></div>
-    <div class="rtotal"><span class="big" id="rbig">0</span><span class="of">／ 10 分</span></div>
+    <div class="rtotal"><span class="big" id="rbig">0</span><span class="of">／ 16 分</span></div>
     <div class="rbar"><i id="rfill"></i><u></u></div>
-    <p class="rpass">↑ 虛線＝8 分及格線</p>
+    <p class="rpass">↑ 虛線＝13 分及格線</p>
     <div class="rverdict" id="rverdict">先給每一項打分。</div>
   </div>
 
@@ -477,7 +478,7 @@
     <li><label><input type="checkbox"><span>反方論證讓自己動搖過</span></label></li>
     <li><label><input type="checkbox"><span>觸發條件可驗證、非純價格（3–5 條）</span></label></li>
     <li><label><input type="checkbox"><span>加碼條件 1–2 條</span></label></li>
-    <li><label><input type="checkbox"><span>Rubric 自評 ≥ 8 分</span></label></li>
+    <li><label><input type="checkbox"><span>Rubric 自評 ≥ 13 分（滿分 16）</span></label></li>
   </ul>
 
   <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
@@ -539,7 +540,7 @@
     <li><label><input type="checkbox"><span>投資論文 2–3 頁完成並獨立存檔</span></label></li>
     <li><label><input type="checkbox"><span>七章齊全，反方論證含至少兩個具體論點</span></label></li>
     <li><label><input type="checkbox"><span>認錯觸發條件 3–5 條，全部可驗證且非純價格</span></label></li>
-    <li><label><input type="checkbox"><span>Rubric ≥ 8 分（或已列出補強計畫）</span></label></li>
+    <li><label><input type="checkbox"><span>Rubric ≥ 13 分（或已列出補強計畫）</span></label></li>
     <li><label><input type="checkbox"><span>家人／朋友能複述你的反方論證</span></label></li>
   </ul>
   <p id="checkdone" aria-live="polite"></p>
@@ -644,11 +645,15 @@
   /* ---------- 互動 2：Rubric 自評計分器 ---------- */
   var RUBRIC = [
     { n: "①一句話論點", d: "具體，而且說得出「市場錯在哪」" },
+    { n: "②商業模式", d: "用自己的話寫清楚賣什麼、賣給誰、憑什麼收錢——家人聽得懂" },
+    { n: "③護城河與五力", d: "來源 × 寬度 × 趨勢，每個判斷附證據而非形容詞" },
+    { n: "④財務健檢摘要", d: "三率、杜邦、現金流三線、紅旗結論，數據為最新一季" },
     { n: "⑤估值", d: "有區間、有安全邊際、有買價上限（不是單點目標價）" },
     { n: "⑥反方論證", d: "強到自己讀了會動搖" },
-    { n: "⑦觸發條件", d: "可驗證、非純價格" },
+    { n: "⑦結論與觸發條件", d: "行動與倉位明確；觸發條件可驗證、非純價格" },
     { n: "全文", d: "每個主張都有數字或出處，不是形容詞堆疊" }
   ];
+  var RPASS = 13, RMAX = RUBRIC.length * 2;
   var rscores = RUBRIC.map(function(){ return null; });
   var rlist = document.getElementById("rlist");
   RUBRIC.forEach(function(item, i){
@@ -666,19 +671,19 @@
     var done = rscores.every(function(s){ return s !== null; });
     var total = rscores.reduce(function(a,b){ return a + (b || 0); }, 0);
     document.getElementById("rbig").textContent = total;
-    document.getElementById("rfill").style.width = (total / 10 * 100) + "%";
+    document.getElementById("rfill").style.width = (total / RMAX * 100) + "%";
     var v = document.getElementById("rverdict");
     if (!done) { v.innerHTML = "先給每一項打分（還有 " + rscores.filter(function(s){ return s === null; }).length + " 項未評）。"; return; }
     var weak = RUBRIC.filter(function(_, i){ return rscores[i] <= 1; }).map(function(x){ return x.n; });
-    if (total >= 8) {
-      v.innerHTML = "<b>" + total + " 分 · Q2 畢業。</b>你已經具備「獨立分析一家公司並做出附帶認錯機制的決策」的能力。" +
-        (weak.length ? "行有餘力可再補強：" + weak.join("、") + "。" : "五項全部紮實，把論文存好——W38 複盤會回來對照它。");
-    } else if (total >= 6) {
-      v.innerHTML = "<b>" + total + " 分 · 差一點。</b>把這幾項補到 2 分就過關：" + weak.join("、") +
+    if (total >= RPASS) {
+      v.innerHTML = "<b>" + total + " / " + RMAX + " 分 · Q2 畢業。</b>你已經具備「獨立分析一家公司並做出附帶認錯機制的決策」的能力。" +
+        (weak.length ? "行有餘力可再補強：" + weak.join("、") + "。" : "八項全部紮實，把論文存好——W38 複盤會回來對照它。");
+    } else if (total >= 10) {
+      v.innerHTML = "<b>" + total + " / " + RMAX + " 分 · 差一點。</b>把這幾項補到 2 分就過關：" + weak.join("、") +
         "。通常最快的補強是⑥反方論證——它一強，⑦觸發條件會跟著具體起來。";
     } else {
-      v.innerHTML = "<b>" + total + " 分 · 還要再一輪。</b>弱項：" + weak.join("、") +
-        "。建議順序：先把⑥反方論證寫到自己會動搖，再回頭修⑤估值的區間與買價上限，最後重寫①。①永遠最後寫。";
+      v.innerHTML = "<b>" + total + " / " + RMAX + " 分 · 還要再一輪。</b>弱項：" + weak.join("、") +
+        "。建議順序：先把⑥反方論證寫到自己會動搖，再回頭修⑤估值的區間與買價上限，②③④若弱多半是素材沒更新到最新一季，最後重寫①。①永遠最後寫。";
     }
   }
   rlist.addEventListener("click", function(e){
