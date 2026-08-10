@@ -1,7 +1,12 @@
 ---
 // 私人流量儀表板（unlisted：noindex、不進導覽列與 sitemap）。
-// 資料來源：GitHub Actions 每日快照 → secret gist（見 docs/analytics-pipeline.md）。
+// 資料來源：GitHub Actions 每 6 小時快照 → secret gist（見 docs/analytics-pipeline.md）。
 // 資料網址由 Cloudflare Pages 環境變數注入，不寫死在 repo。
+//
+// 版型原則：每個「網站」（主站、捕夢網…）是一個標準區塊，由同一個 siteSectionHTML()
+// 渲染——KPI → 趨勢 → 分佈 → 子頁面成效 → 事件/轉換。新站只要進 GA4_EXTRA_SITES
+// config 就會自動長出完整區塊，不會再有兩邊漂移的問題。
+// 各區無外框，以分隔線 + 大標題（.dash-source）區隔。
 import BaseLayout from '../layouts/BaseLayout.astro';
 import T from '../components/T.astro';
 
@@ -15,14 +20,14 @@ const DATA_BASE = import.meta.env.PUBLIC_ANALYTICS_DATA_BASE ?? '';
 
     <section class="speeches-hero">
       <h1><T zh="流量" en="Site" /> <span class="accent-text"><T zh="儀表板" en="Dashboard" /></span></h1>
-      <p class="subtitle" id="dash-updated"><T zh="每日更新的網站流量、轉換與專案數據。" en="Daily traffic, conversion, and project metrics." /></p>
+      <p class="subtitle" id="dash-updated"><T zh="每 6 小時更新的網站流量、轉換與專案數據。" en="Traffic, conversion, and project metrics, refreshed every 6 hours." /></p>
     </section>
 
     <div id="dash-state" class="data-loading"><T zh="資料載入中…" en="Loading data…" /></div>
 
     <div id="dash-main" style="display:none">
 
-      <!-- 時間視窗切換（影響 KPI、趨勢圖、轉換卡；分佈圖與漏斗固定 28 天） -->
+      <!-- 全域時間視窗：控制所有網站區塊與 Cloudflare（GitHub 區的 traffic 資料性質不適用） -->
       <div class="dash-window-row" id="win-chips">
         <button class="chip" data-win="d7"><T zh="7 天" en="7d" /></button>
         <button class="chip" data-win="d28"><T zh="28 天" en="28d" /></button>
@@ -31,117 +36,16 @@ const DATA_BASE = import.meta.env.PUBLIC_ANALYTICS_DATA_BASE ?? '';
         <button class="chip" data-win="d365"><T zh="一年" en="1 year" /></button>
       </div>
 
-      <!-- GA4 KPI -->
-      <section id="sec-kpi">
-        <div class="dash-sec-body">
-          <div class="bento-grid">
-            <div class="bento-card">
-              <div class="bento-card-label">Visitors</div>
-              <div class="bento-card-num" id="val-users">—</div>
-              <div class="bento-card-sub" id="sub-users">—</div>
-            </div>
-            <div class="bento-card">
-              <div class="bento-card-label">Page Views</div>
-              <div class="bento-card-num" id="val-views">—</div>
-              <div class="bento-card-sub" id="sub-views">—</div>
-            </div>
-            <div class="bento-card">
-              <div class="bento-card-label">Sessions</div>
-              <div class="bento-card-num" id="val-sessions">—</div>
-              <div class="bento-card-sub" id="sub-sessions">—</div>
-            </div>
-            <div class="bento-card">
-              <div class="bento-card-label">Engagement</div>
-              <div class="bento-card-num" id="val-eng">—</div>
-              <div class="bento-card-sub" id="sub-eng"><T zh="互動率" en="Engagement rate" /></div>
-            </div>
-            <div class="bento-card">
-              <div class="bento-card-label">Read Completes</div>
-              <div class="bento-card-num" id="val-reads">—</div>
-              <div class="bento-card-sub" id="sub-reads"><T zh="文章完讀" en="Articles read" /></div>
-            </div>
-            <div class="bento-card">
-              <div class="bento-card-label">Total Stars</div>
-              <div class="bento-card-num" id="val-stars">—</div>
-              <div class="bento-card-sub"><T zh="全專案 GitHub Stars" en="GitHub stars, all projects" /></div>
-            </div>
-          </div>
-        </div>
-        <div class="dash-note" style="display:none"></div>
-      </section>
-
-      <!-- GA4 趨勢與分佈 -->
-      <section class="charts-section" id="sec-ga">
-        <div class="dash-sec-body">
-          <div class="year-chart-card">
-            <div class="year-chart-head">
-              <div>
-                <div class="chart-card-title"><T zh="流量趨勢" en="Traffic trend" /> <span class="dash-muted" id="trend-win"></span></div>
-                <div class="year-peak" id="trend-peak">—</div>
-              </div>
-            </div>
-            <div class="year-chart-wrap"><canvas id="chart-trend"></canvas></div>
-            <div class="dash-chart-note" style="display:none"></div>
-          </div>
-
-          <div class="charts-grid">
-            <div class="chart-card">
-              <div class="chart-card-head"><span class="chart-card-title"><T zh="流量管道" en="Channels" /></span><span class="chart-badge" id="badge-channels">—</span></div>
-              <div class="chart-biggest" id="biggest-channels">—</div>
-              <div class="chart-wrap"><canvas id="chart-channels"></canvas></div>
-            </div>
-            <div class="chart-card">
-              <div class="chart-card-head"><span class="chart-card-title"><T zh="裝置" en="Devices" /></span><span class="chart-badge" id="badge-devices">—</span></div>
-              <div class="chart-biggest" id="biggest-devices">—</div>
-              <div class="chart-wrap"><canvas id="chart-devices"></canvas></div>
-            </div>
-            <div class="chart-card" id="card-hosts" style="display:none">
-              <div class="chart-card-head"><span class="chart-card-title"><T zh="站點" en="Sites" /></span><span class="chart-badge" id="badge-hosts">—</span></div>
-              <div class="chart-biggest" id="biggest-hosts">—</div>
-              <div class="chart-wrap"><canvas id="chart-hosts"></canvas></div>
-            </div>
-            <div class="chart-card">
-              <div class="chart-card-head"><span class="chart-card-title"><T zh="國家" en="Countries" /></span><span class="chart-badge" id="badge-countries">—</span></div>
-              <div class="chart-biggest" id="biggest-countries">—</div>
-              <div class="chart-wrap"><canvas id="chart-countries"></canvas></div>
-            </div>
-          </div>
-        </div>
-        <div class="dash-note" style="display:none"></div>
-      </section>
-
-      <!-- Top pages -->
-      <section id="sec-pages">
-        <p class="section-heading"><T zh="子頁面成效（28 天）" en="Top pages (28 days)" /></p>
-        <div class="dash-sec-body">
-          <div class="orgs-scroll-wrap">
-            <div class="orgs-grid" id="pages-grid"></div>
-          </div>
-        </div>
-        <div class="dash-note" style="display:none"></div>
-      </section>
-
-      <!-- 轉換 -->
-      <section id="sec-conv">
-        <p class="section-heading"><T zh="轉換" en="Conversions" /></p>
-        <div class="dash-sec-body">
-          <div class="bento-grid" id="conv-grid"></div>
-          <div class="dash-funnels" id="funnels"></div>
-        </div>
-        <div class="dash-note" style="display:none"></div>
-      </section>
-
-      <!-- 其他網站(額外 GA4 property,例如捕夢網) -->
-      <section id="sec-sites" style="display:none">
-        <p class="section-heading"><T zh="其他網站" en="Other sites" /></p>
-        <div class="dash-sec-body">
-          <div id="sites-wrap"></div>
-        </div>
-      </section>
+      <!-- 網站區塊（主站 + GA4_EXTRA_SITES，共用渲染器動態生成） -->
+      <div id="sites-root"></div>
 
       <!-- Cloudflare -->
-      <section id="sec-cf">
-        <p class="section-heading"><T zh="Cloudflare 邊緣數據（28 天）" en="Cloudflare edge (28 days)" /></p>
+      <section class="dash-source" id="sec-cf">
+        <div class="dash-source-head">
+          <span class="dash-source-title"><T zh="Cloudflare 邊緣" en="Cloudflare edge" /></span>
+          <span class="dash-muted" id="cf-win"></span>
+          <a class="dash-source-link" href="https://dash.cloudflare.com" target="_blank" rel="noopener">mattye.dev zone ↗</a>
+        </div>
         <div class="dash-sec-body">
           <div class="bento-grid" id="cf-kpis"></div>
           <div class="year-chart-card">
@@ -152,15 +56,19 @@ const DATA_BASE = import.meta.env.PUBLIC_ANALYTICS_DATA_BASE ?? '';
               </div>
             </div>
             <div class="year-chart-wrap"><canvas id="chart-cf"></canvas></div>
-            <div class="dash-chart-note" style="display:none"></div>
           </div>
+          <p class="dash-chart-note" id="cf-note" style="display:none"></p>
         </div>
         <div class="dash-note" style="display:none"></div>
       </section>
 
       <!-- GitHub 專案 -->
-      <section id="sec-gh">
-        <p class="section-heading"><T zh="GitHub 專案" en="GitHub projects" /> <span class="chart-badge" id="badge-repos"></span></p>
+      <section class="dash-source" id="sec-gh">
+        <div class="dash-source-head">
+          <span class="dash-source-title"><T zh="GitHub 專案" en="GitHub projects" /></span>
+          <span class="chart-badge" id="badge-repos"></span>
+          <span class="dash-muted" id="gh-stars"></span>
+        </div>
         <div class="dash-sec-body">
           <div class="orgs-filter-row" id="repo-tabs">
             <button class="chip active" data-tab="public"><T zh="公開作品" en="Public" /> <span id="count-public"></span></button>
@@ -173,8 +81,8 @@ const DATA_BASE = import.meta.env.PUBLIC_ANALYTICS_DATA_BASE ?? '';
 
       <p class="dash-footnote">
         <T
-          zh="資料來源：GA4 Data API · Cloudflare GraphQL Analytics · GitHub REST API。每日 09:30（台北）更新；GA4 近 48 小時數據為暫定值。"
-          en="Sources: GA4 Data API · Cloudflare GraphQL Analytics · GitHub REST API. Updated daily 09:30 Asia/Taipei; GA4 figures for the last 48h are provisional."
+          zh="資料來源：GA4 Data API · Cloudflare GraphQL Analytics · GitHub REST API。每 6 小時更新；GA4 近 48 小時數據為暫定值。"
+          en="Sources: GA4 Data API · Cloudflare GraphQL Analytics · GitHub REST API. Refreshed every 6 hours; GA4 figures for the last 48h are provisional."
         />
       </p>
 
@@ -221,7 +129,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 let summary = null;
 let history = [];
 
-/* 時間視窗（KPI、趨勢、轉換卡跟著切；分佈圖與漏斗固定 28 天） */
+/* 全域時間視窗 */
 const WIN_DAYS = { d7: 7, d28: 28, d90: 90, d180: 180, d365: 365 };
 const WIN_LABEL = {
   d7: ['近 7 天', 'last 7 days'],
@@ -230,9 +138,17 @@ const WIN_LABEL = {
   d180: ['近半年', 'last 6 months'],
   d365: ['近一年', 'last 12 months'],
 };
-let win = localStorage.getItem('dash-win');
+let win = null;
+try { win = localStorage.getItem('dash-win'); } catch (e) {}
 if (!WIN_DAYS[win]) win = 'd28';
 const winLabel = () => L(...WIN_LABEL[win]);
+
+// schema v2：維度報表是「視窗 → 陣列」物件；v1 舊資料是單一陣列（28 天）。
+// 舊資料只在 28 天視窗可用，其餘視窗回 null（區塊顯示「待資料更新」）。
+const forWin = (field) => Array.isArray(field)
+  ? (win === 'd28' ? field : null)
+  : (field?.[win] ?? null);
+const PENDING = () => `<div class="dash-note" style="display:block">${L('此視窗的資料將在下次資料更新後出現（Actions → analytics → Run workflow 可立即更新）。', 'Data for this window appears after the next pipeline run (trigger it via Actions → analytics → Run workflow).')}</div>`;
 
 document.querySelectorAll('#win-chips .chip').forEach((btn) => {
   btn.classList.toggle('active', btn.dataset.win === win);
@@ -275,7 +191,7 @@ async function init() {
     ]);
     if (!sRes.ok) throw new Error(`summary HTTP ${sRes.status}`);
     summary = await sRes.json();
-    if ((summary.schemaVersion ?? 0) > 1) throw new Error(`unknown schemaVersion ${summary.schemaVersion}`);
+    if ((summary.schemaVersion ?? 0) > 2) throw new Error(`unknown schemaVersion ${summary.schemaVersion}`);
     history = hRes.ok
       ? (await hRes.text()).split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean)
       : [];
@@ -289,7 +205,7 @@ async function init() {
   }
 }
 
-/* ── section 容錯 ───────────────────────────────────── */
+/* ── section 容錯（CF / GitHub 用）──────────────────── */
 function sectionOk(id, ok, msgZh, msgEn) {
   const sec = document.getElementById(id);
   if (!sec) return false;
@@ -312,10 +228,6 @@ function renderAll() {
     Chart.defaults.font.size = 11;
     Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.06)';
   }
-  document.querySelectorAll('.dash-chart-note').forEach(el => {
-    el.style.display = hasChart() ? 'none' : '';
-    if (!hasChart()) el.textContent = L('圖表元件載入失敗（CDN 無法連線），數字仍為正確資料。', 'Chart library failed to load (CDN unreachable); the numbers above are still accurate.');
-  });
 
   const updated = document.getElementById('dash-updated');
   if (summary.generatedAt && updated) {
@@ -323,223 +235,252 @@ function renderAll() {
     updated.textContent = L(`資料更新於 ${dt.toLocaleString('zh-TW')}`, `Data updated ${dt.toLocaleString('en-US')}`);
   }
 
-  renderGa();
-  renderTopPages();
-  renderConversions();
-  renderExtraSites();
+  renderSites();
   renderCf();
   renderRepos();
 }
 
-/* 其他網站(額外 GA4 property):每站一張卡 = KPI 列 + 90 天趨勢 + top pages + 站方事件 */
-function renderExtraSites() {
-  const sites = summary.ga4Sites ?? [];
-  const sec = document.getElementById('sec-sites');
-  if (!sec) return;
-  if (!sites.length) { sec.style.display = 'none'; return; }
-  sec.style.display = '';
+/* ══ 網站區塊（主站與其他站共用同一套渲染）═══════════ */
 
-  const wrap = document.getElementById('sites-wrap');
-  wrap.innerHTML = sites.map((s, i) => {
-    const name = L(s.label?.zh ?? s.key, s.label?.en ?? s.key);
-    const head = `
-      <div class="dash-repo-head">
-        <span class="dash-site-name">${esc(name)}</span>
-        ${s.site ? `<a class="dash-repo-site" href="${esc(s.site)}" target="_blank" rel="noopener">↗ site</a>` : ''}
-      </div>`;
-    if (!s.configured || s.error || !s.totals) {
-      const msg = s.error
-        ? `${L('本次抓取失敗:', 'Fetch failed: ')}${esc(s.error)}`
-        : L('與主站共用 GA4 設定——完成主站 GA4 設定後此區自動出現數據(見 docs/analytics-pipeline.md)。',
-            'Shares the main GA4 credentials — data appears once the main GA4 setup is done (see docs/analytics-pipeline.md).');
-      return `<div class="dash-site-card">${head}<div class="dash-note" style="display:block">${msg}</div></div>`;
-    }
-    /* 與主站同格式：bento KPI 列（吃視窗切換）+ year-chart-card 大趨勢圖 */
-    const t = s.totals?.[win];
-    const kpiVal = (v, pct) => (t && v !== undefined && v !== null)
-      ? (pct ? `${Math.round(v * 100)}%` : fmtNum(v)) : '—';
-    const kpis = [
-      ['Visitors', kpiVal(t?.users), winLabel()],
-      ['Page Views', kpiVal(t?.views), winLabel()],
-      ['Sessions', kpiVal(t?.sessions), t ? L(`新訪客 ${fmtNum(t.newUsers ?? 0)}`, `${fmtNum(t.newUsers ?? 0)} new`) : '—'],
-      ['Engagement', kpiVal(t?.engagementRate, true), L('互動率', 'Engagement rate')],
-    ].map(([label, numv, sub]) => `
-      <div class="bento-card">
-        <div class="bento-card-label">${label}</div>
-        <div class="bento-card-num">${numv}</div>
-        <div class="bento-card-sub">${sub}</div>
-      </div>`).join('');
-    const sliced = (s.daily ?? []).slice(-WIN_DAYS[win]);
-    const peak = [...sliced].sort((a, b) => b.views - a.views)[0];
-    const pages = (s.topPages ?? []).slice(0, 5).map((p) =>
-      `<div class="dash-site-page"><span class="dash-path">${esc(p.path)}</span><b>${fmtNum(p.views)}</b></div>`).join('');
-    const events = (s.topEvents ?? []).slice(0, 6).map((e) =>
-      `<span class="chip dash-ref">${esc(e.name)} · ${fmtNum(e.count)}</span>`).join('');
-    return `
-      <div class="dash-site-card">
-        ${head}
-        <div class="bento-grid dash-site-bento">${kpis}</div>
-        <div class="year-chart-card">
-          <div class="year-chart-head">
-            <div>
-              <div class="chart-card-title">${L('流量趨勢', 'Traffic trend')} <span class="dash-muted">· ${winLabel()}</span></div>
-              <div class="year-peak">${peak ? `Peak: ${fmtDay(peak.date)} · ${peak.views} views` : '—'}</div>
-            </div>
-          </div>
-          <div class="year-chart-wrap"><canvas id="site-trend-${i}"></canvas></div>
-        </div>
-        ${pages ? `<p class="section-heading dash-site-sub">${L('熱門頁面（28 天）', 'Top pages (28d)')}</p><div class="dash-site-pages">${pages}</div>` : ''}
-        ${events ? `<p class="section-heading dash-site-sub">${L('站方事件（28 天）', 'Site events (28d)')}</p><div class="dash-ref-chips">${events}</div>` : ''}
-      </div>`;
-  }).join('');
+const EVENT_LABELS = {
+  click_github: ['點擊 GitHub', 'GitHub clicks'],
+  click_project: ['點擊專案', 'Project clicks'],
+  click_contact: ['聯繫點擊', 'Contact clicks'],
+  read_complete: ['文章完讀', 'Read completes'],
+  donate_open: ['開啟贊助', 'Donate opens'],
+  donate_start: ['送出贊助', 'Donate starts'],
+};
 
-  if (!hasChart()) return;
-  sites.forEach((s, i) => {
-    if (!s.configured || !s.daily?.length) return;
-    const ctx = document.getElementById(`site-trend-${i}`);
-    if (!ctx) return;
-    const sliced = (s.daily ?? []).slice(-WIN_DAYS[win]);
-    /* 與主站趨勢圖同款（同色、同互動），資料好對照 */
-    chartInstances.push(new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: sliced.map((d) => fmtDay(d.date)),
-        datasets: [
-          { label: 'Views', data: sliced.map((d) => d.views), borderColor: PALETTE[0], backgroundColor: PALETTE[0] + '22', fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2 },
-          { label: 'Visitors', data: sliced.map((d) => d.users), borderColor: PALETTE[1], backgroundColor: 'transparent', tension: 0.35, pointRadius: 0, borderWidth: 2 },
-        ],
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        animation: { duration: 1000, easing: 'easeOutQuart' },
-        interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle' } } },
-        scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } }, y: { beginAtZero: true, ticks: { precision: 0 } } },
-      },
-    }));
+const eventWin = (e) => e?.windows?.[win] ?? ({ d28: e?.d28, d90: e?.d90 })[win];
+
+function siteBlocks() {
+  const blocks = [];
+  const ga = summary.ga4;
+  blocks.push({
+    key: 'main',
+    name: L('個人網站', 'Personal site'),
+    host: 'mattye.dev',
+    site: 'https://mattye.dev',
+    isMain: true,
+    configured: !!(ga && ga.configured && ga.totals && !ga.error),
+    error: ga?.error,
+    data: ga ?? {},
   });
+  for (const s of summary.ga4Sites ?? []) {
+    blocks.push({
+      key: s.key,
+      name: L(s.label?.zh ?? s.key, s.label?.en ?? s.key),
+      host: (s.site ?? '').replace(/^https?:\/\//, '').replace(/\/$/, ''),
+      site: s.site,
+      isMain: false,
+      configured: !!(s.configured && s.totals && !s.error),
+      error: s.error,
+      data: s,
+    });
+  }
+  return blocks;
 }
 
-function gaReady() {
-  const ga = summary.ga4;
-  return !!(ga && ga.configured && ga.totals && !ga.error);
+const tile = (label, value, sub) => {
+  const isNum = typeof value === 'number';
+  return `
+    <div class="bento-card">
+      <div class="bento-card-label">${label}</div>
+      <div class="bento-card-num"${isNum ? ` data-countup="${value}"` : ''}>${isNum ? '—' : (value ?? '—')}</div>
+      <div class="bento-card-sub">${sub}</div>
+    </div>`;
+};
+
+// donut/bar 卡的標頭數字（最大項 + 類別數）在 HTML 直接算好；圖表另在 charts pass 建
+const breakdownMeta = (list, val) => {
+  if (!list?.length) return { biggest: '—', badge: '0' };
+  const total = list.reduce((s, x) => s + val(x), 0) || 1;
+  return { biggest: `${Object.values(list[0])[0]} · ${Math.round(val(list[0]) / total * 100)}%`, badge: String(list.length) };
+};
+
+function chartCard(title, canvasId, list, val) {
+  const m = breakdownMeta(list, val);
+  return `
+    <div class="chart-card">
+      <div class="chart-card-head"><span class="chart-card-title">${title}</span><span class="chart-badge">${m.badge}</span></div>
+      <div class="chart-biggest">${m.biggest}</div>
+      <div class="chart-wrap"><canvas id="${canvasId}"></canvas></div>
+    </div>`;
 }
 
-function renderGa() {
-  const ok = gaReady();
-  sectionOk('sec-kpi', ok, ...NOT_CONFIGURED);
-  sectionOk('sec-ga', ok, ...NOT_CONFIGURED);
-  const gh = summary.github;
-  if (gh?.repos) {
-    const stars = gh.repos.reduce((s, r) => s + (r.stars ?? 0), 0);
-    countUp(document.getElementById('val-stars'), stars, 1200);
-  }
-  if (!ok) return;
-  const ga = summary.ga4;
-  const t = ga.totals?.[win];
-  const setNum = (id, v) => {
-    const el = document.getElementById(id);
-    if (v === undefined || v === null) el.textContent = '—';
-    else countUp(el, v, 1400);
-  };
-  setNum('val-users', t?.users);
-  setNum('val-views', t?.views);
-  setNum('val-sessions', t?.sessions);
-  document.getElementById('sub-users').textContent = winLabel();
-  document.getElementById('sub-views').textContent = winLabel();
-  document.getElementById('sub-sessions').textContent = t
-    ? L(`新訪客 ${fmtNum(t.newUsers ?? 0)}`, `${fmtNum(t.newUsers ?? 0)} new visitors`)
-    : '—';
-  document.getElementById('val-eng').textContent = t ? `${Math.round((t.engagementRate ?? 0) * 100)}%` : '—';
-  document.getElementById('sub-eng').textContent = L(`互動率（${WIN_LABEL[win][0]}）`, `Engagement rate (${WIN_LABEL[win][1]})`);
-  const reads = (ga.events ?? []).find(e => e.name === 'read_complete');
-  const readN = reads?.windows?.[win] ?? ({ d28: reads?.d28, d90: reads?.d90 })[win];
-  setNum('val-reads', readN ?? (reads ? 0 : undefined));
-  document.getElementById('sub-reads').textContent = L(`文章完讀（${WIN_LABEL[win][0]}）`, `Articles read (${WIN_LABEL[win][1]})`);
-
-  /* 趨勢（依視窗切片；資料最多累積 365 天） */
-  const daily = (ga.daily ?? []).slice(-WIN_DAYS[win]);
-  document.getElementById('trend-win').textContent = `· ${winLabel()}`;
-  const peak = [...daily].sort((a, b) => b.views - a.views)[0];
-  if (peak) document.getElementById('trend-peak').textContent = `Peak: ${fmtDay(peak.date)} · ${peak.views} views`;
-  else document.getElementById('trend-peak').textContent = '—';
-  if (hasChart() && daily.length) {
-    const ctx = document.getElementById('chart-trend');
-    chartInstances.push(new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: daily.map(d => fmtDay(d.date)),
-        datasets: [
-          { label: 'Views', data: daily.map(d => d.views), borderColor: PALETTE[0], backgroundColor: PALETTE[0] + '22', fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2 },
-          { label: 'Visitors', data: daily.map(d => d.users), borderColor: PALETTE[1], backgroundColor: 'transparent', tension: 0.35, pointRadius: 0, borderWidth: 2 },
-        ],
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        animation: { duration: 1000, easing: 'easeOutQuart' },
-        interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle' } } },
-        scales: {
-          x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } },
-          y: { beginAtZero: true, ticks: { precision: 0 } },
-        },
-      },
-    }));
-  }
-
-  /* 分佈 */
-  donut('chart-channels', 'biggest-channels', 'badge-channels', (ga.channels ?? []).map(c => [c.channel, c.sessions]), L('sessions', 'sessions'));
-  donut('chart-devices', 'biggest-devices', 'badge-devices', (ga.devices ?? []).map(d => [d.device, d.users]), L('人', 'users'));
-
-  const hosts = ga.hosts ?? [];
-  const hostCard = document.getElementById('card-hosts');
-  hostCard.style.display = hosts.length > 1 ? '' : 'none';
-  if (hosts.length > 1) {
-    donut('chart-hosts', 'biggest-hosts', 'badge-hosts', hosts.map(h => [h.host, h.users]), L('人', 'users'));
-  }
-
-  const countries = (ga.countries ?? []).slice(0, 8);
-  const cBadge = document.getElementById('badge-countries');
-  const cBig = document.getElementById('biggest-countries');
-  if (countries.length) {
-    cBadge.textContent = `${(ga.countries ?? []).length}`;
-    const total = countries.reduce((s, c) => s + c.users, 0);
-    cBig.textContent = `${countries[0].country} · ${Math.round(countries[0].users / (total || 1) * 100)}%`;
-    if (hasChart()) {
-      const ctx = document.getElementById('chart-countries');
-      chartInstances.push(new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: countries.map(c => c.country),
-          datasets: [{ data: countries.map(c => c.users), backgroundColor: countries.map((_, i) => PALETTE[i % PALETTE.length]), borderRadius: 4, borderSkipped: false, maxBarThickness: 16 }],
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true, maintainAspectRatio: false,
-          animation: { duration: 1000, easing: 'easeOutQuart' },
-          plugins: { legend: { display: false } },
-          scales: { x: { beginAtZero: true, ticks: { precision: 0 } }, y: { grid: { display: false } } },
-        },
-      }));
-    }
-  }
+function leaderboardHTML(pages) {
+  if (!pages?.length) return `<div class="dash-note" style="display:block">${L('此視窗尚無頁面數據', 'No page data in this window yet')}</div>`;
+  const top = pages.slice(0, 10);
+  const max = top[0].views || 1;
+  return `<div class="orgs-scroll-wrap"><div class="orgs-grid">` + top.map((p, i) => `
+    <div class="org-row">
+      <span class="org-rank${i < 3 ? ' org-rank-top' : ''}">${String(i + 1).padStart(2, '0')}</span>
+      <span class="org-name">
+        <span class="org-name-zh dash-path">${esc(p.path)}</span>
+        <span class="org-name-en">${fmtNum(p.users ?? 0)} ${L('人', 'users')}${p.engagementSec ? ` · ${L('平均', 'avg')} ${Math.round(p.engagementSec / (p.views || 1))}s` : ''}</span>
+      </span>
+      <span class="org-bar-bg"><span class="org-bar" data-width="${(p.views / max) * 100}"></span></span>
+      <span class="org-count">${fmtNum(p.views)}</span>
+    </div>`).join('') + `</div></div>`;
 }
 
-function donut(canvasId, biggestId, badgeId, entries, unit) {
+function siteSectionHTML(b) {
+  const head = `
+    <div class="dash-source-head">
+      <span class="dash-source-title">${esc(b.name)}</span>
+      ${b.site ? `<a class="dash-source-link" href="${esc(b.site)}" target="_blank" rel="noopener">${esc(b.host)} ↗</a>` : ''}
+    </div>`;
+
+  if (!b.configured) {
+    const msg = b.error
+      ? `${L('本次抓取失敗:', 'Fetch failed: ')}${esc(b.error)}`
+      : L('GA4 尚未設定（見 docs/analytics-pipeline.md）。', 'GA4 is not configured yet (see docs/analytics-pipeline.md).');
+    return `<section class="dash-source">${head}<div class="dash-note" style="display:block">${msg}</div></section>`;
+  }
+
+  const d = b.data;
+  const t = d.totals?.[win];
+
+  /* KPI */
+  let kpis =
+    tile('Visitors', t?.users, winLabel()) +
+    tile('Page Views', t?.views, winLabel()) +
+    tile('Sessions', t?.sessions, t ? L(`新訪客 ${fmtNum(t.newUsers ?? 0)}`, `${fmtNum(t.newUsers ?? 0)} new`) : '—') +
+    tile('Engagement', t ? `${Math.round((t.engagementRate ?? 0) * 100)}%` : null, L('互動率', 'Engagement rate'));
+  if (b.isMain) {
+    const reads = (d.events ?? []).find(e => e.name === 'read_complete');
+    kpis += tile('Read Completes', eventWin(reads) ?? (reads ? null : undefined), L('文章完讀', 'Articles read'));
+  }
+
+  /* 趨勢 */
+  const sliced = (d.daily ?? []).slice(-WIN_DAYS[win]);
+  const peak = [...sliced].sort((a, x) => x.views - a.views)[0];
+  const trend = `
+    <div class="year-chart-card">
+      <div class="year-chart-head">
+        <div>
+          <div class="chart-card-title">${L('流量趨勢', 'Traffic trend')} <span class="dash-muted">· ${winLabel()}</span></div>
+          <div class="year-peak">${peak ? `Peak: ${fmtDay(peak.date)} · ${peak.views} views` : '—'}</div>
+        </div>
+      </div>
+      <div class="year-chart-wrap"><canvas id="trend-${b.key}"></canvas></div>
+      ${hasChart() ? '' : `<p class="dash-chart-note">${L('圖表元件載入失敗（CDN 無法連線），數字仍為正確資料。', 'Chart library failed to load; numbers are still accurate.')}</p>`}
+    </div>`;
+
+  /* 分佈（管道 / 裝置 / 站點(主站) / 國家）*/
+  const channels = forWin(d.channels);
+  const devices = forWin(d.devices);
+  const hosts = b.isMain ? forWin(d.hosts) : null;
+  const countries = forWin(d.countries);
+  let breakdown;
+  if (channels === null && devices === null && countries === null) {
+    breakdown = PENDING();
+  } else {
+    breakdown = `<div class="charts-grid">`
+      + chartCard(L('流量管道', 'Channels'), `ch-${b.key}`, channels, x => x.sessions)
+      + chartCard(L('裝置', 'Devices'), `dev-${b.key}`, devices, x => x.users)
+      + (hosts && hosts.length > 1 ? chartCard(L('站點', 'Sites'), `host-${b.key}`, hosts, x => x.users) : '')
+      + chartCard(L('國家', 'Countries'), `geo-${b.key}`, countries, x => x.users)
+      + `</div>`;
+  }
+
+  /* 子頁面成效 */
+  const pages = forWin(d.topPages);
+  const pagesHTML = `
+    <p class="section-heading">${L('子頁面成效', 'Top pages')} <span class="dash-muted">· ${winLabel()}</span></p>
+    ${pages === null ? PENDING() : leaderboardHTML(pages)}`;
+
+  /* 事件 / 轉換 */
+  let eventsHTML = '';
+  if (b.isMain) {
+    const events = d.events ?? [];
+    const byName = Object.fromEntries(events.map(e => [e.name, e]));
+    const cards = events.map(e => {
+      const [zh, en] = EVENT_LABELS[e.name] ?? [e.name, e.name];
+      const n = eventWin(e);
+      const top = e.topPages?.[0];
+      return `
+        <div class="bento-card">
+          <div class="bento-card-label">${esc(e.name)}</div>
+          <div class="bento-card-num">${n === undefined ? '—' : fmtNum(n ?? 0)}</div>
+          <div class="bento-card-sub">${L(zh, en)} · ${winLabel()}${top ? `<br><span class="dash-path">${esc(top.path)}</span>` : ''}</div>
+        </div>`;
+    }).join('');
+
+    /* 漏斗（跟著視窗）*/
+    const articleViews = (pages ?? []).filter(p => /^\/writing\/[^/]+/.test(p.path)).reduce((s, p) => s + p.views, 0);
+    const projClicks = (eventWin(byName.click_project) ?? 0) + (eventWin(byName.click_github) ?? 0);
+    const funnels = [
+      { title: L('內容 → 專案', 'Content → Projects'), stages: [
+        { label: L('文章瀏覽', 'Article views'), n: pages === null ? null : articleViews },
+        { label: L('完讀', 'Read complete'), n: eventWin(byName.read_complete) ?? 0 },
+        { label: L('點擊專案/GitHub', 'Project/GitHub click'), n: projClicks },
+      ] },
+      { title: L('贊助漏斗', 'Donation funnel'), stages: [
+        { label: L('整站瀏覽', 'All page views'), n: t?.views ?? null },
+        { label: L('開啟贊助', 'Donate open'), n: eventWin(byName.donate_open) ?? 0 },
+        { label: L('送出贊助', 'Donate start'), n: eventWin(byName.donate_start) ?? 0 },
+      ] },
+    ];
+    const funnelHTML = funnels.map(f => {
+      if (f.stages[0].n === null) return `<div class="dash-funnel"><div class="dash-funnel-title">${f.title} <span class="dash-muted">· ${winLabel()}</span></div>${PENDING()}</div>`;
+      const max = f.stages[0].n || 1;
+      return `<div class="dash-funnel"><div class="dash-funnel-title">${f.title} <span class="dash-muted">· ${winLabel()}</span></div>` +
+        f.stages.map((s, i) => {
+          const pct = i === 0 ? '' : `<span class="dash-funnel-pct">${f.stages[i - 1].n ? Math.round(s.n / f.stages[i - 1].n * 100) : 0}%</span>`;
+          return `<div class="dash-funnel-row">
+            <span class="dash-funnel-label">${s.label}</span>
+            <span class="org-bar-bg"><span class="org-bar" style="width:${Math.max(s.n / max * 100, s.n ? 2 : 0)}%"></span></span>
+            <b class="dash-funnel-n">${fmtNum(s.n)}</b>${pct}
+          </div>`;
+        }).join('') + '</div>';
+    }).join('');
+
+    eventsHTML = `
+      <p class="section-heading">${L('轉換', 'Conversions')} <span class="dash-muted">· ${winLabel()}</span></p>
+      <div class="bento-grid">${cards}</div>
+      <div class="dash-funnels">${funnelHTML}</div>`;
+  } else {
+    const evs = forWin(d.topEvents);
+    const cards = evs === null ? PENDING() : (evs.length
+      ? `<div class="bento-grid">` + evs.map(e => `
+          <div class="bento-card">
+            <div class="bento-card-label">${esc(e.name)}</div>
+            <div class="bento-card-num" data-countup="${e.count}">—</div>
+            <div class="bento-card-sub">${winLabel()}</div>
+          </div>`).join('') + `</div>`
+      : `<div class="dash-note" style="display:block">${L('此視窗尚無站方事件', 'No site events in this window yet')}</div>`);
+    eventsHTML = `
+      <p class="section-heading">${L('站方事件', 'Site events')} <span class="dash-muted">· ${winLabel()}</span></p>
+      ${cards}`;
+  }
+
+  return `
+    <section class="dash-source">
+      ${head}
+      <div class="bento-grid">${kpis}</div>
+      ${trend}
+      ${breakdown}
+      ${pagesHTML}
+      ${eventsHTML}
+    </section>`;
+}
+
+const LINE_OPTS = {
+  responsive: true, maintainAspectRatio: false,
+  animation: { duration: 1000, easing: 'easeOutQuart' },
+  interaction: { mode: 'index', intersect: false },
+  plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle' } } },
+  scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } }, y: { beginAtZero: true, ticks: { precision: 0 } } },
+};
+
+function donutChart(canvasId, entries, unit) {
+  const el = document.getElementById(canvasId);
+  if (!el || !entries?.length) return;
   const data = entries.filter(([, v]) => v > 0);
+  if (!data.length) return;
   const total = data.reduce((s, [, v]) => s + v, 0);
-  const biggestEl = document.getElementById(biggestId);
-  const badgeEl = document.getElementById(badgeId);
-  if (!data.length) {
-    if (biggestEl) biggestEl.textContent = '—';
-    if (badgeEl) badgeEl.textContent = '0';
-    return;
-  }
-  const sorted = [...data].sort((a, b) => b[1] - a[1]);
-  if (biggestEl) biggestEl.textContent = `${sorted[0][0]} · ${Math.round(sorted[0][1] / total * 100)}%`;
-  if (badgeEl) badgeEl.textContent = String(data.length);
-  if (!hasChart()) return;
-  chartInstances.push(new Chart(document.getElementById(canvasId), {
+  chartInstances.push(new Chart(el, {
     type: 'doughnut',
     data: {
       labels: data.map(([k]) => k),
@@ -557,109 +498,76 @@ function donut(canvasId, biggestId, badgeId, entries, unit) {
   }));
 }
 
-function renderTopPages() {
-  if (!sectionOk('sec-pages', gaReady(), ...NOT_CONFIGURED)) return;
-  const pages = (summary.ga4.topPages ?? []).slice(0, 10);
-  const grid = document.getElementById('pages-grid');
-  grid.innerHTML = '';
-  if (!pages.length) {
-    grid.innerHTML = `<div class="data-error">${L('尚無頁面數據', 'No page data yet')}</div>`;
-    return;
+function siteSectionCharts(b) {
+  if (!hasChart()) return;
+  const d = b.data;
+  const sliced = (d.daily ?? []).slice(-WIN_DAYS[win]);
+  const trendEl = document.getElementById(`trend-${b.key}`);
+  if (trendEl && sliced.length) {
+    chartInstances.push(new Chart(trendEl, {
+      type: 'line',
+      data: {
+        labels: sliced.map(x => fmtDay(x.date)),
+        datasets: [
+          { label: 'Views', data: sliced.map(x => x.views), borderColor: PALETTE[0], backgroundColor: PALETTE[0] + '22', fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2 },
+          { label: 'Visitors', data: sliced.map(x => x.users), borderColor: PALETTE[1], backgroundColor: 'transparent', tension: 0.35, pointRadius: 0, borderWidth: 2 },
+        ],
+      },
+      options: LINE_OPTS,
+    }));
   }
-  const max = pages[0].views || 1;
-  pages.forEach((p, i) => {
-    const avgSec = p.views ? Math.round(p.engagementSec / p.views) : 0;
-    const row = document.createElement('div');
-    row.className = 'org-row';
-    row.innerHTML = `
-      <span class="org-rank${i < 3 ? ' org-rank-top' : ''}">${String(i + 1).padStart(2, '0')}</span>
-      <span class="org-name">
-        <span class="org-name-zh dash-path">${esc(p.path)}</span>
-        <span class="org-name-en">${fmtNum(p.users)} ${L('人', 'users')} · ${L('平均', 'avg')} ${avgSec}s</span>
-      </span>
-      <span class="org-bar-bg"><span class="org-bar" data-width="${(p.views / max) * 100}"></span></span>
-      <span class="org-count">${fmtNum(p.views)}</span>
-    `;
-    grid.appendChild(row);
-  });
+
+  donutChart(`ch-${b.key}`, (forWin(d.channels) ?? []).map(c => [c.channel, c.sessions]), 'sessions');
+  donutChart(`dev-${b.key}`, (forWin(d.devices) ?? []).map(x => [x.device, x.users]), L('人', 'users'));
+  if (b.isMain) donutChart(`host-${b.key}`, (forWin(d.hosts) ?? []).map(h => [h.host, h.users]), L('人', 'users'));
+
+  const countries = (forWin(d.countries) ?? []).slice(0, 8);
+  const geoEl = document.getElementById(`geo-${b.key}`);
+  if (geoEl && countries.length) {
+    chartInstances.push(new Chart(geoEl, {
+      type: 'bar',
+      data: {
+        labels: countries.map(c => c.country),
+        datasets: [{ data: countries.map(c => c.users), backgroundColor: countries.map((_, i) => PALETTE[i % PALETTE.length]), borderRadius: 4, borderSkipped: false, maxBarThickness: 16 }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        animation: { duration: 1000, easing: 'easeOutQuart' },
+        plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true, ticks: { precision: 0 } }, y: { grid: { display: false } } },
+      },
+    }));
+  }
+}
+
+function renderSites() {
+  const root = document.getElementById('sites-root');
+  const blocks = siteBlocks();
+  root.innerHTML = blocks.map(siteSectionHTML).join('');
+  blocks.forEach(b => { if (b.configured) siteSectionCharts(b); });
+  root.querySelectorAll('[data-countup]').forEach(el => countUp(el, Number(el.dataset.countup), 1400));
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    grid.querySelectorAll('.org-bar').forEach(b => { b.style.width = b.dataset.width + '%'; });
+    root.querySelectorAll('.org-bar[data-width]').forEach(el => { el.style.width = el.dataset.width + '%'; });
   }));
 }
 
-function renderConversions() {
-  if (!sectionOk('sec-conv', gaReady(), ...NOT_CONFIGURED)) return;
-  const ga = summary.ga4;
-  const events = ga.events ?? [];
-  const byName = Object.fromEntries(events.map(e => [e.name, e]));
-  const t28 = ga.totals.d28 ?? {};
-
-  const EVENT_LABELS = {
-    click_github: ['點擊 GitHub', 'GitHub clicks'],
-    click_project: ['點擊專案', 'Project clicks'],
-    click_contact: ['聯繫點擊', 'Contact clicks'],
-    read_complete: ['文章完讀', 'Read completes'],
-    donate_open: ['開啟贊助', 'Donate opens'],
-    donate_start: ['送出贊助', 'Donate starts'],
-  };
-
-  const grid = document.getElementById('conv-grid');
-  grid.innerHTML = events.map(e => {
-    const [zh, en] = EVENT_LABELS[e.name] ?? [e.name, e.name];
-    const top = e.topPages?.[0];
-    const n = e.windows?.[win] ?? ({ d28: e.d28, d90: e.d90 })[win];
-    return `
-      <div class="bento-card">
-        <div class="bento-card-label">${esc(e.name)}</div>
-        <div class="bento-card-num">${n === undefined ? '—' : fmtNum(n)}</div>
-        <div class="bento-card-sub">${L(zh, en)} · ${winLabel()}${top ? `<br><span class="dash-path">${esc(top.path)}</span>` : ''}</div>
-      </div>
-    `;
-  }).join('');
-
-  /* 漏斗（文章→專案、贊助） */
-  const articleViews = (ga.topPages ?? [])
-    .filter(p => /^\/writing\/[^/]+/.test(p.path))
-    .reduce((s, p) => s + p.views, 0);
-  const projClicks = (byName.click_project?.d28 ?? 0) + (byName.click_github?.d28 ?? 0);
-  const funnels = [
-    {
-      title: L('內容 → 專案（28 天）', 'Content → Projects (28d)'),
-      stages: [
-        { label: L('文章瀏覽', 'Article views'), n: articleViews },
-        { label: L('完讀', 'Read complete'), n: byName.read_complete?.d28 ?? 0 },
-        { label: L('點擊專案/GitHub', 'Project/GitHub click'), n: projClicks },
-      ],
-    },
-    {
-      title: L('贊助漏斗（28 天）', 'Donation funnel (28d)'),
-      stages: [
-        { label: L('整站瀏覽', 'All page views'), n: t28.views ?? 0 },
-        { label: L('開啟贊助', 'Donate open'), n: byName.donate_open?.d28 ?? 0 },
-        { label: L('送出贊助', 'Donate start'), n: byName.donate_start?.d28 ?? 0 },
-      ],
-    },
-  ];
-  const funnelEl = document.getElementById('funnels');
-  funnelEl.innerHTML = funnels.map(f => {
-    const max = f.stages[0].n || 1;
-    return `<div class="dash-funnel"><div class="dash-funnel-title">${f.title}</div>` +
-      f.stages.map((s, i) => {
-        const pct = i === 0 ? '' : `<span class="dash-funnel-pct">${f.stages[i - 1].n ? Math.round(s.n / f.stages[i - 1].n * 100) : 0}%</span>`;
-        return `<div class="dash-funnel-row">
-          <span class="dash-funnel-label">${s.label}</span>
-          <span class="org-bar-bg"><span class="org-bar" style="width:${Math.max(s.n / max * 100, s.n ? 2 : 0)}%"></span></span>
-          <b class="dash-funnel-n">${fmtNum(s.n)}</b>${pct}
-        </div>`;
-      }).join('') + '</div>';
-  }).join('');
-}
-
+/* ══ Cloudflare（依視窗切 history；歷史從 pipeline 上線日開始累積）═══ */
 function renderCf() {
   const cf = summary.cloudflare;
-  const cfDays = history.filter(r => r.cf).slice(-28);
-  const ok = !!(cf && cf.configured && !cf.error) || cfDays.length > 0;
+  const allCf = history.filter(r => r.cf);
+  const ok = !!(cf && cf.configured && !cf.error) || allCf.length > 0;
   if (!sectionOk('sec-cf', ok, ...NOT_CONFIGURED)) return;
+
+  const cfDays = allCf.slice(-WIN_DAYS[win]);
+  document.getElementById('cf-win').textContent = `· ${winLabel()}`;
+  const note = document.getElementById('cf-note');
+  if (cfDays.length < WIN_DAYS[win]) {
+    note.style.display = '';
+    note.textContent = L(`Cloudflare 歷史自 pipeline 上線起累積，此視窗實際涵蓋 ${cfDays.length} 天。`, `Cloudflare history accumulates since the pipeline launch — this window covers ${cfDays.length} day(s).`);
+  } else {
+    note.style.display = 'none';
+  }
 
   const sum = key => cfDays.reduce((s, r) => s + (r.cf[key] ?? 0), 0);
   const req = sum('req');
@@ -678,30 +586,24 @@ function renderCf() {
     </div>
   `).join('');
 
-  const trendDays = history.filter(r => r.cf).slice(-90);
-  const peak = [...trendDays].sort((a, b) => (b.cf.req ?? 0) - (a.cf.req ?? 0))[0];
+  const peak = [...cfDays].sort((a, b) => (b.cf.req ?? 0) - (a.cf.req ?? 0))[0];
   document.getElementById('cf-peak').textContent = peak ? `Peak: ${fmtDay(peak.date)} · ${fmtNum(peak.cf.req)} req` : '—';
-  if (hasChart() && trendDays.length) {
+  if (hasChart() && cfDays.length) {
     chartInstances.push(new Chart(document.getElementById('chart-cf'), {
       type: 'line',
       data: {
-        labels: trendDays.map(r => fmtDay(r.date)),
+        labels: cfDays.map(r => fmtDay(r.date)),
         datasets: [
-          { label: 'Requests', data: trendDays.map(r => r.cf.req ?? 0), borderColor: PALETTE[3], backgroundColor: PALETTE[3] + '22', fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2 },
-          { label: 'Uniques', data: trendDays.map(r => r.cf.uniq ?? 0), borderColor: PALETTE[4], backgroundColor: 'transparent', tension: 0.35, pointRadius: 0, borderWidth: 2 },
+          { label: 'Requests', data: cfDays.map(r => r.cf.req ?? 0), borderColor: PALETTE[3], backgroundColor: PALETTE[3] + '22', fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2 },
+          { label: 'Uniques', data: cfDays.map(r => r.cf.uniq ?? 0), borderColor: PALETTE[4], backgroundColor: 'transparent', tension: 0.35, pointRadius: 0, borderWidth: 2 },
         ],
       },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        animation: { duration: 1000, easing: 'easeOutQuart' },
-        interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, pointStyle: 'circle' } } },
-        scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } }, y: { beginAtZero: true, ticks: { precision: 0 } } },
-      },
+      options: LINE_OPTS,
     }));
   }
 }
 
+/* ══ GitHub 專案 ═══════════════════════════════════════ */
 function renderRepos() {
   const gh = summary.github;
   if (!sectionOk('sec-gh', !!(gh && gh.configured && gh.repos && !gh.error), ...NOT_CONFIGURED)) return;
@@ -713,6 +615,8 @@ function renderRepos() {
   const priv = all.filter(r => !inPublicTab(r));
   const badge = document.getElementById('badge-repos');
   if (badge) badge.textContent = String(all.length);
+  const stars = all.reduce((s, r) => s + (r.stars ?? 0), 0);
+  document.getElementById('gh-stars').textContent = `★ ${fmtNum(stars)} ${L('顆星（全專案）', 'stars total')}`;
   document.getElementById('count-public').textContent = `(${pub.length})`;
   document.getElementById('count-private').textContent = `(${priv.length})`;
 
@@ -776,6 +680,15 @@ init();
 <style is:global>
 /* dashboard 專用樣式：JS 動態注入的節點吃不到 Astro scoped style，
    故以 .dash- 前綴 + is:global 隔離（僅 /dashboard 使用這些 class） */
+
+/* 來源區塊：無外框，以分隔線 + 大標題區隔 */
+.dash-source { border-top: 2px solid var(--color-border); margin-top: 56px; padding-top: 36px; }
+.dash-source-head { align-items: baseline; display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.dash-source-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
+.dash-source-link { color: var(--color-text-muted); font-size: 0.82rem; }
+.dash-source .section-heading { margin-top: 36px; }
+.dash-source .year-chart-card, .dash-source .charts-grid { margin-top: 20px; }
+
 .dash-note {
   background: var(--card-bg, var(--color-surface));
   border: 1px dashed var(--color-border);
@@ -788,8 +701,10 @@ init();
 }
 .dash-chart-note { color: var(--color-text-muted); font-size: 0.75rem; padding: 8px 0; text-align: center; }
 .dash-path { font-family: var(--font-mono); font-size: 0.85em; }
-.dash-muted { color: var(--color-text-muted); }
-.dash-footnote { color: var(--color-text-muted); font-size: 0.78rem; margin: 40px 0 8px; text-align: center; }
+.dash-muted { color: var(--color-text-muted); font-size: 0.82rem; font-weight: 400; }
+.dash-footnote { color: var(--color-text-muted); font-size: 0.78rem; margin: 48px 0 8px; text-align: center; }
+
+.dash-window-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 8px; }
 
 .dash-funnels { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px; }
 .dash-funnel {
@@ -814,21 +729,6 @@ init();
 .dash-repo-head { align-items: baseline; display: flex; gap: 10px; justify-content: space-between; }
 .dash-repo-head > a { font-weight: 600; }
 .dash-repo-desc { color: var(--color-text-muted); font-size: 0.8rem; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-.dash-window-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 28px; }
-
-.dash-site-card {
-  background: var(--card-bg, var(--color-surface));
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  margin-top: 12px;
-  padding: 20px;
-}
-.dash-site-name { font-size: 1rem; font-weight: 600; }
-.dash-site-bento { margin-top: 14px; }
-.dash-site-sub { margin-top: 20px; }
-.dash-site-pages { display: grid; gap: 6px; margin-top: 10px; }
-.dash-site-page { border-bottom: 1px dashed var(--color-border); display: flex; font-size: 0.82rem; justify-content: space-between; padding-bottom: 4px; }
 .dash-repo-site { color: var(--color-text-muted); font-size: 0.78rem; white-space: nowrap; }
 .dash-repo-stats { color: var(--color-text-muted); font-size: 0.82rem; margin-top: 8px; }
 .dash-repo-stats b, .dash-repo-traffic b { color: var(--color-text); }

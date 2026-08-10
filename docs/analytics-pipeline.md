@@ -119,25 +119,25 @@ dashboard「其他網站」區自動出現捕夢網卡片（KPI、90 天趨勢�
 
 ```jsonc
 {
-  "schemaVersion": 1,
-  "generatedAt": "2026-07-24T01:35:00Z",
+  "schemaVersion": 2,   // v2：維度報表為「視窗 → 陣列」物件，dashboard 的視窗切換全頁適用
+  "generatedAt": "2026-08-11T01:35:00Z",
   "ga4": {
     "configured": true,            // false = secret 未設定；有 error 欄位 = 本次抓取失敗
-    "totals": { "d7": {...}, "d28": {...}, "d90": {...}, "d180": {...}, "d365": {...} },  // dashboard 視窗切換用
+    "totals": { "d7": {...}, "d28": {...}, "d90": {...}, "d180": {...}, "d365": {...} },
     "daily": [{ "date": "2026-07-23", "users": 12, "views": 31, "sessions": 14 }],  // 最多 365 天
-    "topPages": [{ "path": "/", "views": 120, "users": 88, "engagementSec": 5400 }],
-    "channels": [{ "channel": "Organic Search", "sessions": 40, "users": 33 }],
-    "sources": [{ "source": "google", "medium": "organic", "sessions": 40 }],
-    "countries": [{ "country": "Taiwan", "users": 50 }],
-    "devices": [{ "device": "mobile", "users": 41 }],
-    "hosts": [{ "host": "mattye.dev", "users": 70, "views": 150, "sessions": 80 }],
+    "topPages":  { "d7": [{ "path": "/", "views": 30, "users": 22, "engagementSec": 900 }], "d28": [], "d90": [], "d180": [], "d365": [] },
+    "channels":  { "d7": [{ "channel": "Organic Search", "sessions": 10 }], "...": [] },
+    "devices":   { "d7": [{ "device": "mobile", "users": 12 }], "...": [] },
+    "countries": { "d7": [{ "country": "Taiwan", "users": 15 }], "...": [] },
+    "hosts":     { "d7": [{ "host": "mattye.dev", "users": 20, "views": 44, "sessions": 24 }], "...": [] },
     "events": [{ "name": "click_github", "d28": 12, "d90": 31, "windows": { "d7": 3, "d28": 12, "d90": 31, "d180": 31, "d365": 31 }, "topPages": [{ "path": "/", "count": 5 }] }]
   },
-  "ga4Sites": [{                     // 其他網站的 GA4 property（GA4_EXTRA_SITES）
+  "ga4Sites": [{                     // 同 property 的其他網站（GA4_EXTRA_SITES）——欄位形狀與 ga4 完全一致
     "key": "dreamcatcher", "label": { "zh": "捕夢網 Tela Aurea", "en": "Dreamcatcher · Tela Aurea" },
     "site": "https://telaaurealab.com", "configured": true,
-    "totals": { "d7": {}, "d28": {}, "d90": {} }, "daily": [], "topPages": [],
-    "channels": [], "countries": [], "topEvents": [{ "name": "purchase", "count": 3 }]
+    "totals": { "d7": {}, "...": {} }, "daily": [],
+    "topPages": {}, "channels": {}, "devices": {}, "countries": {},
+    "topEvents": { "d28": [{ "name": "purchase", "count": 3 }], "...": [] }
   }],
   "cloudflare": {
     "configured": true,
