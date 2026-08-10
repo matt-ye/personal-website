@@ -1,8 +1,8 @@
 # Analytics Pipeline 設定手冊
 
-`/dashboard` 儀表板的資料管線：GitHub Actions 每日（01:30 UTC = 09:30 台北）執行
-`scripts/fetch-analytics.mjs`，抓取 GA4 + Cloudflare + GitHub 數據後寫入 secret gist，
-dashboard 頁面在瀏覽器端讀取 gist 渲染。
+`/dashboard` 儀表板的資料管線：GitHub Actions **每 6 小時**（09:30 / 15:30 / 21:30 / 03:30 台北）
+執行 `scripts/fetch-analytics.mjs`，抓取 GA4 + Cloudflare + GitHub 數據後寫入 secret gist，
+dashboard 頁面在瀏覽器端讀取 gist 渲染。（public repo 的 Actions 免費不限量，頻率無成本壓力）
 
 ```
 GA4 Data API ─┐
@@ -123,15 +123,15 @@ dashboard「其他網站」區自動出現捕夢網卡片（KPI、90 天趨勢�
   "generatedAt": "2026-07-24T01:35:00Z",
   "ga4": {
     "configured": true,            // false = secret 未設定；有 error 欄位 = 本次抓取失敗
-    "totals": { "d7": {...}, "d28": {...}, "d90": {...} },  // users/newUsers/sessions/views/engagementRate/engagementSec
-    "daily": [{ "date": "2026-07-23", "users": 12, "views": 31, "sessions": 14 }],
+    "totals": { "d7": {...}, "d28": {...}, "d90": {...}, "d180": {...}, "d365": {...} },  // dashboard 視窗切換用
+    "daily": [{ "date": "2026-07-23", "users": 12, "views": 31, "sessions": 14 }],  // 最多 365 天
     "topPages": [{ "path": "/", "views": 120, "users": 88, "engagementSec": 5400 }],
     "channels": [{ "channel": "Organic Search", "sessions": 40, "users": 33 }],
     "sources": [{ "source": "google", "medium": "organic", "sessions": 40 }],
     "countries": [{ "country": "Taiwan", "users": 50 }],
     "devices": [{ "device": "mobile", "users": 41 }],
     "hosts": [{ "host": "mattye.dev", "users": 70, "views": 150, "sessions": 80 }],
-    "events": [{ "name": "click_github", "d28": 12, "d90": 31, "topPages": [{ "path": "/", "count": 5 }] }]
+    "events": [{ "name": "click_github", "d28": 12, "d90": 31, "windows": { "d7": 3, "d28": 12, "d90": 31, "d180": 31, "d365": 31 }, "topPages": [{ "path": "/", "count": 5 }] }]
   },
   "ga4Sites": [{                     // 其他網站的 GA4 property（GA4_EXTRA_SITES）
     "key": "dreamcatcher", "label": { "zh": "捕夢網 Tela Aurea", "en": "Dreamcatcher · Tela Aurea" },

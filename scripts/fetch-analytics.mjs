@@ -97,6 +97,30 @@ function gaScope(streamId, hosts, ...extra) {
   return { andGroup: { expressions } };
 }
 
+// KPI 時間視窗（dashboard 的 7天/28天/90天/半年/一年切換）。
+// GA4 單一請求最多 4 個 dateRanges → 分批；多 range 時 rows 會附加 dateRange 維度（date_range_N），
+// 單 range 時不附加。
+const WINDOWS = { d7: '7daysAgo', d28: '28daysAgo', d90: '90daysAgo', d180: '180daysAgo', d365: '365daysAgo' };
+
+async function ga4Windows(token, label, scope, metricNames, mapRow) {
+  const keys = Object.keys(WINDOWS);
+  const out = {};
+  for (let i = 0; i < keys.length; i += 4) {
+    const chunk = keys.slice(i, i + 4);
+    const res = await ga4Report(token, `${label}[${chunk.join(',')}]`, {
+      dateRanges: chunk.map((k) => ({ startDate: WINDOWS[k], endDate: 'today' })),
+      metrics: metricNames.map((name) => ({ name })),
+      dimensionFilter: scope,
+    });
+    for (const row of res.rows ?? []) {
+      const idx = chunk.length === 1 ? 0 : num(String(row.dimensionValues?.[0]?.value ?? '').split('_').pop());
+      const key = chunk[idx];
+      if (key) out[key] = mapRow(row.metricValues.map((v) => num(v.value)));
+    }
+  }
+  return out;
+}
+
 async function fetchGa4() {
   const token = await googleToken(JSON.parse(GA4_SA_KEY));
   const D28 = [{ startDate: '28daysAgo', endDate: 'today' }];
@@ -105,43 +129,19 @@ async function fetchGa4() {
   const byMetricDesc = (name) => [{ metric: { metricName: name }, desc: true }];
   const SCOPE = gaScope(MAIN_STREAM_ID, HOSTS);
 
-  // 1) 7/28/90 天總覽（單請求三個 dateRanges；rows 帶 dateRange 維度 date_range_N）
-  const totalsRes = await ga4Report(token, 'totals', {
-    dateRanges: [
-      { startDate: '7daysAgo', endDate: 'today' },
-      { startDate: '28daysAgo', endDate: 'today' },
-      { startDate: '90daysAgo', endDate: 'today' },
-    ],
-    metrics: mets(
-      'activeUsers', 'newUsers', 'sessions', 'screenPageViews',
-      'engagementRate', 'userEngagementDuration'
-    ),
-    dimensionFilter: SCOPE,
-    returnPropertyQuota: true,
-  });
-  const totals = { d7: null, d28: null, d90: null };
-  for (const row of totalsRes.rows ?? []) {
-    const key = { date_range_0: 'd7', date_range_1: 'd28', date_range_2: 'd90' }[
-      row.dimensionValues?.[0]?.value
-    ];
-    if (!key) continue;
-    const m = row.metricValues.map((v) => num(v.value));
-    totals[key] = {
-      users: m[0], newUsers: m[1], sessions: m[2], views: m[3],
-      engagementRate: m[4], engagementSec: m[5],
-    };
-  }
-  const quota = totalsRes.propertyQuota?.tokensPerDay;
-  if (quota) console.log(`  GA4 quota: ${quota.consumed}/${quota.consumed + quota.remaining} tokens/day`);
+  // 1) KPI 總覽（7/28/90/180/365 天視窗）
+  const totals = await ga4Windows(token, 'totals', SCOPE,
+    ['activeUsers', 'newUsers', 'sessions', 'screenPageViews', 'engagementRate', 'userEngagementDuration'],
+    (m) => ({ users: m[0], newUsers: m[1], sessions: m[2], views: m[3], engagementRate: m[4], engagementSec: m[5] }));
 
-  // 2) 90 天逐日趨勢
+  // 2) 逐日趨勢（365 天——dashboard 視窗切到半年/一年也有圖可看）
   const dailyRes = await ga4Report(token, 'daily', {
-    dateRanges: [{ startDate: '90daysAgo', endDate: 'today' }],
+    dateRanges: [{ startDate: '365daysAgo', endDate: 'today' }],
     dimensions: dims('date'),
     metrics: mets('activeUsers', 'screenPageViews', 'sessions'),
     orderBys: [{ dimension: { dimensionName: 'date' } }],
     dimensionFilter: SCOPE,
-    limit: 100,
+    limit: 400,
   });
   const daily = (dailyRes.rows ?? []).map((r) => ({
     date: gaDate(r.dimensionValues[0].value),
@@ -250,6 +250,29 @@ async function fetchGa4() {
     ev.topPages.sort((a, b) => b.count - a.count).splice(5);
   }
 
+  // 6b) 事件 × 視窗總數（KPI 視窗切換用；dateRange 維度附加在 eventName 之後）
+  const eventWindows = {};
+  {
+    const keys = Object.keys(WINDOWS);
+    for (let i = 0; i < keys.length; i += 4) {
+      const chunk = keys.slice(i, i + 4);
+      const res = await ga4Report(token, `eventWindows[${chunk.join(',')}]`, {
+        dateRanges: chunk.map((k) => ({ startDate: WINDOWS[k], endDate: 'today' })),
+        dimensions: dims('eventName'),
+        metrics: mets('eventCount'),
+        dimensionFilter: scopedEventFilter,
+        limit: 100,
+      });
+      for (const row of res.rows ?? []) {
+        const name = row.dimensionValues[0].value;
+        const idx = chunk.length === 1 ? 0 : num(String(row.dimensionValues[1]?.value ?? '').split('_').pop());
+        const key = chunk[idx];
+        if (key) (eventWindows[name] ??= {})[key] = num(row.metricValues[0].value);
+      }
+    }
+  }
+  for (const ev of Object.values(events)) ev.windows = eventWindows[ev.name] ?? {};
+
   // 7) hostName 切分（僅在多站掛同 property 後才有多列）
   const hostsRes = await ga4Report(token, 'hosts', {
     dateRanges: D28,
@@ -300,30 +323,16 @@ async function fetchGa4Site(site) {
   const report = (label, body) =>
     ga4Report(token, `${label}@${site.key}`, { ...body, dimensionFilter: body.dimensionFilter ?? SCOPE });
 
-  const totalsRes = await report('totals', {
-    dateRanges: [
-      { startDate: '7daysAgo', endDate: 'today' },
-      { startDate: '28daysAgo', endDate: 'today' },
-      { startDate: '90daysAgo', endDate: 'today' },
-    ],
-    metrics: mets('activeUsers', 'newUsers', 'sessions', 'screenPageViews', 'engagementRate'),
-  });
-  const totals = { d7: null, d28: null, d90: null };
-  for (const row of totalsRes.rows ?? []) {
-    const key = { date_range_0: 'd7', date_range_1: 'd28', date_range_2: 'd90' }[
-      row.dimensionValues?.[0]?.value
-    ];
-    if (!key) continue;
-    const m = row.metricValues.map((v) => num(v.value));
-    totals[key] = { users: m[0], newUsers: m[1], sessions: m[2], views: m[3], engagementRate: m[4] };
-  }
+  const totals = await ga4Windows(token, `totals@${site.key}`, SCOPE,
+    ['activeUsers', 'newUsers', 'sessions', 'screenPageViews', 'engagementRate'],
+    (m) => ({ users: m[0], newUsers: m[1], sessions: m[2], views: m[3], engagementRate: m[4] }));
 
   const dailyRes = await report('daily', {
-    dateRanges: [{ startDate: '90daysAgo', endDate: 'today' }],
+    dateRanges: [{ startDate: '365daysAgo', endDate: 'today' }],
     dimensions: dims('date'),
     metrics: mets('activeUsers', 'screenPageViews', 'sessions'),
     orderBys: [{ dimension: { dimensionName: 'date' } }],
-    limit: 100,
+    limit: 400,
   });
   const daily = (dailyRes.rows ?? []).map((r) => ({
     date: gaDate(r.dimensionValues[0].value),
