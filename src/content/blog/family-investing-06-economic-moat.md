@@ -280,6 +280,6 @@ Pat Dorsey 在《Why Moats Matter》中提出：**品牌是最容易誤判的護
 
 1. Warren Buffett, *Berkshire Hathaway 2007 Annual Shareholder Letter*, Berkshire Hathaway Inc. — https://berkshirehathaway.com/letters/2007ltr.pdf
 2. Pat Dorsey, *Why Moats Matter: The Morningstar Approach to Stock Investing*, John Wiley & Sons, 2014
-3. Morningstar Equity Research, *Morningstar's Approach to Equity Research* (methodology overview), Morningstar Inc., 2023 — https://www.morningstar.com/content/dam/marketing/shared/pdfs/Research/Morningstars_Approach_to_Equity_Research.pdf
+3. Morningstar Equity Research, *Morningstar Equity Research Methodology*, Morningstar Inc., 2022 — https://www.morningstar.com/content/dam/marketing/shared/research/methodology/705988Morningstar_Equity_Research_Methodology.pdf
 4. Aswath Damodaran, *Return on Capital (ROC), Return on Invested Capital (ROIC) and Return on Equity (ROE): Measurement and Implications*, NYU Stern, 2023 industry dataset — https://pages.stern.nyu.edu/~adamodar/
-5. 台積電 2023 年年報（Annual Report 2023）— https://ir.tsmc.com
+5. 台積電 2023 年年報（Annual Report 2023）— https://investor.tsmc.com/english/annual-reports

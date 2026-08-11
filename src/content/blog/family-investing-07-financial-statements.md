@@ -601,7 +601,7 @@ ROIC 長期超過 15%，通常代表護城河存在（上一篇的核心論點�
 2. CFA Institute, *CFA Level I Curriculum: Financial Reporting and Analysis*, CFA Institute, 2024
 3. Richard A. Brealey, Stewart C. Myers, Franklin Allen, Alex Edmans, *Principles of Corporate Finance*, 14th ed., McGraw-Hill, 2025
 4. Aswath Damodaran, *Investment Valuation: Tools and Techniques for Determining the Value of Any Asset*, 4th ed., Wiley Finance, 2024
-5. 台積電 2023 年年報（Annual Report 2023）— https://ir.tsmc.com
+5. 台積電 2023 年年報（Annual Report 2023）— https://investor.tsmc.com/english/annual-reports
 6. 林明樟（MJ Lin），《財報就像一本故事書》，天下雜誌，財務報表視覺化教學法——三表關聯圖的設計概念參考其圖示化框架
 7. DuPont 分析（DuPont Analysis）——1910 年代由杜邦公司的 Donaldson Brown 提出、1920 年代起推廣普及的 ROE 分解框架；現代定義與三因子／五因子拆解見上列 CFA Level I 教材
 </content>
