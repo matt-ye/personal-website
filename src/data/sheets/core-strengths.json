@@ -1,0 +1,50 @@
+[
+  {
+    "排序": "1",
+    "icon": "🧠",
+    "title": "科學溝通力",
+    "description": "將複雜研究轉為易懂語言，讓學術知識更容易被大眾理解。",
+    "title_eng": "Scientific communication skills",
+    "description_eng": "Translate complex research into easy-to-understand language to make academic knowledge more accessible to the general public."
+  },
+  {
+    "排序": "2",
+    "icon": "🔬",
+    "title": "AI x 認知動作科學",
+    "description": "以機器學習分析手寫動作，來分類老人認知退化程度，嘗試開發社區認知退化篩檢系統。",
+    "title_eng": "AI x Cognitive Action Science",
+    "description_eng": "Using machine learning to analyze handwriting movements to classify the degree of cognitive decline in the elderly, we are attempting to develop a community-based cognitive decline screening system."
+  },
+  {
+    "排序": "3",
+    "icon": "🎤",
+    "title": "表達教育專家",
+    "description": "150+ 場演講、跨 20+ 組織的實戰經驗，系統性訓練學生簡報邏輯、表達能力和投影片設計。",
+    "title_eng": "Expression Education Expert",
+    "description_eng": "With 150+ presentations and practical experience across 20+ organizations, this program provides systematic training in presentation logic, communication skills, and slide design."
+  },
+  {
+    "排序": "4",
+    "icon": "🔗",
+    "title": "跨域整合思維",
+    "description": "橫跨職能治療、AI 研究、教育訓練三個領域，擅長找到不同學科之間的共同語言。",
+    "title_eng": "Cross-domain integration thinking",
+    "description_eng": "Spanning occupational therapy, AI research, and education and training, she excels at finding common ground across different disciplines."
+  },
+  {
+    "排序": "5",
+    "icon": "🚀",
+    "title": "提案競賽培訓",
+    "description": "幫助學生和新創團隊：釐清痛點、優化Ptich Deck敘事、呈現技巧訓練、減壓方法維持舞台巔峰表現。",
+    "title_eng": "Proposal Competition Training",
+    "description_eng": "Helping students and startups: identify pain points, optimize Ptich Deck narratives, provide presentation skills training, and stress reduction methods to maintain peak stage performance."
+  },
+  {
+    "排序": "6",
+    "icon": "💻",
+    "title": "臨床研究軟體開發",
+    "description": "職能治療臨床研究用測驗與分析軟體開發 (App Designer-MATLAB ｜Android Studio-Kotlin )",
+    "title_eng": "Clinical research software development",
+    "description_eng": "Developing software for occupational therapy clinical research testing and analysis (App Designer - MATLAB | Android Studio - Kotlin)"
+  }
+]
