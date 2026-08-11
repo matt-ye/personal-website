@@ -189,7 +189,12 @@ const awards = getPersonalAwards();
       <div class="awards-timeline" id="awards-timeline">
         {awards.map((a) => (
           <div class="award-item">
-            <b>{a.year}</b>　{a.contest.zh}　{a.award.zh}
+            <b>{a.year}</b>
+            {/* 有連結就做成連結——只渲染文字的話這些外連對爬蟲不存在 */}
+            {a.link
+              ? <a href={a.link} target="_blank" rel="noopener">{a.contest.zh}</a>
+              : <span>{a.contest.zh}</span>}
+            　{a.award.zh}
             {a.host.zh && <span>　{a.host.zh}</span>}
           </div>
         ))}

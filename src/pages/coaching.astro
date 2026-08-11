@@ -92,6 +92,14 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
             <li>
               <b>{r.year}</b>　{r.name}　{r.award}
               {r.mentee && <span>　—　{r.mentee}</span>}
+              {/* 連結也要進 build 期版本——只渲染文字的話，這些外連對爬蟲等於不存在 */}
+              {/* ⚠ 「報導連結」欄在 MAIC/ATCC 放網址，在 Falling Walls 卻放
+                  「年份｜人名｜主題」（client 端靠 split('｜') 取人名）。
+                  同一欄兩種語意，所以這裡必須先確認它真的是網址才做成連結。 */}
+              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　觀賽紀錄 →</a>}
+              {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
+                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　觀賽影片 {arr.length > 1 ? i + 1 : ''}▶</a>
+              ))}
               {r.highlightZh && <div class="static-award-note">{r.highlightZh}</div>}
             </li>
           ))}
@@ -111,6 +119,14 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
             <li>
               <b>{r.year}</b>　{r.name}　{r.award}
               {r.mentee && <span>　—　{r.mentee}</span>}
+              {/* 連結也要進 build 期版本——只渲染文字的話，這些外連對爬蟲等於不存在 */}
+              {/* ⚠ 「報導連結」欄在 MAIC/ATCC 放網址，在 Falling Walls 卻放
+                  「年份｜人名｜主題」（client 端靠 split('｜') 取人名）。
+                  同一欄兩種語意，所以這裡必須先確認它真的是網址才做成連結。 */}
+              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　觀賽紀錄 →</a>}
+              {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
+                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　觀賽影片 {arr.length > 1 ? i + 1 : ''}▶</a>
+              ))}
               {r.highlightZh && <div class="static-award-note">{r.highlightZh}</div>}
             </li>
           ))}
@@ -130,6 +146,14 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
             <li>
               <b>{r.year}</b>　{r.name}　{r.award}
               {r.mentee && <span>　—　{r.mentee}</span>}
+              {/* 連結也要進 build 期版本——只渲染文字的話，這些外連對爬蟲等於不存在 */}
+              {/* ⚠ 「報導連結」欄在 MAIC/ATCC 放網址，在 Falling Walls 卻放
+                  「年份｜人名｜主題」（client 端靠 split('｜') 取人名）。
+                  同一欄兩種語意，所以這裡必須先確認它真的是網址才做成連結。 */}
+              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　觀賽紀錄 →</a>}
+              {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
+                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　觀賽影片 {arr.length > 1 ? i + 1 : ''}▶</a>
+              ))}
               {r.highlightZh && <div class="static-award-note">{r.highlightZh}</div>}
             </li>
           ))}
