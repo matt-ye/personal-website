@@ -21,7 +21,9 @@ import {
   MAIN_STREAM_ID, GA4_EXTRA_SITES,
 } from './analytics-config.mjs';
 
-const SCHEMA_VERSION = 1;
+// v2：維度報表（topPages/channels/devices/countries/hosts/topEvents）從單一 28 天陣列
+// 改為「視窗 → 陣列」物件（{d7:[…],d28:[…],…}）。dashboard 兩種形狀都能讀。
+const SCHEMA_VERSION = 2;
 const env = (k) => (process.env[k] ?? '').trim() || null;
 
 const GA4_SA_KEY = env('GA4_SA_KEY');
@@ -97,51 +99,99 @@ function gaScope(streamId, hosts, ...extra) {
   return { andGroup: { expressions } };
 }
 
+// KPI 時間視窗（dashboard 的 7天/28天/90天/半年/一年切換）。
+// GA4 單一請求最多 4 個 dateRanges → 分批；多 range 時 rows 會附加 dateRange 維度（date_range_N），
+// 單 range 時不附加。
+const WINDOWS = { d7: '7daysAgo', d28: '28daysAgo', d90: '90daysAgo', d180: '180daysAgo', d365: '365daysAgo' };
+
+// 純函式：把多 dateRange 回應的 rows 依視窗分桶（可單測）。
+// 多 range 時 dateRange 維度附加在請求維度之後；單 range 時不附加。
+export function bucketByWindow(rows, chunk, dimCount, emit) {
+  for (const row of rows) {
+    const dv = (row.dimensionValues ?? []).map((v) => v.value);
+    const idx = chunk.length === 1 ? 0 : num(String(dv[dimCount] ?? '').split('_').pop());
+    const key = chunk[idx];
+    if (!key) continue;
+    emit(key, dv.slice(0, dimCount), (row.metricValues ?? []).map((v) => num(v.value)));
+  }
+}
+
+async function ga4Windows(token, label, scope, metricNames, mapRow) {
+  const keys = Object.keys(WINDOWS);
+  const out = {};
+  for (let i = 0; i < keys.length; i += 4) {
+    const chunk = keys.slice(i, i + 4);
+    const res = await ga4Report(token, `${label}[${chunk.join(',')}]`, {
+      dateRanges: chunk.map((k) => ({ startDate: WINDOWS[k], endDate: 'today' })),
+      metrics: metricNames.map((name) => ({ name })),
+      dimensionFilter: scope,
+    });
+    bucketByWindow(res.rows ?? [], chunk, 0, (key, _d, m) => { out[key] = mapRow(m); });
+  }
+  return out;
+}
+
+// 單一維度 × 5 視窗：每視窗回傳排序後的 topN 清單
+async function ga4WindowsByDim(token, label, scope, dimName, metricNames, mapRow, { sortBy, topN, limit }) {
+  const keys = Object.keys(WINDOWS);
+  const out = {};
+  for (let i = 0; i < keys.length; i += 4) {
+    const chunk = keys.slice(i, i + 4);
+    const res = await ga4Report(token, `${label}[${chunk.join(',')}]`, {
+      dateRanges: chunk.map((k) => ({ startDate: WINDOWS[k], endDate: 'today' })),
+      dimensions: [{ name: dimName }],
+      metrics: metricNames.map((name) => ({ name })),
+      dimensionFilter: scope,
+      limit,
+    });
+    bucketByWindow(res.rows ?? [], chunk, 1, (key, d, m) => {
+      (out[key] ??= []).push(mapRow(d[0], m));
+    });
+  }
+  for (const k of Object.keys(out)) {
+    out[k].sort((a, b) => sortBy(b) - sortBy(a));
+    if (out[k].length > topN) out[k].length = topN;
+  }
+  return out;
+}
+
+// 兩站共用的維度報表組（全部 5 視窗，dashboard 的視窗切換直接可用）
+async function fetchSiteDimensions(token, scope) {
+  const topPages = await ga4WindowsByDim(token, 'topPages', scope, 'pagePath',
+    ['screenPageViews', 'activeUsers', 'userEngagementDuration'],
+    (d, m) => ({ path: d, views: m[0], users: m[1], engagementSec: m[2] }),
+    { sortBy: (r) => r.views, topN: 20, limit: 500 }); // 20 筆：排行顯示 10、漏斗要加總 /writing/* 長尾
+  const channels = await ga4WindowsByDim(token, 'channels', scope, 'sessionDefaultChannelGroup',
+    ['sessions'], (d, m) => ({ channel: d, sessions: m[0] }),
+    { sortBy: (r) => r.sessions, topN: 10, limit: 100 });
+  const devices = await ga4WindowsByDim(token, 'devices', scope, 'deviceCategory',
+    ['activeUsers'], (d, m) => ({ device: d, users: m[0] }),
+    { sortBy: (r) => r.users, topN: 5, limit: 50 });
+  const countries = await ga4WindowsByDim(token, 'countries', scope, 'country',
+    ['activeUsers'], (d, m) => ({ country: d, users: m[0] }),
+    { sortBy: (r) => r.users, topN: 12, limit: 250 });
+  return { topPages, channels, devices, countries };
+}
+
 async function fetchGa4() {
   const token = await googleToken(JSON.parse(GA4_SA_KEY));
-  const D28 = [{ startDate: '28daysAgo', endDate: 'today' }];
   const dims = (...names) => names.map((name) => ({ name }));
   const mets = (...names) => names.map((name) => ({ name }));
-  const byMetricDesc = (name) => [{ metric: { metricName: name }, desc: true }];
   const SCOPE = gaScope(MAIN_STREAM_ID, HOSTS);
 
-  // 1) 7/28/90 天總覽（單請求三個 dateRanges；rows 帶 dateRange 維度 date_range_N）
-  const totalsRes = await ga4Report(token, 'totals', {
-    dateRanges: [
-      { startDate: '7daysAgo', endDate: 'today' },
-      { startDate: '28daysAgo', endDate: 'today' },
-      { startDate: '90daysAgo', endDate: 'today' },
-    ],
-    metrics: mets(
-      'activeUsers', 'newUsers', 'sessions', 'screenPageViews',
-      'engagementRate', 'userEngagementDuration'
-    ),
-    dimensionFilter: SCOPE,
-    returnPropertyQuota: true,
-  });
-  const totals = { d7: null, d28: null, d90: null };
-  for (const row of totalsRes.rows ?? []) {
-    const key = { date_range_0: 'd7', date_range_1: 'd28', date_range_2: 'd90' }[
-      row.dimensionValues?.[0]?.value
-    ];
-    if (!key) continue;
-    const m = row.metricValues.map((v) => num(v.value));
-    totals[key] = {
-      users: m[0], newUsers: m[1], sessions: m[2], views: m[3],
-      engagementRate: m[4], engagementSec: m[5],
-    };
-  }
-  const quota = totalsRes.propertyQuota?.tokensPerDay;
-  if (quota) console.log(`  GA4 quota: ${quota.consumed}/${quota.consumed + quota.remaining} tokens/day`);
+  // 1) KPI 總覽（7/28/90/180/365 天視窗）
+  const totals = await ga4Windows(token, 'totals', SCOPE,
+    ['activeUsers', 'newUsers', 'sessions', 'screenPageViews', 'engagementRate', 'userEngagementDuration'],
+    (m) => ({ users: m[0], newUsers: m[1], sessions: m[2], views: m[3], engagementRate: m[4], engagementSec: m[5] }));
 
-  // 2) 90 天逐日趨勢
+  // 2) 逐日趨勢（365 天——dashboard 視窗切到半年/一年也有圖可看）
   const dailyRes = await ga4Report(token, 'daily', {
-    dateRanges: [{ startDate: '90daysAgo', endDate: 'today' }],
+    dateRanges: [{ startDate: '365daysAgo', endDate: 'today' }],
     dimensions: dims('date'),
     metrics: mets('activeUsers', 'screenPageViews', 'sessions'),
     orderBys: [{ dimension: { dimensionName: 'date' } }],
     dimensionFilter: SCOPE,
-    limit: 100,
+    limit: 400,
   });
   const daily = (dailyRes.rows ?? []).map((r) => ({
     date: gaDate(r.dimensionValues[0].value),
@@ -150,72 +200,9 @@ async function fetchGa4() {
     sessions: num(r.metricValues[2].value),
   }));
 
-  // 3) Top pages（28 天）
-  const pagesRes = await ga4Report(token, 'topPages', {
-    dateRanges: D28,
-    dimensions: dims('pagePath'),
-    metrics: mets('screenPageViews', 'activeUsers', 'userEngagementDuration'),
-    orderBys: byMetricDesc('screenPageViews'),
-    dimensionFilter: SCOPE,
-    limit: 30,
-  });
-  const topPages = (pagesRes.rows ?? []).map((r) => ({
-    path: r.dimensionValues[0].value,
-    views: num(r.metricValues[0].value),
-    users: num(r.metricValues[1].value),
-    engagementSec: num(r.metricValues[2].value),
-  }));
-
-  // 4) 流量管道 + 原始來源
-  const channelsRes = await ga4Report(token, 'channels', {
-    dateRanges: D28,
-    dimensions: dims('sessionDefaultChannelGroup'),
-    metrics: mets('sessions', 'activeUsers'),
-    orderBys: byMetricDesc('sessions'),
-    dimensionFilter: SCOPE,
-  });
-  const channels = (channelsRes.rows ?? []).map((r) => ({
-    channel: r.dimensionValues[0].value,
-    sessions: num(r.metricValues[0].value),
-    users: num(r.metricValues[1].value),
-  }));
-  const sourcesRes = await ga4Report(token, 'sources', {
-    dateRanges: D28,
-    dimensions: dims('sessionSource', 'sessionMedium'),
-    metrics: mets('sessions'),
-    orderBys: byMetricDesc('sessions'),
-    dimensionFilter: SCOPE,
-    limit: 15,
-  });
-  const sources = (sourcesRes.rows ?? []).map((r) => ({
-    source: r.dimensionValues[0].value,
-    medium: r.dimensionValues[1].value,
-    sessions: num(r.metricValues[0].value),
-  }));
-
-  // 5) 國家 / 裝置
-  const countriesRes = await ga4Report(token, 'countries', {
-    dateRanges: D28,
-    dimensions: dims('country'),
-    metrics: mets('activeUsers'),
-    orderBys: byMetricDesc('activeUsers'),
-    dimensionFilter: SCOPE,
-    limit: 12,
-  });
-  const countries = (countriesRes.rows ?? []).map((r) => ({
-    country: r.dimensionValues[0].value,
-    users: num(r.metricValues[0].value),
-  }));
-  const devicesRes = await ga4Report(token, 'devices', {
-    dateRanges: D28,
-    dimensions: dims('deviceCategory'),
-    metrics: mets('activeUsers'),
-    dimensionFilter: SCOPE,
-  });
-  const devices = (devicesRes.rows ?? []).map((r) => ({
-    device: r.dimensionValues[0].value,
-    users: num(r.metricValues[0].value),
-  }));
+  // 3–5) 維度報表（topPages / 管道 / 裝置 / 國家，全部 5 視窗；
+  //      舊的 sources 報表從未被 dashboard 使用，移除）
+  const { topPages, channels, devices, countries } = await fetchSiteDimensions(token, SCOPE);
 
   // 6) 自訂事件 × 頁面（28/90 天雙窗口）
   const eventFilter = {
@@ -250,21 +237,34 @@ async function fetchGa4() {
     ev.topPages.sort((a, b) => b.count - a.count).splice(5);
   }
 
-  // 7) hostName 切分（僅在多站掛同 property 後才有多列）
-  const hostsRes = await ga4Report(token, 'hosts', {
-    dateRanges: D28,
-    dimensions: dims('hostName'),
-    metrics: mets('activeUsers', 'screenPageViews', 'sessions'),
-    dimensionFilter: SCOPE,
-  });
-  const hosts = (hostsRes.rows ?? [])
-    .map((r) => ({
-      host: r.dimensionValues[0].value,
-      users: num(r.metricValues[0].value),
-      views: num(r.metricValues[1].value),
-      sessions: num(r.metricValues[2].value),
-    }))
-    .filter((h) => HOSTS.includes(h.host));
+  // 6b) 事件 × 視窗總數（KPI 視窗切換用；dateRange 維度附加在 eventName 之後）
+  const eventWindows = {};
+  {
+    const keys = Object.keys(WINDOWS);
+    for (let i = 0; i < keys.length; i += 4) {
+      const chunk = keys.slice(i, i + 4);
+      const res = await ga4Report(token, `eventWindows[${chunk.join(',')}]`, {
+        dateRanges: chunk.map((k) => ({ startDate: WINDOWS[k], endDate: 'today' })),
+        dimensions: dims('eventName'),
+        metrics: mets('eventCount'),
+        dimensionFilter: scopedEventFilter,
+        limit: 100,
+      });
+      for (const row of res.rows ?? []) {
+        const name = row.dimensionValues[0].value;
+        const idx = chunk.length === 1 ? 0 : num(String(row.dimensionValues[1]?.value ?? '').split('_').pop());
+        const key = chunk[idx];
+        if (key) (eventWindows[name] ??= {})[key] = num(row.metricValues[0].value);
+      }
+    }
+  }
+  for (const ev of Object.values(events)) ev.windows = eventWindows[ev.name] ?? {};
+
+  // 7) hostName 切分（主站 vs 腦齡；SCOPE 已限縮到 HOSTS）——5 視窗
+  const hosts = await ga4WindowsByDim(token, 'hosts', SCOPE, 'hostName',
+    ['activeUsers', 'screenPageViews', 'sessions'],
+    (d, m) => ({ host: d, users: m[0], views: m[1], sessions: m[2] }),
+    { sortBy: (r) => r.users, topN: 5, limit: 50 });
 
   // 8) 逐日事件數（餵 history，供長期轉換趨勢）
   const dailyEventsRes = await ga4Report(token, 'dailyEvents', {
@@ -283,47 +283,30 @@ async function fetchGa4() {
 
   return {
     configured: true,
-    totals, daily, topPages, channels, sources, countries, devices,
+    totals, daily, topPages, channels, devices, countries,
     hosts, events: Object.values(events), dailyEvents,
   };
 }
 
-// 同 property 底下其他網站的輕量報表組（例如捕夢網）：
-// 以 streamId + hostName 切分；總覽 + 90 天逐日 + top pages + 管道 + 國家 + 站方熱門事件
+// 同 property 底下其他網站（例如捕夢網）：與主站抓「同一組」報表（全部 5 視窗），
+// 以 streamId + hostName 切分——dashboard 用同一套渲染程式呈現兩站。
 async function fetchGa4Site(site) {
   const token = await googleToken(JSON.parse(GA4_SA_KEY));
-  const D28 = [{ startDate: '28daysAgo', endDate: 'today' }];
   const dims = (...names) => names.map((name) => ({ name }));
   const mets = (...names) => names.map((name) => ({ name }));
-  const byMetricDesc = (name) => [{ metric: { metricName: name }, desc: true }];
   const SCOPE = gaScope(site.streamId, site.hosts);
-  const report = (label, body) =>
-    ga4Report(token, `${label}@${site.key}`, { ...body, dimensionFilter: body.dimensionFilter ?? SCOPE });
 
-  const totalsRes = await report('totals', {
-    dateRanges: [
-      { startDate: '7daysAgo', endDate: 'today' },
-      { startDate: '28daysAgo', endDate: 'today' },
-      { startDate: '90daysAgo', endDate: 'today' },
-    ],
-    metrics: mets('activeUsers', 'newUsers', 'sessions', 'screenPageViews', 'engagementRate'),
-  });
-  const totals = { d7: null, d28: null, d90: null };
-  for (const row of totalsRes.rows ?? []) {
-    const key = { date_range_0: 'd7', date_range_1: 'd28', date_range_2: 'd90' }[
-      row.dimensionValues?.[0]?.value
-    ];
-    if (!key) continue;
-    const m = row.metricValues.map((v) => num(v.value));
-    totals[key] = { users: m[0], newUsers: m[1], sessions: m[2], views: m[3], engagementRate: m[4] };
-  }
+  const totals = await ga4Windows(token, `totals@${site.key}`, SCOPE,
+    ['activeUsers', 'newUsers', 'sessions', 'screenPageViews', 'engagementRate'],
+    (m) => ({ users: m[0], newUsers: m[1], sessions: m[2], views: m[3], engagementRate: m[4] }));
 
-  const dailyRes = await report('daily', {
-    dateRanges: [{ startDate: '90daysAgo', endDate: 'today' }],
+  const dailyRes = await ga4Report(token, `daily@${site.key}`, {
+    dateRanges: [{ startDate: '365daysAgo', endDate: 'today' }],
     dimensions: dims('date'),
     metrics: mets('activeUsers', 'screenPageViews', 'sessions'),
     orderBys: [{ dimension: { dimensionName: 'date' } }],
-    limit: 100,
+    dimensionFilter: SCOPE,
+    limit: 400,
   });
   const daily = (dailyRes.rows ?? []).map((r) => ({
     date: gaDate(r.dimensionValues[0].value),
@@ -332,57 +315,19 @@ async function fetchGa4Site(site) {
     sessions: num(r.metricValues[2].value),
   }));
 
-  const pagesRes = await report('topPages', {
-    dateRanges: D28,
-    dimensions: dims('pagePath'),
-    metrics: mets('screenPageViews', 'activeUsers'),
-    orderBys: byMetricDesc('screenPageViews'),
-    limit: 15,
-  });
-  const topPages = (pagesRes.rows ?? []).map((r) => ({
-    path: r.dimensionValues[0].value,
-    views: num(r.metricValues[0].value),
-    users: num(r.metricValues[1].value),
-  }));
+  const { topPages, channels, devices, countries } = await fetchSiteDimensions(token, SCOPE);
 
-  const channelsRes = await report('channels', {
-    dateRanges: D28,
-    dimensions: dims('sessionDefaultChannelGroup'),
-    metrics: mets('sessions'),
-    orderBys: byMetricDesc('sessions'),
-  });
-  const channels = (channelsRes.rows ?? []).map((r) => ({
-    channel: r.dimensionValues[0].value,
-    sessions: num(r.metricValues[0].value),
-  }));
-
-  const countriesRes = await report('countries', {
-    dateRanges: D28,
-    dimensions: dims('country'),
-    metrics: mets('activeUsers'),
-    orderBys: byMetricDesc('activeUsers'),
-    limit: 8,
-  });
-  const countries = (countriesRes.rows ?? []).map((r) => ({
-    country: r.dimensionValues[0].value,
-    users: num(r.metricValues[0].value),
-  }));
-
-  const eventsRes = await report('topEvents', {
-    dateRanges: D28,
-    dimensions: dims('eventName'),
-    metrics: mets('eventCount'),
-    orderBys: byMetricDesc('eventCount'),
-    limit: 20,
-  });
-  // 濾掉每站都有的雜訊事件，留下站方自己的（例如購買、加入購物車）
+  // 站方自己的熱門事件（不套主站事件白名單）——5 視窗；濾掉每站都有的雜訊事件
   const NOISE = new Set(['page_view', 'session_start', 'first_visit', 'user_engagement', 'scroll']);
-  const topEvents = (eventsRes.rows ?? [])
-    .map((r) => ({ name: r.dimensionValues[0].value, count: num(r.metricValues[0].value) }))
-    .filter((e) => !NOISE.has(e.name))
-    .slice(0, 8);
+  const topEventsRaw = await ga4WindowsByDim(token, `topEvents@${site.key}`, SCOPE, 'eventName',
+    ['eventCount'], (d, m) => ({ name: d, count: m[0] }),
+    { sortBy: (r) => r.count, topN: 20, limit: 120 });
+  const topEvents = {};
+  for (const [k, list] of Object.entries(topEventsRaw)) {
+    topEvents[k] = list.filter((e) => !NOISE.has(e.name)).slice(0, 8);
+  }
 
-  return { configured: true, totals, daily, topPages, channels, countries, topEvents };
+  return { configured: true, totals, daily, topPages, channels, devices, countries, topEvents };
 }
 
 /* ── Cloudflare ──────────────────────────────────────── */
