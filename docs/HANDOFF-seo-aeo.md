@@ -24,7 +24,15 @@ mattye.dev，Astro 6 靜態站，Cloudflare Pages（push `main` 自動部署）�
 - ✅ 全站內部連結 trailing-slash 統一（#181）；sitemap lastmod 35/60（#183）；GA4 注入 40 個靜態頁（#182）
 - ✅ 首頁專案導覽（點擊深度 3→2）；`/projects/agent-skills/` 分頁（#186）
 - ✅ GSC：sitemap 已重送（60 頁已發現）、三筆索引問題已按「驗證修正」（2026-08-10，驗證中，3–14 天）
-- ✅ 全站連結健檢＋272 條外連逐條驗證（#189，**draft 待 owner merge**——動工前先確認它進了 main，`scripts/check-links.mjs` 的全站版在那個 branch 上）
+- ✅ 全站連結健檢＋272 條外連逐條驗證（#189，**已 merge 進 main 2026-08-11**）——`scripts/check-links.mjs` 現在掃 dist 全站；54 條擋機器人網址在 `link-check-verified.txt`，每條附證據
+
+## 連結健檢的遺留觀察項（#189 session 未完全結案的）
+
+這些**不是待辦**，是「當時無法定案、要時間才能收尾」的觀察項。跑健檢看到它們時不要當成新問題：
+
+- [ ] **`iswnetwork.ca`（BOPPPS 頁）**：源站 80/443 無回應（四個獨立出口確認），但網域註冊到 2027-03、NS 三個月前才更新——判定主機故障非棄置。頁面上已改接 Internet Archive 2025-08 快照＋一條 Waterloo CTE 現行來源，**ref-meta 註明「官方站恢復後可改回」**。收尾動作：過幾週 `curl -I https://www.iswnetwork.ca/` 一次，恢復了就把存檔連結換回原站、拿掉註記
+- [ ] **`indiehackers.com` ×3（tech-publishing 頁）**：2026-08-09 最後一輪整站 502 Bad gateway，同日稍早還是 200——對方停機。刻意**不進任何清單**（5xx 歸「對方伺服器異常」不算失效）。每月 1 日的排程健檢會自動再驗；若連續兩個月仍 5xx，再依 SOP 找替代（Wayback 有存檔）
+- [ ] **verified 清單的維護原則**（已寫在檔頭，這裡重申給接手者）：清單裡的網址**時好時壞是常態**，某一輪回 2xx 不代表可以移除；反之 `link-check-ignore.txt` 目前是空的，**保持它只放真失效**
 
 ## TODO（依 audit 文件的優先序）
 
@@ -40,8 +48,8 @@ mattye.dev，Astro 6 靜態站，Cloudflare Pages（push `main` 自動部署）�
 ### 2. 小件（可同一批 PR）
 
 - [ ] **RSS feed**（`@astrojs/rss`）——對訂閱與 AEO 都有幫助（feed 是 LLM 抓內容的常用管道）
-- [ ] **GSC verification meta tag**——先問 owner 是否已用 DNS 驗證，是就直接劃掉這項
-- [ ] CLAUDE.md 待辦清單同步勾掉已完成項
+- [x] ~~GSC verification meta tag~~ 已確認不需要：GSC 驗證 2026-08-08 已完成且非走 meta tag（見 CLAUDE.md 待辦區註記），BaseLayout 不應再加 verification 標籤
+- [x] ~~CLAUDE.md 待辦清單同步~~ #196 已處理
 
 ### 3. i18n（等 1 做完再動，順序有相依）
 
@@ -75,9 +83,9 @@ mattye.dev，Astro 6 靜態站，Cloudflare Pages（push `main` 自動部署）�
 
 ## 進行中的 PR（接手時先看狀態）
 
-| PR | 內容 | 狀態（2026-08-11） |
+| PR | 內容 | 狀態（2026-08-11 更新） |
 |---|---|---|
-| #197 | 本盤點文件＋README | draft，待 owner 看 |
-| #189 | 連結健檢全站化＋驗證報告 | draft，待 owner merge——**你的基礎設施在這裡** |
-| #196 | CLAUDE.md 補勾＋hello-world footer | draft（另一個 session 的） |
+| #197 | 盤點文件＋README＋本 handoff | ✅ 已 merge |
+| #189 | 連結健檢全站化＋驗證報告 | ✅ 已 merge——全站健檢基礎設施可用 |
+| #196 | CLAUDE.md 補勾＋hello-world footer | ✅ 已 merge |
 | #94／#74 | 內容類，owner 刻意留著 | 別動 |
