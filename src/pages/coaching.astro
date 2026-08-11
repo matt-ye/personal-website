@@ -2,10 +2,46 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import T from '../components/T.astro';
 import { AWARD } from '../i18n/dict';
+import { getMenteesAwards, getTestimonials } from '../lib/sheets';
 
-const SHEET_ID = '1vYSAfnbqFzLNBNcPY5dd8XRxvVozt1IDd-kIqKO5swA';
-const AWARDS_URL       = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=mentees_award_records`;
-const TESTIMONIALS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=611725944`;
+/* 資料在 build 期備好（src/data/sheets/*.json，每日由 Actions 同步）。
+   原本在瀏覽器端 fetch Google Sheet，培訓戰績與學員回饋都不在 HTML 裡。 */
+
+/* 形狀對齊下方 client script 的 data——那些 render 函式吃這組欄名。 */
+const awardsData = getMenteesAwards()
+  .filter((a) => a.contest.zh && a.year)
+  .map((a) => ({
+    name: a.contest.zh,
+    contestName: a.contest.en,
+    abbr: a.contestAbbr,
+    year: a.year,
+    award: a.award,
+    prize: a.prize,
+    teams: Number((a.teamCount || '0').replace(/[^\d]/g, '')) || 0,
+    report: a.newsLink,
+    mentee: a.team,
+    highlightZh: a.highlight.zh,
+    highlightEn: a.highlight.en,
+    url: a.urls,
+  }));
+
+const testimonialsData = getTestimonials().map((t) => ({
+  team: t.team,
+  quote: t.quote.zh,
+  quoteEn: t.quote.en,
+  context: t.context.zh,
+  contextEn: t.context.en,
+}));
+
+/* 分組與統計：與 client 的 loadAwards 同一套規則，讓不執行 JS 時看到的數字一致 */
+const maicRows = awardsData.filter((r) => r.abbr === 'MAIC' || r.name.includes('行動應用'));
+const fwRows = awardsData.filter((r) => r.name.includes('圍牆'));
+const atccRows = awardsData.filter((r) => r.abbr === 'ATCC');
+const totalTeams = maicRows.reduce((s, r) => s + r.teams, 0);
+const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
+  const n = Number((r.prize || '').replace(/[^\d.]/g, '')) || 0;
+  return s + n * r.teams;
+}, 0);
 ---
 <BaseLayout
   title="Coaching — Matt Ye"
@@ -27,17 +63,17 @@ const TESTIMONIALS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gvi
     <div class="bento-grid coaching-stats-grid">
       <div class="bento-card">
         <div class="bento-card-label"><T zh="Teams Awarded" en="Teams Awarded" /></div>
-        <div class="bento-card-num" id="c-teams">—</div>
+        <div class="bento-card-num" id="c-teams">{totalTeams}</div>
         <div class="bento-card-sub"><T zh="MAIC 獲獎組數" en="MAIC award-winning teams" /></div>
       </div>
       <div class="bento-card">
         <div class="bento-card-label"><T zh="Prize Money" en="Prize Money" /></div>
-        <div class="bento-card-num" id="c-prize">—</div>
+        <div class="bento-card-num" id="c-prize">{totalPrize.toLocaleString('en-US')}</div>
         <div class="bento-card-sub"><T zh="學員獲獎總獎金（NTD）" en="Total prize money won (NTD)" /></div>
       </div>
       <div class="bento-card">
         <div class="bento-card-label"><T zh="Intl. Champions" en="Intl. Champions" /></div>
-        <div class="bento-card-num" id="c-fw">—</div>
+        <div class="bento-card-num" id="c-fw">{fwRows.length}</div>
         <div class="bento-card-sub"><T zh="Falling Walls 得獎人次" en="Falling Walls award placements" /></div>
       </div>
     </div>
@@ -48,8 +84,18 @@ const TESTIMONIALS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gvi
       <p class="coaching-section-desc">
         <T zh="Straight A × Apple 授權教育夥伴競賽培訓計畫。以提案結構、投影片設計、簡報表達三位一體為核心，協助學生團隊角逐亞太賽事獎項。" en="A competition coaching program by Straight A, an Apple Authorized Education Partner. Built around proposal structure, slide design, and delivery as a unified whole, helping student teams compete for Asia-Pacific honors." />
       </p>
+      {/* build 期渲染的版本＝不執行 JS 時（含爬蟲）看到的內容。
+          JS 載入後 renderMAIC() 會用更完整的樣式重畫這一區。 */}
       <div id="maic-container" class="maic-container">
-        <div class="data-loading">載入中…</div>
+        <ul class="static-award-list">
+          {maicRows.map((r) => (
+            <li>
+              <b>{r.year}</b>　{r.name}　{r.award}
+              {r.mentee && <span>　—　{r.mentee}</span>}
+              {r.highlightZh && <div class="static-award-note">{r.highlightZh}</div>}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
 
@@ -60,7 +106,15 @@ const TESTIMONIALS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gvi
         <T zh="協助學生以 3 分鐘英文學術簡報詮釋研究突破。台北賽事冠軍可晉級德國柏林國際決賽，與全球頂尖研究者同台競技。" en="Helping students present research breakthroughs in a 3-minute English academic pitch. Taipei winners advance to the international final in Berlin, Germany, competing alongside top researchers worldwide." />
       </p>
       <div id="fw-container" class="fw-container">
-        <div class="data-loading">載入中…</div>
+        <ul class="static-award-list">
+          {fwRows.map((r) => (
+            <li>
+              <b>{r.year}</b>　{r.name}　{r.award}
+              {r.mentee && <span>　—　{r.mentee}</span>}
+              {r.highlightZh && <div class="static-award-note">{r.highlightZh}</div>}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
 
@@ -71,7 +125,15 @@ const TESTIMONIALS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gvi
         <T zh="ATCC 是台灣規模最大的大專商業個案賽事——企業出真實題目、學生團隊提案解方。以職能治療專業結合簡報教練經驗，協助 SenseEase 團隊把產品機制對回臨床與神經科學實證、誠實劃出「Demo 能證明」與「仍待驗證」的界線，讓痛點與解方站得住腳；再打磨用詞、敘事順序與投影片呈現。最終奪下第 23 屆全國冠軍。" en="ATCC is Taiwan's largest collegiate business-case competition — companies pose real problems and student teams pitch solutions. Combining occupational-therapy expertise with presentation coaching, I helped the SenseEase team ground their product's mechanisms in clinical and neuroscience evidence and honestly separate what the demo proves from what still needs validation — so the pain point and solution held up — then sharpened their wording, narrative, and slides. The result: 1st place at the 23rd national final." />
       </p>
       <div id="atcc-container" class="fw-container">
-        <div class="data-loading">載入中…</div>
+        <ul class="static-award-list">
+          {atccRows.map((r) => (
+            <li>
+              <b>{r.year}</b>　{r.name}　{r.award}
+              {r.mentee && <span>　—　{r.mentee}</span>}
+              {r.highlightZh && <div class="static-award-note">{r.highlightZh}</div>}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
 
@@ -80,7 +142,12 @@ const TESTIMONIALS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gvi
       <p class="section-heading"><T zh="學生怎麼說" en="What Students Say" /></p>
       <div class="testi-carousel" id="testi-carousel">
         <div class="testi-track" id="testi-track">
-          <div class="data-loading">載入中…</div>
+          {testimonialsData.map((t) => (
+            <blockquote class="static-testi">
+              <p>{t.quote}</p>
+              <cite>{t.team}{t.context && `　${t.context}`}</cite>
+            </blockquote>
+          ))}
         </div>
         <div class="testi-nav" id="testi-nav" style="display:none">
           <button class="testi-arrow" id="testi-prev" aria-label="上一則">‹</button>
@@ -99,25 +166,9 @@ const TESTIMONIALS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gvi
   </div>
 </BaseLayout>
 
-<script define:vars={{ AWARDS_URL, TESTIMONIALS_URL, AWARD }}>
+<script define:vars={{ AWARDS_DATA: awardsData, TESTIMONIALS_DATA: testimonialsData, AWARD }}>
 /* ── CSV Parser ── */
-function parseCSV(text) {
-  const rows = [], t = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  let row = [], cur = '', inQ = false;
-  for (let i = 0; i < t.length; i++) {
-    const c = t[i];
-    if (c === '"') { if (inQ && t[i+1]==='"') { cur+='"'; i++; } else inQ=!inQ; }
-    else if (c===',' && !inQ) { row.push(cur.trim()); cur=''; }
-    else if (c==='\n' && !inQ) { row.push(cur.trim()); if (row.some(v=>v)) rows.push(row); row=[]; cur=''; }
-    else cur+=c;
-  }
-  if (cur||row.length) { row.push(cur.trim()); rows.push(row); }
-  return rows;
-}
-function makeHI(rows) {
-  const h = rows[0].map(v => v.toLowerCase().trim());
-  return name => h.findIndex(v => v.includes(name.toLowerCase()));
-}
+/* CSV 解析與欄位索引已移到 build 期（scripts/fetch-sheets.mjs ＋ src/lib/sheets.ts）。 */
 
 /* ── i18n helpers ── */
 const lang = () => document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
@@ -308,42 +359,12 @@ function renderATCC(rows) {
   });
 }
 
-/* ── Main load ── */
-async function loadAwards() {
+/* ── Main load ──
+   資料由 build 期經 define:vars 帶進來，不再 fetch Google Sheet。
+   下面的分組、統計、render 邏輯完全沒動。 */
+function loadAwards() {
   try {
-    const resp = await fetch(AWARDS_URL);
-    const text = await resp.text();
-    const rows = parseCSV(text);
-    if (!rows.length) return;
-
-    const hi = makeHI(rows);
-    const iName  = hi('競賽名稱');
-    const iCName = hi('contest name');
-    const iAbbr  = hi('abbreviation');
-    const iYear  = hi('年分');
-    const iAward = hi('獎項');
-    const iPrize = hi('獎金');
-    const iTeams = hi('組數');
-    const iRpt   = hi('報導') >= 0 ? hi('報導') : hi('url');
-    const iMentee = hi('mentee');
-    const iHlZh   = hi('亮點_zh');
-    const iHlEn   = hi('亮點_en');
-    const iUrl    = hi('urls');
-
-    const data = rows.slice(1).map(r => ({
-      name:        (r[iName]  || '').trim(),
-      contestName: (r[iCName] || '').trim(),
-      abbr:        (r[iAbbr]  || '').trim(),
-      year:        (r[iYear]  || '').trim(),
-      award:       (r[iAward] || '').trim(),
-      prize:       (r[iPrize] || '').trim(),
-      teams:       parseInt(r[iTeams] || '0') || 0,
-      report:      (r[iRpt]   || '').trim(),
-      mentee:      iMentee >= 0 ? (r[iMentee] || '').trim() : '',
-      highlightZh: iHlZh >= 0 ? (r[iHlZh] || '').trim() : '',
-      highlightEn: iHlEn >= 0 ? (r[iHlEn] || '').trim() : '',
-      url:         iUrl >= 0 ? (r[iUrl] || '').trim() : '',
-    })).filter(r => r.name && r.year);
+    const data = AWARDS_DATA;
 
     const maic = data.filter(r => r.abbr === 'MAIC' || r.name.includes('行動應用'));
     const fw   = data.filter(r => r.name.includes('圍牆'));
@@ -382,35 +403,25 @@ async function loadAwards() {
   }
 }
 
-/* ── Testimonials: fetch from Sheet then init carousel ── */
-async function loadTestimonials() {
+/* ── Testimonials：資料同樣由 build 期帶入，這裡只負責輪播 ── */
+function loadTestimonials() {
   const track = document.getElementById('testi-track');
   const dotsEl = document.getElementById('testi-dots');
   const nav = document.getElementById('testi-nav');
   if (!track) return;
 
   try {
-    const resp = await fetch(TESTIMONIALS_URL);
-    const text = await resp.text();
-    const rows = parseCSV(text);
-    if (rows.length < 2) { track.innerHTML = ''; return; }
-
-    const hi = makeHI(rows);
-    const iQuote    = hi('quote');
-    const iContext  = hi('context');
-    const iQuoteEn  = hi('quote_eng');
-    const iContextEn= hi('context_eng');
-    const iShow     = hi('show');
-
-    const data = rows.slice(1)
+    /* show 篩選已在 build 期做掉（src/lib/sheets.ts 的 visible()），
+       這裡保留 show 欄位只是為了不動下方既有的過濾判斷。 */
+    const data = TESTIMONIALS_DATA
       .map(r => ({
-        quote:     (r[iQuote] || '').trim(),
-        context:   (r[iContext] || '').trim(),
-        quoteEn:   iQuoteEn   >= 0 ? (r[iQuoteEn]   || '').trim() : '',
-        contextEn: iContextEn >= 0 ? (r[iContextEn] || '').trim() : '',
-        show:      (r[iShow] || '').trim().toUpperCase(),
+        quote:     r.quote,
+        context:   r.context,
+        quoteEn:   r.quoteEn,
+        contextEn: r.contextEn,
+        show:      'TRUE',
       }))
-      .filter(r => r.quote && (iShow < 0 || r.show === 'TRUE'));
+      .filter(r => r.quote);
 
     if (!data.length) { track.innerHTML = ''; return; }
 

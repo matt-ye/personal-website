@@ -80,14 +80,42 @@ owner 看到 GSC 兩份報告覺得有問題，**逐項查過後結論是技術�
 
 ## TODO（依 audit 文件的優先序）
 
-### 1. 【擋在最前面的決策】問題 A：Sheet 驅動內容靜態化
+### 1. ~~【擋在最前面的決策】問題 A：Sheet 驅動內容靜態化~~ ✅ 已完成（A-1，2026-08-11）
 
-`index`／`coaching`／`speeches` 三頁核心內容是瀏覽器端 fetch Google Sheet（gviz CSV）。
-實測：`/speeches/` 對不執行 JS 的爬蟲只有 1,113 字可見，**61 場演講零場在 HTML 裡**；LLM 爬蟲（GPTBot／ClaudeBot）完全看不到——AEO 上「150+ 場演講」不存在。
+owner 選 A-1（build 期靜態化）＋每日排程同步。**三頁都已改完**，實測結果：
 
-- [ ] **等 owner 選案**：A-1 build 期抓 Sheet 靜態化（audit 文件建議）／A-2 只補 JSON-LD 快照／A-3 不動
-- [ ] 若 A-1，還要 owner 答：rebuild 用手動 deploy hook 還是每日排程（取決於 Sheet 更新頻率）
-- [ ] A-1 實作要點：fetch 搬進 Astro frontmatter（build 期執行）；篩選互動保留（資料改 inline JSON）；**Sheet 掛掉的 fallback**（用上次快照，別讓 build 紅）；`_eng` 缺值退回中文並標 `lang="zh-TW"`
+| 頁面 | 爬蟲可見正文 | 「載入中」佔位 |
+|---|---|---|
+| `/speeches/` | 731 → **24,311** 字元（165 筆紀錄進 HTML） | 2 → 0 |
+| `/coaching/` | 1,953 → **3,856** 字元 | 4 → 0 |
+| `/` | 2,568 → **6,074** 字元 | 8 → 0 |
+
+三頁都不再連 `docs.google.com`；統計數字（場次／時數／人次／獎金）在 build 期就填好，
+不再是 `—`。站內連結健檢 955 個通過 0 問題。
+
+**架構（動它之前先讀）**：
+
+- `scripts/fetch-sheets.mjs` 把 7 個來源抓成 `src/data/sheets/*.json`。
+  內容沒變就不寫檔；任一來源抓失敗**保留既有快照**並以非零碼結束——
+  網站不會因為 Google 掛掉而失去內容，但失敗不會被藏起來
+- `.github/workflows/sync-sheets.yml` 每日 21:00 UTC（台北 05:00）同步，
+  有變動才 commit，push 後由既有的 main 綁定觸發 Cloudflare 部署。也可手動 Run workflow
+- **`src/lib/sheets.ts` 是唯一做「欄名 → 型別」對應的地方**。
+  ⚠ Sheet 的中英欄位命名慣例並不一致：`主辦單位_zh`/`_eng`、`org_zh`/`org_en`、
+  `title`/`title_eng`、`競賽名稱`/`Contest Name`（完全不同名）四種都有，
+  所以逐表寫死對應，**不要改成「猜後綴」的通則**——通則遇到第四種會安靜地取不到值
+- 三頁的 client script 都保留原本的篩選／圖表／輪播邏輯，只是資料改由
+  `define:vars` 帶入。`index.astro` 的五個 load 函式仍吃「二維陣列＋欄位索引」，
+  所以 frontmatter 把快照還原成 `[表頭, ...資料列]` 再傳進去
+
+**順帶修掉一個原本被藏住的資料問題**：兩列的 URL 欄塞了多個連結加說明文字
+（`報名資訊: https://… ⏎ 電子報：https://…`）。內容原本不在 HTML 裡，連結健檢掃不到；
+改成 build 期渲染後才浮現。`sheets.ts` 現在只取第一個合法網址。
+
+- [ ] 待觀察：首頁 LCP 實測 106 秒（PSI mobile，兩次測量一致）。原以為是 Sheet 逾時，
+      但第二次測量時 Sheet 只花 463ms、LCP 仍 106.6s，**根因未定案**。
+      候選假設是 hero 三張輪播不斷產生新的 LCP 候選（未驗證）。
+      這次改動移除了 client fetch，值得重測一次看有無變化
 
 ### 2. 小件（可同一批 PR）
 

@@ -10,12 +10,51 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
   .slice(0, 3);
 
-const SHEET_ID = '1vYSAfnbqFzLNBNcPY5dd8XRxvVozt1IDd-kIqKO5swA';
-const CSV_URL       = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
-const CONTENT_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=site_content`;
-const STRENGTHS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=core_strengths`;
-const ROLES_URL     = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=experience_roles`;
-const AWARDS_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=personal_awards`;
+import speechesRaw from '../data/sheets/speeches.json';
+import siteContentRaw from '../data/sheets/site-content.json';
+import coreStrengthsRaw from '../data/sheets/core-strengths.json';
+import experienceRolesRaw from '../data/sheets/experience-roles.json';
+import personalAwardsRaw from '../data/sheets/personal-awards.json';
+import { getSpeeches, getSiteContent, getCoreStrengths, getExperienceRoles, getPersonalAwards } from '../lib/sheets';
+
+/* 五個 Sheet 的資料在 build 期就備好（每日由 Actions 同步進 src/data/sheets/）。
+   原本是瀏覽器端 fetch——首頁因此有 8 處「載入中」，核心內容不在 HTML 裡。
+
+   下方 client script 的五個 load 函式是用「二維陣列＋欄位索引」的方式讀 CSV，
+   所以這裡把快照還原成同樣的 [表頭, ...資料列] 形狀傳進去，
+   那些函式的內部邏輯就完全不必改動。 */
+const toRows = (raw: Record<string, string>[]): string[][] => {
+  if (!raw.length) return [];
+  const header = Object.keys(raw[0]);
+  return [header, ...raw.map((r) => header.map((h) => r[h] ?? ''))];
+};
+
+const SPEECHES_ROWS = toRows(speechesRaw as Record<string, string>[]);
+const CONTENT_ROWS = toRows(siteContentRaw as Record<string, string>[]);
+const STRENGTHS_ROWS = toRows(coreStrengthsRaw as Record<string, string>[]);
+const ROLES_ROWS = toRows(experienceRolesRaw as Record<string, string>[]);
+const AWARDS_ROWS = toRows(personalAwardsRaw as Record<string, string>[]);
+
+/* 給不執行 JS 的訪客（含爬蟲）用的 build 期版本 */
+const EXCLUDED_TYPES = new Set(['彩排', '教材製作']);
+const speeches = getSpeeches().filter((s) => s.topic.zh && !EXCLUDED_TYPES.has(s.eventType));
+const heroTotal = speeches.length;
+const heroHours = Math.round(speeches.reduce((s, d) => s + d.hours, 0));
+const heroAudience = speeches.reduce((s, d) => s + d.attendees, 0);
+const partners = [...new Set(
+  speeches.flatMap((s) => [s.host.zh, s.coHost1.zh, s.coHost2.zh]).filter(Boolean)
+)].sort();
+
+const content = getSiteContent();
+const heroTagline = Object.keys(content)
+  .filter((k) => k.startsWith('hero_tagline_line'))
+  .sort()
+  .map((k) => content[k].zh)
+  .join(' ');
+
+const strengths = getCoreStrengths();
+const roles = getExperienceRoles();
+const awards = getPersonalAwards();
 ---
 <BaseLayout
   title="葉淨維 Matt Ye"
@@ -31,7 +70,7 @@ const AWARDS_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
           葉淨維
           <span class="name-en">Ching-Wei (Matt) Ye</span>
         </h1>
-        <p class="hero-tagline" id="hero-tagline"></p>
+        <p class="hero-tagline" id="hero-tagline">{heroTagline}</p>
         <div class="hero-tags">
           <span class="hero-tag">🧠 <T zh="AI ＆認知科學研究" en="AI &amp; Cognitive Science Research" /></span>
           <span class="hero-tag">🎤 <T zh="150+ 場演講" en="150+ Talks Delivered" /></span>
@@ -90,17 +129,17 @@ const AWARDS_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
       <div class="bento-grid">
         <div class="bento-card">
           <div class="bento-card-label"><T zh="演講場次" en="Speeches" /></div>
-          <div class="bento-card-num" id="h-total">—</div>
+          <div class="bento-card-num" id="h-total">{heroTotal}</div>
           <div class="bento-card-sub"><T zh="場次累計" en="Total sessions" /></div>
         </div>
         <div class="bento-card">
           <div class="bento-card-label"><T zh="講台時數" en="Hours" /></div>
-          <div class="bento-card-num" id="h-hours">—</div>
+          <div class="bento-card-num" id="h-hours">{heroHours}</div>
           <div class="bento-card-sub"><T zh="講台時數" en="Hours on stage" /></div>
         </div>
         <div class="bento-card">
           <div class="bento-card-label"><T zh="觸及人次" en="Audience" /></div>
-          <div class="bento-card-num" id="h-audience">—</div>
+          <div class="bento-card-num" id="h-audience">{heroAudience.toLocaleString('en-US')}</div>
           <div class="bento-card-sub"><T zh="觸及人次" en="People reached" /></div>
         </div>
         <div class="bento-card">
@@ -115,8 +154,15 @@ const AWARDS_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
     <!-- ③ Three Pillars (dynamic from Sheet: core_strengths) -->
     <section style="margin-bottom: var(--spacing-xl)">
       <p class="section-heading"><T zh="核心優勢" en="Core Strengths" /></p>
+      {/* build 期渲染＝不執行 JS 時（含爬蟲）看到的內容；JS 載入後會重畫成可切換語言的版本 */}
       <div class="pillars-grid" id="pillars-grid">
-        <div class="data-loading"><T zh="載入中…" en="Loading…" /></div>
+        {strengths.map((s) => (
+          <div class="pillar-card">
+            <div class="pillar-icon">{s.icon}</div>
+            <div class="pillar-title">{s.title.zh}</div>
+            <p class="pillar-desc">{s.description.zh}</p>
+          </div>
+        ))}
       </div>
     </section>
 
@@ -124,7 +170,16 @@ const AWARDS_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
     <section style="margin-bottom: var(--spacing-xl)">
       <p class="section-heading"><T zh="經歷 & 角色" en="Experience &amp; Roles" /></p>
       <div class="roles-list" id="roles-list">
-        <div class="data-loading"><T zh="載入中…" en="Loading…" /></div>
+        {roles.map((r) => (
+          <div class="role-item">
+            <div class="role-icon">{r.icon}</div>
+            <div class="role-body">
+              <div class="role-title">{r.title.zh}</div>
+              <div class="role-org">{r.org.zh}{r.period && `　${r.period}`}</div>
+              {r.description.zh && <p class="role-desc">{r.description.zh}</p>}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
 
@@ -132,7 +187,12 @@ const AWARDS_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
     <section style="margin-bottom: var(--spacing-xl)">
       <p class="section-heading"><T zh="個人獎項" en="Awards & Honors" /></p>
       <div class="awards-timeline" id="awards-timeline">
-        <div class="data-loading"><T zh="載入中…" en="Loading…" /></div>
+        {awards.map((a) => (
+          <div class="award-item">
+            <b>{a.year}</b>　{a.contest.zh}　{a.award.zh}
+            {a.host.zh && <span>　{a.host.zh}</span>}
+          </div>
+        ))}
       </div>
     </section>
 
@@ -140,7 +200,7 @@ const AWARDS_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
     <section class="partners-section">
       <p class="section-heading"><T zh="主要合作單位" en="Top Collaborating Organizations" /></p>
       <div class="partners-orgs-grid" id="partners-grid">
-        <div class="data-loading"><T zh="載入中…" en="Loading…" /></div>
+        {partners.map((p) => <span class="partner-name">{p}</span>)}
       </div>
       <a href="/speeches/" class="section-cta" style="margin-top:1rem"><T zh="查看所有演講 →" en="View all speeches →" /></a>
     </section>
@@ -230,7 +290,7 @@ const AWARDS_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
 })();
 </script>
 
-<script define:vars={{ CSV_URL, CONTENT_URL, STRENGTHS_URL, ROLES_URL, AWARDS_URL }}>
+<script define:vars={{ SPEECHES_ROWS, CONTENT_ROWS, STRENGTHS_ROWS, ROLES_ROWS, AWARDS_ROWS }}>
 /* ── Count-up animation ── */
 function countUp(el, finalVal, dur) {
   if (!el || isNaN(finalVal)) return;
@@ -283,11 +343,10 @@ function pick(zh, en) { return (lang() === 'en' && en) ? en : (zh || en || ''); 
 var contentRender = null, strengthsRender = null, rolesRender = null, awardsRender = null;
 
 /* ── Speeches sheet: stats + partners leaderboard ── */
+/* 五個 load 函式的資料改由 build 期經 define:vars 帶入（不再 fetch Google Sheet）。
+   資料形狀維持原本的「二維陣列」，所以下面的欄位索引邏輯完全沒動。 */
 function loadSpeeches() {
-  fetch(CSV_URL)
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-      var allRows = parseCSV(text);
+  (function(allRows) {
       if (!allRows.length) return;
       var hi = makeHI(allRows);
       var iDate = hi('日期'), iOrg = hi('主辦單位_zh'), iOrgEn = hi('主辦單位_eng');
@@ -356,19 +415,12 @@ function loadSpeeches() {
           });
         });
       });
-    })
-    .catch(function() {
-      var grid = document.getElementById('partners-grid');
-      if (grid) grid.innerHTML = '';
-    });
+  })(SPEECHES_ROWS);
 }
 
 /* ── site_content: hero tagline ── */
 function loadContent() {
-  fetch(CONTENT_URL)
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-      var rows = parseCSV(text);
+  (function(rows) {
       /* Build key → value map (header row is row[0], skip it) */
       /* 3-column layout: key | value(zh) | value_eng */
       var kv = {};
@@ -389,16 +441,12 @@ function loadContent() {
         taglineEl.innerHTML = lines.join('<br>');
       };
       contentRender();
-    })
-    .catch(function() { /* silent fail — tagline stays empty */ });
+  })(CONTENT_ROWS);
 }
 
 /* ── core_strengths: pillar cards ── */
 function loadStrengths() {
-  fetch(STRENGTHS_URL)
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-      var rows = parseCSV(text);
+  (function(rows) {
       if (rows.length < 2) return;
       var hi = makeHI(rows);
       var iSort = hi('排序'), iIcon = hi('icon'), iTitle = hi('title'), iDesc = hi('description');
@@ -425,19 +473,12 @@ function loadStrengths() {
         });
       };
       strengthsRender();
-    })
-    .catch(function() {
-      var g = document.getElementById('pillars-grid');
-      if (g) g.innerHTML = '';
-    });
+  })(STRENGTHS_ROWS);
 }
 
 /* ── experience_roles: role cards ── */
 function loadRoles() {
-  fetch(ROLES_URL)
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-      var rows = parseCSV(text);
+  (function(rows) {
       if (rows.length < 2) return;
       var hi = makeHI(rows);
       var iSort   = hi('排序');
@@ -482,19 +523,12 @@ function loadRoles() {
         });
       };
       rolesRender();
-    })
-    .catch(function() {
-      var l = document.getElementById('roles-list');
-      if (l) l.innerHTML = '';
-    });
+  })(ROLES_ROWS);
 }
 
 /* ── personal_awards: year-grouped awards timeline ── */
 function loadPersonalAwards() {
-  fetch(AWARDS_URL)
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-      var rows = parseCSV(text);
+  (function(rows) {
       if (rows.length < 2) { var e = document.getElementById('awards-timeline'); if (e) e.innerHTML = ''; return; }
       var hi = makeHI(rows);
       var iYear    = hi('年份');
@@ -562,11 +596,7 @@ function loadPersonalAwards() {
         }).join('');
       };
       awardsRender();
-    })
-    .catch(function() {
-      var e = document.getElementById('awards-timeline');
-      if (e) e.innerHTML = '';
-    });
+  })(AWARDS_ROWS);
 }
 
 /* ── Run all ── */
