@@ -6,7 +6,7 @@
 **GitHub：** https://github.com/matt-ye/personal-website  
 **部署：** Cloudflare Pages（連接 GitHub `main` branch，push 自動 deploy）  
 **網域：** https://mattye.dev（自訂網域，preview: personal-website-1m7.pages.dev）  
-**Tech stack：** Astro 6 (static) · Plain CSS · Markdown content collections
+**Tech stack：** Astro 7 (static) · Plain CSS · Markdown content collections
 
 ---
 
@@ -39,8 +39,12 @@
 ## 技術規範
 
 ### Astro
-- 使用 Astro 6，**靜態輸出**（`output: 'static'`）
+- 使用 Astro 7，**靜態輸出**（`output: 'static'`）
 - Content collections 設定在 `src/content.config.ts`
+- **`<T zh="…" en="…" />` 的兩個屬性是 JS 字串**，由 `{zh}` 插值輸出、Astro 會轉義一次。
+  裡面寫 `&amp;` / `&nbsp;` / `&gt;` 這類 HTML entity，畫面上會直接看到 `&amp;` 字樣。
+  一律填實際字元（`&`、`>`、nbsp 用 U+00A0 實字元）。這條只適用於「屬性／JS 字串」，
+  模板標籤之間的文字（如 `<h1>演講 &amp; 工作坊</h1>`）照常寫 entity
 - 文章放在 `src/content/blog/`，格式為 Markdown（`.md`）
 - 頁面路由：`/` · `/writing` · `/writing/[slug]`
 
