@@ -11,6 +11,19 @@ const json = (obj, status = 200) =>
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   });
 
+// 自動偵測 users 表（與 scripts/fetch-analytics.mjs 的邏輯一致），
+// 快取在 isolate 生命週期內
+let usersTable = null;
+async function resolveUsersTable(db) {
+  if (usersTable) return usersTable;
+  const { results } = await db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
+  const names = (results ?? [])
+    .map((r) => r.name)
+    .filter((t) => !t.startsWith('sqlite_') && !t.startsWith('_cf_') && !t.startsWith('d1_'));
+  usersTable = names.find((t) => /^users?$/i.test(t)) ?? names.find((t) => /user/i.test(t)) ?? null;
+  return usersTable;
+}
+
 export default {
   async fetch(req, env) {
     // Access 已在邊緣驗證身分；此處防禦性確認 JWT header 存在——
@@ -23,8 +36,10 @@ export default {
 
     if (url.pathname === '/api/dashboard/users' && req.method === 'GET') {
       try {
-        const row = await env.AUTH_DB.prepare('SELECT COUNT(*) AS n FROM user').first();
-        return json({ count: row?.n ?? 0, at: new Date().toISOString() });
+        const table = await resolveUsersTable(env.AUTH_DB);
+        if (!table) return json({ error: 'users table not found' }, 500);
+        const row = await env.AUTH_DB.prepare(`SELECT COUNT(*) AS n FROM "${table}"`).first();
+        return json({ count: row?.n ?? 0, table, at: new Date().toISOString() });
       } catch (err) {
         return json({ error: String(err.message).slice(0, 200) }, 500);
       }

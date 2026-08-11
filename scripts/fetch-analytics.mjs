@@ -419,21 +419,33 @@ async function fetchCloudflare() {
 
 /* ── D1 註冊用戶數（Tela Aurea 帳號系統）────────────── */
 
-async function fetchRegUsers() {
+async function d1Query(sql) {
   const res = await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/d1/database/${CF_D1_DB_ID}/query`,
     {
       method: 'POST',
       headers: { Authorization: `Bearer ${CF_D1_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sql: 'SELECT COUNT(*) AS n FROM user' }),
+      body: JSON.stringify({ sql }),
     }
   );
   if (!res.ok) throw new Error(`D1 query ${res.status}: ${(await res.text()).slice(0, 200)}`);
   const data = await res.json();
   if (!data.success) throw new Error(`D1: ${JSON.stringify(data.errors).slice(0, 200)}`);
-  const count = num(data.result?.[0]?.results?.[0]?.n);
+  return data.result?.[0]?.results ?? [];
+}
+
+async function fetchRegUsers() {
+  // 自動偵測 users 表：實際 schema 的表名與口頭認知常有出入（首跑就撞上
+  // no such table: user），改成查 sqlite_master 自選，schema 改名也不會壞。
+  const tables = (await d1Query("SELECT name FROM sqlite_master WHERE type='table'"))
+    .map((r) => r.name)
+    .filter((t) => !t.startsWith('sqlite_') && !t.startsWith('_cf_') && !t.startsWith('d1_'));
+  const table = tables.find((t) => /^users?$/i.test(t)) ?? tables.find((t) => /user/i.test(t));
+  if (!table) throw new Error(`找不到 users 相關資料表；現有：${tables.join(', ') || '(無)'}`);
+  console.log(`  D1 tables: ${tables.join(', ')} → 使用「${table}」`);
+  const count = num((await d1Query(`SELECT COUNT(*) AS n FROM "${table}"`))[0]?.n);
   // siteKey：dashboard 把這張卡掛在哪個網站區塊
-  return { configured: true, count, siteKey: 'dreamcatcher', fetchedAt: new Date().toISOString() };
+  return { configured: true, count, table, siteKey: 'dreamcatcher', fetchedAt: new Date().toISOString() };
 }
 
 /* ── GitHub ──────────────────────────────────────────── */
