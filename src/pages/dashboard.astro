@@ -199,16 +199,29 @@ async function refetchData() {
   renderAll();
 }
 
-document.getElementById('refresh-btn')?.addEventListener('click', () => {
+document.getElementById('refresh-btn')?.addEventListener('click', async () => {
   if (watching) return;
   watching = true;
   const btn = document.getElementById('refresh-btn');
   const status = document.getElementById('refresh-status');
   const bar = document.getElementById('refresh-progress');
   btn.disabled = true;
-  window.open(WF_PAGE, '_blank', 'noopener');
-  status.textContent = L('已開啟 GitHub——按綠色「Run workflow」後回到這裡，進度會自動顯示', 'GitHub opened — hit the green “Run workflow” button there; progress shows here');
   bar.style.display = '';
+
+  // 真・一鍵：先試同源的 dashboard-api worker（Access 保護、token 在 worker secrets）。
+  // worker 未部署 / 非 mattye.dev 網域 / Access 未過 → 退回開 GitHub 頁面的流程。
+  let oneClick = false;
+  status.textContent = L('觸發中…', 'Triggering…');
+  try {
+    const r = await fetch('/api/dashboard/trigger', { method: 'POST' });
+    if (r.ok) oneClick = !!(await r.json()).ok;
+  } catch (e) { /* fallback below */ }
+  if (oneClick) {
+    status.textContent = L('已觸發，等待執行開始…', 'Triggered — waiting for the run to start…');
+  } else {
+    window.open(WF_PAGE, '_blank', 'noopener');
+    status.textContent = L('已開啟 GitHub——按綠色「Run workflow」後回到這裡，進度會自動顯示', 'GitHub opened — hit the green “Run workflow” button there; progress shows here');
+  }
   const started = Date.now();
   const stop = (msg) => { watching = false; btn.disabled = false; bar.style.display = 'none'; status.textContent = msg; };
   const tick = async () => {
@@ -233,8 +246,36 @@ document.getElementById('refresh-btn')?.addEventListener('click', () => {
     } catch (e) { /* 網路波動，下一輪再試 */ }
     setTimeout(tick, 15000);
   };
-  setTimeout(tick, 8000); // 給使用者時間按下 Run workflow
+  setTimeout(tick, oneClick ? 4000 : 8000); // fallback 模式多留時間按 Run workflow
 });
+
+/* 註冊用戶：live 數（同源 worker，僅 mattye.dev + Access 通過時可用）。
+   失敗無妨——卡片仍顯示 pipeline 快照。 */
+let liveUserCount = null;
+async function fetchLiveUsers() {
+  const key = summary?.regUsers?.siteKey;
+  if (!summary?.regUsers?.configured || !key) return;
+  try {
+    const r = await fetch('/api/dashboard/users');
+    if (!r.ok) return;
+    const j = await r.json();
+    if (typeof j.count === 'number') {
+      liveUserCount = j.count;
+      const el = document.getElementById(`ru-num-${key}`);
+      if (el) el.textContent = fmtNum(liveUserCount);
+    }
+  } catch (e) { /* 非 mattye.dev 或 worker 未部署 */ }
+}
+
+/* 視窗內新增的註冊數（history ru 快照差值） */
+function regUsersDelta(key) {
+  const rows = history.filter(r => r.ru?.[key] !== undefined);
+  if (rows.length < 2) return null;
+  const nowV = rows[rows.length - 1].ru[key];
+  const cutoff = new Date(Date.now() - WIN_DAYS[win] * 864e5).toISOString().slice(0, 10);
+  const base = [...rows].reverse().find(r => r.date <= cutoff) ?? rows[0];
+  return nowV - base.ru[key];
+}
 
 /* ── init ───────────────────────────────────────────── */
 async function init() {
@@ -263,6 +304,7 @@ async function init() {
     state.style.display = 'none';
     document.getElementById('dash-main').style.display = '';
     renderAll();
+    fetchLiveUsers();
   } catch (err) {
     state.className = 'data-error';
     state.innerHTML = `⚠️ ${L('資料尚未產生或載入失敗——pipeline 首次執行成功後才會有資料。', 'No data yet — it appears after the first successful pipeline run.')}<br><small>${esc(err.message)}</small>`;
@@ -415,6 +457,16 @@ function siteSectionHTML(b) {
   if (b.isMain) {
     const reads = (d.events ?? []).find(e => e.name === 'read_complete');
     kpis += tile('Read Completes', eventWin(reads) ?? (reads ? null : undefined), L('文章完讀', 'Articles read'));
+  }
+  if (summary.regUsers?.configured && summary.regUsers.siteKey === b.key) {
+    const count = liveUserCount ?? summary.regUsers.count;
+    const delta = regUsersDelta(b.key);
+    kpis += `
+      <div class="bento-card">
+        <div class="bento-card-label">Registered Users</div>
+        <div class="bento-card-num" id="ru-num-${b.key}" data-countup="${count}">—</div>
+        <div class="bento-card-sub">${L('註冊用戶', 'Registered users')}${delta !== null && delta > 0 ? ` · +${fmtNum(delta)} ${winLabel()}` : ''}</div>
+      </div>`;
   }
 
   /* 趨勢 */

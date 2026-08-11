@@ -33,6 +33,9 @@ const CF_ZONE_ID = env('CF_ZONE_ID');
 const GH_TRAFFIC_TOKEN = env('GH_TRAFFIC_TOKEN');
 const GIST_TOKEN = env('GIST_TOKEN');
 const GIST_ID = env('GIST_ID');
+const CF_ACCOUNT_ID = env('CF_ACCOUNT_ID');
+const CF_D1_DB_ID = env('CF_D1_DB_ID');
+const CF_D1_TOKEN = env('CF_D1_TOKEN');
 
 const num = (v) => Number(v ?? 0) || 0;
 const isoDay = (d) => d.toISOString().slice(0, 10);
@@ -414,6 +417,25 @@ async function fetchCloudflare() {
   return { configured: true, daily, topCountries, hosts, notes };
 }
 
+/* ── D1 註冊用戶數（Tela Aurea 帳號系統）────────────── */
+
+async function fetchRegUsers() {
+  const res = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/d1/database/${CF_D1_DB_ID}/query`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${CF_D1_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sql: 'SELECT COUNT(*) AS n FROM user' }),
+    }
+  );
+  if (!res.ok) throw new Error(`D1 query ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const data = await res.json();
+  if (!data.success) throw new Error(`D1: ${JSON.stringify(data.errors).slice(0, 200)}`);
+  const count = num(data.result?.[0]?.results?.[0]?.n);
+  // siteKey：dashboard 把這張卡掛在哪個網站區塊
+  return { configured: true, count, siteKey: 'dreamcatcher', fetchedAt: new Date().toISOString() };
+}
+
 /* ── GitHub ──────────────────────────────────────────── */
 
 const ghHeaders = (token) => ({
@@ -595,7 +617,7 @@ async function gistWrite(summaryJson, historyNdjson) {
 
 /* ── History merge（冪等 upsert）────────────────────── */
 
-function mergeHistory(prevText, ga4, cf, gh, extraSites = []) {
+function mergeHistory(prevText, ga4, cf, gh, extraSites = [], regUsers = null) {
   const byDate = new Map();
   for (const line of (prevText ?? '').split('\n')) {
     const trimmed = line.trim();
@@ -633,6 +655,12 @@ function mergeHistory(prevText, ga4, cf, gh, extraSites = []) {
       row.gx ??= {};
       row.gx[s.key] = { u: d.users, v: d.views, s: d.sessions };
     }
+  }
+  // 註冊用戶數：只落當日快照（ru.<siteKey>），累積出成長曲線
+  if (regUsers?.configured && typeof regUsers.count === 'number') {
+    const row = rowFor(isoDay(new Date()));
+    row.ru ??= {};
+    row.ru[regUsers.siteKey] = regUsers.count;
   }
   if (gh?.dailyTraffic) {
     for (const [repo, days] of Object.entries(gh.dailyTraffic)) {
@@ -680,6 +708,10 @@ const ga4 = await runSource('GA4', GA4_SA_KEY && GA4_PROPERTY_ID, fetchGa4);
 const cloudflare = await runSource('Cloudflare', CF_API_TOKEN && CF_ZONE_ID, fetchCloudflare);
 const github = await runSource('GitHub', GH_TRAFFIC_TOKEN, fetchGithub);
 
+const regUsers = await runSource(
+  'D1:users', CF_ACCOUNT_ID && CF_D1_DB_ID && CF_D1_TOKEN, fetchRegUsers
+);
+
 // 同 property 的其他網站(config 驅動;與主站共用憑證,主站 GA 未設定時一併跳過)
 const ga4Sites = [];
 for (const site of GA4_EXTRA_SITES) {
@@ -697,7 +729,7 @@ try {
   console.error(`- gist read error — ${err.message}（本次視為無歷史）`);
 }
 
-const history = mergeHistory(prevHistory, ga4, cloudflare, github, ga4Sites);
+const history = mergeHistory(prevHistory, ga4, cloudflare, github, ga4Sites, regUsers);
 
 // summary 不含 script 內部用的中間資料
 const { dailyEvents: _e, ...ga4Out } = ga4;
@@ -707,6 +739,7 @@ const summary = {
   generatedAt: new Date().toISOString(),
   ga4: ga4Out,
   ga4Sites,
+  regUsers,
   cloudflare,
   github: githubOut,
 };

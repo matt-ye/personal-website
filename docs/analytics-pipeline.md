@@ -58,6 +58,10 @@ repo Settings → Secrets and variables → Actions → New repository secret：
 | `GH_TRAFFIC_TOKEN` | fine-grained PAT（名稱不能以 `GITHUB_` 開頭，是 Actions 的保留字） |
 | `GIST_TOKEN` | classic PAT（gist scope） |
 | `GIST_ID` | 首次執行後補（見下一步） |
+| `CF_DEPLOY_TOKEN` | 自動化 token：Workers Scripts:Edit + D1:Edit + Workers Routes:Edit（第 10 步） |
+| `CF_ACCOUNT_ID` | Cloudflare Account ID（第 10 步） |
+| `CF_D1_DB_ID` | D1 `telaaurea-auth` 的 Database ID（第 10 步） |
+| `GH_DISPATCH_TOKEN` | fine-grained PAT，僅 personal-website、Actions:RW（第 10 步） |
 
 ### 5. 首次執行（~3 分鐘）
 
@@ -105,6 +109,30 @@ pipeline 以 **streamId + hostName 雙重過濾**在同一個 property 內切分
 dashboard「其他網站」區自動出現捕夢網卡片（KPI、90 天趨勢、top pages、站方熱門事件如購買）。
 
 再加網站：GA4 為該站建 data stream → `GA4_EXTRA_SITES` 加一項（key / label / site / streamId / hosts）。
+
+### 10. dashboard-api worker（真一鍵更新 + 註冊用戶數，~15 分鐘）
+
+`workers/dashboard-api/` 是獨立的小 worker（與金流/AI worker 隔離），由
+`.github/workflows/deploy-worker.yml` 自動部署——**不需要地端 wrangler**。
+提供兩個同源端點（`mattye.dev/api/dashboard/*`，Cloudflare Access 保護）：
+`POST /trigger`（一鍵觸發 analytics workflow）、`GET /users`（D1 即時用戶數）。
+
+1. **建自動化 token**：dash.cloudflare.com → My Profile → API Tokens → Create Custom Token，
+   權限三條：**Account → Workers Scripts → Edit**、**Account → D1 → Edit**、
+   **Zone → Workers Routes → Edit**（Zone Resources 限 mattye.dev）
+2. **記兩個 ID**：Account ID（dash 首頁右欄）、D1 Database ID
+   （Storage & Databases → D1 → `telaaurea-auth` → 右側 Database ID）
+3. **建 GitHub PAT**（fine-grained）：僅勾 personal-website，權限 **Actions: Read and write**
+4. **存 4 個 repo secrets**：`CF_DEPLOY_TOKEN`、`CF_ACCOUNT_ID`、`CF_D1_DB_ID`、`GH_DISPATCH_TOKEN`
+5. **Access 加保護**：Zero Trust → Access → Applications → 新增 Self-hosted，
+   domain `mattye.dev`、path `api/dashboard`，policy 與 dashboard 相同（僅 owner email）
+6. merge 後 `deploy-worker` workflow 自動部署；`analytics` workflow 同時開始每 6 小時
+   查 D1 用戶數（`SELECT COUNT(*) FROM user`）寫入 history，dashboard 捕夢網區塊
+   出現 **Registered Users** 卡（快照 + 視窗內新增；mattye.dev 上另補 live 數）
+
+> 用戶數查詢與 worker 部署共用同一把 `CF_DEPLOY_TOKEN`（analytics workflow 以
+> `CF_D1_TOKEN` 名稱引用它）。未來個人網站電子報上線：D1 建表後在 pipeline 加一條
+> query + dashboard `siteKey` 對應即可。
 
 > ⚠️ **重要（2026-08 事故記錄）**：Google 代碼曾被「合併」為單一代碼、兩個目的地
 > （G-1RKL72DPPW + G-4MY30R916S），導致 6/8 起兩站事件互灌、同站事件寫入兩個 stream。
@@ -164,6 +192,7 @@ dashboard「其他網站」區自動出現捕夢網卡片（KPI、90 天趨勢�
 {"v":1,"date":"2026-07-23",
  "ga":{"users":12,"views":31,"sessions":14,"ev":{"click_github":2}},
  "gx":{"dreamcatcher":{"u":30,"v":80,"s":35}},
+ "ru":{"dreamcatcher":128},
  "cf":{"req":900,"pv":300,"uniq":80,"bytes":1,"cachedReq":700,"cachedBytes":1,"threats":0},
  "gh":{"matt-ye/dreamcatcher":{"v":10,"vu":4,"c":1,"cu":1,"stars":5}}}
 ```
