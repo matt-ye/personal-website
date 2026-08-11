@@ -94,9 +94,10 @@ draft: false   # true 時不顯示在列表
 
 ## 待辦事項（之後的 PR）
 - [x] 加入 Google Analytics 4（G-1RKL72DPPW）
-- [ ] 加入 Google Search Console verification meta tag
+- [x] Google Search Console 驗證（2026-08-08 完成，站已編入索引）
+      驗證非走 meta tag，BaseLayout 不需要也不應該再加 verification 標籤
 - [x] 建立 `llms.txt`
-- [ ] 加入個人照片
+- [x] 加入個人照片（首頁 hero 三張輪播）
 - [x] 設定自訂網域（mattye.dev）
 - [ ] 加入 RSS feed（`@astrojs/rss`）
 - [x] 加入 sitemap（`@astrojs/sitemap`）

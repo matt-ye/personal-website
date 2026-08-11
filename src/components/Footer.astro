@@ -8,6 +8,10 @@ const year = new Date().getFullYear();
     <span>© {year} 葉淨維 Matt Ye</span>
     <div class="footer-links">
       <a href="https://github.com/matt-ye" target="_blank" rel="noopener">GitHub</a>
+      {/* 〈為什麼建立這個網站〉先前全站只有 /writing 列表一個入口（對照
+          /coaching 的 24 個），Search Console 因此判定重要性低、長期停在
+          「已檢索 - 目前尚未建立索引」。放進 footer 讓每一頁都連過去。 */}
+      <a href="/writing/hello-world/"><T zh="關於本站" en="About this site" /></a>
       {/* 這個文字連結是 /sponsor 唯一的站內入口——旁邊的金色按鈕只開 modal，
           不是連結，Google 無法沿著它發現該頁。 */}
       <a href="/sponsor/"><T zh="贊助說明" en="Sponsorship" /></a>
