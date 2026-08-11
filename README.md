@@ -15,6 +15,7 @@
 
 | 文件 | 內容 | 狀態 |
 |---|---|---|
+| [`HANDOFF-seo-aeo.md`](docs/HANDOFF-seo-aeo.md) | **跨 session 交接**：SEO/AEO 工作流的 TODO、已完成清單、陷阱 | 進行中 |
 | [`seo-architecture-audit.md`](docs/seo-architecture-audit.md) | **架構與 SEO 總盤點**：Sheet 驅動內容的可見性問題、優先序、待決策 | 待評估 |
 | [`i18n-architecture-plan.md`](docs/i18n-architecture-plan.md) | 中英雙語改分頁的完整規劃（三方案、Phase、坑） | 待評估 |
 | [`analytics-pipeline.md`](docs/analytics-pipeline.md) | GA4＋Cloudflare＋GitHub 每日快照管線的設定 | 運行中 |
