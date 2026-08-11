@@ -201,8 +201,8 @@ async function refetchData() {
   const base = DATA_BASE.replace(/\/+$/, '');
   const bust = Date.now();
   const [sRes, hRes] = await Promise.all([
-    fetch(`${base}/summary.json?t=${bust}`),
-    fetch(`${base}/history.ndjson?t=${bust}`),
+    fetch(`${base}/summary.json?t=${bust}`, { cache: 'no-store' }),
+    fetch(`${base}/history.ndjson?t=${bust}`, { cache: 'no-store' }),
   ]);
   if (sRes.ok) summary = await sRes.json();
   if (hRes.ok) history = (await hRes.text()).split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
@@ -219,18 +219,40 @@ document.getElementById('refresh-btn')?.addEventListener('click', async () => {
   bar.style.display = '';
 
   // 真・一鍵：先試同源的 dashboard-api worker（Access 保護、token 在 worker secrets）。
-  // worker 未部署 / 非 mattye.dev 網域 / Access 未過 → 退回開 GitHub 頁面的流程。
+  // worker 未部署 / 非 mattye.dev 網域 / Access 未過 → 退回開 GitHub 頁面的流程，
+  // 並把「為什麼一鍵失敗」寫進狀態列（否則除錯只能瞎猜）。
   let oneClick = false;
+  let why = '';
   status.textContent = L('觸發中…', 'Triggering…');
-  try {
-    const r = await fetch('/api/dashboard/trigger', { method: 'POST' });
-    if (r.ok) oneClick = !!(await r.json()).ok;
-  } catch (e) { /* fallback below */ }
+  if (location.hostname !== 'mattye.dev') {
+    // worker route 只綁 mattye.dev——preview（*.pages.dev）打同源 /api 只會拿到 404
+    why = L(`此網域（${location.hostname}）無 API，一鍵僅在 mattye.dev/dashboard 可用`,
+            `no API on ${location.hostname} — one-click works on mattye.dev/dashboard only`);
+  } else {
+    try {
+      const r = await fetch('/api/dashboard/trigger', { method: 'POST' });
+      if (r.ok) {
+        oneClick = !!(await r.json()).ok;
+        if (!oneClick) why = 'API ok=false';
+      } else {
+        why = `API HTTP ${r.status}` + (r.status === 403
+          ? L('——Access 未涵蓋 /api/dashboard 路徑（worker 收不到 Access JWT）', ' — Access is not covering /api/dashboard (worker got no Access JWT)')
+          : '');
+      }
+    } catch (e) {
+      // Access 罩住但此瀏覽器對該 Access app 沒有效 session 時，fetch 會被 302
+      // 轉去 cloudflareaccess.com 登入頁（跨域無 CORS）→ 落到這裡
+      why = L('API 連線失敗——多半是被轉去 Access 登入頁（session 過期或 API 與頁面分屬不同 Access app）',
+              'API unreachable — likely redirected to the Access login (expired session, or the API sits in a different Access app)');
+      console.error('one-click trigger error:', e);
+    }
+  }
   if (oneClick) {
     status.textContent = L('已觸發，等待執行開始…', 'Triggered — waiting for the run to start…');
   } else {
     window.open(WF_PAGE, '_blank', 'noopener');
-    status.textContent = L('已開啟 GitHub——按綠色「Run workflow」後回到這裡，進度會自動顯示', 'GitHub opened — hit the green “Run workflow” button there; progress shows here');
+    status.textContent = L(`已開啟 GitHub——按綠色「Run workflow」後回到這裡，進度會自動顯示。一鍵失敗原因：${why}`,
+                           `GitHub opened — hit the green “Run workflow” button there; progress shows here. One-click failed: ${why}`);
   }
   const started = Date.now();
   const stop = (msg) => { watching = false; btn.disabled = false; bar.style.display = 'none'; status.textContent = msg; };
@@ -299,11 +321,14 @@ async function init() {
     return;
   }
   try {
-    const bust = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    // cache-buster 用毫秒級時間戳：gist raw CDN 對同一 URL 快取約 5 分鐘、
+    // 瀏覽器再疊一層 HTTP cache——先前用「日期」當 buster，剛跑完 workflow
+    // 重新整理會看到最多 5–10 分鐘前的舊資料（更新時間對不上）
+    const bust = Date.now();
     const base = DATA_BASE.replace(/\/+$/, '');
     const [sRes, hRes] = await Promise.all([
-      fetch(`${base}/summary.json?t=${bust}`),
-      fetch(`${base}/history.ndjson?t=${bust}`),
+      fetch(`${base}/summary.json?t=${bust}`, { cache: 'no-store' }),
+      fetch(`${base}/history.ndjson?t=${bust}`, { cache: 'no-store' }),
     ]);
     if (!sRes.ok) throw new Error(`summary HTTP ${sRes.status}`);
     summary = await sRes.json();
