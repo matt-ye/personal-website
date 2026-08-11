@@ -1,7 +1,7 @@
 # HANDOFF：SEO／AEO 優化工作流
 
 **寫給**：接手 SEO／AEO 優化的 session（跨 session 交接文件，內容自足，不依賴任何對話紀錄）
-**更新**：2026-08-11。接手後若完成任何項目，**請直接更新本檔**（勾掉＋一行結果），這裡是唯一的進度真相。
+**更新**：2026-08-11（#198：RSS feed、GSC 索引判讀、Access 修正）。接手後若完成任何項目，**請直接更新本檔**（勾掉＋一行結果），這裡是唯一的進度真相。
 
 ---
 
@@ -24,7 +24,59 @@ mattye.dev，Astro 6 靜態站，Cloudflare Pages（push `main` 自動部署）�
 - ✅ 全站內部連結 trailing-slash 統一（#181）；sitemap lastmod 35/60（#183）；GA4 注入 40 個靜態頁（#182）
 - ✅ 首頁專案導覽（點擊深度 3→2）；`/projects/agent-skills/` 分頁（#186）
 - ✅ GSC：sitemap 已重送（60 頁已發現）、三筆索引問題已按「驗證修正」（2026-08-10，驗證中，3–14 天）
-- ✅ 全站連結健檢＋272 條外連逐條驗證（#189，**draft 待 owner merge**——動工前先確認它進了 main，`scripts/check-links.mjs` 的全站版在那個 branch 上）
+- ✅ 全站連結健檢＋272 條外連逐條驗證（#189，**已 merge 進 main 2026-08-11**）——`scripts/check-links.mjs` 現在掃 dist 全站；54 條擋機器人網址在 `link-check-verified.txt`，每條附證據
+- ✅ `/writing/hello-world/` 站內入口 1→24 個頁面（#196）——見下方「GSC 索引狀態的判讀」
+- ✅ RSS feed `/rss.xml`（#198）——見下方「RSS feed 的架構決定」
+- ✅ Cloudflare Access 修正（2026-08-11，非程式碼）：`/api/dashboard/*` 先前被設成 `mattye.dev/api.dashboard`（**點，非斜線**），路徑永遠比對不到，worker 收不到 Access JWT 而 fail closed 回 `{"error":"unauthorized"}`。已改正並與 `/dashboard` 併入同一個 Access app（分成兩個 app 時登入 cookie 各自綁 AUD，一鍵更新會被 302 轉去登入頁）
+
+## 連結健檢的遺留觀察項（#189 session 未完全結案的）
+
+這些**不是待辦**，是「當時無法定案、要時間才能收尾」的觀察項。跑健檢看到它們時不要當成新問題：
+
+- [ ] **`iswnetwork.ca`（BOPPPS 頁）**：源站 80/443 無回應（四個獨立出口確認），但網域註冊到 2027-03、NS 三個月前才更新——判定主機故障非棄置。頁面上已改接 Internet Archive 2025-08 快照＋一條 Waterloo CTE 現行來源，**ref-meta 註明「官方站恢復後可改回」**。收尾動作：過幾週 `curl -I https://www.iswnetwork.ca/` 一次，恢復了就把存檔連結換回原站、拿掉註記
+- [ ] **`indiehackers.com` ×3（tech-publishing 頁）**：2026-08-09 最後一輪整站 502 Bad gateway，同日稍早還是 200——對方停機。刻意**不進任何清單**（5xx 歸「對方伺服器異常」不算失效）。每月 1 日的排程健檢會自動再驗；若連續兩個月仍 5xx，再依 SOP 找替代（Wayback 有存檔）
+- [ ] **verified 清單的維護原則**（已寫在檔頭，這裡重申給接手者）：清單裡的網址**時好時壞是常態**，某一輪回 2xx 不代表可以移除；反之 `link-check-ignore.txt` 目前是空的，**保持它只放真失效**
+
+## GSC 索引狀態的判讀（2026-08-11 逐項查證）
+
+owner 看到 GSC 兩份報告覺得有問題，**逐項查過後結論是技術面沒有缺陷**。寫在這裡是為了讓接手者
+**不要浪費時間去「修」不是問題的東西**——尤其別去動 trailing slash 設定或 canonical，那些現在都是對的。
+
+**「頁面會重新導向」2 筆——正常，不需要處理**
+
+| 網址 | 為什麼出現在報告裡 |
+|---|---|
+| `http://mattye.dev/`（**http**，非 https） | Cloudflare 的 HTTP→HTTPS 301。每個 HTTPS 站都有這筆 |
+| `https://mattye.dev/writing/family-investing-08-...`（**結尾無斜線**） | directory 格式輸出（`/foo/index.html`），Cloudflare Pages 把無斜線 308 轉到有斜線 |
+
+這份報告不是錯誤清單，是「這些網址會轉址，所以我改去索引目標網址」的通知。
+
+**「已檢索 - 目前尚未建立索引」6 筆——非技術問題**
+
+6 個網址其實只有 3 頁（`/coaching`、`/writing/hello-world`、`/projects/marketing`，各含有／無斜線兩種寫法）。逐項查證：
+
+| 檢查項 | 結果 |
+|---|---|
+| `noindex` | 三頁都沒有，允許索引 |
+| canonical | 正確且自我一致（一律指向有斜線版） |
+| description | 三頁各異，非重複內容 |
+| sitemap | 三頁都收錄 |
+| 站內連結 | `/coaching/` 24 個、`/projects/marketing/` 7 個 |
+
+且首頁 GSC 顯示「網址在 Google 服務中／網頁已編入索引」，發現方式是本站 sitemap，Google 採用的標準網址就是我們宣告的——**基礎建設全通**。
+
+結論：「已檢索但未索引」＝Google 抓過了但還沒決定收錄，屬於新站權重累積期（GSC 8/8 才驗證）。**唯一找到的實質缺口**是 `/writing/hello-world/` 全站只有 1 個入口，已在 #196 補到 24 個。
+
+接手者可做（非程式碼）：GSC「網址檢查」對三頁各按一次「要求建立索引」，**務必用結尾有斜線的 canonical 版**。其餘只能靠時間與外部連結。
+
+## RSS feed 的架構決定（#198）
+
+`/rss.xml`，26 筆，涵蓋 `/writing` 全部內容。**動它之前先讀這節**，因為它不是獨立的一個檔：
+
+- **來源是共用的**：站上文章散在四處（`src/content/blog/` 的 Markdown ＋ `src/data/` 的 `oneMoreStep`／`marketingUnits`／`essays`）。`/writing` 列表頁與 feed 都讀 `src/lib/writing.ts` 的 `getWritingItems()`。**新增第五種內容來源時只改那一個檔**，兩邊同時生效；不要在 feed 或列表頁各自另建清單——feed 漏文章沒有畫面可看，不會有人回報
+- **build 期會擋**：`astro.config.mjs` 的 `verifyRssFeed()` 檢查 feed 非空、連結在 dist 有對應頁、網址為絕對路徑，任一不符 **build 結束碼 1**（Cloudflare 會擋下部署）。已實測故意打錯 slug 會紅
+- **未來日期會被濾掉**：課程週次的 `date` 是排程性質（同 sitemap lastmod 的處理）。目前四個來源都沒有未來日，這是預留的防線
+- **目前給 description 不給全文**：四個來源有 Markdown 與手刻 HTML 兩種形態，只有前者能輕易取全文，混著給會前後不一致。**若之後把 AEO 當主要目標，全文 feed 是可考慮的升級**（audit 提到 feed 是 LLM 抓內容的常用管道），但要先解決手刻 HTML 那批
 
 ## TODO（依 audit 文件的優先序）
 
@@ -39,9 +91,9 @@ mattye.dev，Astro 6 靜態站，Cloudflare Pages（push `main` 自動部署）�
 
 ### 2. 小件（可同一批 PR）
 
-- [x] **RSS feed**（`@astrojs/rss`）——已完成 2026-08-11：`/rss.xml`，來源與 /writing 共用 `src/lib/writing.ts`
-- [x] **GSC verification meta tag**——已確認：驗證非走 meta tag（2026-08-08 已生效），BaseLayout 不需要也不應該再加
-- [x] CLAUDE.md 待辦清單同步勾掉已完成項（GA4／GSC／照片／sitemap／RSS）
+- [x] ~~**RSS feed**~~ 已完成 2026-08-11（#198）：`/rss.xml`，26 筆。**不是單純加一個 feed 檔**——來源與 `/writing` 共用 `src/lib/writing.ts`，且 build 期 `verifyRssFeed()` 把關，細節見上方「RSS feed 的架構決定」
+- [x] ~~GSC verification meta tag~~ 已確認不需要：GSC 驗證 2026-08-08 已完成且非走 meta tag（見 CLAUDE.md 待辦區註記），BaseLayout 不應再加 verification 標籤
+- [x] ~~CLAUDE.md 待辦清單同步~~ #196 已處理；#198 再補上 RSS 與新的「內容來源與 RSS feed」一節
 
 ### 3. i18n（等 1 做完再動，順序有相依）
 
@@ -75,9 +127,10 @@ mattye.dev，Astro 6 靜態站，Cloudflare Pages（push `main` 自動部署）�
 
 ## 進行中的 PR（接手時先看狀態）
 
-| PR | 內容 | 狀態（2026-08-11） |
+| PR | 內容 | 狀態（2026-08-11 更新） |
 |---|---|---|
-| #197 | 本盤點文件＋README | draft，待 owner 看 |
-| #189 | 連結健檢全站化＋驗證報告 | draft，待 owner merge——**你的基礎設施在這裡** |
-| #196 | CLAUDE.md 補勾＋hello-world footer | draft（另一個 session 的） |
+| #197 | 盤點文件＋README＋本 handoff | ✅ 已 merge |
+| #189 | 連結健檢全站化＋驗證報告 | ✅ 已 merge——全站健檢基礎設施可用 |
+| #196 | CLAUDE.md 補勾＋hello-world footer | ✅ 已 merge |
+| #198 | RSS feed＋本 handoff 更新 | ✅ 已 merge（2026-08-11） |
 | #94／#74 | 內容類，owner 刻意留著 | 別動 |

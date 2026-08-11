@@ -1,10 +1,15 @@
 #!/usr/bin/env node
-// 連結健檢：掃描教材頁的所有超連結，回報站內連結、頁內錨點與外部網址的狀態。
+// 連結健檢：掃描全站每一頁的超連結，回報站內連結、頁內錨點與外部網址的狀態。
 //
 //   node scripts/check-links.mjs            # 全部檢查（外連需要對外網路）
 //   node scripts/check-links.mjs --internal # 只檢查站內連結與錨點（免網路）
 //
-// 站內連結會比對 dist/ 的建置結果，所以請先跑過 `npm run build`。
+// 掃描對象是 `dist/`，所以請先跑過 `npm run build`。
+//
+// 為什麼掃 dist 而不是 src：src 裡有三種語法（markdown 的 [text](url)、astro 的
+// href="..."、ts 的字串常數），各要一個萃取器；build 之後全部變成標準 HTML，
+// 一個 <a href> regex 就吃得下全站——包含部落格 md 轉出的頁面。
+//
 // 在 GitHub Actions 上執行時會另外寫一份表格到 job summary。
 
 import fs from 'node:fs';
@@ -13,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
-const SCAN_DIRS = [path.join(ROOT, 'public', 'projects')];
+const SCAN_DIRS = [DIST];
 const ONLY_INTERNAL = process.argv.includes('--internal');
 const TIMEOUT_MS = 20000;
 const CONCURRENCY = 6;
@@ -54,8 +59,14 @@ const VERIFIED = readUrlList('link-check-verified.txt');
 
 const files = SCAN_DIRS.flatMap((d) => collectHtml(d)).sort();
 if (files.length === 0) {
-  console.error('找不到任何 HTML 檔，請確認路徑。');
+  console.error('dist/ 底下找不到任何 HTML 檔——請先跑 `npm run build`。');
   process.exit(1);
+}
+
+/** dist 檔案路徑 → 網站上的網址路徑，當作報告裡的頁面標籤 */
+function pageLabel(file) {
+  const rel = path.relative(DIST, file).split(path.sep).join('/');
+  return '/' + rel.replace(/(^|\/)index\.html$/, '$1');
 }
 
 // ---------- 收集連結 ----------
@@ -64,14 +75,20 @@ const externalMap = new Map(); // url -> Set(頁面標籤)
 let internalOk = 0;
 
 for (const file of files) {
-  const label = path.basename(path.dirname(file));
-  const html = fs.readFileSync(file, 'utf8');
+  const label = pageLabel(file);
+  const raw = fs.readFileSync(file, 'utf8');
+  // <script> 裡的 href="${...}" 是樣板字串，不是真的連結（/coaching、/speeches 從
+  // Google Sheet 動態組卡片）。這些網址在建置期不存在，靜態掃描本來就驗不了。
+  const html = raw.replace(/<script\b[\s\S]*?<\/script>/gi, '');
   const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
 
   // 只看 <a> 的 href：<link rel="preconnect"> / canonical 之類不是給人點的連結
   for (const m of html.matchAll(/<a\b[^>]*?href="([^"]+)"/g)) {
     const href = m[1];
     if (href.includes("' +")) continue; // JS 樣板字串組出來的連結，另行人工確認
+
+    // mailto:／tel:／javascript: 沒有可檢查的目標，不是站內路徑也不是可 fetch 的網址
+    if (/^(mailto|tel|javascript|sms):/i.test(href)) continue;
 
     if (href.startsWith('#')) {
       if (ids.has(href.slice(1))) internalOk++;
@@ -87,9 +104,12 @@ for (const file of files) {
       internalIssues.push({ label, href, msg: '非絕對路徑' });
       continue;
     }
-    const target = href.endsWith('/')
-      ? path.join(DIST, href, 'index.html')
-      : path.join(DIST, href);
+    // 站內連結可能帶 query 或 hash（例如 /writing/?series=硬核簡報）——
+    // 那是給前端篩選用的，檔案系統上只有去掉這兩段之後的路徑。
+    const cleanHref = href.replace(/[?#].*$/, '');
+    const target = cleanHref.endsWith('/')
+      ? path.join(DIST, cleanHref, 'index.html')
+      : path.join(DIST, cleanHref);
     if (fs.existsSync(target)) internalOk++;
     else internalIssues.push({ label, href, msg: '站內目標頁面不存在（先跑 npm run build）' });
   }
@@ -172,6 +192,14 @@ function verdict(r, url) {
   return { icon: '❌', text: `HTTP ${r.status}` };
 }
 
+/* 全站掃描後，footer/header 的連結會出現在每一頁——列出 60 個頁面沒有資訊量。
+   超過門檻就只印前幾個並標「等 N 頁」。 */
+const MAX_PAGES_SHOWN = 4;
+function pagesLabel(pages) {
+  if (pages.length <= MAX_PAGES_SHOWN) return pages.join('、');
+  return `${pages.slice(0, MAX_PAGES_SHOWN).join('、')} 等 ${pages.length} 頁`;
+}
+
 const externalResults = [];
 if (!ONLY_INTERNAL) {
   const urls = [...externalMap.keys()].sort();
@@ -189,7 +217,7 @@ if (!ONLY_INTERNAL) {
 
 // ---------- 輸出 ----------
 const lines = [];
-lines.push(`掃描 ${files.length} 個頁面`);
+lines.push(`掃描 ${files.length} 個頁面（dist 全站）`);
 lines.push('');
 lines.push(`站內連結與錨點：通過 ${internalOk} 個，問題 ${internalIssues.length} 個`);
 for (const i of internalIssues) lines.push(`  ❌ ${i.label}  ${i.href}  — ${i.msg}`);
@@ -207,7 +235,7 @@ if (ONLY_INTERNAL) {
   lines.push('');
   for (const r of externalResults) {
     lines.push(`  ${r.icon} ${r.text.padEnd(28)} ${r.url}`);
-    lines.push(`      使用於：${r.pages.join('、')}`);
+    lines.push(`      使用於：${pagesLabel(r.pages)}`);
     if (r.finalUrl && r.finalUrl !== r.url) lines.push(`      轉址到：${r.finalUrl}`);
   }
   // 待修清單也會腐爛：已經自己好起來的網址提醒刪掉，免得清單愈積愈舊。
@@ -226,7 +254,7 @@ console.log(lines.join('\n'));
 if (process.env.GITHUB_STEP_SUMMARY) {
   const md = [];
   md.push('## 連結健檢報告', '');
-  md.push(`掃描 ${files.length} 個教材頁。`, '');
+  md.push(`掃描 ${files.length} 個頁面（dist 全站）。`, '');
   md.push(`### 站內連結與錨點`, '');
   md.push(internalIssues.length === 0
     ? `✅ 全部通過（${internalOk} 個）`
@@ -238,7 +266,7 @@ if (process.env.GITHUB_STEP_SUMMARY) {
   if (!ONLY_INTERNAL) {
     md.push('', '### 外部連結', '', '| 狀態 | 連結 | 使用於 |', '|---|---|---|');
     for (const r of externalResults) {
-      md.push(`| ${r.icon} ${r.text} | ${r.url} | ${r.pages.join('<br>')} |`);
+      md.push(`| ${r.icon} ${r.text} | ${r.url} | ${pagesLabel(r.pages).replace(/、/g, '<br>')} |`);
     }
   }
   fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md.join('\n') + '\n');

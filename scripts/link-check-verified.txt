@@ -61,3 +61,130 @@ https://csrc.nist.gov/projects/post-quantum-cryptography/faqs
 # 標題與內文摘要（連 iClicker 那段內容都取得到），健檢卻回 404，所以是被擋不是不存在。
 # 同系列的 Part 1 則是四次不同搜尋都沒出現過網址，判定確實已被移除，連結才改指 Part 2。
 https://blogs.sjsu.edu/ecampus/2019/10/10/lesson-design-using-the-boppps-model-part-2-intended-learning-outcomes/
+
+# ── 2026-08-09：全站掃描新納入的網址（原本只掃教材頁） ──
+#
+# deming.org 整個網域走 Cloudflare 挑戰：連首頁都回 403，回應內容是
+# <title>Just a moment...</title> + cf 挑戰腳本。不是頁面不存在。
+https://deming.org/explore/pdsa/
+
+# ScienceDirect（Elsevier）對機房 IP 一律出 captcha 牆，回 403 但 body 有
+# 1.2MB 的挑戰頁；連 sciencedirect.com 首頁都回 400。文章本身存在：
+# Crossref 查 PII S0024630123000110 = "The origins of SWOT analysis"，
+# Long Range Planning 2023，DOI 10.1016/j.lrp.2023.102304——標題與站上的
+# 連結文字「The origins of SWOT analysis」完全相符。
+https://www.sciencedirect.com/science/article/pii/S0024630123000110
+
+# LinkedIn 對未登入請求回 999（自訂碼，非標準 HTTP）。owner 已確認正常。
+https://www.linkedin.com/in/ching-wei-ye
+
+# TSMC 投資人關係站整站走 Cloudflare 挑戰（回 403 + "Just a moment..."）。
+# 年報清單頁確實存在、列出 1994–2025 各年度（含站上引用的 2023）；
+# 同站的 2023 年報 PDF 也實際抓到過一次（200、16MB），之後才被限流。
+# 原本站上寫的是 ir.tsmc.com——那個主機是 NXDOMAIN，已改成這個。
+https://investor.tsmc.com/english/annual-reports
+
+# 亞洲大學企管系：這個網址在三輪掃描分別回 200 / 連不上 / 403，是對重複請求限流。
+# 用瀏覽器 UA 連測三次都 200，且頁面 <title> 為「管理五要：生產、行銷、人資、研發、
+# 財務」，與站上的連結文字相符。不是失效。
+https://ba.au.edu.tw/p/404-1043-63549.php
+
+# ── 2026-08-09：教材頁 40 條 ⚠️ 逐條驗證的結果 ──
+#
+# 這批原本一直停在「需人工確認」。本輪用瀏覽器 UA 重打一次，再以 Wayback 200 存檔、
+# Crossref DOI 解析、或搜尋索引（網址原封不動＋標題相符）交叉驗證。以下都確認活著，
+# 只是機器過不去。剩下的 iswnetwork.ca 沒放進來——它是源站無回應，另案追蹤。
+
+# Investopedia 對機房 IP 回 403，body 是它的擋機器人頁（<title>Simple Page</title>）。
+# owner 2026-08-08 已全部手動點過；本輪另以 Wayback 200 存檔逐條交叉驗證。
+https://www.investopedia.com/articles/fundamental-analysis/financial-statement-manipulation.asp
+https://www.investopedia.com/terms/b/behavioralfinance.asp
+https://www.investopedia.com/terms/b/bid-askspread.asp
+https://www.investopedia.com/terms/b/businesscycle.asp
+https://www.investopedia.com/terms/d/disposition.asp
+https://www.investopedia.com/terms/d/dupontanalysis.asp
+https://www.investopedia.com/terms/e/efficientfrontier.asp
+https://www.investopedia.com/terms/f/fishereffect.asp
+https://www.investopedia.com/terms/g/goodwill-impairment.asp
+https://www.investopedia.com/terms/q/qualityofearnings.asp
+https://www.investopedia.com/terms/s/sectorrotation.asp
+https://www.investopedia.com/terms/w/workingcapital.asp
+https://www.investopedia.com/terms/y/yieldcurve.asp
+
+# Bogleheads wiki 走 Cloudflare 挑戰（<title>Just a moment...</title>）。
+# 四條各有 Wayback 200 存檔。
+https://www.bogleheads.org/wiki/Asset_allocation
+https://www.bogleheads.org/wiki/Dollar_cost_averaging
+https://www.bogleheads.org/wiki/Investment_policy_statement
+https://www.bogleheads.org/wiki/Rebalancing
+
+# ACM DL 走 Cloudflare 挑戰。兩篇 DOI 經 Crossref 確認存在：
+# 10.1145/3658617.3703151 = ASP-DAC 2025 邀請論文；10.1145/3725888 = ACM TODAES 2026。
+https://dl.acm.org/doi/10.1145/3658617.3703151
+https://dl.acm.org/doi/10.1145/3725888
+
+# doi.org 本身走 Cloudflare 挑戰。Crossref 確認 10.1093/rfs/hhn046 =
+# "Just How Much Do Individual Investors Lose by Trading?"（Review of Financial Studies, 2008）。
+https://doi.org/10.1093/rfs/hhn046
+
+# 美國國防部檔案站回 Akamai 的 Access Denied。兩份 PDF 都有 2026 年的 Wayback 200 存檔。
+https://media.defense.gov/2021/Aug/04/2002821837/-1/-1/1/Quantum_FAQs_20210804.PDF
+https://media.defense.gov/2025/May/30/2003728741/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS.PDF
+
+# BusinessWire 回 Akamai Access Denied。該篇 2021-05-05 PsiQuantum×GLOBALFOUNDRIES 新聞稿
+# 網址原封不動出現在搜尋結果，標題與連結文字相符。
+https://www.businesswire.com/news/home/20210505005355/en/PsiQuantum-and-GLOBALFOUNDRIES-to-Build-the-Worlds-First-Full-scale-Quantum-Computer
+
+# Corning 回 Akamai Access Denied。該頁有 2026-04 的 Wayback 200 存檔。
+https://www.corning.com/worldwide/en/about-us/news-events/news-releases/2026/03/corning-to-launch-ai-innovations-in-fiber-cable-and-connectivity-at-ofc-2026.html
+
+# NYT 付費牆回 403。有 2026-05 的 Wayback 200 存檔。
+https://www.nytimes.com/2008/10/17/opinion/17buffett.html
+
+# Photonics Spectra 走 Cloudflare 挑戰。網址原封不動出現在搜尋結果，
+# 標題「Jabil Acquires Intel's Silicon Photonics Optical Modules Business」與連結文字相符。
+https://www.photonics.com/Articles/Jabil-Acquires-Intels-Silicon-Photonics-Optical/a69434
+
+# S&P Global 回 403 錯誤頁。SPIVA 研究頁有 2026-06 的 Wayback 200 存檔。
+https://www.spglobal.com/spdji/en/research-insights/spiva/
+
+# SparkToro 回 403 錯誤頁。該文有 2026-08 的 Wayback 200 存檔。
+https://sparktoro.com/blog/in-2026-less-than-one-third-of-google-searches-still-send-a-click/
+
+# Umbrex 回 403 Forbidden、無 Wayback 存檔。網址原封不動出現在搜尋結果，
+# 標題「Clarify Brand Message with the StoryBrand SB7 Framework」與頁面主題相符。
+https://umbrex.com/resources/frameworks/marketing-frameworks/storybrand-sb7-framework/
+
+# 註：iswnetwork.ca 已從 BOPPPS 頁換成 Internet Archive 快照（官方站源站無回應），
+# 所以這份清單裡沒有它——它不是「驗不到但正常」，是真的連不上。
+
+# ── 2026-08-09（續）：對腳本 403／逾時、對真人 200 的 9 條 ──
+#
+# 這批我用瀏覽器 UA（含 Accept-Language 與 Referer）逐條實打，全部回 200，
+# 且 <title> 與站上的連結文字相符。腳本用的是精簡 UA，被同一批站台擋下。
+# 它們在不同輪次會在 ✅ 與 ⚠️ 之間跳動，列在這裡讓報告說實話。
+#
+# title: What to know about the Sora discontinuation | OpenAI Help Center
+https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation
+# title: NDC-Business Indicators DataBase-lightscore（國發會景氣指標）
+https://index.ndc.gov.tw/
+# Medium 三篇：對腳本 403，實打皆 200（Medium 的 <title> 一律只有 "Medium"）
+https://medium.com/blog/partner-program-update-starting-february-17-were-rewarding-stories-that-bring-in-new-members-3e84d2eb6e68
+https://medium.com/creative-black-pug-studio/threads-vs-x-where-should-your-brand-be-in-2026-c635d00b7f02
+https://medium.com/free-code-camp/how-to-get-up-to-3500-github-stars-in-one-week-339102b62a8f
+# title: Portfolio Selection | JSTOR（Markowitz 1952，week-15 MPT 引用）
+https://www.jstor.org/stable/2975974
+# 實打回 254KB 的 PDF 本體（SHS Web of Conferences, ICHESS 2023）
+https://www.shs-conferences.org/articles/shsconf/pdf/2023/28/shsconf_ichess2023_04029.pdf
+# title: Press Release - UMC
+https://www.umc.com/en/News/press_release/Content/technology_related/20251208
+# title: GA4 Explore Reports: Understanding Behavioral Analysis - e-dialog
+https://e-dialog.group/en/blog/ga4-explore-reports-understanding-behavioral-analysis/
+
+# Product Hunt 對腳本 403，瀏覽器 UA 實打 200，
+# title 為「Prepare for your Product Hunt launch」，與連結文字相符。
+https://www.producthunt.com/launch/preparing-for-launch
+
+# TSMC 研究網頁對腳本時而 200 時而 403，瀏覽器 UA 實打 200，
+# title 為「Heterogeneous Integration of a Compact Universal Photonic Engine」。
+https://research.tsmc.com/page/on-chip-interconnect/14.html

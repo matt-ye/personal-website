@@ -1,14 +1,20 @@
-# 教材頁連結健檢：站內連結／頁內錨點／外部網址是否還活著
+# 全站連結健檢：站內連結／頁內錨點／外部網址是否還活著
 # 手動觸發：Actions → link-check → Run workflow
-# 也會在改動 public/projects/ 的 PR 上自動跑一次；結果看 job summary 表格。
+# 也會在改動頁面內容的 PR 上自動跑一次；結果看 job summary 表格。
+#
+# 掃描對象是 build 出來的 dist/，所以任何會改變輸出 HTML 的來源都要能觸發：
+# 教材頁（public/）、Astro 頁與元件、部落格 md、以及頁面用的資料檔（src/）。
 name: link-check
 
 on:
   workflow_dispatch: {}
   pull_request:
     paths:
-      - 'public/projects/**'
+      - 'public/**'
+      - 'src/**'
       - 'scripts/check-links.mjs'
+      - 'scripts/link-check-*.txt'
+      - 'astro.config.mjs'
   schedule:
     - cron: '0 2 1 * *' # 每月 1 日 02:00 UTC＝台北 10:00，抓連結腐爛
 
@@ -29,5 +35,5 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run build
-      - name: 檢查所有連結
+      - name: 檢查所有連結（全站）
         run: node scripts/check-links.mjs
