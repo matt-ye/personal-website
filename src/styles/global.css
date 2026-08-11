@@ -1909,6 +1909,9 @@ footer .container {
   margin-bottom: 12px;
 }
 @media (max-width: 480px) { .charts-grid { grid-template-columns: 1fr; } }
+/* min-width:0：canvas 的固有尺寸會讓 track 縮不下去，圖在窄視窗被裁掉
+   （org-row 同一個坑）；歸零後 Chart.js 才能跟著容器縮放 */
+.charts-grid > *, .bento-grid > * { min-width: 0; }
 
 .chart-card {
   background: var(--card-bg);

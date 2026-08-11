@@ -20,28 +20,29 @@ const DATA_BASE = import.meta.env.PUBLIC_ANALYTICS_DATA_BASE ?? '';
 
     <section class="speeches-hero">
       <h1><T zh="流量" en="Site" /> <span class="accent-text"><T zh="儀表板" en="Dashboard" /></span></h1>
-      <p class="subtitle" id="dash-updated"><T zh="每 6 小時更新的網站流量、轉換與專案數據。" en="Traffic, conversion, and project metrics, refreshed every 6 hours." /></p>
     </section>
 
     <div id="dash-state" class="data-loading"><T zh="資料載入中…" en="Loading data…" /></div>
 
     <div id="dash-main" style="display:none">
 
-      <!-- 全域時間視窗：控制所有網站區塊與 Cloudflare（GitHub 區的 traffic 資料性質不適用） -->
-      <div class="dash-window-row" id="win-chips">
-        <button class="chip" data-win="d7"><T zh="7 天" en="7d" /></button>
-        <button class="chip" data-win="d28"><T zh="28 天" en="28d" /></button>
-        <button class="chip" data-win="d90"><T zh="90 天（季）" en="Quarter" /></button>
-        <button class="chip" data-win="d180"><T zh="半年" en="6 months" /></button>
-        <button class="chip" data-win="d365"><T zh="一年" en="1 year" /></button>
+      <!-- 控制列：時間視窗 + 手動更新 + 更新時間，捲動時 sticky 貼在 header 下方。
+           視窗控制所有網站區塊與 Cloudflare（GitHub 區的 traffic 資料性質不適用）。 -->
+      <div class="dash-controls">
+        <div class="dash-window-row" id="win-chips">
+          <button class="chip" data-win="d7"><T zh="7 天" en="7d" /></button>
+          <button class="chip" data-win="d28"><T zh="28 天" en="28d" /></button>
+          <button class="chip" data-win="d90"><T zh="90 天（季）" en="Quarter" /></button>
+          <button class="chip" data-win="d180"><T zh="半年" en="6 months" /></button>
+          <button class="chip" data-win="d365"><T zh="一年" en="1 year" /></button>
+        </div>
+        <div class="dash-refresh-row">
+          <button class="chip" id="refresh-btn">↻ <T zh="立即更新資料" en="Refresh data now" /></button>
+          <span class="dash-muted" id="dash-updated"></span>
+          <span class="dash-muted" id="refresh-status"></span>
+        </div>
+        <div class="dash-progress" id="refresh-progress" style="display:none"><div class="dash-progress-bar"></div></div>
       </div>
-
-      <!-- 手動更新：開 GitHub Run workflow 頁 + 即時輪詢執行進度（公開 API，零憑證） -->
-      <div class="dash-refresh-row">
-        <button class="chip" id="refresh-btn">↻ <T zh="立即更新資料" en="Refresh data now" /></button>
-        <span class="dash-muted" id="refresh-status"></span>
-      </div>
-      <div class="dash-progress" id="refresh-progress" style="display:none"><div class="dash-progress-bar"></div></div>
 
       <!-- 網站區塊（主站 + GA4_EXTRA_SITES，共用渲染器動態生成） -->
       <div id="sites-root"></div>
@@ -156,6 +157,15 @@ const forWin = (field) => Array.isArray(field)
   ? (win === 'd28' ? field : null)
   : (field?.[win] ?? null);
 const PENDING = () => `<div class="dash-note" style="display:block">${L('此視窗的資料將在下次資料更新後出現（Actions → analytics → Run workflow 可立即更新）。', 'Data for this window appears after the next pipeline run (trigger it via Actions → analytics → Run workflow).')}</div>`;
+
+/* sticky 控制列要貼在 sticky header 正下方——header 高度會隨視窗寬度變
+   （窄螢幕導覽列換行），用 JS 實測寫進 CSS 變數 */
+const setStickyTop = () => {
+  const h = document.querySelector('header')?.offsetHeight ?? 57;
+  document.documentElement.style.setProperty('--dash-sticky-top', `${h - 1}px`);
+};
+setStickyTop();
+window.addEventListener('resize', setStickyTop);
 
 document.querySelectorAll('#win-chips .chip').forEach((btn) => {
   btn.classList.toggle('active', btn.dataset.win === win);
@@ -339,7 +349,9 @@ function renderAll() {
   const updated = document.getElementById('dash-updated');
   if (summary.generatedAt && updated) {
     const dt = new Date(summary.generatedAt);
-    updated.textContent = L(`資料更新於 ${dt.toLocaleString('zh-TW')}`, `Data updated ${dt.toLocaleString('en-US')}`);
+    const short = dt.toLocaleString(L('zh-TW', 'en-US'), { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    updated.textContent = L(`資料更新於 ${short}`, `Updated ${short}`);
+    updated.title = dt.toLocaleString(L('zh-TW', 'en-US'));
   }
 
   renderSites();
@@ -524,14 +536,18 @@ function siteSectionHTML(b) {
         </div>`;
     }).join('');
 
-    /* 漏斗（跟著視窗）*/
+    /* 漏斗（跟著視窗）。
+       每階段的轉換率底數（base）預設是前一階段；「點擊專案/GitHub」是全站事件、
+       不是完讀者的子集合（一個 session 可點多個連結、不必先完讀文章），
+       拿完讀當底數會爆出 >100%（例：完讀 1、點擊 11 → 1100%）——
+       所以它的底數明定為漏斗第一階段（文章瀏覽）。 */
     const articleViews = (pages ?? []).filter(p => /^\/writing\/[^/]+/.test(p.path)).reduce((s, p) => s + p.views, 0);
     const projClicks = (eventWin(byName.click_project) ?? 0) + (eventWin(byName.click_github) ?? 0);
     const funnels = [
       { title: L('內容 → 專案', 'Content → Projects'), stages: [
         { label: L('文章瀏覽', 'Article views'), n: pages === null ? null : articleViews },
         { label: L('完讀', 'Read complete'), n: eventWin(byName.read_complete) ?? 0 },
-        { label: L('點擊專案/GitHub', 'Project/GitHub click'), n: projClicks },
+        { label: L('點擊專案/GitHub', 'Project/GitHub click'), n: projClicks, base: 0 },
       ] },
       { title: L('贊助漏斗', 'Donation funnel'), stages: [
         { label: L('整站瀏覽', 'All page views'), n: t?.views ?? null },
@@ -544,10 +560,16 @@ function siteSectionHTML(b) {
       const max = f.stages[0].n || 1;
       return `<div class="dash-funnel"><div class="dash-funnel-title">${f.title} <span class="dash-muted">· ${winLabel()}</span></div>` +
         f.stages.map((s, i) => {
-          const pct = i === 0 ? '' : `<span class="dash-funnel-pct">${f.stages[i - 1].n ? Math.round(s.n / f.stages[i - 1].n * 100) : 0}%</span>`;
+          let pct = '';
+          if (i > 0) {
+            const baseN = f.stages[s.base ?? i - 1].n;
+            const raw = baseN ? s.n / baseN * 100 : 0;
+            const shown = raw > 100 ? '>100' : (raw > 0 && raw < 1 ? raw.toFixed(1) : String(Math.round(raw)));
+            pct = `<span class="dash-funnel-pct">${shown}%</span>`;
+          }
           return `<div class="dash-funnel-row">
             <span class="dash-funnel-label">${s.label}</span>
-            <span class="org-bar-bg"><span class="org-bar" style="width:${Math.max(s.n / max * 100, s.n ? 2 : 0)}%"></span></span>
+            <span class="org-bar-bg"><span class="org-bar" style="width:${Math.min(100, Math.max(s.n / max * 100, s.n ? 2 : 0))}%"></span></span>
             <b class="dash-funnel-n">${fmtNum(s.n)}</b>${pct}
           </div>`;
         }).join('') + '</div>';
@@ -556,7 +578,11 @@ function siteSectionHTML(b) {
     eventsHTML = `
       <p class="section-heading">${L('轉換', 'Conversions')} <span class="dash-muted">· ${winLabel()}</span></p>
       <div class="bento-grid">${cards}</div>
-      <div class="dash-funnels">${funnelHTML}</div>`;
+      <div class="dash-funnels">${funnelHTML}</div>
+      <p class="dash-chart-note">${L(
+        '漏斗百分比＝該階段相對「文章/整站瀏覽」的轉換率（「送出贊助」相對「開啟贊助」）。點擊專案/GitHub 為全站事件，不限文章頁。',
+        'Funnel percentages are conversion vs the funnel’s first stage (“Donate start” vs “Donate open”). Project/GitHub clicks are site-wide events, not limited to articles.'
+      )}</p>`;
   } else {
     const evs = forWin(d.topEvents);
     const cards = evs === null ? PENDING() : (evs.length
@@ -821,15 +847,30 @@ init();
 .dash-muted { color: var(--color-text-muted); font-size: 0.82rem; font-weight: 400; }
 .dash-footnote { color: var(--color-text-muted); font-size: 0.78rem; margin: 48px 0 8px; text-align: center; }
 
+/* 控制列：捲動時貼在 sticky header 下方持續可用。
+   負 margin + 同量 padding 讓背景蓋滿 .container-wide 的左右 gutter，
+   內容捲過時不會從兩側縫隙露出。top 由 JS 實測 header 高度寫入。 */
+.dash-controls {
+  background: var(--color-bg);
+  margin: 0 calc(-1 * clamp(1rem, 4vw, 2rem));
+  padding: 10px clamp(1rem, 4vw, 2rem) 12px;
+  position: sticky;
+  top: var(--dash-sticky-top, 57px);
+  z-index: 40;
+}
+
 .dash-window-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 8px; }
 
-.dash-refresh-row { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 14px 0 4px; }
+.dash-refresh-row { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 10px 0 0; }
 #refresh-btn:disabled { cursor: wait; opacity: 0.6; }
-.dash-progress { background: var(--color-tag-bg, var(--color-surface)); border-radius: 999px; height: 4px; margin: 10px auto 0; max-width: 420px; overflow: hidden; }
+.dash-progress { background: var(--color-tag-bg, var(--color-surface)); border-radius: 999px; height: 4px; margin: 10px auto 0; max-width: 420px; overflow: hidden; width: 100%; }
 .dash-progress-bar { animation: dash-indeterminate 1.4s ease-in-out infinite; background: var(--color-accent); border-radius: 999px; height: 100%; width: 40%; }
 @keyframes dash-indeterminate { 0% { margin-left: -40%; } 100% { margin-left: 100%; } }
 
-.dash-funnels { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px; }
+/* minmax 用 min(100%, 300px)：容器窄於 300px（小手機）時 track 跟著縮，
+   不會硬撐 300px 造成整頁橫向溢出；min-width:0 讓 canvas 卡片可收窄 */
+.dash-funnels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; margin-top: 16px; }
+.dash-funnels > * { min-width: 0; }
 .dash-funnel {
   background: var(--card-bg, var(--color-surface));
   border: 1px solid var(--color-border);
@@ -842,7 +883,8 @@ init();
 .dash-funnel-n { font-variant-numeric: tabular-nums; min-width: 34px; text-align: right; }
 .dash-funnel-pct { color: var(--color-accent); font-size: 0.75rem; min-width: 36px; text-align: right; }
 
-.dash-repos { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); margin-top: 8px; }
+.dash-repos { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); margin-top: 8px; }
+.dash-repos > * { min-width: 0; }
 .dash-repo-card {
   background: var(--card-bg, var(--color-surface));
   border: 1px solid var(--color-border);
