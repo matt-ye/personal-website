@@ -123,6 +123,10 @@ draft: false   # true 時不顯示在列表
 - [x] 加入個人照片（首頁 hero 三張輪播）
 - [x] 設定自訂網域（mattye.dev）
 - [x] 加入 RSS feed（`@astrojs/rss`）— `/rss.xml`，來源見「內容來源與 RSS feed」
+- [x] 依賴漏洞清零（#200，2026-08-11）：Astro 6.4.2 → 7.2.0，`npm audit` 8 個（1 low／7 high）→ 0。
+      留在 6.x 清不完（astro 的 3 個 XSS 修正只出在 7.0.4／7.0.6／7.0.10，sharp／esbuild 也被
+      6.x 的依賴範圍卡住）。**升版的代價寫在上面 Astro 一節的 `<T>` 規範**，判讀方法見
+      `docs/HANDOFF-seo-aeo.md` 的「Astro 7 的轉義陷阱」
 - [x] 加入 sitemap（`@astrojs/sitemap`）
 - [x] Dark mode support
 
