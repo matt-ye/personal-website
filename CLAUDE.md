@@ -6,7 +6,7 @@
 **GitHub：** https://github.com/matt-ye/personal-website  
 **部署：** Cloudflare Pages（連接 GitHub `main` branch，push 自動 deploy）  
 **網域：** https://mattye.dev（自訂網域，preview: personal-website-1m7.pages.dev）  
-**Tech stack：** Astro 6 (static) · Plain CSS · Markdown content collections
+**Tech stack：** Astro 7 (static) · Plain CSS · Markdown content collections
 
 ---
 
@@ -39,8 +39,12 @@
 ## 技術規範
 
 ### Astro
-- 使用 Astro 6，**靜態輸出**（`output: 'static'`）
+- 使用 Astro 7，**靜態輸出**（`output: 'static'`）
 - Content collections 設定在 `src/content.config.ts`
+- **`<T zh="…" en="…" />` 的兩個屬性是 JS 字串**，由 `{zh}` 插值輸出、Astro 會轉義一次。
+  裡面寫 `&amp;` / `&nbsp;` / `&gt;` 這類 HTML entity，畫面上會直接看到 `&amp;` 字樣。
+  一律填實際字元（`&`、`>`、nbsp 用 U+00A0 實字元）。這條只適用於「屬性／JS 字串」，
+  模板標籤之間的文字（如 `<h1>演講 &amp; 工作坊</h1>`）照常寫 entity
 - 文章放在 `src/content/blog/`，格式為 Markdown（`.md`）
 - 頁面路由：`/` · `/writing` · `/writing/[slug]`
 
@@ -119,6 +123,10 @@ draft: false   # true 時不顯示在列表
 - [x] 加入個人照片（首頁 hero 三張輪播）
 - [x] 設定自訂網域（mattye.dev）
 - [x] 加入 RSS feed（`@astrojs/rss`）— `/rss.xml`，來源見「內容來源與 RSS feed」
+- [x] 依賴漏洞清零（#200，2026-08-11）：Astro 6.4.2 → 7.2.0，`npm audit` 8 個（1 low／7 high）→ 0。
+      留在 6.x 清不完（astro 的 3 個 XSS 修正只出在 7.0.4／7.0.6／7.0.10，sharp／esbuild 也被
+      6.x 的依賴範圍卡住）。**升版的代價寫在上面 Astro 一節的 `<T>` 規範**，判讀方法見
+      `docs/HANDOFF-seo-aeo.md` 的「Astro 7 的轉義陷阱」
 - [x] 加入 sitemap（`@astrojs/sitemap`）
 - [x] Dark mode support
 

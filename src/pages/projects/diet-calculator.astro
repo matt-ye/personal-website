@@ -214,7 +214,10 @@ import T from '../../components/T.astro';
           <div class="stat-row-num" id="out-carb-g">— g</div>
         </div>
       </div>
-      <p class="dri-legend"><T zh="✅ 符合 DRIs 建議範圍 &nbsp;&nbsp; ⚠️ 超出 DRIs 一般建議範圍（特殊飲食型態，建議諮詢營養師）" en="✅ Within DRIs range &nbsp;&nbsp; ⚠️ Outside typical DRIs range (special dietary pattern — consult a dietitian)" /></p>
+      {/* 兩個圖例間的間距是 nbsp 實字元（U+00A0 x2）。不能寫 &nbsp; entity：
+         <T> 的 zh/en 是 JS 字串、由 {zh} 插值輸出，Astro 會再轉義一次，
+         畫面上會直接看到「&nbsp;」四個字。 */}
+      <p class="dri-legend"><T zh="✅ 符合 DRIs 建議範圍    ⚠️ 超出 DRIs 一般建議範圍（特殊飲食型態，建議諮詢營養師）" en="✅ Within DRIs range    ⚠️ Outside typical DRIs range (special dietary pattern — consult a dietitian)" /></p>
 
       <p class="week-grid-heading"><T zh="每日訓練強度與巨量營養素明細（選擇下方下拉選單即時更新）" en="Daily training intensity & macro breakdown (updates live as you change the dropdowns)" /></p>
       <div class="supp-table-wrap">
@@ -292,7 +295,7 @@ import T from '../../components/T.astro';
         </div>
         <div class="venue-card">
           <div class="venue-title">🍱 <T zh="辦公室便當" en="Office bento box" /></div>
-          <p><b><T zh="公式：" en="Formula: " /></b><T zh="飯半碗～1 碗＋2–3 份蛋白質＋2–3 份蔬菜。烹調法排序：蒸／燙 &gt; 滷／烤 &gt; 煎／炒 &gt; 炸／糖醋。" en="½–1 bowl rice + 2–3 servings protein + 2–3 servings vegetables. Cooking-method ranking: steamed/blanched > braised/baked > pan-fried/stir-fried > deep-fried/sweet-and-sour." /></p>
+          <p><b><T zh="公式：" en="Formula: " /></b><T zh="飯半碗～1 碗＋2–3 份蛋白質＋2–3 份蔬菜。烹調法排序：蒸／燙 > 滷／烤 > 煎／炒 > 炸／糖醋。" en="½–1 bowl rice + 2–3 servings protein + 2–3 servings vegetables. Cooking-method ranking: steamed/blanched > braised/baked > pan-fried/stir-fried > deep-fried/sweet-and-sour." /></p>
         </div>
       </div>
 
@@ -301,7 +304,7 @@ import T from '../../components/T.astro';
         <T zh="原型食物指仍可辨識原始樣貌、少添加物的食物（相對於高鹽糖油的加工食品）。美國 2025–2030 飲食指南與 WHO 皆建議減少高度加工食品與添加糖攝取。" en="Whole foods are those still recognizable in their original form with few additives (vs. processed foods high in salt, sugar, and oil). Both the US 2025–2030 Dietary Guidelines and the WHO recommend cutting highly-processed foods and added sugar." />
       </p>
       <p class="calc-section-desc">
-        <b><T zh="烹調法對熱量的影響（低到高）：" en="Cooking methods by calorie impact (low to high): " /></b><T zh="水煮／蒸／舒肥 → 少油快炒／烤箱 → 氣炸 → 油炸／勾芡／裹粉。氣炸並非等同水煮：澱粉類食物 &gt;130°C、蛋白質 &gt;150°C 高溫烹調可能產生丙烯醯胺／雜環胺，建議氣炸溫度控制在 160–180°C 以下。" en="boiling/steaming/sous-vide → light stir-fry/oven → air-frying → deep-frying/starch-thickening/breading. Air-frying isn't the same as boiling: starches above 130°C and proteins above 150°C can form acrylamide/heterocyclic amines — keep air-frying below 160–180°C." />
+        <b><T zh="烹調法對熱量的影響（低到高）：" en="Cooking methods by calorie impact (low to high): " /></b><T zh="水煮／蒸／舒肥 → 少油快炒／烤箱 → 氣炸 → 油炸／勾芡／裹粉。氣炸並非等同水煮：澱粉類食物 >130°C、蛋白質 >150°C 高溫烹調可能產生丙烯醯胺／雜環胺，建議氣炸溫度控制在 160–180°C 以下。" en="boiling/steaming/sous-vide → light stir-fry/oven → air-frying → deep-frying/starch-thickening/breading. Air-frying isn't the same as boiling: starches above 130°C and proteins above 150°C can form acrylamide/heterocyclic amines — keep air-frying below 160–180°C." />
       </p>
       <p class="calc-section-desc">
         <b><T zh="備餐小技巧：" en="Meal-prep tip: " /></b><T zh="選 3 種蛋白質＋3 種碳水＋3 種油脂來源，一次批量烹煮、當週混搭，減少每日決策疲勞；冷藏建議 4 天內食用完畢，多餘份量冷凍保存。" en="pick 3 protein + 3 carb + 3 fat sources, batch-cook once, and mix through the week to cut daily decision fatigue; eat refrigerated portions within 4 days and freeze the rest." />
