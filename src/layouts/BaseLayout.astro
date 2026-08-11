@@ -81,6 +81,10 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
 
     <link rel="canonical" href={canonicalURL} />
 
+    {/* RSS 閱讀器與瀏覽器靠這行自動發現 feed：使用者只要貼 mattye.dev
+        就能訂閱，不必知道 /rss.xml 這個路徑。 */}
+    <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml" />
+
     <meta name="author" content="Ching-Wei (Matt) Ye" />
 
     <meta property="og:type" content={ogType} />

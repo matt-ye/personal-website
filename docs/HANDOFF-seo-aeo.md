@@ -39,9 +39,9 @@ mattye.dev，Astro 6 靜態站，Cloudflare Pages（push `main` 自動部署）�
 
 ### 2. 小件（可同一批 PR）
 
-- [ ] **RSS feed**（`@astrojs/rss`）——對訂閱與 AEO 都有幫助（feed 是 LLM 抓內容的常用管道）
-- [ ] **GSC verification meta tag**——先問 owner 是否已用 DNS 驗證，是就直接劃掉這項
-- [ ] CLAUDE.md 待辦清單同步勾掉已完成項
+- [x] **RSS feed**（`@astrojs/rss`）——已完成 2026-08-11：`/rss.xml`，來源與 /writing 共用 `src/lib/writing.ts`
+- [x] **GSC verification meta tag**——已確認：驗證非走 meta tag（2026-08-08 已生效），BaseLayout 不需要也不應該再加
+- [x] CLAUDE.md 待辦清單同步勾掉已完成項（GA4／GSC／照片／sitemap／RSS）
 
 ### 3. i18n（等 1 做完再動，順序有相依）
 
