@@ -1,0 +1,37 @@
+# 自動部署 dashboard-api worker 到 Cloudflare。
+# 需要的 repo secrets（設定步驟見 docs/analytics-pipeline.md 第 10 步）：
+#   CF_DEPLOY_TOKEN（Workers Scripts:Edit + D1:Edit + Workers Routes:Edit@mattye.dev）
+#   CF_ACCOUNT_ID、CF_D1_DB_ID、GH_DISPATCH_TOKEN（fine-grained PAT，僅 Actions:RW）
+name: deploy-worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/dashboard-api/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Inject D1 database id
+        run: sed -i "s/PLACEHOLDER_D1_ID/${{ secrets.CF_D1_DB_ID }}/" workers/dashboard-api/wrangler.toml
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_DEPLOY_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          workingDirectory: workers/dashboard-api
+          secrets: |
+            GH_DISPATCH_TOKEN
+        env:
+          GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}
