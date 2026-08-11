@@ -150,6 +150,44 @@ function autoLinkWeekRefs() {
   };
 }
 
+// RSS feed 的自我驗證（理由同 autoLinkWeekRefs：自動產生、不經過人眼的連結
+// 必須自己證明有效）。feed 壞掉不像頁面壞掉那樣看得見——沒有畫面、訂閱者也
+// 不會回報，只會安靜地漏文章，所以讓 build 直接紅掉。
+// 擋下的情境：feed 空了（來源模組壞掉）、連結指向不存在的頁（slug 改名但
+// 資料檔沒同步）、網址不是絕對路徑（RSS 規格要求，閱讀器才連得到）。
+function verifyRssFeed() {
+  return {
+    name: 'verify-rss-feed',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        const file = join(root, 'rss.xml');
+        let xml;
+        try {
+          xml = readFileSync(file, 'utf8');
+        } catch {
+          throw new Error('rss.xml 未產生——檢查 src/pages/rss.xml.ts');
+        }
+
+        const links = [...xml.matchAll(/<item>[\s\S]*?<link>([^<]+)<\/link>/g)].map((m) => m[1]);
+        if (links.length === 0) throw new Error('rss.xml 沒有任何 item——檢查 src/lib/writing.ts 的來源');
+
+        const bad = [];
+        for (const href of links) {
+          if (!href.startsWith(SITE + '/')) { bad.push(`${href}（非絕對網址）`); continue; }
+          const rel = href.slice(SITE.length).replace(/^\/+|\/+$/g, '');
+          // 目錄式輸出：/foo/ → dist/foo/index.html
+          try { statSync(join(root, ...rel.split('/'), 'index.html')); }
+          catch { bad.push(`${href}（dist 找不到對應頁面）`); }
+        }
+        if (bad.length) throw new Error(`rss.xml 有 ${bad.length} 個無效連結：\n  ` + bad.join('\n  '));
+
+        logger.info(`rss.xml verified: ${links.length} item(s), all links resolve`);
+      },
+    },
+  };
+}
+
 function findPublicHtmlPages(publicDir, siteUrl) {
   const pages = [];
   function scan(dir) {
@@ -259,5 +297,6 @@ export default defineConfig({
     }),
     injectGaIntoStaticHtml(),
     autoLinkWeekRefs(),
+    verifyRssFeed(),
   ],
 });

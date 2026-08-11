@@ -21,7 +21,7 @@
 | `<T>` 使用次數 | 365 | **390** | 雙語 DOM 持續長大 |
 | Sheet 即時驅動的頁面 | 3 | 3 | `index`、`coaching`、`speeches` |
 | 部落格文章／有英文版 | 11／1 | 11／1 | |
-| RSS feed | 無 | 無 | CLAUDE.md 待辦掛著 |
+| RSS feed | `/rss.xml` | 有（`<link rel="alternate">`） | ✅ 已完成（2026-08-11）；來源與 /writing 共用 `src/lib/writing.ts` |
 | GSC verification meta tag | 無 | 無 | 同上（目前用 DNS/檔案驗證？需確認） |
 
 另外：**根目錄 `README.md` 還是 Astro starter 的預設樣板**——這次找前幾個 session 的紀錄，就是因為 README 沒有任何指引才差點找不到。已知紀錄實際散在 `docs/` 與 PR 說明裡。
@@ -89,7 +89,7 @@ Astro 頁面 frontmatter 是 build 期執行的——把現在瀏覽器端的 fe
 | # | 項目 | 說明 | 工作量 |
 |---|---|---|---|
 | C-1 | **README 是 starter 樣板** | 換成真的專案說明＋`docs/` 索引，讓紀錄找得到（這次差點找不到就是它害的） | 極小 |
-| C-2 | **RSS feed** | `@astrojs/rss`，CLAUDE.md 掛很久了；對訂閱與 AEO（feed 是 LLM 抓內容的常用管道）都有幫助 | 小 |
+| C-2 | ~~**RSS feed**~~ ✅ | 已完成（2026-08-11）。`/rss.xml`，26 筆；來源與 /writing 共用 `src/lib/writing.ts`，build 期 `verifyRssFeed()` 把關 | 小 |
 | C-3 | **GSC verification meta tag** | 待辦掛著；若目前已用 DNS 驗證則可直接劃掉 | 極小 |
 | C-4 | **40 個靜態頁的 metadata 債** | #168 用腳本批次補過一輪，但每次新增 meta 欄位仍要批次改 40 處。長期解法是遷移成 Astro 頁（i18n 文件第 6 節第 6 點），這是獨立大工程，先掛著 | 大 |
 
@@ -103,7 +103,7 @@ Astro 頁面 frontmatter 是 build 期執行的——把現在瀏覽器端的 fe
 |---|---|---|
 | 1 | **C-1 README** | 十分鐘的事，直接解決「紀錄找不到」 |
 | 2 | **A-1 Sheet → build 期靜態化** | 三頁核心內容進 HTML；61 場演講第一次對搜尋引擎與 LLM 存在；GSC 索引問題可望改善；同時是 i18n 的前置 |
-| 3 | **C-2 RSS ＋ C-3 GSC tag** | 小，可與 2 同一批 |
+| ~~3~~ | ~~**C-2 RSS ＋ C-3 GSC tag**~~ ✅ | 兩項均已完成（2026-08-11） |
 | 4 | **i18n 方案 C**（一頁英文 landing） | 照原規劃，低成本試水溫 |
 | 5 | **i18n 方案 B** | 等 4 的流量數據；且吃 2 的成果 |
 | — | C-4 靜態頁遷移 | 獨立排程，不擋上面任何一項 |

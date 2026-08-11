@@ -1,68 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import T from '../../components/T.astro';
-import { getCollection } from 'astro:content';
-import { oneMoreStep } from '../../data/oneMoreStep';
-import { marketingUnits } from '../../data/marketing';
-import { essays } from '../../data/essays';
+/* 來源合併邏輯抽到 src/lib/writing.ts —— RSS feed 讀同一份，
+   新增內容來源時改那個檔，這頁與 /rss.xml 會同時生效。 */
+import { getWritingItems, CAT_ORDER } from '../../lib/writing';
 
-// Blog posts → unified items
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).map(p => ({
-  title: p.data.title,
-  titleEn: '',            // 留空：文章卡片不像 One More Step 那樣多印一行英文標題
-  /* 雙語文章改用「切換」而非「兩行並陳」：卡片標題與描述跟著站上的語言換。 */
-  titleAlt: p.data.titleEn ?? '',
-  descAlt: p.data.descriptionEn ?? '',
-  desc: p.data.description,
-  href: `/writing/${p.id}/`,
-  date: p.data.pubDate,
-  category: p.data.series === 'family-investing' ? '投資專欄'
-          : p.data.series === 'hardcore-presentation' ? '硬核簡報'
-          : p.data.series === 'management-3r' ? '管理專欄'
-          : '隨筆',
-  badge: p.data.titleEn ? '中 · EN' : (p.data.lang === 'zh' ? '中' : 'EN'),
-  kind: 'post',
-}));
+const items = await getWritingItems();
 
-// One More Step features → unified items
-const features = oneMoreStep.map(d => ({
-  title: d.title,
-  titleEn: d.titleEn,
-  desc: d.description,
-  href: d.url ?? `/projects/one-more-step/${d.slug}/`,
-  date: new Date(d.date),
-  category: 'One More Step',
-  badge: 'One More Step',
-  kind: 'feature',
-}));
-
-// Marketing Column units → unified items
-const marketingItems = marketingUnits.map(d => ({
-  title: d.title,
-  titleEn: d.titleEn,
-  desc: d.description,
-  href: d.url ?? `/projects/marketing/${d.slug}/`,
-  date: new Date(d.date),
-  category: '行銷專欄',
-  badge: '行銷專欄',
-  kind: 'feature',
-}));
-
-// Standalone essays / 隨筆 (static HTML under public/writing/) → unified items
-const essayItems = essays.map(d => ({
-  title: d.title,
-  titleEn: d.titleEn,
-  desc: d.description,
-  href: d.url,
-  date: new Date(d.date),
-  category: '隨筆',
-  badge: '紀念',
-  kind: 'feature',
-}));
-
-const items = [...posts, ...features, ...marketingItems, ...essayItems].sort((a, b) => b.date.getTime() - a.date.getTime());
-
-const CAT_ORDER = ['硬核簡報', '投資專欄', '管理專欄', '行銷專欄', 'One More Step', '隨筆'];
 const categories = CAT_ORDER.filter(c => items.some(i => i.category === c));
 
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });

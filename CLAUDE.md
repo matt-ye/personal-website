@@ -57,11 +57,29 @@ src/
 ├── components/     # 可重用元件（Header, Footer, PostCard）
 ├── content/blog/   # Markdown 文章
 ├── content.config.ts
+├── data/           # 手刻 HTML 頁的 metadata 清單（essays, marketing…）
 ├── layouts/        # BaseLayout, PostLayout
-├── pages/          # 路由頁面
+├── lib/
+│   └── writing.ts  # 文章來源的單一事實來源 ← 見下節
+├── pages/          # 路由頁面（含 rss.xml.ts）
 └── styles/
     └── global.css
 ```
+
+### 內容來源與 RSS feed（重要）
+
+站上的「文章」散在四個來源：`src/content/blog/`（Markdown）＋ `src/data/` 底下
+三個清單（`oneMoreStep` / `marketingUnits` / `essays`，對應 `public/` 的手刻 HTML）。
+
+**`src/lib/writing.ts` 的 `getWritingItems()` 是這四者合併後的單一事實來源**，
+`/writing` 列表頁與 `/rss.xml` 都讀它。因此：
+
+- 新增一篇文章（`.md` 或在 `src/data/` 加一筆）→ 列表頁與 feed **自動同步**，不需要動別的檔
+- **新增第五種內容來源時，只改 `src/lib/writing.ts`**，兩邊會同時生效
+- 不要在 `rss.xml.ts` 或 `writing/index.astro` 裡各自另建清單——feed 漏文章不會有人發現
+
+Build 期有 `verifyRssFeed()`（`astro.config.mjs`）把關：feed 空掉、連結指向
+不存在的頁、或網址不是絕對路徑，**build 直接失敗**（結束碼 1，Cloudflare 會擋下部署）。
 
 ### 文章 Frontmatter 規範
 ```yaml
@@ -82,6 +100,7 @@ draft: false   # true 時不顯示在列表
 - `description` 長度建議 50-160 字元
 - `lang` 設定正確（`zh` → `zh-TW`，`en` → `en`）
 - canonical URL 由 BaseLayout 自動處理
+- RSS feed 在 `/rss.xml`，BaseLayout 已放 `<link rel="alternate">` 供自動發現
 
 ---
 
@@ -99,7 +118,7 @@ draft: false   # true 時不顯示在列表
 - [x] 建立 `llms.txt`
 - [x] 加入個人照片（首頁 hero 三張輪播）
 - [x] 設定自訂網域（mattye.dev）
-- [ ] 加入 RSS feed（`@astrojs/rss`）
+- [x] 加入 RSS feed（`@astrojs/rss`）— `/rss.xml`，來源見「內容來源與 RSS feed」
 - [x] 加入 sitemap（`@astrojs/sitemap`）
 - [x] Dark mode support
 
