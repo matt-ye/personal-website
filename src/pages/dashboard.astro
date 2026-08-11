@@ -36,6 +36,13 @@ const DATA_BASE = import.meta.env.PUBLIC_ANALYTICS_DATA_BASE ?? '';
         <button class="chip" data-win="d365"><T zh="一年" en="1 year" /></button>
       </div>
 
+      <!-- 手動更新：開 GitHub Run workflow 頁 + 即時輪詢執行進度（公開 API，零憑證） -->
+      <div class="dash-refresh-row">
+        <button class="chip" id="refresh-btn">↻ <T zh="立即更新資料" en="Refresh data now" /></button>
+        <span class="dash-muted" id="refresh-status"></span>
+      </div>
+      <div class="dash-progress" id="refresh-progress" style="display:none"><div class="dash-progress-bar"></div></div>
+
       <!-- 網站區塊（主站 + GA4_EXTRA_SITES，共用渲染器動態生成） -->
       <div id="sites-root"></div>
 
@@ -169,6 +176,64 @@ document.querySelectorAll('#repo-tabs .chip').forEach((btn) => {
     document.querySelectorAll('#repo-tabs .chip').forEach((b) => b.classList.toggle('active', b === btn));
     if (summary) renderRepos();
   });
+});
+
+/* 手動更新：開 GitHub Run workflow 頁 + 輪詢執行狀態。
+   公開 repo 的 Actions API 不需憑證且允許 CORS——真正的觸發在 GitHub 頁面上按
+   （token 不能放進靜態頁：*.pages.dev 網域不受 Access 保護，會直接外洩）。
+   節流：15 秒輪詢一次、最多 5 分鐘（未登入 API 限額 60 次/小時）。 */
+const GH_REPO = 'matt-ye/personal-website';
+const WF_PAGE = `https://github.com/${GH_REPO}/actions/workflows/analytics.yml`;
+const RUNS_API = `https://api.github.com/repos/${GH_REPO}/actions/workflows/analytics.yml/runs?per_page=1`;
+let watching = false;
+
+async function refetchData() {
+  const base = DATA_BASE.replace(/\/+$/, '');
+  const bust = Date.now();
+  const [sRes, hRes] = await Promise.all([
+    fetch(`${base}/summary.json?t=${bust}`),
+    fetch(`${base}/history.ndjson?t=${bust}`),
+  ]);
+  if (sRes.ok) summary = await sRes.json();
+  if (hRes.ok) history = (await hRes.text()).split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+  renderAll();
+}
+
+document.getElementById('refresh-btn')?.addEventListener('click', () => {
+  if (watching) return;
+  watching = true;
+  const btn = document.getElementById('refresh-btn');
+  const status = document.getElementById('refresh-status');
+  const bar = document.getElementById('refresh-progress');
+  btn.disabled = true;
+  window.open(WF_PAGE, '_blank', 'noopener');
+  status.textContent = L('已開啟 GitHub——按綠色「Run workflow」後回到這裡，進度會自動顯示', 'GitHub opened — hit the green “Run workflow” button there; progress shows here');
+  bar.style.display = '';
+  const started = Date.now();
+  const stop = (msg) => { watching = false; btn.disabled = false; bar.style.display = 'none'; status.textContent = msg; };
+  const tick = async () => {
+    if (Date.now() - started > 5 * 60e3) return stop(L('5 分鐘內未偵測到完成的執行——可到 GitHub Actions 查看', 'No completed run within 5 minutes — check GitHub Actions'));
+    try {
+      const res = await fetch(RUNS_API);
+      if (res.ok) {
+        const run = (await res.json()).workflow_runs?.[0];
+        // 只認按下按鈕之後建立的 run（容忍 2 分鐘時鐘偏差）
+        if (run && new Date(run.created_at).getTime() > started - 2 * 60e3) {
+          if (run.status === 'completed') {
+            if (run.conclusion === 'success') {
+              status.textContent = L('執行完成，正在載入新資料…', 'Run finished — loading fresh data…');
+              await refetchData();
+              return stop(L(`✓ 資料已更新（${new Date().toLocaleTimeString('zh-TW')}）`, `✓ Data refreshed (${new Date().toLocaleTimeString('en-US')})`));
+            }
+            return stop(L(`✗ 執行失敗（${run.conclusion}）——到 GitHub Actions 看 log`, `✗ Run failed (${run.conclusion}) — see GitHub Actions logs`));
+          }
+          status.textContent = `${run.status === 'queued' ? L('排隊中…', 'Queued…') : L('執行中…', 'Running…')} ${Math.round((Date.now() - started) / 1000)}s`;
+        }
+      }
+    } catch (e) { /* 網路波動，下一輪再試 */ }
+    setTimeout(tick, 15000);
+  };
+  setTimeout(tick, 8000); // 給使用者時間按下 Run workflow
 });
 
 /* ── init ───────────────────────────────────────────── */
@@ -705,6 +770,12 @@ init();
 .dash-footnote { color: var(--color-text-muted); font-size: 0.78rem; margin: 48px 0 8px; text-align: center; }
 
 .dash-window-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 8px; }
+
+.dash-refresh-row { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 14px 0 4px; }
+#refresh-btn:disabled { cursor: wait; opacity: 0.6; }
+.dash-progress { background: var(--color-tag-bg, var(--color-surface)); border-radius: 999px; height: 4px; margin: 10px auto 0; max-width: 420px; overflow: hidden; }
+.dash-progress-bar { animation: dash-indeterminate 1.4s ease-in-out infinite; background: var(--color-accent); border-radius: 999px; height: 100%; width: 40%; }
+@keyframes dash-indeterminate { 0% { margin-left: -40%; } 100% { margin-left: 100%; } }
 
 .dash-funnels { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px; }
 .dash-funnel {
