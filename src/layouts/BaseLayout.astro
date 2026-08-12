@@ -26,7 +26,13 @@ const siteURL = Astro.site ?? 'https://mattye.dev';
 const canonicalURL = new URL(Astro.url.pathname, siteURL);
 const imageURL = new URL(image, siteURL);
 const siteName = '葉淨維 Matt Ye';
-const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
+/* 首頁傳 title === siteName 時不加後綴（避免「葉淨維 Matt Ye · 葉淨維 Matt Ye」），
+   但光是人名對搜尋結果的資訊量太低——補一句身分描述。
+   長度控制：中文標題約 40 字元內不會被 SERP 截斷，這裡是 28 字元。 */
+const fullTitle =
+  title === siteName
+    ? `${siteName}｜職能治療師 · 簡報教練 · AI 認知科學研究`
+    : `${title} · ${siteName}`;
 
 const personLd = {
   '@type': 'Person',
@@ -101,7 +107,10 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageURL} />
-    <meta name="twitter:creator" content="@mattye_dev" />
+    {/* creator 標作者、site 標網站帳號——X 的卡片歸屬兩者都會讀，只有 creator 會少一半。
+      個人網站兩者同帳號是正常的。 */}
+  <meta name="twitter:site" content="@mattye_dev" />
+  <meta name="twitter:creator" content="@mattye_dev" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 

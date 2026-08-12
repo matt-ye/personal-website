@@ -31,7 +31,7 @@ import T from '../../components/T.astro';
 
     <!-- Input form -->
     <section class="calc-section">
-      <p class="section-heading">1. <T zh="輸入基本資料" en="Enter Your Details" /></p>
+      <h2 class="section-heading">1. <T zh="輸入基本資料" en="Enter Your Details" /></h2>
       <div class="calc-form-card">
         <div class="form-grid">
           <label class="form-field">
@@ -118,7 +118,7 @@ import T from '../../components/T.astro';
 
     <!-- ACSM risk screening -->
     <section class="calc-section">
-      <p class="section-heading">2. <T zh="ACSM 運動健康風險評估" en="ACSM Exercise Health-Risk Screening" /></p>
+      <h2 class="section-heading">2. <T zh="ACSM 運動健康風險評估" en="ACSM Exercise Health-Risk Screening" /></h2>
       <p class="calc-section-desc"><T zh="美國運動醫學會（ACSM）建議開始運動計畫前的自我篩檢，勾選符合你狀況的項目。" en="A self-screen recommended by the American College of Sports Medicine (ACSM) before starting an exercise program. Check any items that apply to you." /></p>
       <div class="acsm-list" id="acsm-list">
         <label class="acsm-item"><input type="checkbox" data-acsm="1" /> <T zh="年齡：男性 ≥ 45 歲 / 女性 ≥ 55 歲" en="Age: male ≥ 45 / female ≥ 55" /></label>
@@ -137,7 +137,7 @@ import T from '../../components/T.astro';
 
     <!-- BMR/TDEE results -->
     <section class="calc-section">
-      <p class="section-heading">3. <T zh="BMR / TDEE 估算結果" en="BMR / TDEE Estimates" /></p>
+      <h2 class="section-heading">3. <T zh="BMR / TDEE 估算結果" en="BMR / TDEE Estimates" /></h2>
       <div class="calc-bento stat-list">
         <div class="stat-row">
           <div class="stat-row-label">
@@ -187,7 +187,7 @@ import T from '../../components/T.astro';
 
     <!-- Macro targets + weekly training schedule (merged) -->
     <section class="calc-section">
-      <p class="section-heading">4. <T zh="每日巨量營養素目標" en="Daily Macronutrient Targets" /></p>
+      <h2 class="section-heading">4. <T zh="每日巨量營養素目標" en="Daily Macronutrient Targets" /></h2>
       <p class="calc-section-desc">
         <T zh="蛋白質採「體重 × 每公斤克數」計算（ISSN 2017 實證範圍），每日固定；碳水依下方每天的訓練強度逐日調整：一般飲食類型採 ACSM/AND/Dietitians of Canada 2016 聯合聲明的訓練量框架（依一般健身族群調整，非耐力運動員數值）；生酮／極低醣類飲食則改採「Targeted/Cyclical Ketogenic Diet」小幅碳水微調，避免破壞酮症；脂肪為每日剩餘熱量的彈性項。以下先顯示週平均，可在下方表格調整每天的訓練強度。" en="Protein is fixed daily, calculated as body weight × g/kg (ISSN 2017 evidence range). Carbs adjust per day by that day's training intensity: standard diets use the ACSM/AND/Dietitians of Canada 2016 joint-statement training-load framework (scaled for general trainees, not endurance athletes); keto / very-low-carb diets instead use a small Targeted/Cyclical Ketogenic Diet carb bump to avoid breaking ketosis. Fat is the flexible remainder of each day's calories. Weekly averages are shown below; adjust each day's training intensity in the table." />
       </p>
@@ -231,7 +231,7 @@ import T from '../../components/T.astro';
 
     <!-- Food-group servings (六大類食物換算) -->
     <section class="calc-section">
-      <p class="section-heading">5. <T zh="六大類食物份數建議" en="Food-Group Servings" /></p>
+      <h2 class="section-heading">5. <T zh="六大類食物份數建議" en="Food-Group Servings" /></h2>
 
       <p class="calc-subheading">5a. <T zh="總食物採買量（週）" en="Total Weekly Shopping Amount" /></p>
       <p class="calc-section-desc">
@@ -262,7 +262,7 @@ import T from '../../components/T.astro';
 
     <!-- Eating out + whole food guidance -->
     <section class="calc-section">
-      <p class="section-heading">6. <T zh="外食技巧與原型食物" en="Eating-Out Tips & Whole Foods" /></p>
+      <h2 class="section-heading">6. <T zh="外食技巧與原型食物" en="Eating-Out Tips & Whole Foods" /></h2>
       <p class="calc-section-desc">
         <T zh="以下為業界／營養師的實務共識整理，並非一手文獻回顧（跟本頁其他章節的 DRIs/ISSN/ACSM 引用等級不同），僅供參考。內容為靜態整理，未依你選擇的飲食類型或目標動態調整。" en="The following is practical consensus from dietitians/industry, not a primary-literature review (a different evidence tier from the DRIs/ISSN/ACSM citations elsewhere on this page) — for reference only. This content is static and does not adjust to your selected diet type or goal." />
       </p>
@@ -313,7 +313,7 @@ import T from '../../components/T.astro';
 
     <!-- Sports supplements -->
     <section class="calc-section">
-      <p class="section-heading">7. <T zh="運動營養補充劑" en="Sports Supplements" /></p>
+      <h2 class="section-heading">7. <T zh="運動營養補充劑" en="Sports Supplements" /></h2>
       <p class="calc-section-desc">
         <T zh="依 ISSN（國際運動營養學會）的實證等級分類：" en="Classified by the ISSN evidence tiers: " /><b>Category I</b> <T zh="證據充分支持；" en="strong support; " /><b>Category II</b> <T zh="證據有限／不一致；" en="limited/mixed; " /><b>Category III</b> <T zh="證據不足或無效。補充劑無法取代足夠的整體飲食與訓練，僅為輔助工具。" en="insufficient or ineffective. Supplements can't replace adequate overall diet and training — they're only aids." />
       </p>
@@ -376,7 +376,7 @@ import T from '../../components/T.astro';
 
     <!-- References -->
     <section class="calc-section">
-      <p class="section-heading">8. <T zh="參考文獻" en="References" /></p>
+      <h2 class="section-heading">8. <T zh="參考文獻" en="References" /></h2>
       <ul class="ref-list">
         <li><T zh="衛生福利部國民健康署《國人膳食營養素參考攝取量》第八版 — 蛋白質、脂質、碳水化合物專章。" en="Taiwan HPA, Dietary Reference Intakes (DRIs), 8th ed. — protein, lipid, and carbohydrate chapters." /> <a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=4248&pid=12285" target="_blank" rel="noopener">hpa.gov.tw</a></li>
         <li>Jäger R, et al. (2017). International Society of Sports Nutrition Position Stand: Protein and exercise. <em>J Int Soc Sports Nutr.</em> <a href="https://jissn.biomedcentral.com/articles/10.1186/s12970-017-0177-8" target="_blank" rel="noopener"><T zh="連結" en="link" /></a></li>
@@ -406,7 +406,7 @@ import T from '../../components/T.astro';
 
     <!-- Glossary -->
     <section class="calc-section">
-      <p class="section-heading">9. <T zh="常見名詞解釋" en="Glossary" /></p>
+      <h2 class="section-heading">9. <T zh="常見名詞解釋" en="Glossary" /></h2>
       <div class="glossary-grid">
         <div class="glossary-item"><b><T zh="BMR（基礎代謝率）" en="BMR (Basal Metabolic Rate)" /></b><T zh="身體在完全靜止、清醒狀態下維持生命所需的最低熱量。" en="The minimum calories needed to sustain life at complete rest while awake." /></div>
         <div class="glossary-item"><b><T zh="TDEE（每日總消耗熱量）" en="TDEE (Total Daily Energy Expenditure)" /></b><T zh="BMR 加上日常活動與運動消耗的熱量，等於「不增不減體重」所需的每日總熱量。" en="BMR plus calories burned through daily activity and exercise — the daily total needed to maintain weight." /></div>

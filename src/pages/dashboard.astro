@@ -541,7 +541,7 @@ function siteSectionHTML(b) {
   /* 子頁面成效 */
   const pages = forWin(d.topPages);
   const pagesHTML = `
-    <p class="section-heading">${L('子頁面成效', 'Top pages')} <span class="dash-muted">· ${winLabel()}</span></p>
+    <h2 class="section-heading">${L('子頁面成效', 'Top pages')} <span class="dash-muted">· ${winLabel()}</span></h2>
     ${pages === null ? PENDING() : leaderboardHTML(pages)}`;
 
   /* 事件 / 轉換 */
@@ -601,7 +601,7 @@ function siteSectionHTML(b) {
     }).join('');
 
     eventsHTML = `
-      <p class="section-heading">${L('轉換', 'Conversions')} <span class="dash-muted">· ${winLabel()}</span></p>
+      <h2 class="section-heading">${L('轉換', 'Conversions')} <span class="dash-muted">· ${winLabel()}</span></h2>
       <div class="bento-grid">${cards}</div>
       <div class="dash-funnels">${funnelHTML}</div>
       <p class="dash-chart-note">${L(
@@ -619,7 +619,7 @@ function siteSectionHTML(b) {
           </div>`).join('') + `</div>`
       : `<div class="dash-note" style="display:block">${L('此視窗尚無站方事件', 'No site events in this window yet')}</div>`);
     eventsHTML = `
-      <p class="section-heading">${L('站方事件', 'Site events')} <span class="dash-muted">· ${winLabel()}</span></p>
+      <h2 class="section-heading">${L('站方事件', 'Site events')} <span class="dash-muted">· ${winLabel()}</span></h2>
       ${cards}`;
   }
 
