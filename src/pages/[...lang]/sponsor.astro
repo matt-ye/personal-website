@@ -1,16 +1,31 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import T from '../components/T.astro';
-import AmountPicker from '../components/AmountPicker.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import T from '../../components/T.astro';
+import AmountPicker from '../../components/AmountPicker.astro';
+import { localeHref } from '../../lib/i18n';
 
 /* 獨立的贊助頁。footer 的 modal 仍然保留（順手贊助用），這頁的存在是為了
    有一個可以直接分享、外部連結得到的網址——例如 GitHub profile README。
    兩邊共用 src/lib/donate.ts，付款邏輯不重複實作。
-   ID 一律用 sp- 前綴：每頁的 footer 都有 modal，避免與它的 id 撞名。 */
+   ID 一律用 sp- 前綴：每頁的 footer 都有 modal，避免與它的 id 撞名。
+
+   同時產出 /sponsor/ 與 /en/sponsor/，見 [...lang]/about.astro 的說明。
+   ⚠ 這頁的金額選擇器與付款按鈕文字由 client script 的 L() 產生，
+   L() 讀 <html data-lang>——而 BaseLayout 的 inline script 已讓網址決定
+   data-lang，所以 /en/sponsor/ 的動態文字會自動是英文，不需要另外處理。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+const loc = Astro.currentLocale;
 ---
 <BaseLayout
-  title="贊助 Sponsor"
-  description="支持 mattye.dev 的工具與內容持續更新。支援台幣（綠界）與美金（Polar）付款。"
+  title={isEn ? 'Sponsor' : '贊助 Sponsor'}
+  description={isEn
+    ? 'Support the tools and writing on mattye.dev. Pay in TWD via ECPay or in USD via Polar.'
+    : '支持 mattye.dev 的工具與內容持續更新。支援台幣（綠界）與美金（Polar）付款。'}
+  lang={isEn ? 'en' : 'zh-TW'}
 >
   <h1 class="sp-title"><T zh="請我喝杯咖啡" en="Buy me a coffee" /></h1>
 
@@ -67,23 +82,23 @@ import AmountPicker from '../components/AmountPicker.astro';
     <h2 class="section-heading"><T zh="我在做的其他事" en="Where else to find me" /></h2>
 
     <div class="sp-links">
-      <a href="/" class="sp-link">
+      <a href={localeHref('/about/', loc)} class="sp-link">
         <span class="sp-link-t"><T zh="關於我" en="About" /></span>
         <span class="sp-link-d"><T zh="職能治療師、NTU 博士候選人，做研究也做簡報教學" en="Occupational therapist and NTU PhD candidate, working on research and presentation education" /></span>
       </a>
-      <a href="/speeches/" class="sp-link">
+      <a href={localeHref('/speeches/', loc)} class="sp-link">
         <span class="sp-link-t"><T zh="演講紀錄" en="Speeches" /></span>
         <span class="sp-link-d"><T zh="2020 年至今 150+ 場，可依主題與對象篩選" en="150+ talks since 2020, filterable by topic and audience" /></span>
       </a>
-      <a href="/coaching/" class="sp-link">
+      <a href={localeHref('/coaching/', loc)} class="sp-link">
         <span class="sp-link-t"><T zh="競賽培訓" en="Coaching" /></span>
         <span class="sp-link-d"><T zh="ATCC 全國冠軍、Falling Walls Lab 等隊伍的培訓紀錄" en="Coaching records including the ATCC national champions and Falling Walls Lab teams" /></span>
       </a>
-      <a href="/projects/" class="sp-link">
+      <a href={localeHref('/projects/', loc)} class="sp-link">
         <span class="sp-link-t"><T zh="工具與專案" en="Projects" /></span>
         <span class="sp-link-d"><T zh="體態管理計算機、腦健康檢測等可實際操作的工具" en="Hands-on tools including the body composition calculator and brain-health check-in" /></span>
       </a>
-      <a href="/writing/" class="sp-link">
+      <a href={localeHref('/writing/', loc)} class="sp-link">
         <span class="sp-link-t"><T zh="文章與筆記" en="Writing" /></span>
         <span class="sp-link-d"><T zh="投資專欄、硬核簡報系列與 One More Step 學習筆記" en="The investing column, the presentation series, and One More Step learning notes" /></span>
       </a>
@@ -180,7 +195,7 @@ import AmountPicker from '../components/AmountPicker.astro';
 
 <script>
   /* 金額選擇（含自填與驗證）由 AmountPicker 負責，這裡只把它選到的金額送出。 */
-  import { L, startDonation, track } from '../lib/donate';
+  import { L, startDonation, track } from '../../lib/donate';
 
   const payBtn = document.getElementById('sp-pay') as HTMLButtonElement | null;
   const noteEl = document.getElementById('sp-note');
