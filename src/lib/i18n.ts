@@ -16,7 +16,7 @@
  * 而缺 hreflang 在畫面上完全看不出來。astro.config.mjs 的 verifyI18nHreflang
  * 會在建置期比對 dist 裡實際產出的 /en/ 頁面與這份清單，漏了就讓 build 失敗。
  */
-export const MIGRATED_PATHS = ['/about/', '/sponsor/', '/projects/'] as const;
+export const MIGRATED_PATHS = ['/', '/about/', '/sponsor/', '/projects/', '/coaching/'] as const;
 
 /**
  * 把站內路徑轉成當前語言該去的網址。
