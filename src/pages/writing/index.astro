@@ -32,9 +32,13 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month:
     {items.map(it => (
       <li class="post-card" data-category={it.category}>
         <div class="post-card-header">
-          <a href={it.href} class="post-card-title">
-            {it.titleAlt ? <T zh={it.title} en={it.titleAlt} /> : it.title}
-          </a>
+          {/* 這頁的結構是「h1 寫作 → 文章清單」，中間沒有分區，所以文章標題就是 h2。
+              heading 用 .post-card-heading（display:contents）只提供語意、不影響排版。 */}
+          <h2 class="post-card-heading">
+            <a href={it.href} class="post-card-title">
+              {it.titleAlt ? <T zh={it.title} en={it.titleAlt} /> : it.title}
+            </a>
+          </h2>
           <span class="post-card-date"><time datetime={it.date.toISOString()}>{fmt(it.date)}</time></span>
           <span class={`lang-badge${it.kind === 'feature' ? ' feature-badge' : ''}`}>{it.badge}</span>
         </div>

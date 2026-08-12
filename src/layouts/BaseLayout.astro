@@ -26,7 +26,13 @@ const siteURL = Astro.site ?? 'https://mattye.dev';
 const canonicalURL = new URL(Astro.url.pathname, siteURL);
 const imageURL = new URL(image, siteURL);
 const siteName = '葉淨維 Matt Ye';
-const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
+/* 首頁傳 title === siteName 時不加後綴（避免「葉淨維 Matt Ye · 葉淨維 Matt Ye」），
+   但光是人名對搜尋結果的資訊量太低——補一句身分描述。
+   長度控制：中文標題約 40 字元內不會被 SERP 截斷，這裡是 28 字元。 */
+const fullTitle =
+  title === siteName
+    ? `${siteName}｜職能治療師 · 簡報教練 · AI 認知科學研究`
+    : `${title} · ${siteName}`;
 
 const personLd = {
   '@type': 'Person',
@@ -36,7 +42,15 @@ const personLd = {
   url: 'https://mattye.dev',
   jobTitle: 'PhD Candidate · Presentation Coach',
   alumniOf: { '@type': 'CollegeOrUniversity', name: 'National Taiwan University' },
-  sameAs: ['https://www.linkedin.com/in/ching-wei-ye'],
+  /* sameAs 是把散在各平台的身分串成同一個實體，搜尋引擎與 AI 引擎靠它確認
+     「這些帳號是同一個人」。清單越完整，實體識別越穩——但每一條都必須是
+     本人實際擁有且公開的帳號，填錯會把別人的身分綁到你頭上。 */
+  sameAs: [
+    'https://www.linkedin.com/in/ching-wei-ye',
+    'https://x.com/MattChingWeiYe',
+    'https://orcid.org/0009-0001-6085-8303',
+    'https://www.instagram.com/brown.yeh',
+  ],
 };
 const websiteLd = {
   '@type': 'WebSite',
@@ -101,7 +115,12 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageURL} />
-    <meta name="twitter:creator" content="@mattye_dev" />
+    {/* creator 標作者、site 標網站帳號——X 的卡片歸屬兩者都會讀，只有 creator 會少一半。
+      個人網站兩者同帳號是正常的。
+      ⚠ 這個值必須是真實存在的 handle：先前填的 @mattye_dev 查證為 404（不存在），
+      推測是從網域名 mattye.dev 推想出來的。錯的 handle 會讓卡片歸屬失效。 */}
+  <meta name="twitter:site" content="@MattChingWeiYe" />
+  <meta name="twitter:creator" content="@MattChingWeiYe" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 

@@ -115,7 +115,7 @@ const yearSpan = (() => {
 
     <!-- Charts: 4 Donuts -->
     <section class="charts-section">
-      <p class="section-heading"><T zh="類型分佈" en="Distribution breakdown" /></p>
+      <h2 class="section-heading"><T zh="類型分佈" en="Distribution breakdown" /></h2>
       <div class="charts-grid">
         <div class="chart-card">
           <div class="chart-card-head"><span class="chart-card-title"><T zh="類型" en="Type" /></span><span class="chart-badge" id="badge-type">—</span></div>
@@ -154,7 +154,7 @@ const yearSpan = (() => {
 
     <!-- Org Leaderboard -->
     <section class="orgs-section">
-      <p class="section-heading"><T zh="主要合作單位" en="Top collaborating organizations" /></p>
+      <h2 class="section-heading"><T zh="主要合作單位" en="Top collaborating organizations" /></h2>
       <div class="orgs-filter-row">
         <button class="chip active" data-cat="all"><T zh="全部" en="All" /></button>
         <button class="chip" data-cat="學校">🎓 <T zh="學校" en="Schools" /></button>
@@ -241,9 +241,14 @@ const yearSpan = (() => {
               <span>{d.date}</span>
               <span>{d.edu}</span>
             </div>
-            {linkUrl
-              ? <a class="card-topic card-topic-link" href={linkUrl} target="_blank" rel="noopener">{d.topic}</a>
-              : <div class="card-topic">{d.topic}</div>}
+            {/* 演講主題是卡片標題 → h3（這一區的 h2 是「類型分佈」等區塊標題）。
+                ⚠ 下方 client script 的 cardHTML() 必須產生相同結構，
+                否則 JS 重畫後 heading 會消失。 */}
+            <h3 class="card-heading">
+              {linkUrl
+                ? <a class="card-topic card-topic-link" href={linkUrl} target="_blank" rel="noopener">{d.topic}</a>
+                : <div class="card-topic">{d.topic}</div>}
+            </h3>
             {/* 單位有官網就做成連結——這些是指向真實機構的外連，對 E-E-A-T 有幫助；
                 字典查不到的單位沒有網址，就只顯示文字 */}
             {d.org && (
@@ -637,9 +642,11 @@ function cardHTML(d) {
   const modeCls = `badge badge-mode-${d.mode}`;
   const linkUrl = d.youtubeUrl || d.url;
   const topic = pick(d.topic, d.topicEn);
+  /* 結構要與 build 期渲染的版本一致（見上方 .speech-cards-grid 那段），
+     否則 JS 重畫後 h3 會不見，爬蟲看到的與使用者看到的就對不上。 */
   const topicHTML = linkUrl
-    ? `<a class="card-topic card-topic-link" href="${linkUrl}" target="_blank" rel="noopener">${topic}</a>`
-    : `<div class="card-topic">${topic}</div>`;
+    ? `<h3 class="card-heading"><a class="card-topic card-topic-link" href="${linkUrl}" target="_blank" rel="noopener">${topic}</a></h3>`
+    : `<h3 class="card-heading"><div class="card-topic">${topic}</div></h3>`;
   const coOrgHTML = [
     { zh: d.coOrg1, en: d.coOrg1En },
     { zh: d.coOrg2, en: d.coOrg2En },

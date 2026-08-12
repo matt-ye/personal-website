@@ -5,13 +5,14 @@ interface Props {
   title: string;
   description: string;
   pubDate: Date;
+  updatedDate?: Date;
   lang?: 'zh' | 'en';
   tags?: string[];
   titleEn?: string;
   descriptionEn?: string;
 }
 
-const { title, description, pubDate, lang = 'zh', tags, titleEn, descriptionEn } = Astro.props;
+const { title, description, pubDate, updatedDate, lang = 'zh', tags, titleEn, descriptionEn } = Astro.props;
 
 /* 有 titleEn 就是雙語文章：標題與日期跟著站上的語言切換，不再固定單一語言 */
 const bilingual = Boolean(titleEn);
@@ -31,6 +32,9 @@ const articleLd = {
   "headline": title,
   "description": description,
   "datePublished": pubDate.toISOString(),
+  /* 只有實際填了 updatedDate 才輸出。沒填就不給，而不是拿 pubDate 或建置時間充數——
+     不準的時間訊號會讓 Google 連帶不信任整站的日期（同 sitemap lastmod 的處理）。 */
+  ...(updatedDate ? { "dateModified": updatedDate.toISOString() } : {}),
   "inLanguage": htmlLang,
   "author": {
     "@type": "Person",
@@ -63,6 +67,13 @@ const articleLd = {
           </>
         ) : dateFormatted}
       </time>
+      {updatedDate && (
+        <time class="post-updated" datetime={updatedDate.toISOString()}>
+          {lang === 'zh'
+            ? `更新於 ${updatedDate.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })}`
+            : `Updated ${updatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`}
+        </time>
+      )}
       {bilingual
         ? <span class="lang-badge">中 · EN</span>
         : <span class="lang-badge">{lang === 'zh' ? '中' : 'EN'}</span>}
