@@ -303,24 +303,48 @@ const awards = getPersonalAwards();
     dots[current].classList.add('active');
   }
 
-  // Auto-advance every 4 seconds
-  var timer = setInterval(function () { goTo(current + 1); }, 4000);
+  /* 自動輪播跑三輪後回到第一張並停止。
+     不是美觀考量——是 LCP：每張照片都是頁面最大的元素，每次換圖就產生一個新的
+     LCP 候選，而 LCP 取的是「追蹤期間最後一個最大內容繪製」。原本無限輪播時
+     實測 LCP 106 秒（三次測量一致），但同時 CPU 只用 1.1 秒、最慢請求 490ms
+     ——不是載入慢，是指標被輪播推著跑。停下來 LCP 才會定案。
+     使用者仍可點圓點手動切換（手動切換後不再自動播放）。 */
+  var ROUNDS = 3;
+  var advances = 0;
+  var timer = setInterval(tick, 4000);
 
-  // Dot click → jump + reset timer
+  function tick() {
+    advances++;
+    if (advances >= slides.length * ROUNDS) {
+      clearInterval(timer);
+      timer = null;
+      goTo(0);              // 回到第一張收尾
+      return;
+    }
+    goTo(current + 1);
+  }
+
+  function stopAuto() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  // Dot click → 手動切換，並停止自動播放（使用者已經表達了偏好）
   dots.forEach(function (dot, i) {
     dot.addEventListener('click', function () {
-      clearInterval(timer);
+      stopAuto();
       goTo(i);
-      timer = setInterval(function () { goTo(current + 1); }, 4000);
     });
   });
 
-  // Pause on hover
+  /* 滑過時暫停、離開時續播——但三輪跑完之後就不再重啟
+     （否則滑鼠一進一出就把已經停下來的輪播叫醒，LCP 又會被推著跑）。 */
   var carousel = document.getElementById('hero-carousel');
   if (carousel) {
-    carousel.addEventListener('mouseenter', function () { clearInterval(timer); });
+    carousel.addEventListener('mouseenter', stopAuto);
     carousel.addEventListener('mouseleave', function () {
-      timer = setInterval(function () { goTo(current + 1); }, 4000);
+      if (timer) return;                                   // 已在跑就不重複開
+      if (advances >= slides.length * ROUNDS) return;       // 已跑完三輪，不再自動播
+      timer = setInterval(tick, 4000);
     });
   }
 })();

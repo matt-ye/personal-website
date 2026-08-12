@@ -27,6 +27,12 @@ export interface WritingItem {
   category: string;
   badge: string;
   kind: 'post' | 'feature';
+  /* 渲染後的全文 HTML，只有 Markdown 文章有（手刻的 public/ 頁面拿不到）。
+     RSS 用它輸出全文；列表頁用不到。
+     為什麼要給全文：feed 是 LLM 抓內容的常用管道，只給一句話描述等於
+     讓對方拿不到實質內容。有全文的給全文，沒有的維持描述——
+     混合是刻意的取捨，總比全部都只給一句話好。 */
+  contentHtml?: string;
 }
 
 /* 列表頁的系列篩選順序。categories 由實際存在的項目決定，
@@ -56,6 +62,9 @@ export async function getWritingItems(): Promise<WritingItem[]> {
             : '隨筆',
     badge: p.data.titleEn ? '中 · EN' : (p.data.lang === 'zh' ? '中' : 'EN'),
     kind: 'post',
+    /* Astro 的 content layer 已經把 Markdown 渲染好放在 rendered.html，
+       不需要另外裝 markdown-it 之類的依賴。 */
+    contentHtml: p.rendered?.html,
   }));
 
   // One More Step features → unified items
