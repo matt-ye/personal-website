@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import AnalyticsEvents from '../components/AnalyticsEvents.astro';
+import { hasEnglishRoute } from '../lib/i18n';
 import '../styles/global.css';
 
 interface Props {
@@ -10,9 +11,6 @@ interface Props {
   lang?: string;
   ogType?: 'website' | 'article';
   image?: string;
-  /* 這一頁是否已經有 /en/ 的獨立網址（i18n 遷移進行中，見 astro.config.mjs）。
-     只有傳 true 的頁面才輸出 hreflang——未遷移的頁面沒有英文網址可指。 */
-  hasEnglishVersion?: boolean;
 }
 
 const {
@@ -20,7 +18,6 @@ const {
   description = '葉淨維 Ching-Wei (Matt) Ye 的個人網站',
   lang = 'zh-TW',
   ogType = 'website',
-  hasEnglishVersion = false,
   /* 預設分享圖用捕夢網 LOGO，不用本人照片——只有首頁需要把臉放在分享卡上，
      子頁面全部是自己的臉會很奇怪。首頁自行傳 image="/OG.png" 覆寫。 */
   image = '/og-logo.png',
@@ -29,14 +26,16 @@ const {
 const siteURL = Astro.site ?? 'https://mattye.dev';
 const canonicalURL = new URL(Astro.url.pathname, siteURL);
 
-/* hreflang：只有真的有英文網址的頁面才輸出。
-   指向不存在的網址比不輸出更糟——Google 會把互指不成立的 hreflang 整組忽略，
-   還會在 Search Console 報錯。所以這裡用明確的 prop 而不是從路徑推導：
-   全站只有已遷移的頁面會傳 hasEnglishVersion。
+/* hreflang：只有真的有英文網址的頁面才輸出。指向不存在的網址比不輸出更糟——
+   Google 會把互指不成立的 hreflang 整組忽略，還會在 Search Console 報錯。
+
+   判斷依據是 lib/i18n.ts 的 MIGRATED_PATHS，不是每頁傳進來的旗標：
+   能從單一事實來源推導出來的，就不該讓人記得傳——會忘的遲早會忘，
+   而忘記的症狀（少了 hreflang）在頁面上完全看不出來。
 
    x-default 指中文版：這是網站的主要語言，也是網址沒有前綴的那一版。 */
 const zhPath = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/';
-const localeAlternates = hasEnglishVersion
+const localeAlternates = hasEnglishRoute(Astro.url.pathname)
   ? [
       { hreflang: 'zh-TW', href: new URL(zhPath, siteURL).href },
       { hreflang: 'en', href: new URL(`/en${zhPath}`.replace(/\/$/, '') + '/', siteURL).href },

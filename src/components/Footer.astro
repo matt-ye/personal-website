@@ -1,7 +1,12 @@
 ---
 import Sponsor from './Sponsor.astro';
 import T from './T.astro';
+import { localeHref } from '../lib/i18n';
 const year = new Date().getFullYear();
+
+/* 站內連結跟著當前語言走。已遷移的頁面連到 /en/ 版，未遷移的維持原路徑——
+   連到中文版好過連到還不存在的 /en/ 網址。 */
+const loc = Astro.currentLocale;
 ---
 <footer>
   <div class="container">
@@ -11,14 +16,14 @@ const year = new Date().getFullYear();
       {/* 「關於作者」（/about/）與下面的「關於本站」是兩件事：一個是人的資歷，
           一個是這個網站為什麼存在。作者頁另外還有每篇文章的 byline 連過來，
           內部連結足夠，因此不佔用主導覽的位置。 */}
-      <a href="/about/"><T zh="關於作者" en="About the author" /></a>
+      <a href={localeHref('/about/', loc)}><T zh="關於作者" en="About the author" /></a>
       {/* 〈為什麼建立這個網站〉先前全站只有 /writing 列表一個入口（對照
           /coaching 的 24 個），Search Console 因此判定重要性低、長期停在
           「已檢索 - 目前尚未建立索引」。放進 footer 讓每一頁都連過去。 */}
       <a href="/writing/hello-world/"><T zh="關於本站" en="About this site" /></a>
       {/* 這個文字連結是 /sponsor 唯一的站內入口——旁邊的金色按鈕只開 modal，
           不是連結，Google 無法沿著它發現該頁。 */}
-      <a href="/sponsor/"><T zh="贊助說明" en="Sponsorship" /></a>
+      <a href={localeHref('/sponsor/', loc)}><T zh="贊助說明" en="Sponsorship" /></a>
       <a href="/rss.xml">RSS</a>
       <Sponsor />
     </div>
