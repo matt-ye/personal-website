@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import T from '../components/T.astro';
 import { EVENT_TYPE, MODE, LANG, EDU } from '../i18n/dict';
-import { getSpeeches } from '../lib/sheets';
+import { getSpeeches, speechesUnmatchedOrgs } from '../lib/sheets';
 
 /* 資料在 build 期就備好（來源：src/data/sheets/speeches.json，每日由 Actions 同步）。
    原本是瀏覽器端 fetch Google Sheet——那讓整份演講紀錄不在 HTML 裡，
@@ -11,31 +11,44 @@ const EXCLUDED_TYPES = new Set(['彩排', '教材製作']);
 
 /* 這個形狀要與下方 client script 的 allData 完全一致：
    script 的 500 行 render 邏輯全部吃這組欄名，改形狀等於重寫那些函式。 */
-const speechData = getSpeeches()
-  .filter((s) => s.date && s.topic.zh && !EXCLUDED_TYPES.has(s.eventType))
-  .map((s) => ({
-    date: s.date,
-    year: String(s.year || ''),
-    org: s.host.zh,
-    orgEn: s.host.en,
-    orgType: s.hostType,
-    coOrg1: s.coHost1.zh,
-    coOrg1En: s.coHost1.en,
-    coOrg1Type: s.coHost1Type,
-    coOrg2: s.coHost2.zh,
-    coOrg2En: s.coHost2.en,
-    coOrg2Type: s.coHost2Type,
-    topic: s.topic.zh,
-    topicEn: s.topic.en,
-    type: s.eventType,
-    mode: s.mode,
-    lang: s.language,
-    edu: s.audienceEdu,
-    audience: s.attendees,
-    hours: s.hours,
-    youtubeUrl: s.youtubeUrl,
-    url: s.otherUrl,
-  }));
+const speechList = getSpeeches().filter(
+  (s) => s.date && s.topic.zh && !EXCLUDED_TYPES.has(s.eventType)
+);
+
+/* 單位的官網從 organizations 字典帶進來，讓卡片上的機構名變成可點的連結。
+   查不到字典的單位 orgUrl 是空字串——渲染時就只顯示文字，不會產生空連結。 */
+const speechData = speechList.map((s) => ({
+  date: s.date,
+  year: String(s.year || ''),
+  org: s.host?.name ?? '',
+  orgEn: s.host?.nameEn ?? '',
+  orgType: s.host?.type ?? '',
+  orgUrl: s.host?.url ?? '',
+  coOrg1: s.coHost1?.name ?? '',
+  coOrg1En: s.coHost1?.nameEn ?? '',
+  coOrg1Type: s.coHost1?.type ?? '',
+  coOrg1Url: s.coHost1?.url ?? '',
+  coOrg2: s.coHost2?.name ?? '',
+  coOrg2En: s.coHost2?.nameEn ?? '',
+  coOrg2Type: s.coHost2?.type ?? '',
+  coOrg2Url: s.coHost2?.url ?? '',
+  topic: s.topic.zh,
+  topicEn: s.topic.en,
+  type: s.eventType,
+  mode: s.mode,
+  lang: s.language,
+  edu: s.audienceEdu,
+  audience: s.attendees,
+  hours: s.hours,
+  youtubeUrl: s.youtubeUrl,
+  url: s.otherUrl,
+}));
+
+/* 還沒進字典的單位在 build log 列出來，逐步補完用；不影響 build 成敗 */
+const missingOrgs = speechesUnmatchedOrgs();
+if (missingOrgs.length) {
+  console.log(`  [organizations] ${missingOrgs.length} 個單位不在字典裡（顯示為純文字）：${missingOrgs.join('、')}`);
+}
 
 /* 給不執行 JS 的訪客（含爬蟲）看的靜態統計——與 script 的 renderStats 同一套算法 */
 const totalEvents = speechData.length;
@@ -231,10 +244,26 @@ const yearSpan = (() => {
             {linkUrl
               ? <a class="card-topic card-topic-link" href={linkUrl} target="_blank" rel="noopener">{d.topic}</a>
               : <div class="card-topic">{d.topic}</div>}
-            {d.org && <div class="card-org">{d.org}</div>}
+            {/* 單位有官網就做成連結——這些是指向真實機構的外連，對 E-E-A-T 有幫助；
+                字典查不到的單位沒有網址，就只顯示文字 */}
+            {d.org && (
+              <div class="card-org">
+                {d.orgUrl
+                  ? <a href={d.orgUrl} target="_blank" rel="noopener">{d.org}</a>
+                  : d.org}
+              </div>
+            )}
             {d.orgEn && <div class="card-org-en" lang="en">{d.orgEn}</div>}
-            {d.coOrg1 && <div class="card-org-co">協辦：{d.coOrg1}</div>}
-            {d.coOrg2 && <div class="card-org-co">協辦：{d.coOrg2}</div>}
+            {d.coOrg1 && (
+              <div class="card-org-co">協辦：{d.coOrg1Url
+                ? <a href={d.coOrg1Url} target="_blank" rel="noopener">{d.coOrg1}</a>
+                : d.coOrg1}</div>
+            )}
+            {d.coOrg2 && (
+              <div class="card-org-co">協辦：{d.coOrg2Url
+                ? <a href={d.coOrg2Url} target="_blank" rel="noopener">{d.coOrg2}</a>
+                : d.coOrg2}</div>
+            )}
             <div class="card-stats">
               {d.audience > 0 && <span><b>{d.audience}</b>人</span>}
               {d.hours > 0 && <span><b>{d.hours}</b>hr</span>}

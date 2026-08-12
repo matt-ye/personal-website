@@ -12,6 +12,7 @@
  */
 
 import speechesRaw from '../data/sheets/speeches.json';
+import organizationsRaw from '../data/sheets/organizations.json';
 import siteContentRaw from '../data/sheets/site-content.json';
 import coreStrengthsRaw from '../data/sheets/core-strengths.json';
 import experienceRolesRaw from '../data/sheets/experience-roles.json';
@@ -63,56 +64,141 @@ const toDate = (raw?: string): Date | null => {
   return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
 };
 
+/* ── 單位字典（organizations） ─────────────────────────────────────
+ *
+ * 演講表只填單位的中文名，英文名／官網／類型都從這裡查。
+ * 這樣同一個單位的資料只有一份，不會像以前那樣同一個機構在不同列有三種英文名。
+ */
+
+export interface Organization {
+  name: string;
+  nameEn: string;
+  url: string;
+  type: string;
+  abbr: string;
+}
+
+/* 比對用的正規化：臺/台 異體字、空白、結尾括號縮寫都會造成對不上，
+   但它們指的是同一個機構。 */
+const normOrgKey = (s: string) =>
+  (s ?? '')
+    .trim()
+    .replace(/臺/g, '台')
+    .replace(/\s+/g, '')
+    .replace(/[（(].*?[)）]\s*$/, '');
+
+const ORG_INDEX: Map<string, Organization> = (() => {
+  const idx = new Map<string, Organization>();
+  for (const r of organizationsRaw as Row[]) {
+    const name = (r['單位名稱'] ?? '').trim();
+    if (!name) continue;
+    const org: Organization = {
+      name,
+      nameEn: (r['單位名稱_eng'] ?? '').trim(),
+      url: (r['官網URL'] ?? '').trim(),
+      type: (r['類型'] ?? '').trim(),
+      abbr: (r['簡稱'] ?? '').trim(),
+    };
+    idx.set(normOrgKey(name), org);
+    /* 別名讓演講表保留歷史寫法也能對上——那 179 列不必因為字典改名而全部重打 */
+    for (const alias of (r['別名'] ?? '').split('｜')) {
+      const a = alias.trim();
+      if (a) idx.set(normOrgKey(a), org);
+    }
+  }
+  return idx;
+})();
+
+/** 查單位。查不到回 null——呼叫端要能接受「這個單位還沒進字典」，
+ *  不然每新增一場演講都得先維護字典才 build 得起來。 */
+export const findOrg = (name: string): Organization | null =>
+  ORG_INDEX.get(normOrgKey(name)) ?? null;
+
+/** 單位的顯示資訊：字典查得到就用字典的，查不到至少還有原始名稱可顯示 */
+export interface OrgRef {
+  name: string;      // 顯示用的中文名（字典優先，維持全站一致）
+  nameEn: string;
+  url: string;       // 空字串代表不做成連結
+  type: string;
+  abbr: string;
+  matched: boolean;  // 是否對到字典，供 build 期回報用
+}
+
+export function orgRef(rawName: string, fallbackEn = ''): OrgRef | null {
+  const raw = (rawName ?? '').trim();
+  if (!raw || raw === '-') return null;
+  const hit = findOrg(raw);
+  return hit
+    ? { name: hit.name, nameEn: hit.nameEn, url: hit.url, type: hit.type, abbr: hit.abbr, matched: true }
+    : { name: raw, nameEn: fallbackEn, url: '', type: '', abbr: '', matched: false };
+}
+
+/** build 期用：列出演講表裡還沒進字典的單位，方便逐步補完 */
+export function unmatchedOrgs(names: string[]): string[] {
+  const miss = new Set<string>();
+  for (const n of names) {
+    const t = (n ?? '').trim();
+    if (t && t !== '-' && !findOrg(t)) miss.add(t);
+  }
+  return [...miss];
+}
+
+export const allOrganizations = (): Organization[] =>
+  [...new Set(ORG_INDEX.values())].sort((a, b) => a.name.localeCompare(b.name, 'zh-TW'));
+
 /* ── 演講紀錄（index 的統計與 speeches 的列表共用同一份） ───────────── */
 
 export interface Speech {
   date: string;
   dateObj: Date | null;
   year: number;
-  host: Bilingual;         // 主辦單位_zh / 主辦單位_eng
-  hostType: string;
-  coHost1: Bilingual;
-  coHost1Type: string;
-  coHost2: Bilingual;
-  coHost2Type: string;
-  topic: Bilingual;        // ⚠ 主題 / Topic（英文欄沒有後綴，是獨立欄名）
+  /* 單位資訊全部來自 organizations 字典（英文名／官網／類型都在那裡），
+     演講表只填中文名。查不到的單位 url 為空字串，顯示成純文字。 */
+  host: OrgRef | null;
+  coHost1: OrgRef | null;
+  coHost2: OrgRef | null;
+  topic: Bilingual;        // 主題 / 主題_eng
   eventType: string;       // 場次類型
-  mode: string;            // 線上/實體
+  mode: string;            // 形式（線上／實體）
   language: string;
   audienceEdu: string;     // 聽眾教育程度
-  attendees: number;       // 人數/觀看
+  attendees: number;       // 人數
   hours: number;
-  youtubeUrl: string;
-  otherUrl: string;
+  youtubeUrl: string;      // 影片URL
+  otherUrl: string;        // 報導URL
 }
 
 export function getSpeeches(): Speech[] {
   return (speechesRaw as Row[])
-    .filter((r) => r['日期'] && r['主辦單位_zh'])
+    .filter((r) => r['日期'] && r['主辦單位'])
     .map((r) => {
       const d = toDate(r['日期']);
       return {
         date: r['日期'] ?? '',
         dateObj: d,
         year: d ? d.getFullYear() : 0,
-        host: bi(r['主辦單位_zh'], r['主辦單位_eng']),
-        hostType: r['主辦單位_類型'] ?? '',
-        coHost1: bi(r['協辦單位_1_zh'], r['協辦單位_1_eng']),
-        coHost1Type: r['協辦單位_1_類型'] ?? '',
-        coHost2: bi(r['協辦單位_2_zh'], r['協辦單位_2_eng']),
-        coHost2Type: r['協辦單位_2_類型'] ?? '',
-        topic: bi(r['主題'], r['Topic']),
+        host: orgRef(r['主辦單位']),
+        coHost1: orgRef(r['協辦單位_1']),
+        coHost2: orgRef(r['協辦單位_2']),
+        topic: bi(r['主題'], r['主題_eng']),
         eventType: r['場次類型'] ?? '',
-        mode: r['線上/實體'] ?? '',
+        mode: r['形式'] ?? '',
         language: r['語言'] ?? '',
         audienceEdu: r['聽眾教育程度'] ?? '',
-        attendees: num(r['人數/觀看']),
+        attendees: num(r['人數']),
         hours: num(r['小時']),
-        youtubeUrl: firstUrl(r['YouTube URL']),
-        otherUrl: firstUrl(r['News, Blog, or Other URL']),
+        youtubeUrl: firstUrl(r['影片URL']),
+        otherUrl: firstUrl(r['報導URL']),
       };
     })
     .sort((a, b) => (b.dateObj?.getTime() ?? 0) - (a.dateObj?.getTime() ?? 0));
+}
+
+/** 演講表裡出現、但字典查不到的單位名稱（build 期印出來提醒逐步補完） */
+export function speechesUnmatchedOrgs(): string[] {
+  return unmatchedOrgs(
+    (speechesRaw as Row[]).flatMap((r) => [r['主辦單位'], r['協辦單位_1'], r['協辦單位_2']])
+  );
 }
 
 /* ── 首頁文案（key-value 表） ──────────────────────────────────────── */

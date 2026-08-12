@@ -1,0 +1,482 @@
+[
+  {
+    "單位名稱": "啟夢股份有限公司",
+    "單位名稱_eng": "Enlighten-Dream Social Enterprise",
+    "官網URL": "https://enlightendream.com/",
+    "類型": "企業",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "晶盛科技股份有限公司",
+    "單位名稱_eng": "Straight A Inc.",
+    "官網URL": "https://www.straighta.com.tw/",
+    "類型": "企業",
+    "簡稱": "STRAIGHT A INC.",
+    "別名": "Straight A 蘋果授權校園店&教育專家 晶盛科技股份有限公司"
+  },
+  {
+    "單位名稱": "布朗的布朗尼盒子",
+    "單位名稱_eng": "Browne's Brownie Boxes",
+    "官網URL": "https://open.firstory.me/user/brownes-brownie-boxes/episodes",
+    "類型": "自媒體",
+    "簡稱": "BBB",
+    "別名": ""
+  },
+  {
+    "單位名稱": "理想自己研究室",
+    "單位名稱_eng": "Ideal Self Research Lab - Athena",
+    "官網URL": "https://open.firstory.me/user/thatmyself/episodes",
+    "類型": "自媒體",
+    "簡稱": "NTUIB",
+    "別名": "理想自己研究室 - 席娜 Athena"
+  },
+  {
+    "單位名稱": "臺北市家庭教育中心",
+    "單位名稱_eng": "Taipei City Family Education Center",
+    "官網URL": "https://family.gov.taipei/",
+    "類型": "政府單位",
+    "簡稱": "",
+    "別名": "臺北市青少年發展暨家庭教育中心"
+  },
+  {
+    "單位名稱": "德國在台協會",
+    "單位名稱_eng": "German Institute Taipei (Deutsches Institut Taipei)",
+    "官網URL": "https://taipei.diplo.de/tw-zh-tw",
+    "類型": "政府單位",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學印尼同學會",
+    "單位名稱_eng": "National Taiwan University Indonesian Student Association",
+    "官網URL": "https://www.facebook.com/ntuisaofficial/",
+    "類型": "學生社團",
+    "簡稱": "NTU ISA",
+    "別名": "國立台灣大學印尼同學會x椰島社NTUISA"
+  },
+  {
+    "單位名稱": "國立臺灣大學國際英語演講社",
+    "單位名稱_eng": "National Taiwan University Toastmasters Club",
+    "官網URL": "https://www.facebook.com/ntutm/",
+    "類型": "學生社團",
+    "簡稱": "NTU TMC",
+    "別名": "台大國際英語演講社"
+  },
+  {
+    "單位名稱": "國立臺灣大學醫學系學生會",
+    "單位名稱_eng": "National Taiwan University Medical Student Association",
+    "官網URL": "https://ntumedsa.org/",
+    "類型": "學生社團",
+    "簡稱": "NTU MED SA",
+    "別名": "國立臺灣大學醫學院 醫學系學生會學術部"
+  },
+  {
+    "單位名稱": "中原大學",
+    "單位名稱_eng": "Chung Yuan Christian University",
+    "官網URL": "https://www.cycu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "天主教輔仁大學",
+    "單位名稱_eng": "Fu Jen Catholic University",
+    "官網URL": "https://www.fju.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "東吳大學政治系",
+    "單位名稱_eng": "Soochow University, Department of Political Science",
+    "官網URL": "https://web-ch.scu.edu.tw/politics",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "東吳大學英文學系",
+    "單位名稱_eng": "Soochow University, Department of English",
+    "官網URL": "https://web-ch.scu.edu.tw/english",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": "東吳大學英文系"
+  },
+  {
+    "單位名稱": "花蓮縣立玉里國中",
+    "單位名稱_eng": "Yuli Junior High School",
+    "官網URL": "https://www.yljh.hlc.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "長庚大學職能治療學系",
+    "單位名稱_eng": "Chang Gung University Department of Occupational Therapy",
+    "官網URL": "https://www.cgu.edu.tw/dot/",
+    "類型": "學校",
+    "簡稱": "CGUOT",
+    "別名": ""
+  },
+  {
+    "單位名稱": "苗栗縣立烏眉國中",
+    "單位名稱_eng": "MiaoLi Conty WuMei Junior High School",
+    "官網URL": "https://wumeijh.mlc.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": "苗栗縣立苗栗烏眉國"
+  },
+  {
+    "單位名稱": "神戶大學",
+    "單位名稱_eng": "Kobe University",
+    "官網URL": "https://www.kobe-u.ac.jp/en/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": "国立大学法人 神戸大学"
+  },
+  {
+    "單位名稱": "國立斗六高級中學",
+    "單位名稱_eng": "National Tou-Liu Senior High School",
+    "官網URL": "https://www.tlsh.ylc.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立竹山高級中學",
+    "單位名稱_eng": "National Chushan Senior High School",
+    "官網URL": "https://www.cshs.ntct.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立屏北高級中學",
+    "單位名稱_eng": "National PingPei Senior High School",
+    "官網URL": "https://www.ppsh.ptc.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立政治大學商學院",
+    "單位名稱_eng": "National Chengchi University College of Commerce",
+    "官網URL": "https://commerce.nccu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NCCU",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立新化高級中學",
+    "單位名稱_eng": "National Hsin Hua Senior High School",
+    "官網URL": "https://www.hhsh.tn.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立嘉義女子高級中學",
+    "單位名稱_eng": "National Chia-Yi Girls' High School",
+    "官網URL": "https://www.cygsh.cy.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學",
+    "單位名稱_eng": "National Taiwan University",
+    "官網URL": "https://www.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTU",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學公共衛生學院全球衛生學程",
+    "單位名稱_eng": "National Taiwan University College of Public Health Global Health Program",
+    "官網URL": "https://ghp.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTU GHP",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學共同教育中心",
+    "單位名稱_eng": "National Taiwan University Center of General Education",
+    "官網URL": "https://cge.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTU CGE",
+    "別名": "國立臺灣大學 共同教育中心"
+  },
+  {
+    "單位名稱": "國立臺灣大學科學教育發展中心",
+    "單位名稱_eng": "National Taiwan University Center for the Advancement of Science Education",
+    "官網URL": "https://case.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTU CASE",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學教學發展中心暨數位學習中心",
+    "單位名稱_eng": "National Taiwan University Center for Teaching and Learning Development & Digital Learning Center",
+    "官網URL": "https://www.dlc.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTU CTLD & DLC",
+    "別名": "國立臺灣大學教學發展中心X數位學習中心｜國立臺灣大學教務處數位學習中心｜國立台灣大學教務處數位學習中心｜國立臺灣大學教務處教學發展中心"
+  },
+  {
+    "單位名稱": "國立臺灣大學創業創新MBA",
+    "單位名稱_eng": "National Taiwan University Entrepreneurship and Innovation MBA",
+    "官網URL": "https://management.ntu.edu.tw/EIMBA",
+    "類型": "學校",
+    "簡稱": "NTU EiMBA",
+    "別名": "國立臺灣大學創業創新MBA｜國立臺灣大學創業創新MBA (NTU EiMBA)"
+  },
+  {
+    "單位名稱": "國立臺灣大學經濟學系",
+    "單位名稱_eng": "National Taiwan University Department of Economics",
+    "官網URL": "https://econ.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTUE",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學管理學院國際企業學系暨研究所",
+    "單位名稱_eng": "National Taiwan University International Business",
+    "官網URL": "https://management.ntu.edu.tw/IB",
+    "類型": "學校",
+    "簡稱": "NTUIB",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學寫作教學中心",
+    "單位名稱_eng": "National Taiwan University Academic Writing Education Center",
+    "官網URL": "https://awec.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTU AWEC",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學學務處學生心理輔導中心資源教室",
+    "單位名稱_eng": "National Taiwan University Disability Support Services, Student Counseling Center",
+    "官網URL": "https://dss.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTU DSS",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學醫學院職能治療學系",
+    "單位名稱_eng": "National Taiwan University College of Medicine School of Occupational Therapy",
+    "官網URL": "https://www.mc.ntu.edu.tw/otntu/",
+    "類型": "學校",
+    "簡稱": "NTU OT",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學雙語教育中心",
+    "單位名稱_eng": "National Taiwan University Center for Bilingual Education",
+    "官網URL": "https://cbe.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTU CBE",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學EMI教學資源中心",
+    "單位名稱_eng": "National Taiwan University EMI Teaching and Learning Center",
+    "官網URL": "https://emitlc.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTU EMI TLC",
+    "別名": "國立臺灣大學雙語教育中心- EMI教學資源中心"
+  },
+  {
+    "單位名稱": "國立臺灣科技大學應用外語系",
+    "單位名稱_eng": "Department of Applied Foreign Languages",
+    "官網URL": "https://afl.ntust.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTUST",
+    "別名": ""
+  },
+  {
+    "單位名稱": "逢甲大學",
+    "單位名稱_eng": "Feng Chia University",
+    "官網URL": "https://www.fcu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "新北市立新店高中",
+    "單位名稱_eng": "New Taipei Municipal Hsin Tien Senior High School",
+    "官網URL": "https://www.htsh.ntpc.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "彰化縣立二林高級中學",
+    "單位名稱_eng": "Erhlin Senior High School",
+    "官網URL": "https://elsh.chc.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "維多利亞雙語中小學",
+    "單位名稱_eng": "Victoria Academy",
+    "官網URL": "https://www.victoria.ylc.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": "維多利亞實驗中學"
+  },
+  {
+    "單位名稱": "臺中市立臺中第二高級中等學校",
+    "單位名稱_eng": "Taichung Municipal Taichung Second Senior High School",
+    "官網URL": "https://tcssh.tc.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "臺中市立豐原高中",
+    "單位名稱_eng": "Taichung Municipal Feng Yuan Senior High School",
+    "官網URL": "https://fysh.tc.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": "台中豐原高中"
+  },
+  {
+    "單位名稱": "臺北市立麗山高級中學",
+    "單位名稱_eng": "Taipei Municipal Lishan High School",
+    "官網URL": "https://www.lssh.tp.edu.tw/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": "台北市立麗山高級中學"
+  },
+  {
+    "單位名稱": "臺北醫學大學",
+    "單位名稱_eng": "Taipei Medical University",
+    "官網URL": "https://www.tmu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "TMU",
+    "別名": "台北醫學大學"
+  },
+  {
+    "單位名稱": "澳洲昆士蘭大學",
+    "單位名稱_eng": "The University of Queensland",
+    "官網URL": "https://www.uq.edu.au/",
+    "類型": "學校",
+    "簡稱": "UQ",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國立臺灣大學創新設計學院",
+    "單位名稱_eng": "National Taiwan University College of Design and Innovation",
+    "官網URL": "https://dschool.ntu.edu.tw/",
+    "類型": "學校",
+    "簡稱": "NTU D-School",
+    "別名": "Stanley Wang  D-School@NTU"
+  },
+  {
+    "單位名稱": "中國基督教信義會靈光堂",
+    "單位名稱_eng": "Lingguang Church of the Lutheran Church of China",
+    "官網URL": "https://slclcroc.org/",
+    "類型": "NPO",
+    "簡稱": "",
+    "別名": "台北市大安區中國基督教信義會靈光堂"
+  },
+  {
+    "單位名稱": "日本計算工程與科學學會",
+    "單位名稱_eng": "Japan Society for Computational Engineering and Science",
+    "官網URL": "https://www.jsces.org/",
+    "類型": "NPO",
+    "簡稱": "JSCES",
+    "別名": ""
+  },
+  {
+    "單位名稱": "台灣生物力學學會",
+    "單位名稱_eng": "Taiwanese Society of Biomechanics",
+    "官網URL": "https://en.tsbiomechanics.org/",
+    "類型": "NPO",
+    "簡稱": "TSB",
+    "別名": ""
+  },
+  {
+    "單位名稱": "台灣動作科技學會",
+    "單位名稱_eng": "Taiwanese Society of Movement Science and Technology",
+    "官網URL": "https://tsmst.org/",
+    "類型": "NPO",
+    "簡稱": "TSMST",
+    "別名": ""
+  },
+  {
+    "單位名稱": "全球集思論壇",
+    "單位名稱_eng": "GIS Taiwan",
+    "官網URL": "https://gis-taiwan.ntu.edu.tw/",
+    "類型": "NPO",
+    "簡稱": "",
+    "別名": "全球集思論壇 GIS Taiwan"
+  },
+  {
+    "單位名稱": "西蓮淨苑",
+    "單位名稱_eng": "Seeland Monastery",
+    "官網URL": "https://seelandboya.org/",
+    "類型": "NPO",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "社團法人起駛簡報表達教育協會",
+    "單位名稱_eng": "Cheese Association of Presentation Education",
+    "官網URL": "https://www.facebook.com/cheesepresentation",
+    "類型": "NPO",
+    "簡稱": "CAPE",
+    "別名": ""
+  },
+  {
+    "單位名稱": "社團法人臺灣職能治療學會",
+    "單位名稱_eng": "Taiwan Occupational Therapy Association",
+    "官網URL": "https://www.ot.org.tw/",
+    "類型": "NPO",
+    "簡稱": "TOTA",
+    "別名": "社團法人職能治療學會"
+  },
+  {
+    "單位名稱": "社團法人臺灣藥物經濟暨效果研究學會",
+    "單位名稱_eng": "Taiwan Society for Pharmacoeconomics and Outcome Research",
+    "官網URL": "https://www.taspor.org.tw/",
+    "類型": "NPO",
+    "簡稱": "TaSPOR",
+    "別名": ""
+  },
+  {
+    "單位名稱": "研華文教基金會",
+    "單位名稱_eng": "Advantech Foundation",
+    "官網URL": "https://foundation.advantech.com/zh-tw/",
+    "類型": "NPO",
+    "簡稱": "",
+    "別名": "研華基金會"
+  },
+  {
+    "單位名稱": "財團法人遠哲科學教育基金會",
+    "單位名稱_eng": "Yuan T. Lee Foundation Science Education",
+    "官網URL": "https://www.ytlee.org.tw/",
+    "類型": "NPO",
+    "簡稱": "",
+    "別名": ""
+  },
+  {
+    "單位名稱": "國際計算力學協會",
+    "單位名稱_eng": "International Association For Computational Mechanics",
+    "官網URL": "https://iacm.info/",
+    "類型": "NPO",
+    "簡稱": "IACM",
+    "別名": ""
+  },
+  {
+    "單位名稱": "臺北德國學術交流資訊中心",
+    "單位名稱_eng": "Deutscher Akademischer Austauschdienst, DAAD",
+    "官網URL": "https://www.daad.org.tw/en/",
+    "類型": "NPO",
+    "簡稱": "DAAD",
+    "別名": ""
+  }
+]

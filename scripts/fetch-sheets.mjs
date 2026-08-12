@@ -28,6 +28,7 @@ const CHECK_ONLY = process.argv.includes('--check');
    ⚠ 新增來源時只要加一列，src/lib/sheets.ts 那邊再決定怎麼用。 */
 const SOURCES = [
   { name: 'speeches', query: 'gid=0', desc: '演講紀錄主表（index 統計與 speeches 列表共用）' },
+  { name: 'organizations', query: 'sheet=organizations', desc: '單位字典：名稱、官網、類型、簡稱、別名' },
   { name: 'site-content', query: 'sheet=site_content', desc: '首頁文案（hero 等）' },
   { name: 'core-strengths', query: 'sheet=core_strengths', desc: '核心優勢' },
   { name: 'experience-roles', query: 'sheet=experience_roles', desc: '經歷與角色' },
@@ -35,6 +36,18 @@ const SOURCES = [
   { name: 'mentees-awards', query: 'sheet=mentees_award_records', desc: '培訓戰績' },
   { name: 'testimonials', query: 'gid=611725944', desc: '學員回饋' },
 ];
+
+/* ⚠ 只抓白名單內的欄位。來源 Sheet 同時放著收入、時薪這類不該公開的欄位，
+   而這個 repo 是 public——「預設只放行」比「記得排除」安全：
+   日後在 Sheet 加任何新欄位都不會意外流出，除非在這裡明確列出。
+   某來源不在此表 = 全欄放行（那些表目前沒有敏感欄位）。 */
+const FIELD_ALLOWLIST = {
+  speeches: [
+    '序號', '日期', '主辦單位', '協辦單位_1', '協辦單位_2',
+    '主題', '主題_eng', '場次類型', '形式', '語言',
+    '聽眾教育程度', '人數', '小時', '影片URL', '報導URL',
+  ],
+};
 
 const url = (q) => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&${q}`;
 
@@ -67,12 +80,16 @@ function parseCSV(text) {
    刻意不在這裡做欄位改名或中英配對——那些規則放 src/lib/sheets.ts，
    因為 Sheet 的欄名慣例不一致（_zh/_eng/_en/無後綴/純英文欄名混用），
    把 mapping 留在型別化的那一層比較好維護，這裡只負責忠實搬運。 */
-function toObjects(rows) {
+function toObjects(rows, allow) {
   if (rows.length < 2) return [];
   const header = rows[0];
   return rows.slice(1).map((r) => {
     const o = {};
-    header.forEach((h, i) => { if (h) o[h] = r[i] ?? ''; });
+    header.forEach((h, i) => {
+      if (!h) return;
+      if (allow && !allow.includes(h)) return; // 白名單外的欄位直接丟棄
+      o[h] = r[i] ?? '';
+    });
     return o;
   });
 }
@@ -88,7 +105,15 @@ async function fetchOne(src, attempt = 1) {
     /* Google 對權限有問題的表會回 HTML 登入頁而不是 CSV，狀態碼仍是 200。
        只看狀態碼會把一頁 HTML 當成資料存進去。 */
     if (/^\s*</.test(text)) throw new Error('回傳的是 HTML 不是 CSV（分享權限可能被改了）');
-    const items = toObjects(parseCSV(text));
+    const rows = parseCSV(text);
+    const allow = FIELD_ALLOWLIST[src.name];
+    /* 白名單裡列了、但來源已經沒有的欄位要出聲——通常表示 Sheet 改了欄名，
+       靜靜地少一欄比抓不到整張表更難發現 */
+    if (allow && rows.length) {
+      const missing = allow.filter((f) => !rows[0].includes(f));
+      if (missing.length) console.warn(`  ! ${src.name} 少了白名單欄位：${missing.join('、')}`);
+    }
+    const items = toObjects(rows, allow);
     if (items.length === 0) throw new Error('解析後 0 列');
     return items;
   } catch (e) {
