@@ -9,8 +9,14 @@
  * BaseLayout 的 hreflang、Header/Footer 的連結、各頁的站內連結都讀這份清單。
  */
 
-/** 已經有 /en/ 對應網址的路徑。結尾一律帶斜線，與站上的網址格式一致。 */
-export const MIGRATED_PATHS = ['/about/', '/sponsor/'] as const;
+/**
+ * 已經有 /en/ 對應網址的路徑。結尾一律帶斜線，與站上的網址格式一致。
+ *
+ * ⚠ 新增 [...lang] 頁面時**必須**同步加進來，否則那頁不會輸出 hreflang——
+ * 而缺 hreflang 在畫面上完全看不出來。astro.config.mjs 的 verifyI18nHreflang
+ * 會在建置期比對 dist 裡實際產出的 /en/ 頁面與這份清單，漏了就讓 build 失敗。
+ */
+export const MIGRATED_PATHS = ['/about/', '/sponsor/', '/projects/'] as const;
 
 /**
  * 把站內路徑轉成當前語言該去的網址。
