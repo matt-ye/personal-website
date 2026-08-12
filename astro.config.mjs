@@ -155,6 +155,151 @@ function autoLinkWeekRefs() {
 // 不會回報，只會安靜地漏文章，所以讓 build 直接紅掉。
 // 擋下的情境：feed 空了（來源模組壞掉）、連結指向不存在的頁（slug 改名但
 // 資料檔沒同步）、網址不是絕對路徑（RSS 規格要求，閱讀器才連得到）。
+/**
+ * BreadcrumbList JSON-LD 自動注入。
+ *
+ * 刻意「從網址推導」而不是逐頁手寫：這站的內容一直在長（課程週次、行銷專欄、
+ * One More Step 都會再加），手寫的麵包屑一定會有人忘記加。從 dist 的目錄結構
+ * 推導，新頁面一 build 就自動有麵包屑，不需要任何額外動作。
+ *
+ * 每一層的顯示名稱去讀該層 index.html 自己的 <title>（去掉站名後綴）——
+ * 名稱因此永遠與該頁自稱的一致，改標題時麵包屑跟著改，不會對不上。
+ */
+function injectBreadcrumbs() {
+  return {
+    name: 'inject-breadcrumbs',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+
+        /** 從一個 index.html 取出適合當麵包屑節點的名稱 */
+        const labelOf = (segments) => {
+          const file = join(root, ...segments, 'index.html');
+          let html;
+          try { html = readFileSync(file, 'utf8'); } catch { return null; }
+          const t = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+          if (!t) return null;
+          let s = t[1].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+
+          /* 站名後綴可能出現不只一次——有些頁面自己的 title 就寫了
+             「Projects — Matt Ye」，BaseLayout 再加一次變成
+             「Projects — Matt Ye · 葉淨維 Matt Ye」。所以要重複剝到沒有為止。
+             麵包屑每一節都掛著站名的話，路徑會長到看不出層級。 */
+          for (let i = 0; i < 3; i++) {
+            const next = s.replace(/\s*[—–·|｜-]\s*(葉淨維\s*)?Matt Ye\s*$/iu, '');
+            if (next === s) break;
+            s = next;
+          }
+          /* 「第 1 週：…｜給家人的投資課」這種「自己｜所屬系列」的寫法，
+             系列名在麵包屑的上一層已經有了，這裡只保留自己那一段。 */
+          s = s.replace(/｜[^｜]*$/u, '');
+          /* 雙語標題是中英並排（「給家人的投資課 Family Investing Course」），
+             取中文那段就好——麵包屑要短。找不到中文就整串保留。 */
+          const zh = s.match(/^[^A-Za-z]*[一-鿿][^A-Za-z]*/u);
+          if (zh && zh[0].trim().length >= 2) s = zh[0].trim();
+
+          /* 剝完後常留下孤立的分隔符（例如「…筆記 ·」），清掉頭尾的標點 */
+          s = s.replace(/^[\s—–·|｜:：-]+|[\s—–·|｜:：-]+$/gu, '');
+
+          return s.trim() || null;
+        };
+
+        const pages = [];
+        const walk = (d) => {
+          for (const entry of readdirSync(d)) {
+            const p = join(d, entry);
+            if (statSync(p).isDirectory()) { walk(p); continue; }
+            if (entry === 'index.html') pages.push(p);
+          }
+        };
+        walk(root);
+
+        let injected = 0, skipped = 0;
+        for (const file of pages) {
+          const rel = relative(root, file).split(sep).slice(0, -1); // 去掉 index.html
+          if (rel.length === 0) continue;            // 首頁本身不需要麵包屑
+          const html = readFileSync(file, 'utf8');
+          if (html.includes('"BreadcrumbList"')) { skipped++; continue; }
+
+          /* 逐層組出項目。祖先層若沒有自己的頁面（例如 /projects/marketing/ 有頁、
+             但某個中介目錄沒有），就跳過那一層——麵包屑要指向真的點得到的頁面。 */
+          const items = [{ name: '首頁', url: `${SITE}/` }];
+          for (let i = 0; i < rel.length; i++) {
+            const segs = rel.slice(0, i + 1);
+            const label = labelOf(segs);
+            if (!label) continue;
+            items.push({ name: label, url: `${SITE}/${segs.join('/')}/` });
+          }
+          if (items.length < 2) continue;            // 只有首頁就沒有意義
+
+          const ld = {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: items.map((it, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              name: it.name,
+              /* 最後一項是當前頁，依 schema.org 慣例不給 item */
+              ...(i === items.length - 1 ? {} : { item: it.url }),
+            })),
+          };
+
+          const idx = html.toLowerCase().lastIndexOf('</head>');
+          if (idx === -1) continue;
+          const tag = `<script type="application/ld+json">${JSON.stringify(ld)}</script>`;
+          writeFileSync(file, html.slice(0, idx) + tag + html.slice(idx));
+          injected++;
+        }
+        logger.info(`breadcrumbs injected into ${injected} page(s)${skipped ? `, ${skipped} already had one` : ''}`);
+      },
+    },
+  };
+}
+
+/**
+ * 給 public/ 手刻頁的 Article JSON-LD 補 datePublished。
+ *
+ * 那些頁面的結構化資料是手寫的，多數漏了 datePublished。日期不另外猜——
+ * 直接用 sitemap lastmod 已經在讀的同一份資料（src/data/*.ts 的 date 欄位），
+ * 那是內容的發佈日，比檔案的 git 建立時間準確（內容常是先寫好、排程才上線）。
+ */
+function injectArticleDates(dateByUrl) {
+  return {
+    name: 'inject-article-dates',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        let filled = 0, noDate = 0;
+        const walk = (d) => {
+          for (const entry of readdirSync(d)) {
+            const p = join(d, entry);
+            if (statSync(p).isDirectory()) { walk(p); continue; }
+            if (entry !== 'index.html') continue;
+
+            const html = readFileSync(p, 'utf8');
+            /* 只補「有 Article 型 JSON-LD 但沒有 datePublished」的頁 */
+            if (!/"@type"\s*:\s*"(Article|BlogPosting|NewsArticle|TechArticle)"/.test(html)) continue;
+            if (/"datePublished"/.test(html)) continue;
+
+            const url = `${SITE}/${relative(root, p).split(sep).slice(0, -1).join('/')}/`;
+            const date = dateByUrl.get(url);
+            if (!date) { noDate++; continue; }
+
+            /* 插在 @type 後面，維持 JSON 合法 */
+            const out = html.replace(
+              /("@type"\s*:\s*"(?:Article|BlogPosting|NewsArticle|TechArticle)")/,
+              `$1,"datePublished":"${new Date(`${date}T00:00:00+08:00`).toISOString()}"`
+            );
+            if (out !== html) { writeFileSync(p, out); filled++; }
+          }
+        };
+        walk(root);
+        logger.info(`datePublished filled on ${filled} page(s)${noDate ? `, ${noDate} had no date in src/data` : ''}`);
+      },
+    },
+  };
+}
+
 function verifyRssFeed() {
   return {
     name: 'verify-rss-feed',
@@ -297,6 +442,11 @@ export default defineConfig({
     }),
     injectGaIntoStaticHtml(),
     autoLinkWeekRefs(),
+    /* 這兩個都在 astro:build:done 改寫 dist 的 HTML。
+       datePublished 用的是與 sitemap lastmod 同一份日期資料（src/data/*.ts 的 date），
+       麵包屑則從 dist 的目錄結構推導，新增內容不必另外設定。 */
+    injectArticleDates(lastmodByUrl),
+    injectBreadcrumbs(),
     verifyRssFeed(),
   ],
 });
