@@ -4,7 +4,13 @@ import T from '../components/T.astro';
 import PostCard from '../components/PostCard.astro';
 import Tour from '../components/Tour.astro';
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import { projects } from '../data/projects';
+/* hero 照片放 src/assets/ 而非 public/：只有前者會經過 Astro 的圖片最佳化。
+   原始檔是相機直出的 6.5–7.5 MB，直接送出去就是首頁 20.8 MB 的來源。 */
+import photoPointing from '../assets/photo-pointing.jpg';
+import photoStanding from '../assets/photo-standing.jpg';
+import photo5 from '../assets/photo-5.jpg';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
@@ -119,15 +125,26 @@ const awards = getPersonalAwards();
         </div>
       </div>
       <div class="hero-photo-wrap">
+        {/* 用 <Image> 而不是 <img>：原始檔是 6.5–7.5 MB 的相機直出檔，
+            三張加起來 20.8 MB，是 LCP 106 秒的真正原因（不是輪播）。
+            Astro 會在 build 期轉成 WebP 並產生多種尺寸，瀏覽器依螢幕挑最小的那份。
+            widths 上限 1200 是因為這個位置在版面上最多就這麼寬，再大也看不出差別。 */}
         <div class="hero-carousel" id="hero-carousel">
           <div class="carousel-slide active">
-            <img src="/photo-pointing.jpg" alt="葉淨維 Matt Ye — 演講姿態" />
+            <Image src={photoPointing} alt="葉淨維 Matt Ye — 演講姿態"
+                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   format="webp" quality={80} loading="eager" fetchpriority="high" />
           </div>
           <div class="carousel-slide">
-            <img src="/photo-standing.jpg" alt="葉淨維 Matt Ye — 站姿" />
+            {/* 後兩張延後載入：它們要到第 4 秒才會出現，不該和首屏搶頻寬 */}
+            <Image src={photoStanding} alt="葉淨維 Matt Ye — 站姿"
+                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   format="webp" quality={80} loading="lazy" />
           </div>
           <div class="carousel-slide">
-            <img src="/photo-5.jpg" alt="葉淨維 Matt Ye — 笑容" />
+            <Image src={photo5} alt="葉淨維 Matt Ye — 笑容"
+                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   format="webp" quality={80} loading="lazy" />
           </div>
         </div>
         <div class="carousel-dots">
