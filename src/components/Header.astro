@@ -61,6 +61,21 @@ const pathname = Astro.url.pathname;
   langBtn?.addEventListener('click', () => {
     const current = document.documentElement.getAttribute('data-lang') ?? 'zh';
     const next = current === 'en' ? 'zh' : 'en';
+
+    /* 已遷移成獨立網址的頁面（有 hreflang 標籤）改為換網址，而不是切 CSS。
+       用 hreflang 當訊號是刻意的：那組標籤本來就只在有英文網址時才輸出，
+       不必再多傳一個旗標——多一個訊號就多一個會不同步的地方。
+
+       偏好先存再跳轉，讓下一頁（若尚未遷移）沿用同樣的語言。 */
+    const alt = document.querySelector(
+      `link[rel="alternate"][hreflang="${next === 'en' ? 'en' : 'zh-TW'}"]`,
+    ) as HTMLLinkElement | null;
+    if (alt) {
+      localStorage.setItem('lang', next);
+      window.location.href = alt.href;
+      return;
+    }
+
     document.documentElement.setAttribute('data-lang', next);
     document.documentElement.lang = next === 'en' ? 'en' : 'zh-TW';
     localStorage.setItem('lang', next);

@@ -429,6 +429,20 @@ const lastmodByUrl = new Map([
 export default defineConfig({
   site: SITE,
   output: 'static',
+  /* 網址層級的語言分流。目前站上的語言是 CSS 切換（同一份 HTML 裝兩種語言，
+     見 components/T.astro），那讓爬蟲讀到「首頁Home」這種混雜字串，也沒辦法
+     把英文版單獨分享給人。
+
+     prefixDefaultLocale: false 是關鍵：中文維持原網址（/about/），英文才加
+     前綴（/en/about/）。既有的網址、外部連結與 GSC 索引因此完全不受影響。
+
+     ⚠ 這個設定本身不會產生任何 /en/ 頁面——要一頁一頁遷移成 [...lang] 動態
+     路由才會有。遷移進度見 docs/i18n-architecture-plan.md。 */
+  i18n: {
+    defaultLocale: 'zh-TW',
+    locales: ['zh-TW', 'en'],
+    routing: { prefixDefaultLocale: false },
+  },
   integrations: [
     sitemap({
       customPages: publicPages,
