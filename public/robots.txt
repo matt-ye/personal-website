@@ -2,3 +2,122 @@ User-agent: *
 Allow: /
 
 Sitemap: https://mattye.dev/sitemap-index.xml
+
+# ============================================================
+# AI 爬蟲政策：擋「訓練」，留「檢索／引用」
+#
+# 這兩件事是分開的，很多人以為擋 GPTBot 就是「不讓 AI 用我的內容」——
+# 實際上那只擋訓練，是否被 ChatGPT 搜尋引用由 OAI-SearchBot 另外決定。
+# 本站的立場是：內容不進模型訓練，但要能被 AI 回答引用（那是流量來源）。
+#
+# 查證日 2026-08-12，逐條依各公司官方文件。爬蟲名單變動頻繁，建議每季複查。
+# 官方來源：
+#   OpenAI      https://developers.openai.com/api/docs/bots
+#   Anthropic   https://support.claude.com/en/articles/8896518
+#   Google      https://developers.google.com/search/docs/crawling-indexing/google-common-crawlers
+#   Perplexity  https://docs.perplexity.ai/guides/bots
+#   Apple       https://support.apple.com/en-us/119829
+#   Meta        https://developers.facebook.com/documentation/sharing/webmasters/web-crawlers
+#   Amazon      https://developer.amazon.com/amazonbot
+#   CommonCrawl https://commoncrawl.org/ccbot
+# ============================================================
+
+# ---------------- OpenAI ----------------
+# 訓練用。官方明講擋它「不影響」是否出現在 ChatGPT 搜尋答案裡。
+User-agent: GPTBot
+Disallow: /
+
+# ChatGPT 搜尋結果的引用來源——留著才會被引用。
+User-agent: OAI-SearchBot
+Allow: /
+
+# 使用者貼網址請 ChatGPT 讀取時觸發。官方說「使用者發起，robots.txt 可能不適用」，
+# 這裡寫 Allow 是表態，實際上也擋不住。
+User-agent: ChatGPT-User
+Allow: /
+
+# ---------------- Anthropic ----------------
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+# ⚠ 不要誤擋：Anthropic 是三家裡唯一沒說「使用者觸發會忽略 robots.txt」的，
+# 官方原文是擋了就「prevents our system from retrieving your content」——
+# 也就是別人貼本站網址請 Claude 讀時會真的讀不到。
+User-agent: Claude-User
+Allow: /
+
+# ---------------- Google ----------------
+# 只控制 Gemini App 與 Vertex AI 的訓練/grounding。
+# 官方明講：不影響 Google 搜尋收錄與排名。
+# ⚠ 它也不是 AI Overviews 的開關——AI Overviews 屬於 Search 的一部分，
+#   要限制那個得用 nosnippet／data-nosnippet／noindex，不是這個 token。
+User-agent: Google-Extended
+Disallow: /
+
+# ---------------- Perplexity ----------------
+# 官方明講「不用於訓練基礎模型」，是引用來源，留著。
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# ---------------- Apple ----------------
+# Applebot 供 Siri／Spotlight／Safari 建議使用，非訓練，留著。
+User-agent: Applebot
+Allow: /
+
+# Applebot-Extended 本身不爬網頁，只決定 Applebot 抓到的資料能否用於訓練。
+# 擋它不影響 Applebot 的搜尋收錄。
+User-agent: Applebot-Extended
+Disallow: /
+
+# ---------------- Meta ----------------
+User-agent: meta-externalagent
+Disallow: /
+
+User-agent: meta-webindexer
+Allow: /
+
+User-agent: meta-externalfetcher
+Allow: /
+
+# 純粹是分享連結時的預覽卡，與 AI 無關。
+User-agent: facebookexternalhit
+Allow: /
+
+# ---------------- Common Crawl ----------------
+# 公開研究語料庫，但長期是各家訓練資料的上游來源之一。
+User-agent: CCBot
+Disallow: /
+
+# ---------------- Amazon ----------------
+# 官方明講「可能用於訓練 Amazon AI 模型」。
+User-agent: Amazonbot
+Disallow: /
+
+# 這兩隻官方明講「不用於生成式 AI 訓練」。
+User-agent: Amzn-SearchBot
+Allow: /
+
+User-agent: Amzn-User
+Allow: /
+
+# ---------------- 其他資料仲介 ----------------
+# ⚠ Bytespider 查無 ByteDance 官方文件，且多份獨立報告指出它不一定遵守 robots.txt。
+#   寫在這裡是表態，真要擋住得靠 WAF／伺服器層規則。
+User-agent: Bytespider
+Disallow: /
+
+# webz.io 的訓練用途控制 token（原名 omgili／omgilibot，已改名，舊名一併保留）。
+User-agent: webzio-extended
+Disallow: /
+
+User-agent: omgili
+Disallow: /
+
+User-agent: omgilibot
+Disallow: /
