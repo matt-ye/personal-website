@@ -4,6 +4,7 @@ description: 巴菲特的護城河概念：無形資產、轉換成本、網路�
 pubDate: 2026-06-18
 lang: zh
 series: family-investing
+ymyl: true
 tags: [護城河, 選股, 競爭優勢, 巴菲特]
 draft: false
 ---

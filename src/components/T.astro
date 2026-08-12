@@ -12,8 +12,28 @@
  *
  * 預設輸出 zh 可見、en 隱藏（與 CSS 的預設一致）；切換語言時由 Header 的
  * syncLangHidden() 對調 hidden，避免出現「看得到卻被輔助技術跳過」的狀態。
+ *
+ * ── 遷移中的雙模式 ──────────────────────────────────────────────
+ * 已遷移成 /en/ 獨立網址的頁面不需要雙 DOM——那一頁本來就只有英文。
+ * 這裡依 Astro.currentLocale 分流：
+ *
+ *   /en/xxx  → currentLocale === 'en' → 只輸出英文，無 lang-* class
+ *   其他     → 維持雙 DOM（現行行為，一個字都不變）
+ *
+ * 這條規則讓已遷移與未遷移的頁面共存，不必一次改完 395 處 <T>。
+ * 全站遷移完成後，else 分支連同 CSS 的 .lang-zh/.lang-en 一起移除。
  */
 interface Props { zh: string; en: string; }
 const { zh, en } = Astro.props;
+
+const englishOnly = Astro.currentLocale === 'en';
 ---
-<span class="lang-zh" lang="zh-TW">{zh}</span><span class="lang-en" lang="en" hidden>{en}</span>
+{
+  englishOnly ? (
+    <Fragment>{en}</Fragment>
+  ) : (
+    <Fragment
+      ><span class="lang-zh" lang="zh-TW">{zh}</span><span class="lang-en" lang="en" hidden>{en}</span></Fragment
+    >
+  )
+}

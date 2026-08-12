@@ -4,6 +4,7 @@ description: 為什麼存錢反而會讓你變窮？理解通膨的本質，是�
 pubDate: 2026-06-10
 lang: zh
 series: family-investing
+ymyl: true
 tags: [投資基礎, 總體經濟, 通膨]
 draft: false
 ---

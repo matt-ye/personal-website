@@ -388,6 +388,103 @@ footer .container {
   flex-wrap: wrap;
 }
 
+/* ===== /about/ 作者頁 ===== */
+.about-header { margin-bottom: var(--spacing-xl); }
+.about-role {
+  color: var(--color-accent);
+  font-weight: 600;
+  margin: var(--spacing-xs) 0 var(--spacing-md);
+}
+.about-tagline p { margin: 0.15em 0; color: var(--color-text-muted); }
+
+.about-section { margin-bottom: var(--spacing-xl); }
+.about-section > h2 {
+  font-size: 1.15rem;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.about-roles, .about-awards, .about-strengths, .about-profiles {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.about-role-item, .about-award {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+.about-role-icon { font-size: 1.2rem; line-height: 1.4; }
+/* h3 但視覺上維持內文大小——heading 是給爬蟲與螢幕閱讀器的結構宣告，
+   不代表這裡需要一個放大的標題（同 .post-card-heading 的處理）。 */
+.about-role-title { font-weight: 600; font-size: 1rem; margin: 0; }
+.about-role-org, .about-award-meta { color: var(--color-text-muted); font-size: 0.9rem; }
+.about-period { font-variant-numeric: tabular-nums; }
+.about-role-desc { margin: 0.3em 0 0; font-size: 0.9rem; line-height: 1.7; }
+
+.about-award-year {
+  flex: 0 0 3.2em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent);
+}
+.about-award-name { font-weight: 600; }
+.about-award-host { color: var(--color-text-muted); }
+
+.about-strengths {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-md);
+}
+.about-strength {
+  padding: var(--spacing-md);
+  background: var(--color-tag-bg);
+  border-radius: 6px;
+}
+.about-strength-icon { font-size: 1.4rem; }
+.about-strength-title { font-size: 1rem; margin: 0.3em 0; }
+.about-strength p { margin: 0; font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.7; }
+
+.about-profiles-note { color: var(--color-text-muted); font-size: 0.9rem; }
+.about-profiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+.about-profiles a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+  padding: 0.4em 0.8em;
+  background: var(--color-tag-bg);
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+.about-profile-value { color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+
+/* 作者署名。比其他 meta 略深一階，讓「誰寫的」在一排灰字裡讀得出來——
+   這是 meta 列裡唯一需要被主動注意的資訊。 */
+.post-author {
+  color: var(--color-text);
+  font-weight: 600;
+}
+.post-author:hover { color: var(--color-accent); }
+
+/* YMYL 免責聲明。放在文章之後、樣式明顯弱於正文——它需要被看見，
+   但不該搶走內容的視覺權重。 */
+.post-disclaimer {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md);
+  border-left: 3px solid var(--color-border);
+  background: var(--color-tag-bg);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  border-radius: 0 4px 4px 0;
+}
+
 .back-link {
   display: inline-block;
   margin-bottom: var(--spacing-lg);

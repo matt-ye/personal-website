@@ -4,6 +4,7 @@ description: 為什麼央行升息，股市就跌？利率怎麼從中央銀行�
 pubDate: 2026-06-12
 lang: zh
 series: family-investing
+ymyl: true
 tags: [投資基礎, 總體經濟, 利率]
 draft: false
 ---

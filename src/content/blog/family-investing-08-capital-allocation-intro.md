@@ -4,6 +4,7 @@ description: 選股之前有四個更根本的問題要先想清楚：資產配�
 pubDate: 2026-06-22
 lang: zh
 series: family-investing
+ymyl: true
 tags: [資產配置, 資金分配, 投資策略, 再平衡]
 draft: false
 ---

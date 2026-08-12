@@ -10,6 +10,9 @@ interface Props {
   lang?: string;
   ogType?: 'website' | 'article';
   image?: string;
+  /* 這一頁是否已經有 /en/ 的獨立網址（i18n 遷移進行中，見 astro.config.mjs）。
+     只有傳 true 的頁面才輸出 hreflang——未遷移的頁面沒有英文網址可指。 */
+  hasEnglishVersion?: boolean;
 }
 
 const {
@@ -17,6 +20,7 @@ const {
   description = '葉淨維 Ching-Wei (Matt) Ye 的個人網站',
   lang = 'zh-TW',
   ogType = 'website',
+  hasEnglishVersion = false,
   /* 預設分享圖用捕夢網 LOGO，不用本人照片——只有首頁需要把臉放在分享卡上，
      子頁面全部是自己的臉會很奇怪。首頁自行傳 image="/OG.png" 覆寫。 */
   image = '/og-logo.png',
@@ -24,14 +28,33 @@ const {
 
 const siteURL = Astro.site ?? 'https://mattye.dev';
 const canonicalURL = new URL(Astro.url.pathname, siteURL);
+
+/* hreflang：只有真的有英文網址的頁面才輸出。
+   指向不存在的網址比不輸出更糟——Google 會把互指不成立的 hreflang 整組忽略，
+   還會在 Search Console 報錯。所以這裡用明確的 prop 而不是從路徑推導：
+   全站只有已遷移的頁面會傳 hasEnglishVersion。
+
+   x-default 指中文版：這是網站的主要語言，也是網址沒有前綴的那一版。 */
+const zhPath = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+const localeAlternates = hasEnglishVersion
+  ? [
+      { hreflang: 'zh-TW', href: new URL(zhPath, siteURL).href },
+      { hreflang: 'en', href: new URL(`/en${zhPath}`.replace(/\/$/, '') + '/', siteURL).href },
+      { hreflang: 'x-default', href: new URL(zhPath, siteURL).href },
+    ]
+  : [];
 const imageURL = new URL(image, siteURL);
-const siteName = '葉淨維 Matt Ye';
+/* 英文頁用英文站名。「About Ching-Wei (Matt) Ye · 葉淨維 Matt Ye」在英文
+   搜尋結果裡，後綴的中文對英語使用者是雜訊，也會佔掉 SERP 的字元額度。 */
+const siteName = lang === 'en' ? 'Matt Ye' : '葉淨維 Matt Ye';
 /* 首頁傳 title === siteName 時不加後綴（避免「葉淨維 Matt Ye · 葉淨維 Matt Ye」），
    但光是人名對搜尋結果的資訊量太低——補一句身分描述。
    長度控制：中文標題約 40 字元內不會被 SERP 截斷，這裡是 28 字元。 */
 const fullTitle =
   title === siteName
-    ? `${siteName}｜職能治療師 · 簡報教練 · AI 認知科學研究`
+    ? lang === 'en'
+      ? `${siteName}｜Occupational Therapist · Presentation Coach · AI & Cognitive Science`
+      : `${siteName}｜職能治療師 · 簡報教練 · AI 認知科學研究`
     : `${title} · ${siteName}`;
 
 const personLd = {
@@ -84,7 +107,14 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
     <!-- Language preference (runs before render; default zh) -->
     <script is:inline>
       (function () {
-        const lang = localStorage.getItem('lang') === 'en' ? 'en' : 'zh';
+        /* 網址永遠優先於 localStorage。使用者上次選英文、這次點進中文網址，
+           該看到的是中文——網址是分享出去、被搜尋引擎索引的那個真實身分，
+           偏好設定不該蓋過它。localStorage 只在網址沒有指定語言時決定。
+
+           不這樣做的話，/en/ 的頁面會被上次存的 'zh' 覆寫成 data-lang="zh"，
+           但那頁的 HTML 只有英文——變成宣告與內容不符。 */
+        const routed = location.pathname === '/en' || location.pathname.startsWith('/en/');
+        const lang = routed ? 'en' : localStorage.getItem('lang') === 'en' ? 'en' : 'zh';
         document.documentElement.setAttribute('data-lang', lang);
         document.documentElement.lang = lang === 'en' ? 'en' : 'zh-TW';
       })();
@@ -94,6 +124,10 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
     <meta name="description" content={description} />
 
     <link rel="canonical" href={canonicalURL} />
+
+    {localeAlternates.map((a) => (
+      <link rel="alternate" hreflang={a.hreflang} href={a.href} />
+    ))}
 
     {/* RSS 閱讀器與瀏覽器靠這行自動發現 feed：使用者只要貼 mattye.dev
         就能訂閱，不必知道 /rss.xml 這個路徑。 */}
