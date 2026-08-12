@@ -219,7 +219,7 @@ Pat Dorsey 在《Why Moats Matter》中提出：**品牌是最容易誤判的護
   簡單記法：公司每投入 100 元，一年能賺多少錢？<br><br>
   <strong>ROIC 長期 > 15%</strong>：通常有護城河<br>
   <strong>ROIC 長期 8–15%</strong>：護城河可能存在，但不夠寬<br>
-  <strong>ROIC 長期 < 資金成本（約 8–10%）</strong>：護城河幾乎不存在
+  <strong>ROIC 長期 &lt; 資金成本（約 8–10%）</strong>：護城河幾乎不存在
 </div>
 
 <div class="stat-row">

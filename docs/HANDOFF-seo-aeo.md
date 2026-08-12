@@ -1,13 +1,13 @@
 # HANDOFF：SEO／AEO 優化工作流
 
 **寫給**：接手 SEO／AEO 優化的 session（跨 session 交接文件，內容自足，不依賴任何對話紀錄）
-**更新**：2026-08-11（#198：RSS feed、GSC 索引判讀、Access 修正）。接手後若完成任何項目，**請直接更新本檔**（勾掉＋一行結果），這裡是唯一的進度真相。
+**更新**：2026-08-11（#200：Astro 7 升版＋依賴漏洞清零；#198：RSS feed、GSC 索引判讀、Access 修正）。接手後若完成任何項目，**請直接更新本檔**（勾掉＋一行結果），這裡是唯一的進度真相。
 
 ---
 
 ## 30 秒背景
 
-mattye.dev，Astro 6 靜態站，Cloudflare Pages（push `main` 自動部署）。
+mattye.dev，Astro 7 靜態站，Cloudflare Pages（push `main` 自動部署）。
 架構速覽見 [`README.md`](../README.md)；**開發規則見 [`CLAUDE.md`](../CLAUDE.md)——每個需求開新 PR、owner 說「可以 merge」才 merge、merge 用 merge commit、禁用 JS/CSS framework。**
 
 三份要先讀的文件（都在 repo 裡，不用翻對話）：
@@ -27,6 +27,7 @@ mattye.dev，Astro 6 靜態站，Cloudflare Pages（push `main` 自動部署）�
 - ✅ 全站連結健檢＋272 條外連逐條驗證（#189，**已 merge 進 main 2026-08-11**）——`scripts/check-links.mjs` 現在掃 dist 全站；54 條擋機器人網址在 `link-check-verified.txt`，每條附證據
 - ✅ `/writing/hello-world/` 站內入口 1→24 個頁面（#196）——見下方「GSC 索引狀態的判讀」
 - ✅ RSS feed `/rss.xml`（#198）——見下方「RSS feed 的架構決定」
+- ✅ Astro 6.4.2 → 7.2.0，`npm audit` 8 個漏洞（1 low／7 high）清到 0（#200，2026-08-11）——**改 `<T>` 相關的東西前先讀下方「Astro 7 的轉義陷阱」**
 - ✅ Cloudflare Access 修正（2026-08-11，非程式碼）：`/api/dashboard/*` 先前被設成 `mattye.dev/api.dashboard`（**點，非斜線**），路徑永遠比對不到，worker 收不到 Access JWT 而 fail closed 回 `{"error":"unauthorized"}`。已改正並與 `/dashboard` 併入同一個 Access app（分成兩個 app 時登入 cookie 各自綁 AUD，一鍵更新會被 302 轉去登入頁）
 
 ## 連結健檢的遺留觀察項（#189 session 未完全結案的）
@@ -77,6 +78,30 @@ owner 看到 GSC 兩份報告覺得有問題，**逐項查過後結論是技術�
 - **build 期會擋**：`astro.config.mjs` 的 `verifyRssFeed()` 檢查 feed 非空、連結在 dist 有對應頁、網址為絕對路徑，任一不符 **build 結束碼 1**（Cloudflare 會擋下部署）。已實測故意打錯 slug 會紅
 - **未來日期會被濾掉**：課程週次的 `date` 是排程性質（同 sitemap lastmod 的處理）。目前四個來源都沒有未來日，這是預留的防線
 - **目前給 description 不給全文**：四個來源有 Markdown 與手刻 HTML 兩種形態，只有前者能輕易取全文，混著給會前後不一致。**若之後把 AEO 當主要目標，全文 feed 是可考慮的升級**（audit 提到 feed 是 LLM 抓內容的常用管道），但要先解決手刻 HTML 那批
+
+## Astro 7 的轉義陷阱（#200）——**動 `<T>` 之前先讀這節**
+
+`<T zh="…" en="…" />` 全站用了 390 處，是這個 repo 最常被碰的元件。Astro 7 之後有一條
+非直覺的規則：
+
+> **`<T>` 的 `zh`／`en` 是 JS 字串**，由 `{zh}` 插值輸出、Astro 會轉義一次。
+> 裡面寫 `&amp;`／`&nbsp;`／`&gt;` 這類 HTML entity，**畫面上會直接看到 `&amp;` 字樣**。
+> 一律填實際字元：`&`、`>`，nbsp 用 U+00A0 實字元。
+
+模板標籤之間的文字不受這條限制（`<h1>演講 &amp; 工作坊</h1>` 照常寫 entity）。
+差別在 Astro 把模板文字當 HTML 原樣輸出，把 `{expr}` 當不可信字串轉義——**Astro 6 的
+漏洞（CVE-2026-54298 那組）就是後者漏了轉義**，所以「修好安全性」跟「弄壞既有的
+entity 寫法」是同一個改動的兩面，不可能只要前者。#200 已修掉當時全站 5 處。
+
+實務提醒：
+
+- `diet-calculator.astro:217` 的圖例間距是兩個 **U+00A0 實字元**（原始碼裡看不見），
+  上方有 `{/* */}` 註解擋著。改那行時不要順手換回 `&nbsp;`
+- 要驗有沒有再犯，掃 `dist/` 找 `&amp;(amp|nbsp|gt|lt|quot);` 這種雙重轉義，
+  比看原始碼可靠（同規範 4：驗證要看建置產物）
+- 依賴升級的判讀方法也留在 #200 說明裡：這站是純靜態輸出，`npm audit` 的傳遞漏洞
+  **多數 code path 根本不走**（例如 sharp 從未被呼叫，因為圖全在 `public/`），
+  評風險先問「這條路我走不走」，不要照 severity 分數辦事
 
 ## TODO（依 audit 文件的優先序）
 
@@ -148,6 +173,7 @@ owner 選 A-1（build 期靜態化）＋每日排程同步。**三頁都已改�
 ## 已知陷阱（這個 repo 特有）
 
 - 中英文目前是**同頁雙 DOM**（`<T>` 元件 390 處＋CSS 切換）——爬蟲會讀到「AI＆認知科學研究AI & Cognitive Science Research」混雜字串。這正是 i18n 計畫要解的，**不要**試圖在現機制上小修
+- `<T>` 的 `zh`／`en` 屬性**不能寫 HTML entity**（Astro 7 起會雙重轉義，畫面直接顯示 `&amp;`）——見上方「Astro 7 的轉義陷阱」。連帶提醒：把一個 `<T>` 拆成兩個會讓原始 HTML 的中英文交錯（`zh en zh en`），削弱 `<T>` 本來為爬蟲／LLM 提供的語言分段，排版需求優先用 CSS 解
 - `grep -c` 數行不數次數；建置產物多為單行 HTML，計數用 `grep -o | wc -l`
 - Windows 環境：Python 寫檔預設 CRLF，餵給 bash/curl 前要 `newline='\n'`
 - `link-check` CI 只在動到特定 paths 時觸發（#189 merge 後放寬到 `src/**`）；外連 272 條約跑 2–3 分鐘
@@ -161,4 +187,5 @@ owner 選 A-1（build 期靜態化）＋每日排程同步。**三頁都已改�
 | #189 | 連結健檢全站化＋驗證報告 | ✅ 已 merge——全站健檢基礎設施可用 |
 | #196 | CLAUDE.md 補勾＋hello-world footer | ✅ 已 merge |
 | #198 | RSS feed＋本 handoff 更新 | ✅ 已 merge（2026-08-11） |
+| #200 | Astro 7 升版＋漏洞清零＋`<T>` entity 修正 | ✅ 已 merge（2026-08-11） |
 | #94／#74 | 內容類，owner 刻意留著 | 別動 |
