@@ -6,9 +6,17 @@ interface Props {
   pubDate: Date;
   lang: 'zh' | 'en';
   series?: string;
+  /* 卡片標題該是 h2 還是 h3，取決於它在頁面中的層級：
+       /writing/ 是文章清單，h1「寫作」底下直接就是文章 → h2
+       首頁的「近期文章」本身是 h2 區塊，文章在它底下 → h3
+     同一個元件在不同頁需要不同層級，所以由呼叫端指定，預設用較深的 h3
+     （深一層只是階層較細，不會像跳級那樣造成結構錯誤）。 */
+  headingLevel?: 2 | 3;
 }
 
-const { id, title, description, pubDate, lang, series } = Astro.props;
+const { id, title, description, pubDate, lang, series, headingLevel = 3 } = Astro.props;
+
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
 
 const dateFormatted = pubDate.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -18,7 +26,12 @@ const dateFormatted = pubDate.toLocaleDateString('en-US', {
 ---
 <li class="post-card" data-series={series ?? ''}>
   <div class="post-card-header">
-    <a href={`/writing/${id}/`} class="post-card-title">{title}</a>
+    {/* heading 用 display:contents（見 global.css 的 .post-card-heading）：
+        語意上是標題，但不產生自己的盒子，所以 .post-card-header 的 flex
+        排版與原本完全一致——標題、日期、語言標籤仍然是同一層的 flex 子元素。 */}
+    <Heading class="post-card-heading">
+      <a href={`/writing/${id}/`} class="post-card-title">{title}</a>
+    </Heading>
     <span class="post-card-date">
       <time datetime={pubDate.toISOString()}>{dateFormatted}</time>
     </span>

@@ -251,7 +251,9 @@ const awards = getPersonalAwards();
             class="home-project"
             {...(p.internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
           >
-            <span class="home-project-title"><T zh={p.title} en={p.titleEn} /></span>
+            {/* 專案名是清單項標題：這一區的 h2 是「工具與專案」，所以卡片用 h3。
+            .card-heading 是 display:contents，不影響原本的排版。 */}
+        <h3 class="card-heading"><span class="home-project-title"><T zh={p.title} en={p.titleEn} /></span></h3>
             <span class="home-project-desc"><T zh={p.description} en={p.descriptionEn} /></span>
           </a>
         ))}

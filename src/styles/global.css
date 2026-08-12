@@ -2848,3 +2848,18 @@ footer .container {
 .johari tbody tr:last-child th { border-bottom: none; }
 .johari .j-desc { display: inline-block; margin-top: 0.2rem; color: var(--color-text-muted); font-size: 0.85em; line-height: 1.5; text-transform: none; }
 .johari-cap { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.4rem; }
+
+/* 卡片標題的 heading 外殼：只提供語意，不參與排版。
+   display:contents 讓這個元素不產生盒子，子元素直接成為父層的 flex/grid 子元素
+   ——因此把卡片標題包進 h2/h3 之後，版面與原本完全一致。
+   margin/font-size/font-weight 一併歸零，避免瀏覽器的 heading 預設值滲進來。
+
+   用途：清單項的標題本來就是標題，只是原本寫成 <a>／<span>／<div>。
+   包上 heading 後，爬蟲與螢幕閱讀器才看得出這份清單的結構。 */
+.post-card-heading,
+.card-heading {
+  display: contents;
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
