@@ -1,31 +1,48 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import T from '../../components/T.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import T from '../../../components/T.astro';
 import { getCollection } from 'astro:content';
-import { projects } from '../../data/projects';
-import { agentSkills } from '../../data/agentSkills';
+import { projects } from '../../../data/projects';
+import { agentSkills } from '../../../data/agentSkills';
+import { localeHref } from '../../../lib/i18n';
 
-const investingPosts = (await getCollection('blog', ({ data }) =>
-  !data.draft && data.series === 'family-investing'
-))
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
-  .slice(0, 3);
+/* 同時產出 /projects/ 與 /en/projects/，見 [...lang]/about.astro 的說明。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
 
-const managementPosts = (await getCollection('blog', ({ data }) =>
-  !data.draft && data.series === 'management-3r'
-))
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
-  .slice(0, 3);
+const isEn = Astro.currentLocale === 'en';
 
-const presentationPosts = (await getCollection('blog', ({ data }) =>
-  !data.draft && data.series === 'hardcore-presentation'
-))
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
-  .slice(0, 3);
+async function seriesPosts(series: string) {
+  const posts = (await getCollection('blog', ({ data }) => !data.draft && data.series === series))
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+    .slice(0, 3);
+
+  return posts.map((post) => ({
+    href: `/writing/${post.id}/`,
+    /* 11 篇文章只有 1 篇填了 titleEn。英文頁沒有英文標題時退回中文，
+       並標 lang="zh-TW"——空白比中文更糟（讀者什麼都看不到），
+       但讓爬蟲把中文當成英文更糟（會污染這一頁的語言判定）。
+       翻譯是唯一無法自動化的部分，見 docs/i18n-architecture-plan.md 第 3 節。 */
+    title: isEn ? (post.data.titleEn ?? post.data.title) : post.data.title,
+    titleLang: isEn && !post.data.titleEn ? 'zh-TW' : undefined,
+    date: post.data.pubDate.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
+      month: 'numeric',
+      day: 'numeric',
+    }),
+  }));
+}
+
+const investingPosts = await seriesPosts('family-investing');
+const managementPosts = await seriesPosts('management-3r');
+const presentationPosts = await seriesPosts('hardcore-presentation');
 ---
 <BaseLayout
-  title="Projects — Matt Ye"
-  description="葉淨維 Matt Ye 的 Side Projects — 互動工具、開源 AI agent skills、實驗性作品，以及 One More Step 學習筆記。"
+  title={isEn ? 'Projects' : 'Projects — Matt Ye'}
+  description={isEn
+    ? "Side projects by Ching-Wei (Matt) Ye — interactive tools, open-source AI agent skills, experiments, and One More Step learning notes."
+    : '葉淨維 Matt Ye 的 Side Projects — 互動工具、開源 AI agent skills、實驗性作品，以及 One More Step 學習筆記。'}
+  lang={isEn ? 'en' : 'zh-TW'}
 >
   <section class="projects-hero">
     <h1><T zh="個人" en="Side" /> <span class="accent-text"><T zh="專案" en="Projects" /></span></h1>
@@ -41,7 +58,11 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
         <div class="project-card-header">
           <div>
             <h2 class="project-title"><T zh={p.title} en={p.titleEn} /></h2>
-            <p class="project-title-en">{p.titleEn}</p>
+            {/* 這行副標在中文頁是「英文對照」，在英文頁會和上面的 h2 一字不差地
+                重複，所以英文路由不輸出。
+                下面四張卡的 project-title-en 是各自獨立的副標（例如「Presentation ·
+                The PEOP Field Guide」），不是對照，兩種語言都保留。 */}
+            {!isEn && <p class="project-title-en">{p.titleEn}</p>}
           </div>
           <span class={`project-badge badge-${p.status}`}>
             {p.status === 'live'
@@ -67,7 +88,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
     <!-- AI Agent Skills：仿寫作系列卡的「標題清單」寫法，卡片不放描述。
          完整說明在 /projects/agent-skills/，清單資料在 src/data/agentSkills.ts。
          id 供外部深連結 /projects/#agent-skills -->
-    <div class="project-card" id="agent-skills" data-href="/projects/agent-skills/">
+    <div class="project-card" id="agent-skills" data-href={localeHref('/projects/agent-skills/', Astro.currentLocale)}>
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="AI Agent Skills" en="AI Agent Skills" /></h2>
@@ -89,7 +110,7 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
           <span class="project-tag"><T zh="AI Agent" en="AI Agent" /></span>
           <span class="project-tag"><T zh="開源工具" en="Open-Source Tools" /></span>
         </div>
-        <a href="/projects/agent-skills/" class="project-link"><T zh="完整說明 →" en="Details →" /></a>
+        <a href={localeHref('/projects/agent-skills/', Astro.currentLocale)} class="project-link"><T zh="完整說明 →" en="Details →" /></a>
       </div>
     </div>
 
@@ -105,15 +126,13 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
 
       {presentationPosts.length > 0 ? (
         <ul class="series-mini-list">
-          {presentationPosts.map(post => {
-            const dateStr = post.data.pubDate.toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' });
-            return (
-              <li class="series-mini-item">
-                <a href={`/writing/${post.id}/`} class="series-mini-title">{post.data.title}</a>
-                <span class="series-mini-date">{dateStr}</span>
-              </li>
-            );
-          })}
+          {presentationPosts.map(post => (
+            <li class="series-mini-item">
+              {/* 沒有英文標題時退回中文並標 lang——見上方 seriesPosts() 的說明 */}
+              <a href={post.href} class="series-mini-title" lang={post.titleLang}>{post.title}</a>
+              <span class="series-mini-date">{post.date}</span>
+            </li>
+          ))}
         </ul>
       ) : (
         <p class="project-desc"><T zh="從認知科學、語言學到表演藝術，拆解「簡報表達」這項職能。硬核知識，逐步上線。" en="Deconstructing presentation as an occupation — from cognitive science and linguistics to the performing arts. Hardcore knowledge, rolling out." /></p>
@@ -140,15 +159,13 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
 
       {investingPosts.length > 0 ? (
         <ul class="series-mini-list">
-          {investingPosts.map(post => {
-            const dateStr = post.data.pubDate.toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' });
-            return (
-              <li class="series-mini-item">
-                <a href={`/writing/${post.id}/`} class="series-mini-title">{post.data.title}</a>
-                <span class="series-mini-date">{dateStr}</span>
-              </li>
-            );
-          })}
+          {investingPosts.map(post => (
+            <li class="series-mini-item">
+              {/* 沒有英文標題時退回中文並標 lang——見上方 seriesPosts() 的說明 */}
+              <a href={post.href} class="series-mini-title" lang={post.titleLang}>{post.title}</a>
+              <span class="series-mini-date">{post.date}</span>
+            </li>
+          ))}
         </ul>
       ) : (
         <p class="project-desc"><T zh="從基礎金融知識到價值投資心法，寫給我的家人。文章即將上線。" en="From financial fundamentals to value-investing principles — written for my family. Posts coming soon." /></p>
@@ -177,15 +194,13 @@ const presentationPosts = (await getCollection('blog', ({ data }) =>
 
       {managementPosts.length > 0 ? (
         <ul class="series-mini-list">
-          {managementPosts.map(post => {
-            const dateStr = post.data.pubDate.toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' });
-            return (
-              <li class="series-mini-item">
-                <a href={`/writing/${post.id}/`} class="series-mini-title">{post.data.title}</a>
-                <span class="series-mini-date">{dateStr}</span>
-              </li>
-            );
-          })}
+          {managementPosts.map(post => (
+            <li class="series-mini-item">
+              {/* 沒有英文標題時退回中文並標 lang——見上方 seriesPosts() 的說明 */}
+              <a href={post.href} class="series-mini-title" lang={post.titleLang}>{post.title}</a>
+              <span class="series-mini-date">{post.date}</span>
+            </li>
+          ))}
         </ul>
       ) : (
         <p class="project-desc"><T zh="用「天時、地利、人和」對接策略、營運、組織三大管理面向。自學與紀錄管理知能的空間，文章即將上線。" en="Mapping strategy, operations, and organization onto Right Time, Right Place, Right People — a space to learn and document management. Posts coming soon." /></p>

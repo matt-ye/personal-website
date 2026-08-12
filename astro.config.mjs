@@ -333,6 +333,74 @@ function verifyRssFeed() {
   };
 }
 
+/*
+ * i18n 遷移的建置期守衛。
+ *
+ * 遷移一頁要做兩件事：把頁面改成 [...lang] 動態路由，以及把路徑加進
+ * src/lib/i18n.ts 的 MIGRATED_PATHS。只做第一件，頁面會正常產出、畫面
+ * 完全正常，但少了 hreflang——搜尋引擎因此不知道兩個網址是同一頁的不同語言。
+ *
+ * 這種「症狀看不見」的遺漏正是最該用機器擋的：實際發生過一次（/projects/），
+ * 而且是在人工比對 dist 產出時才發現的。
+ *
+ * 檢查方式是比對 dist 的實際產出，不是讀原始碼——真正重要的是使用者拿到的
+ * HTML 裡有沒有那幾行，不是我們以為它應該有。
+ */
+function verifyI18nHreflang() {
+  return {
+    name: 'verify-i18n-hreflang',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        const enRoot = join(root, 'en');
+
+        /** dist/en 底下所有頁面的中文對應路徑，例如 /about/ */
+        const enPages = [];
+        const walk = (d, rel) => {
+          let entries;
+          try { entries = readdirSync(d); } catch { return; }
+          for (const e of entries) {
+            const full = join(d, e);
+            if (statSync(full).isDirectory()) walk(full, `${rel}/${e}`);
+            else if (e === 'index.html') enPages.push(`${rel || ''}/`.replace(/\/+/g, '/'));
+          }
+        };
+        walk(enRoot, '');
+        if (enPages.length === 0) return; // 還沒有任何 /en/ 頁面
+
+        const hasHreflang = (file) => {
+          try {
+            const html = readFileSync(file, 'utf8').replace(/<script\b[\s\S]*?<\/script>/gi, '');
+            return /<link rel="alternate" hreflang="en"/.test(html);
+          } catch { return null; }
+        };
+
+        const problems = [];
+        for (const p of enPages) {
+          const rel = p.replace(/^\/|\/$/g, '');
+          const enFile = join(root, 'en', ...(rel ? rel.split('/') : []), 'index.html');
+          const zhFile = join(root, ...(rel ? rel.split('/') : []), 'index.html');
+
+          if (hasHreflang(zhFile) === null) {
+            problems.push(`${p} 有 /en/ 版但找不到中文版 dist${p}index.html`);
+            continue;
+          }
+          if (!hasHreflang(enFile)) problems.push(`/en${p} 缺 hreflang`);
+          if (!hasHreflang(zhFile)) problems.push(`${p} 缺 hreflang（有 /en 版卻沒互指）`);
+        }
+
+        if (problems.length) {
+          throw new Error(
+            `i18n hreflang 檢查未過，通常是忘了把路徑加進 src/lib/i18n.ts 的 MIGRATED_PATHS：\n  ` +
+              problems.join('\n  '),
+          );
+        }
+        logger.info(`i18n verified: ${enPages.length} localized page pair(s), hreflang reciprocal`);
+      },
+    },
+  };
+}
+
 function findPublicHtmlPages(publicDir, siteUrl) {
   const pages = [];
   function scan(dir) {
@@ -462,5 +530,6 @@ export default defineConfig({
     injectArticleDates(lastmodByUrl),
     injectBreadcrumbs(),
     verifyRssFeed(),
+    verifyI18nHreflang(),
   ],
 });
