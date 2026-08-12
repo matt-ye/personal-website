@@ -2,9 +2,63 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import T from '../components/T.astro';
 import { EVENT_TYPE, MODE, LANG, EDU } from '../i18n/dict';
+import { getSpeeches, speechesUnmatchedOrgs } from '../lib/sheets';
 
-const SHEET_ID = '1vYSAfnbqFzLNBNcPY5dd8XRxvVozt1IDd-kIqKO5swA';
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
+/* 資料在 build 期就備好（來源：src/data/sheets/speeches.json，每日由 Actions 同步）。
+   原本是瀏覽器端 fetch Google Sheet——那讓整份演講紀錄不在 HTML 裡，
+   搜尋引擎與 LLM 完全看不到，也要等外部請求回來才畫得出畫面。 */
+const EXCLUDED_TYPES = new Set(['彩排', '教材製作']);
+
+/* 這個形狀要與下方 client script 的 allData 完全一致：
+   script 的 500 行 render 邏輯全部吃這組欄名，改形狀等於重寫那些函式。 */
+const speechList = getSpeeches().filter(
+  (s) => s.date && s.topic.zh && !EXCLUDED_TYPES.has(s.eventType)
+);
+
+/* 單位的官網從 organizations 字典帶進來，讓卡片上的機構名變成可點的連結。
+   查不到字典的單位 orgUrl 是空字串——渲染時就只顯示文字，不會產生空連結。 */
+const speechData = speechList.map((s) => ({
+  date: s.date,
+  year: String(s.year || ''),
+  org: s.host?.name ?? '',
+  orgEn: s.host?.nameEn ?? '',
+  orgType: s.host?.type ?? '',
+  orgUrl: s.host?.url ?? '',
+  coOrg1: s.coHost1?.name ?? '',
+  coOrg1En: s.coHost1?.nameEn ?? '',
+  coOrg1Type: s.coHost1?.type ?? '',
+  coOrg1Url: s.coHost1?.url ?? '',
+  coOrg2: s.coHost2?.name ?? '',
+  coOrg2En: s.coHost2?.nameEn ?? '',
+  coOrg2Type: s.coHost2?.type ?? '',
+  coOrg2Url: s.coHost2?.url ?? '',
+  topic: s.topic.zh,
+  topicEn: s.topic.en,
+  type: s.eventType,
+  mode: s.mode,
+  lang: s.language,
+  edu: s.audienceEdu,
+  audience: s.attendees,
+  hours: s.hours,
+  youtubeUrl: s.youtubeUrl,
+  url: s.otherUrl,
+}));
+
+/* 還沒進字典的單位在 build log 列出來，逐步補完用；不影響 build 成敗 */
+const missingOrgs = speechesUnmatchedOrgs();
+if (missingOrgs.length) {
+  console.log(`  [organizations] ${missingOrgs.length} 個單位不在字典裡（顯示為純文字）：${missingOrgs.join('、')}`);
+}
+
+/* 給不執行 JS 的訪客（含爬蟲）看的靜態統計——與 script 的 renderStats 同一套算法 */
+const totalEvents = speechData.length;
+const totalHours = Math.round(speechData.reduce((s, d) => s + d.hours, 0));
+const totalAudience = speechData.reduce((s, d) => s + d.audience, 0);
+const totalOrgs = new Set(speechData.map((d) => d.org).filter(Boolean)).size;
+const yearSpan = (() => {
+  const ys = speechData.map((d) => Number(d.year)).filter(Boolean);
+  return ys.length ? `${Math.min(...ys)}–${Math.max(...ys)}` : '';
+})();
 ---
 <BaseLayout
   title="Speeches"
@@ -25,24 +79,26 @@ const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=
 
     <!-- Bento Stats -->
     <div class="bento-grid" id="bento-stats">
+      {/* 數字在 build 期就填好——JS 載入後會用 countUp 動畫重寫同一個值，
+          但不執行 JS 的訪客與爬蟲看到的不再是破折號。 */}
       <div class="bento-card">
         <div class="bento-card-label">Total Events</div>
-        <div class="bento-card-num" id="val-total">—</div>
+        <div class="bento-card-num" id="val-total">{totalEvents}</div>
         <div class="bento-card-sub"><T zh="場次累計" en="Total Events" /></div>
       </div>
       <div class="bento-card">
         <div class="bento-card-label">Total Hours</div>
-        <div class="bento-card-num" id="val-hours">—</div>
+        <div class="bento-card-num" id="val-hours">{totalHours}</div>
         <div class="bento-card-sub"><T zh="講台時數" en="Total Hours" /></div>
       </div>
       <div class="bento-card">
         <div class="bento-card-label">Audience</div>
-        <div class="bento-card-num" id="val-audience">—</div>
+        <div class="bento-card-num" id="val-audience">{totalAudience.toLocaleString('en-US')}</div>
         <div class="bento-card-sub"><T zh="觸及人次" en="Audience Reached" /></div>
       </div>
       <div class="bento-card">
         <div class="bento-card-label">Organizations</div>
-        <div class="bento-card-num" id="val-orgs">—</div>
+        <div class="bento-card-num" id="val-orgs">{totalOrgs}</div>
         <div class="bento-card-sub"><T zh="合作單位" en="Partner organizations" /></div>
       </div>
       <div class="bento-card">
@@ -53,7 +109,7 @@ const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=
       <div class="bento-card">
         <div class="bento-card-label">Since</div>
         <div class="bento-card-num" id="val-since">2020</div>
-        <div class="bento-card-sub" id="val-span">—</div>
+        <div class="bento-card-sub" id="val-span">{yearSpan}</div>
       </div>
     </div>
 
@@ -172,9 +228,54 @@ const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=
       </div>
     </div>
 
-    <!-- Cards -->
+    {/* Cards —— build 期就把整份紀錄渲染進 HTML。
+        JS 載入後 renderCards() 會重畫這一區以支援篩選與分頁，所以這裡是
+        「不執行 JS 時看到的版本」，也就是搜尋引擎與 LLM 看到的版本。
+        刻意不分頁：使用者可以按 Show more，爬蟲不會。 */}
     <div class="speech-cards-grid" id="cards-grid">
-      <div class="data-loading"><T zh="演講資料載入中…" en="Loading speeches data…" /></div>
+      {speechData.map((d) => {
+        const linkUrl = d.youtubeUrl || d.url;
+        return (
+          <div class="speech-card">
+            <div class="card-meta-row">
+              <span>{d.date}</span>
+              <span>{d.edu}</span>
+            </div>
+            {linkUrl
+              ? <a class="card-topic card-topic-link" href={linkUrl} target="_blank" rel="noopener">{d.topic}</a>
+              : <div class="card-topic">{d.topic}</div>}
+            {/* 單位有官網就做成連結——這些是指向真實機構的外連，對 E-E-A-T 有幫助；
+                字典查不到的單位沒有網址，就只顯示文字 */}
+            {d.org && (
+              <div class="card-org">
+                {d.orgUrl
+                  ? <a href={d.orgUrl} target="_blank" rel="noopener">{d.org}</a>
+                  : d.org}
+              </div>
+            )}
+            {d.orgEn && <div class="card-org-en" lang="en">{d.orgEn}</div>}
+            {d.coOrg1 && (
+              <div class="card-org-co">協辦：{d.coOrg1Url
+                ? <a href={d.coOrg1Url} target="_blank" rel="noopener">{d.coOrg1}</a>
+                : d.coOrg1}</div>
+            )}
+            {d.coOrg2 && (
+              <div class="card-org-co">協辦：{d.coOrg2Url
+                ? <a href={d.coOrg2Url} target="_blank" rel="noopener">{d.coOrg2}</a>
+                : d.coOrg2}</div>
+            )}
+            <div class="card-stats">
+              {d.audience > 0 && <span><b>{d.audience}</b>人</span>}
+              {d.hours > 0 && <span><b>{d.hours}</b>hr</span>}
+            </div>
+            <div class="card-badges">
+              {d.type && <span class={`badge badge-type-${d.type}`}>{d.type}</span>}
+              {d.mode && <span class={`badge badge-mode-${d.mode}`}>{d.mode}</span>}
+              {d.lang && <span class="badge badge-lang">{d.lang}</span>}
+            </div>
+          </div>
+        );
+      })}
     </div>
 
     <!-- Show more -->
@@ -187,30 +288,8 @@ const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=
   </div>
 </BaseLayout>
 
-<script define:vars={{ CSV_URL, EVENT_TYPE, MODE, LANG, EDU }}>
-/* ── CSV Parser (robust: handles quoted multi-line cells) ── */
-function parseCSV(text) {
-  const rows = [];
-  let row = [], cur = '', inQ = false;
-  const t = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  for (let i = 0; i < t.length; i++) {
-    const c = t[i];
-    if (c === '"') {
-      if (inQ && t[i+1] === '"') { cur += '"'; i++; }
-      else inQ = !inQ;
-    } else if (c === ',' && !inQ) {
-      row.push(cur.trim()); cur = '';
-    } else if (c === '\n' && !inQ) {
-      row.push(cur.trim());
-      if (row.some(v => v)) rows.push(row);
-      row = []; cur = '';
-    } else {
-      cur += c;
-    }
-  }
-  if (cur || row.length) { row.push(cur.trim()); rows.push(row); }
-  return rows;
-}
+<script define:vars={{ SPEECH_DATA: speechData, EVENT_TYPE, MODE, LANG, EDU }}>
+/* CSV 解析已移到 build 期（scripts/fetch-sheets.mjs），這裡收到的是解析好的物件陣列。 */
 
 function fmtDate(raw) {
   if (!raw) return '';
@@ -255,80 +334,25 @@ function countUp(el, finalVal, dur) {
 
 /* ── State ── */
 const PAGE_SIZE = 24;
-const EXCLUDED_TYPES = new Set(['彩排', '教材製作']);
+/* 「彩排」「教材製作」的排除已在 build 期做掉（見 frontmatter 的 EXCLUDED_TYPES）。 */
 const PALETTE = ['#3b82f6','#22d3ee','#ff5dd9','#ffd166','#4ade80','#ff7a59','#c8b0ff','#8ee0ff','#ffb3ee'];
 let allData = [];
 let state = { search: '', types: new Set(), modes: new Set(), langs: new Set(), years: new Set(), sort: 'date-desc', page: 1 };
 
-/* ── Fetch & Init ── */
-async function init() {
-  try {
-    const resp = await fetch(CSV_URL);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const text = await resp.text();
-    const rows = parseCSV(text);
+/* ── Init ──
+   資料由 build 期經 define:vars 帶進來（來源 src/data/sheets/speeches.json），
+   不再在瀏覽器端 fetch Google Sheet。差別：整份紀錄已經在 HTML 裡，
+   爬蟲與 LLM 看得到，畫面也不必等外部請求。
+   篩選、圖表、排行榜的邏輯完全沒動——它們吃的 allData 形狀與原本一致。 */
+function init() {
+  allData = SPEECH_DATA;
 
-    const headers = rows[0].map(h => h.toLowerCase().trim());
-    const hi = name => headers.findIndex(h => h.includes(name.toLowerCase()));
-
-    const iDate        = hi('日期');
-    const iOrg         = hi('主辦單位_zh');
-    const iOrgEn       = hi('主辦單位_eng');
-    const iOrgType     = hi('主辦單位_類型');
-    const iCoOrg1      = hi('協辦單位_1_zh');
-    const iCoOrg1En    = hi('協辦單位_1_eng');
-    const iCoOrg1Type  = hi('協辦單位_1_類型');
-    const iCoOrg2      = hi('協辦單位_2_zh');
-    const iCoOrg2En    = hi('協辦單位_2_eng');
-    const iCoOrg2Type  = hi('協辦單位_2_類型');
-    const iTopic       = hi('主題');
-    const iTopicEn     = hi('topic');
-    const iType        = hi('場次類型');
-    const iMode        = hi('線上');
-    const iLang        = hi('語言');
-    const iEdu         = hi('教育程度');
-    const iAudience    = hi('人數');
-    const iHours       = hi('小時');
-    const iYoutubeUrl  = hi('youtube');
-    const iUrl         = hi('news, blog');
-
-    allData = rows.slice(1)
-      .map(r => ({
-        date:        r[iDate]                           ?? '',
-        year:        (r[iDate] ?? '').match(/^(\d{4})/)?.[1] ?? '',
-        org:         iOrg >= 0        ? (r[iOrg]        ?? '') : '',
-        orgEn:       iOrgEn >= 0      ? (r[iOrgEn]      ?? '') : '',
-        orgType:     iOrgType >= 0    ? (r[iOrgType]    ?? '') : '',
-        coOrg1:      iCoOrg1 >= 0     ? (r[iCoOrg1]     ?? '') : '',
-        coOrg1En:    iCoOrg1En >= 0   ? (r[iCoOrg1En]   ?? '') : '',
-        coOrg1Type:  iCoOrg1Type >= 0 ? (r[iCoOrg1Type] ?? '') : '',
-        coOrg2:      iCoOrg2 >= 0     ? (r[iCoOrg2]     ?? '') : '',
-        coOrg2En:    iCoOrg2En >= 0   ? (r[iCoOrg2En]   ?? '') : '',
-        coOrg2Type:  iCoOrg2Type >= 0 ? (r[iCoOrg2Type] ?? '') : '',
-        topic:       r[iTopic]                          ?? '',
-        topicEn:     iTopicEn >= 0 ? (r[iTopicEn] ?? '') : '',
-        type:        r[iType]                           ?? '',
-        mode:        r[iMode]                           ?? '',
-        lang:        r[iLang]                           ?? '',
-        edu:         r[iEdu]                            ?? '',
-        audience:    parseInt(r[iAudience])  || 0,
-        hours:       parseFloat(r[iHours])   || 0,
-        youtubeUrl:  iYoutubeUrl >= 0 ? (r[iYoutubeUrl] ?? '') : '',
-        url:         iUrl >= 0        ? (r[iUrl]         ?? '') : '',
-      }))
-      .filter(d => d.date && d.topic && !EXCLUDED_TYPES.has(d.type));
-
-    renderStats();
-    renderChips();
-    renderCharts();
-    initOrgFilters();
-    renderOrgLeaderboard();
-    renderCards();
-  } catch (err) {
-    document.getElementById('cards-grid').innerHTML =
-      `<div class="data-error">⚠️ 資料載入失敗，請稍後再試。<br><small>${err.message}</small></div>`;
-    console.error('Speeches data error:', err);
-  }
+  renderStats();
+  renderChips();
+  renderCharts();
+  initOrgFilters();
+  renderOrgLeaderboard();
+  renderCards();
 }
 
 /* ── Stats ── */
