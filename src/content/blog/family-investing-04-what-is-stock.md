@@ -4,6 +4,7 @@ description: 從「為什麼要成立公司」出發，理解股票的本質：�
 pubDate: 2026-06-14
 lang: zh
 series: family-investing
+ymyl: true
 tags: [股票, 投資基礎, 公司治理]
 draft: false
 ---

@@ -4,6 +4,7 @@ description: 損益表、資產負債表、現金流量表的結構與關聯；�
 pubDate: 2026-06-20
 lang: zh
 series: family-investing
+ymyl: true
 tags: [財務報表, 損益表, 資產負債表, 現金流量表, 杜邦分析]
 draft: false
 ---

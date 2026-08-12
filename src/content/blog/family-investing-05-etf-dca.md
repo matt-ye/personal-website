@@ -4,6 +4,7 @@ description: 什麼是 ETF？為什麼 80% 的主動基金長期跑輸大盤？�
 pubDate: 2026-06-16
 lang: zh
 series: family-investing
+ymyl: true
 tags: [ETF, 定期定額, 指數投資, 投資心理]
 draft: false
 ---

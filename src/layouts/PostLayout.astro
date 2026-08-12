@@ -1,5 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import T from '../components/T.astro';
 
 interface Props {
   title: string;
@@ -10,9 +11,10 @@ interface Props {
   tags?: string[];
   titleEn?: string;
   descriptionEn?: string;
+  ymyl?: boolean;
 }
 
-const { title, description, pubDate, updatedDate, lang = 'zh', tags, titleEn, descriptionEn } = Astro.props;
+const { title, description, pubDate, updatedDate, lang = 'zh', tags, titleEn, descriptionEn, ymyl = false } = Astro.props;
 
 /* 有 titleEn 就是雙語文章：標題與日期跟著站上的語言切換，不再固定單一語言 */
 const bilingual = Boolean(titleEn);
@@ -60,6 +62,12 @@ const articleLd = {
       ) : title}
     </h1>
     <div class="post-meta">
+      {/* 作者署名。在此之前「葉淨維」只出現在 <title>、meta 與頁尾版權——
+          那些位置對讀者與評分員都不算內容創作者資訊。rel="author" 是這層
+          關係的機器可讀宣告，連到 /about/ 讓資歷可查證。 */}
+      <a class="post-author" href="/about/" rel="author">
+        <T zh="葉淨維" en="Matt Ye" />
+      </a>
       <time datetime={pubDate.toISOString()}>
         {bilingual ? (
           <>
@@ -88,6 +96,21 @@ const articleLd = {
   <article class="prose">
     <slot />
   </article>
+
+  {/* YMYL 免責聲明。措辭沿用課程頁既有的那句（本課程→本文），定性為
+      「個人學習紀錄」而非專家建議——這對應 Rater Guidelines 3.4.1 節
+      Experience 與 Expertise 的分野。
+
+      放在 </article> 之外是刻意的：它不是文章內容，是關於這篇文章的聲明。
+      放進 prose 裡會被 RSS 全文與 LLM 當成正文的一部分。 */}
+  {ymyl && (
+    <aside class="post-disclaimer" role="note">
+      <T
+        zh="本文為個人學習紀錄與家人教育素材，非投資建議；內容涉及之制度與稅率以主管機關現行公告為準。"
+        en="This article is a personal learning record and educational material for my family — not investment advice. Any regulations or tax rates mentioned are subject to the current announcements of the competent authorities."
+      />
+    </aside>
+  )}
 
   <!-- Tab switching for diagram posts -->
   <script is:inline>

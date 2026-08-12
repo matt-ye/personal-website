@@ -4,6 +4,7 @@ description: 從零開始認識投資的本質：它不是賭博，不是快速�
 pubDate: 2026-06-08
 lang: zh
 series: family-investing
+ymyl: true
 tags: [投資基礎, 心態]
 draft: false
 ---
