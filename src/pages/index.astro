@@ -4,7 +4,13 @@ import T from '../components/T.astro';
 import PostCard from '../components/PostCard.astro';
 import Tour from '../components/Tour.astro';
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import { projects } from '../data/projects';
+/* hero 照片放 src/assets/ 而非 public/：只有前者會經過 Astro 的圖片最佳化。
+   原始檔是相機直出的 6.5–7.5 MB，直接送出去就是首頁 20.8 MB 的來源。 */
+import photoPointing from '../assets/photo-pointing.jpg';
+import photoStanding from '../assets/photo-standing.jpg';
+import photo5 from '../assets/photo-5.jpg';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
@@ -119,15 +125,26 @@ const awards = getPersonalAwards();
         </div>
       </div>
       <div class="hero-photo-wrap">
+        {/* 用 <Image> 而不是 <img>：原始檔是 6.5–7.5 MB 的相機直出檔，
+            三張加起來 20.8 MB，是 LCP 106 秒的真正原因（不是輪播）。
+            Astro 會在 build 期轉成 WebP 並產生多種尺寸，瀏覽器依螢幕挑最小的那份。
+            widths 上限 1200 是因為這個位置在版面上最多就這麼寬，再大也看不出差別。 */}
         <div class="hero-carousel" id="hero-carousel">
           <div class="carousel-slide active">
-            <img src="/photo-pointing.jpg" alt="葉淨維 Matt Ye — 演講姿態" />
+            <Image src={photoPointing} alt="葉淨維 Matt Ye — 演講姿態"
+                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   format="webp" quality={80} loading="eager" fetchpriority="high" />
           </div>
           <div class="carousel-slide">
-            <img src="/photo-standing.jpg" alt="葉淨維 Matt Ye — 站姿" />
+            {/* 後兩張延後載入：它們要到第 4 秒才會出現，不該和首屏搶頻寬 */}
+            <Image src={photoStanding} alt="葉淨維 Matt Ye — 站姿"
+                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   format="webp" quality={80} loading="lazy" />
           </div>
           <div class="carousel-slide">
-            <img src="/photo-5.jpg" alt="葉淨維 Matt Ye — 笑容" />
+            <Image src={photo5} alt="葉淨維 Matt Ye — 笑容"
+                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   format="webp" quality={80} loading="lazy" />
           </div>
         </div>
         <div class="carousel-dots">
@@ -303,13 +320,15 @@ const awards = getPersonalAwards();
     dots[current].classList.add('active');
   }
 
-  /* 自動輪播跑三輪後回到第一張並停止。
-     不是美觀考量——是 LCP：每張照片都是頁面最大的元素，每次換圖就產生一個新的
-     LCP 候選，而 LCP 取的是「追蹤期間最後一個最大內容繪製」。原本無限輪播時
-     實測 LCP 106 秒（三次測量一致），但同時 CPU 只用 1.1 秒、最慢請求 490ms
-     ——不是載入慢，是指標被輪播推著跑。停下來 LCP 才會定案。
+  /* 自動輪播跑完一輪（三張各出現一次）後回到第一張並停止。
+     兩個理由：
+     1. 每次換圖都會產生新的 LCP 候選，而 LCP 取「追蹤期間最後一個」——
+        輪播跑越久，量到的 LCP 越晚。跑一輪就停，指標才會早早定案。
+        （註：LCP 106 秒的主因其實是圖片有 20.8 MB，已在 perf/hero-images 處理；
+         輪播只是讓它更晚定案，不是主因。）
+     2. 無限自動輪播對可及性不友善——會干擾閱讀障礙與注意力障礙的使用者。
      使用者仍可點圓點手動切換（手動切換後不再自動播放）。 */
-  var ROUNDS = 3;
+  var ROUNDS = 1;
   var advances = 0;
   var timer = setInterval(tick, 4000);
 
