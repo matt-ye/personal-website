@@ -177,6 +177,11 @@
       .header-title .week { display:none; }
       #searchWrap { max-width:170px; }
     }
+  
+    /* 這兩個標題原本是 div，改成 heading 是為了讓爬蟲讀得到文件結構；
+       margin 歸零讓視覺與改動前一致（font-size/font-weight 原本就有明確設定）。 */
+    .topic-title { margin:0; }
+    .hook-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
   </style>
   <script type="application/ld+json">
   {
@@ -259,8 +264,7 @@
     <section id="overview">
       <div class="hero">
         <div class="crumb"><a href="/projects/marketing/">← 行銷專欄 Marketing</a> · 行銷學習地圖 W3-5</div>
-        <h1 class="zh-only">社交平台 2026 生態</h1>
-        <h1 class="en-only">Social Platform Ecosystems 2026</h1>
+        <h1><span class="zh-only">社交平台 2026 生態</span><span class="en-only">Social Platform Ecosystems 2026</span></h1>
         <p class="zh-only">八大平台的演算法邏輯、受眾輪廓、內容偏好——以及「平台選擇 = 受眾在哪 × 內容擅長 × 能持續多久」的決策框架。</p>
         <p class="en-only">Eight platforms' algorithms, audiences, and content preferences — plus the decision framework: audience × content strength × sustainability.</p>
         <div class="hero-goals">
@@ -511,8 +515,7 @@
         <div class="topic-header" onclick="toggleCard('card-red')">
           <div class="topic-icon">📕</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">小紅書 RED（RedNote）</div>
-            <div class="topic-title en-only">Xiaohongshu / RED (RedNote)</div>
+            <h2 class="topic-title"><span class="zh-only">小紅書 RED（RedNote）</span><span class="en-only">Xiaohongshu / RED (RedNote)</span></h2>
             <div class="topic-subtitle zh-only">生活方式搜尋引擎 · 種草文化</div>
             <div class="topic-subtitle en-only">Lifestyle search engine · Zhongcao (seeding) culture</div>
             <div class="topic-tags"><span class="tag tag-green">Week 5</span><span class="tag tag-orange">⚠️ 台灣禁令 TW ban</span><span class="tag tag-pink">華語 Chinese</span></div>
@@ -632,8 +635,7 @@
         <div class="topic-header" onclick="toggleCard('card-practice')">
           <div class="topic-icon">✏️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">實作練習 + 平台選擇框架</div>
-            <div class="topic-title en-only">Practice + Platform Selection Framework</div>
+            <h2 class="topic-title"><span class="zh-only">實作練習 + 平台選擇框架</span><span class="en-only">Practice + Platform Selection Framework</span></h2>
             <div class="topic-subtitle zh-only">深耕 1-2 平台勝過全平台淺嚐</div>
             <div class="topic-subtitle en-only">Going deep on 1-2 beats spreading thin</div>
             <div class="topic-tags"><span class="tag tag-green">動手做 Hands-on</span></div>

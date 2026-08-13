@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Built with lazy-html -->
-<html lang="zh-Hant" data-theme="light">
+<html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -965,7 +965,7 @@
   /* ── apply lang ── */
   function applyLang() {
     var lang = state.lang;
-    document.documentElement.setAttribute("lang", lang === "zh" ? "zh-Hant" : "en");
+    document.documentElement.setAttribute("lang", lang === "zh" ? "zh-TW" : "en");
     store.set("oms-lang", lang);
     var lbl = $("langLabel");
     if (lbl) lbl.textContent = lang === "en" ? "中" : "EN";

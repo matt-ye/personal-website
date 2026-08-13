@@ -259,7 +259,7 @@
     .notice-card { background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 14px 16px;
       border-left: 4px solid var(--accent); box-shadow: var(--shadow); }
-    .notice-card h4 { font-size: .82rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .notice-card h3 { font-size: .82rem; font-weight: 700; color: var(--accent); margin:0 0 4px; }
     .notice-card p { font-size: .8rem; color: var(--muted); line-height: 1.5; }
 
     /* ── Glossary Panel ── */
@@ -312,7 +312,7 @@
     .framework-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0; }
     .fw-card { background: var(--bg); border: 1px solid var(--border);
       border-radius: var(--radius-sm); padding: 12px; }
-    .fw-card h4 { font-size: .82rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+    .fw-card h3 { font-size: .82rem; font-weight: 700; color: var(--accent); margin:0 0 4px; }
     .fw-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; font-size: .8rem; }
     .fw-label { font-weight: 600; color: var(--text); flex-shrink: 0; min-width: 90px; }
     .fw-desc { color: var(--muted); }
@@ -347,6 +347,10 @@
       .header-title span { display: none; }
       #searchWrap { max-width: 200px; }
     }
+  
+    /* <summary> 本身是 button role，不進文件大綱；把標題包進 h2 讓摺疊區塊
+       在大綱裡佔一層。display:inline 與 margin/font 歸零，視覺與改動前相同。 */
+    .summary-heading { display:inline; margin:0; font-size:inherit; font-weight:inherit; }
   </style>
   <script type="application/ld+json">
   {
@@ -427,8 +431,7 @@
     <!-- Hero -->
     <section id="overview">
       <div class="hero">
-        <h1 class="zh-only">GA4 全攻略 · 團隊教學手冊</h1>
-        <h1 class="en-only">GA4 Complete Guide · Team Reference</h1>
+        <h1><span class="zh-only">GA4 全攻略 · 團隊教學手冊</span><span class="en-only">GA4 Complete Guide · Team Reference</span></h1>
         <p class="zh-only">涵蓋基礎概念、漏斗分析、使用者行為、行銷應用、爬蟲偵測到進階 BigQuery，附所有官方與社群參考資源。</p>
         <p class="en-only">Covers fundamentals, funnel analysis, user behavior, marketing, bot detection, and advanced BigQuery — with all official and community references.</p>
         <div class="hero-stats">
@@ -459,7 +462,7 @@
         <div class="topic-body">
 
           <details class="sub-section" open>
-            <summary>🔄 <span class="zh-only">GA4 vs UA 核心差異</span><span class="en-only">GA4 vs Universal Analytics</span></summary>
+            <summary>🔄 <h2 class="summary-heading"><span class="zh-only">GA4 vs UA 核心差異</span><span class="en-only">GA4 vs Universal Analytics</span></h2></summary>
             <div class="sub-content">
               <div class="table-wrap">
                 <table class="data-table">
@@ -478,7 +481,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🏗️ <span class="zh-only">資料結構</span><span class="en-only">Data Structure</span></summary>
+            <summary>🏗️ <h2 class="summary-heading"><span class="zh-only">資料結構</span><span class="en-only">Data Structure</span></h2></summary>
             <div class="sub-content">
               <div class="pipeline">
                 <div class="pipeline-step">👤 使用者 User</div>
@@ -499,7 +502,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🔬 <span class="zh-only">探索報表類型</span><span class="en-only">Exploration Report Types</span></summary>
+            <summary>🔬 <h2 class="summary-heading"><span class="zh-only">探索報表類型</span><span class="en-only">Exploration Report Types</span></h2></summary>
             <div class="sub-content">
               <div class="table-wrap">
                 <table class="data-table">
@@ -518,7 +521,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>📐 <span class="zh-only">常見維度 × 指標</span><span class="en-only">Key Dimensions & Metrics</span></summary>
+            <summary>📐 <h2 class="summary-heading"><span class="zh-only">常見維度 × 指標</span><span class="en-only">Key Dimensions & Metrics</span></h2></summary>
             <div class="sub-content">
               <div class="table-wrap">
                 <table class="data-table">
@@ -535,7 +538,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>⚠️ <span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></summary>
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
             <div class="sub-content">
               <div class="warning-box">Exploration 報表有資料取樣限制（非 GA4 360 帳戶），大流量時報表旁會顯示橙色取樣警告。</div>
               <div class="warning-box">Exploration 保存最多 14 個月資料；超過需匯出至 BigQuery 保存。</div>
@@ -544,7 +547,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🔗 <span class="zh-only">參考連結</span><span class="en-only">References</span></summary>
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
             <div class="sub-content">
               <div class="links-grid">
                 <a class="link-item" href="https://support.google.com/analytics/?hl=en#topic=14090456" target="_blank">
@@ -591,7 +594,7 @@
         <div class="topic-body">
 
           <details class="sub-section" open>
-            <summary>🔑 <span class="zh-only">核心概念</span><span class="en-only">Core Concepts</span></summary>
+            <summary>🔑 <h2 class="summary-heading"><span class="zh-only">核心概念</span><span class="en-only">Core Concepts</span></h2></summary>
             <div class="sub-content">
               <div class="table-wrap">
                 <table class="data-table">
@@ -611,11 +614,11 @@
           </details>
 
           <details class="sub-section">
-            <summary>🏴‍☠️ <span class="zh-only">行銷漏斗框架</span><span class="en-only">Marketing Funnel Frameworks</span></summary>
+            <summary>🏴‍☠️ <h2 class="summary-heading"><span class="zh-only">行銷漏斗框架</span><span class="en-only">Marketing Funnel Frameworks</span></h2></summary>
             <div class="sub-content">
               <div class="framework-grid">
                 <div class="fw-card">
-                  <h4>AARRR 海盜指標（Dave McClure, 2007）</h4>
+                  <h3>AARRR 海盜指標（Dave McClure, 2007）</h3>
                   <div class="fw-row"><span class="fw-label">Acquisition 獲取</span><span class="fw-desc">Sessions by Source/Medium</span></div>
                   <div class="fw-row"><span class="fw-label">Activation 啟動</span><span class="fw-desc">Key Event 自訂轉換</span></div>
                   <div class="fw-row"><span class="fw-label">Retention 留存</span><span class="fw-desc">Cohort 同期群報表</span></div>
@@ -623,7 +626,7 @@
                   <div class="fw-row"><span class="fw-label">Referral 推薦</span><span class="fw-desc">Referral Source Sessions</span></div>
                 </div>
                 <div class="fw-card">
-                  <h4>AIDA 行銷漏斗</h4>
+                  <h3>AIDA 行銷漏斗</h3>
                   <div class="fw-row"><span class="fw-label">Awareness</span><span class="fw-desc">曝光、廣告觸及 (Impressions)</span></div>
                   <div class="fw-row"><span class="fw-label">Interest</span><span class="fw-desc">頁面停留、滾動深度</span></div>
                   <div class="fw-row"><span class="fw-label">Desire</span><span class="fw-desc">加入購物車、收藏</span></div>
@@ -634,7 +637,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🛠️ <span class="zh-only">建立漏斗操作步驟</span><span class="en-only">How to Build a Funnel</span></summary>
+            <summary>🛠️ <h2 class="summary-heading"><span class="zh-only">建立漏斗操作步驟</span><span class="en-only">How to Build a Funnel</span></h2></summary>
             <div class="sub-content">
               <ol class="step-list">
                 <li><div class="step-num">1</div><div>確認事件已收集：報表 → 事件，確認清單中有目標事件</div></li>
@@ -648,7 +651,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>⚠️ <span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></summary>
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
             <div class="sub-content">
               <div class="warning-box">GA4 漏斗資料不溯及既往：建立後才開始計算，未事先標記轉換則資料永遠遺失。</div>
               <div class="warning-box">封閉漏斗轉換率通常遠低於開放漏斗，選擇時須理解業務情境再比較。</div>
@@ -657,7 +660,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🔗 <span class="zh-only">參考連結</span><span class="en-only">References</span></summary>
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
             <div class="sub-content">
               <div class="links-grid">
                 <a class="link-item" href="https://support.google.com/analytics/answer/9327974?hl=en" target="_blank">
@@ -698,7 +701,7 @@
         <div class="topic-body">
 
           <details class="sub-section" open>
-            <summary>🔑 <span class="zh-only">核心概念與指標</span><span class="en-only">Core Concepts & Metrics</span></summary>
+            <summary>🔑 <h2 class="summary-heading"><span class="zh-only">核心概念與指標</span><span class="en-only">Core Concepts & Metrics</span></h2></summary>
             <div class="sub-content">
               <ul class="bullet-list">
                 <li><strong>同期群分析 Cohort：</strong>依共同特徵（首次造訪日期）分群，追蹤後續留存率</li>
@@ -710,7 +713,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>📅 <span class="zh-only">User Lifecycle 四大報表</span><span class="en-only">User Lifecycle Reports</span></summary>
+            <summary>📅 <h2 class="summary-heading"><span class="zh-only">User Lifecycle 四大報表</span><span class="en-only">User Lifecycle Reports</span></h2></summary>
             <div class="sub-content">
               <div class="table-wrap">
                 <table class="data-table">
@@ -727,18 +730,18 @@
           </details>
 
           <details class="sub-section">
-            <summary>🏷️ RFM <span class="zh-only">分析框架</span><span class="en-only">Analysis Framework</span></summary>
+            <summary>🏷️ RFM <h2 class="summary-heading"><span class="zh-only">分析框架</span><span class="en-only">Analysis Framework</span></h2></summary>
             <div class="sub-content">
               <div class="framework-grid">
                 <div class="fw-card">
-                  <h4>RFM 使用者分群</h4>
+                  <h3>RFM 使用者分群</h3>
                   <div class="fw-row"><span class="fw-label">R — Recency</span><span class="fw-desc">最近一次購買距今多久</span></div>
                   <div class="fw-row"><span class="fw-label">F — Frequency</span><span class="fw-desc">購買/造訪頻率</span></div>
                   <div class="fw-row"><span class="fw-label">M — Monetary</span><span class="fw-desc">消費金額總計</span></div>
                   <div class="fw-row" style="margin-top:8px"><span class="fw-label" style="color:var(--orange)">⚠️ 需要</span><span class="fw-desc">BigQuery 或 Looker Studio 計算</span></div>
                 </div>
                 <div class="fw-card">
-                  <h4>同期群分析步驟</h4>
+                  <h3>同期群分析步驟</h3>
                   <div class="fw-row"><span class="fw-label">Step 1</span><span class="fw-desc">探索 › 同期群探索</span></div>
                   <div class="fw-row"><span class="fw-label">Step 2</span><span class="fw-desc">納入條件：first_visit</span></div>
                   <div class="fw-row"><span class="fw-label">Step 3</span><span class="fw-desc">回訪條件：session_start</span></div>
@@ -750,7 +753,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>⚠️ <span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></summary>
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
             <div class="sub-content">
               <div class="warning-box">GA4 的 Bounce Rate 偏低是正常的（定義放寬），勿直接與 UA 跳出率比較。</div>
               <div class="warning-box">同期群最多觀察 12 週或 3 個月；更長週期的留存分析需搭配 BigQuery。</div>
@@ -759,7 +762,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🔗 <span class="zh-only">參考連結</span><span class="en-only">References</span></summary>
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
             <div class="sub-content">
               <div class="links-grid">
                 <a class="link-item" href="https://measureschool.com/google-analytics-4-cohort-analysis/" target="_blank">
@@ -800,7 +803,7 @@
         <div class="topic-body">
 
           <details class="sub-section" open>
-            <summary>⚖️ <span class="zh-only">歸因模型</span><span class="en-only">Attribution Models</span></summary>
+            <summary>⚖️ <h2 class="summary-heading"><span class="zh-only">歸因模型</span><span class="en-only">Attribution Models</span></h2></summary>
             <div class="sub-content">
               <div class="table-wrap">
                 <table class="data-table">
@@ -818,7 +821,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🔖 UTM <span class="zh-only">參數追蹤</span><span class="en-only">Parameter Tracking</span></summary>
+            <summary>🔖 UTM <h2 class="summary-heading"><span class="zh-only">參數追蹤</span><span class="en-only">Parameter Tracking</span></h2></summary>
             <div class="sub-content">
               <div class="table-wrap">
                 <table class="data-table">
@@ -841,7 +844,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>👥 <span class="zh-only">受眾建立與再行銷</span><span class="en-only">Audience & Remarketing</span></summary>
+            <summary>👥 <h2 class="summary-heading"><span class="zh-only">受眾建立與再行銷</span><span class="en-only">Audience & Remarketing</span></h2></summary>
             <div class="sub-content">
               <ul class="bullet-list">
                 <li>受眾 Audience 建立後才開始累積，<strong>不溯及既往</strong></li>
@@ -853,7 +856,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>⚠️ <span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></summary>
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
             <div class="sub-content">
               <div class="warning-box">資料驅動歸因需每 30 天至少 300 個轉換，不足時系統降級為「最後點擊」。</div>
               <div class="warning-box">utm_source/medium 大小寫不同會被視為不同來源（`Facebook` ≠ `facebook`）。</div>
@@ -862,7 +865,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🔗 <span class="zh-only">參考連結</span><span class="en-only">References</span></summary>
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
             <div class="sub-content">
               <div class="links-grid">
                 <a class="link-item" href="https://measureschool.com/google-analytics-4-attribution-models/" target="_blank">
@@ -906,7 +909,7 @@
         <div class="topic-body">
 
           <details class="sub-section" open>
-            <summary>🛡️ <span class="zh-only">GA4 內建 Bot 過濾</span><span class="en-only">GA4 Built-in Bot Filtering</span></summary>
+            <summary>🛡️ <h2 class="summary-heading"><span class="zh-only">GA4 內建 Bot 過濾</span><span class="en-only">GA4 Built-in Bot Filtering</span></h2></summary>
             <div class="sub-content">
               <ul class="bullet-list">
                 <li>自動過濾 <strong>IAB/ABC 已知 Bot 清單</strong>（含 Googlebot、Bingbot、Screaming Frog、Ahrefs）</li>
@@ -931,7 +934,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🔍 <span class="zh-only">異常流量特徵識別</span><span class="en-only">Anomaly Signals</span></summary>
+            <summary>🔍 <h2 class="summary-heading"><span class="zh-only">異常流量特徵識別</span><span class="en-only">Anomaly Signals</span></h2></summary>
             <div class="sub-content">
               <div class="table-wrap">
                 <table class="data-table">
@@ -950,7 +953,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🛠️ <span class="zh-only">調查 SOP + 排除內部流量</span><span class="en-only">Investigation SOP & Internal Traffic</span></summary>
+            <summary>🛠️ <h2 class="summary-heading"><span class="zh-only">調查 SOP + 排除內部流量</span><span class="en-only">Investigation SOP & Internal Traffic</span></h2></summary>
             <div class="sub-content">
               <ol class="step-list">
                 <li><div class="step-num">1</div><div>探索 › 自由格式：加維度「城市」「裝置類別」「瀏覽器」，找異常集中點</div></li>
@@ -968,7 +971,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🔧 <span class="zh-only">第三方工具</span><span class="en-only">Third-party Tools</span></summary>
+            <summary>🔧 <h2 class="summary-heading"><span class="zh-only">第三方工具</span><span class="en-only">Third-party Tools</span></h2></summary>
             <div class="sub-content">
               <div class="table-wrap">
                 <table class="data-table">
@@ -985,7 +988,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>⚠️ <span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></summary>
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
             <div class="sub-content">
               <div class="warning-box">Bot 過濾設定不溯及既往，啟用後只對未來資料有效。</div>
               <div class="warning-box">Ghost Traffic 無法靠 GA4 本身過濾，Hit 直接送 Measurement Protocol 不觸發頁面。</div>
@@ -994,7 +997,7 @@
           </details>
 
           <details class="sub-section">
-            <summary>🔗 <span class="zh-only">參考連結</span><span class="en-only">References</span></summary>
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
             <div class="sub-content">
               <div class="links-grid">
                 <a class="link-item" href="https://support.google.com/analytics/answer/10104470?hl=en" target="_blank">
@@ -1038,7 +1041,7 @@
         <div class="topic-body">
 
           <details class="sub-section" open>
-            <summary>🗄️ BigQuery <span class="zh-only">匯出</span><span class="en-only">Export</span></summary>
+            <summary>🗄️ BigQuery <h2 class="summary-heading"><span class="zh-only">匯出</span><span class="en-only">Export</span></h2></summary>
             <div class="sub-content">
               <ul class="bullet-list">
                 <li>免費啟用，每日 1M 事件上限；超過需升級 GA4 360</li>
@@ -1080,7 +1083,7 @@ ORDER BY event_count DESC</pre>
           </details>
 
           <details class="sub-section">
-            <summary>🏷️ <span class="zh-only">自訂維度與指標</span><span class="en-only">Custom Dimensions & Metrics</span></summary>
+            <summary>🏷️ <h2 class="summary-heading"><span class="zh-only">自訂維度與指標</span><span class="en-only">Custom Dimensions & Metrics</span></h2></summary>
             <div class="sub-content">
               <div class="table-wrap">
                 <table class="data-table">
@@ -1097,7 +1100,7 @@ ORDER BY event_count DESC</pre>
           </details>
 
           <details class="sub-section">
-            <summary>📊 <span class="zh-only">Looker Studio 整合架構</span><span class="en-only">Looker Studio Integration</span></summary>
+            <summary>📊 <h2 class="summary-heading"><span class="zh-only">Looker Studio 整合架構</span><span class="en-only">Looker Studio Integration</span></h2></summary>
             <div class="sub-content">
               <div class="pipeline">
                 <div class="pipeline-step">GA4 原始資料</div>
@@ -1117,7 +1120,7 @@ ORDER BY event_count DESC</pre>
           </details>
 
           <details class="sub-section">
-            <summary>⚠️ <span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></summary>
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
             <div class="sub-content">
               <div class="warning-box">直連 GA4 的 Looker Studio 報表有取樣問題，大流量網站必須透過 BigQuery 中介。</div>
               <div class="warning-box">BigQuery 中避免 <code>SELECT *</code>，應指定欄位名稱，否則費用大幅增加。</div>
@@ -1126,7 +1129,7 @@ ORDER BY event_count DESC</pre>
           </details>
 
           <details class="sub-section">
-            <summary>🔗 <span class="zh-only">參考連結</span><span class="en-only">References</span></summary>
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
             <div class="sub-content">
               <div class="links-grid">
                 <a class="link-item" href="https://developers.google.com/analytics/devguides/reporting/data/v1" target="_blank">
@@ -1189,22 +1192,22 @@ ORDER BY event_count DESC</pre>
       </h2>
       <div class="notice-grid">
         <div class="notice-card">
-          <h4>📅 資料保留期限 Data Retention</h4>
+          <h3>📅 資料保留期限 Data Retention</h3>
           <p class="zh-only">預設保留 2 個月，可在 Admin › 資料保留 改為 14 個月（免費版上限）。超過需匯出至 BigQuery 永久保存。</p>
           <p class="en-only">Default 2 months; extend to 14 months (free tier max) in Admin › Data Retention. Beyond that, export to BigQuery.</p>
         </div>
         <div class="notice-card">
-          <h4>⚖️ 報表口徑差異 Report Discrepancies</h4>
+          <h3>⚖️ 報表口徑差異 Report Discrepancies</h3>
           <p class="zh-only">標準報表、探索報表、Looker Studio 直連、API 查詢，四者計算方式與去重邏輯有細微差異，數字可能不一致。</p>
           <p class="en-only">Standard reports, Explorations, Looker Studio direct, and API queries may show slightly different numbers due to sampling and dedup logic.</p>
         </div>
         <div class="notice-card">
-          <h4>🚫 不再支援 Views No More Views</h4>
+          <h3>🚫 不再支援 Views No More Views</h3>
           <p class="zh-only">GA4 取消 UA 的多個 View（檢視）功能，改由 Data Filters（資料篩選器）部分取代，規劃帳戶架構時需調整。</p>
           <p class="en-only">GA4 removed UA's multiple Views. Data Filters partially replace this; adjust your account architecture accordingly.</p>
         </div>
         <div class="notice-card">
-          <h4>🔐 Consent Mode v2 合規</h4>
+          <h3>🔐 Consent Mode v2 合規</h3>
           <p class="zh-only">GDPR/CCPA 環境下需正確設定 Consent Mode v2，否則 EU 流量資料會因用戶拒絕追蹤而缺失，影響報表準確度。</p>
           <p class="en-only">In GDPR/CCPA environments, properly configure Consent Mode v2. Without it, EU traffic data will be missing when users decline tracking.</p>
         </div>
