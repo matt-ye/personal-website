@@ -14,7 +14,9 @@ import AmountPicker from './AmountPicker.astro';
 <div id="sponsor-modal" role="dialog" aria-modal="true" aria-label="Sponsor">
   <div class="sponsor-card">
     <div class="sponsor-ico">☕</div>
-    <h3><T zh="贊助 Matt" en="Sponsor Matt" /></h3>
+    {/* h2 而非 h3：這個 modal 每頁都在，前面不一定有 h2——用 h3 會造成 h1→h3 跳級。
+        它在語意上是頁面的一個獨立區塊（雖然以 modal 呈現），h2 是正確的層級。 */}
+    <h2><T zh="贊助 Matt" en="Sponsor Matt" /></h2>
     <p class="sponsor-desc"><T zh="喜歡這裡的內容嗎？請我喝杯咖啡，支持網站持續更新。" en="Enjoying the content? Buy me a coffee and help keep this site going." /></p>
     <AmountPicker prefix="sponsor" compact />
     <button type="button" class="sponsor-pay" id="sponsor-pay"><T zh="前往付款" en="Continue to payment" /></button>

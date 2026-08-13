@@ -142,7 +142,7 @@
     .link-arrow { color:var(--muted); flex-shrink:0; }
     .fw-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:8px 0; }
     .fw-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; }
-    .fw-card h4 { font-size:.82rem; font-weight:700; color:var(--accent); margin-bottom:8px; }
+    .fw-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
     .fw-row { display:flex; align-items:flex-start; gap:8px; margin-bottom:5px; font-size:.8rem; }
     .fw-label { font-weight:600; flex-shrink:0; min-width:96px; }
     .fw-desc { color:var(--muted); }
@@ -192,6 +192,11 @@
       .header-title .week { display:none; }
       #searchWrap { max-width:170px; }
     }
+  
+    /* 這兩個標題原本是 div，改成 heading 是為了讓爬蟲讀得到文件結構；
+       margin 歸零讓視覺與改動前一致（font-size/font-weight 原本就有明確設定）。 */
+    .topic-title { margin:0; }
+    .hook-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
   </style>
   <script type="application/ld+json">
   {
@@ -268,8 +273,7 @@
     <section id="overview">
       <div class="hero">
         <div class="crumb"><a href="/projects/marketing/">← 行銷專欄 Marketing</a> · 行銷學習地圖 W1-2</div>
-        <h1 class="zh-only">行銷基礎與 2025-26 趨勢</h1>
-        <h1 class="en-only">Marketing Foundations & 2025-26 Trends</h1>
+        <h1><span class="zh-only">行銷基礎與 2025-26 趨勢</span><span class="en-only">Marketing Foundations & 2025-26 Trends</span></h1>
         <p class="zh-only">漏斗思維的百年演進、內容與廣告的取捨，以及 AI 時代行銷的三大變局。</p>
         <p class="en-only">A century of funnel thinking, the content-vs-ads tradeoff, and three seismic shifts in AI-era marketing.</p>
         <div class="hero-goals">
@@ -287,8 +291,7 @@
         <div class="topic-header" onclick="toggleCard('card-funnels')">
           <div class="topic-icon">🔻</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">漏斗演進三部曲：AIDA → AARRR → Flywheel</div>
-            <div class="topic-title en-only">Funnel Evolution: AIDA → AARRR → Flywheel</div>
+            <h2 class="topic-title"><span class="zh-only">漏斗演進三部曲：AIDA → AARRR → Flywheel</span><span class="en-only">Funnel Evolution: AIDA → AARRR → Flywheel</span></h2>
             <div class="topic-subtitle">1898 → 2007 → 2018</div>
             <div class="topic-tags"><span class="tag tag-green">Week 1</span><span class="tag tag-teal">必讀 Core</span></div>
           </div>
@@ -371,8 +374,7 @@
         <div class="topic-header" onclick="toggleCard('card-ca')">
           <div class="topic-icon">⚖️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">內容行銷 vs 付費廣告</div>
-            <div class="topic-title en-only">Content Marketing vs Paid Ads</div>
+            <h2 class="topic-title"><span class="zh-only">內容行銷 vs 付費廣告</span><span class="en-only">Content Marketing vs Paid Ads</span></h2>
             <div class="topic-subtitle zh-only">資產 vs 租金</div>
             <div class="topic-subtitle en-only">Asset vs Rent</div>
             <div class="topic-tags"><span class="tag tag-green">Week 1</span><span class="tag tag-blue">策略 Strategy</span></div>
@@ -411,8 +413,7 @@
         <div class="topic-header" onclick="toggleCard('card-trends')">
           <div class="topic-icon">🚀</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">2025-26 三大變局 + Creator Economy 現實</div>
-            <div class="topic-title en-only">2025-26 Seismic Shifts + Creator Economy Reality</div>
+            <h2 class="topic-title"><span class="zh-only">2025-26 三大變局 + Creator Economy 現實</span><span class="en-only">2025-26 Seismic Shifts + Creator Economy Reality</span></h2>
             <div class="topic-subtitle">AI Marketing · AEO/GEO · Social Search · Zero-Click</div>
             <div class="topic-tags"><span class="tag tag-green">Week 2</span><span class="tag tag-orange">時效敏感 Time-sensitive</span></div>
           </div>
@@ -437,12 +438,12 @@
             <div class="sub-content">
               <div class="fw-grid">
                 <div class="fw-card">
-                  <h4>AEO — Answer Engine Optimization</h4>
+                  <h3>AEO — Answer Engine Optimization</h3>
                   <p style="font-size:.8rem" class="zh-only">優化給 AI 搜尋功能（Google AI Overviews、featured snippets）<strong>直接引用</strong>你的內容。</p>
                   <p style="font-size:.8rem" class="en-only">Optimizing for AI search features (Google AI Overviews, featured snippets) to <strong>quote you directly</strong>.</p>
                 </div>
                 <div class="fw-card">
-                  <h4>GEO — Generative Engine Optimization</h4>
+                  <h3>GEO — Generative Engine Optimization</h3>
                   <p style="font-size:.8rem" class="zh-only">讓 LLM（ChatGPT / Claude / Gemini）生成回答時<strong>引用你為來源</strong>。</p>
                   <p style="font-size:.8rem" class="en-only">Getting LLMs (ChatGPT / Claude / Gemini) to <strong>cite you as a source</strong> in generated answers.</p>
                 </div>
@@ -510,8 +511,7 @@
         <div class="topic-header" onclick="toggleCard('card-fw')">
           <div class="topic-icon">🧭</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">三個必學框架：JTBD、StoryBrand、Hook Model</div>
-            <div class="topic-title en-only">3 Key Frameworks: JTBD, StoryBrand, Hook Model</div>
+            <h2 class="topic-title"><span class="zh-only">三個必學框架：JTBD、StoryBrand、Hook Model</span><span class="en-only">3 Key Frameworks: JTBD, StoryBrand, Hook Model</span></h2>
             <div class="topic-subtitle zh-only">需求洞察 · 品牌敘事 · 習慣設計</div>
             <div class="topic-subtitle en-only">Demand Insight · Brand Narrative · Habit Design</div>
             <div class="topic-tags"><span class="tag tag-green">Week 2</span><span class="tag tag-teal">必讀 Core</span></div>
@@ -593,8 +593,7 @@
         <div class="topic-header" onclick="toggleCard('card-practice')">
           <div class="topic-icon">✏️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">實作練習</div>
-            <div class="topic-title en-only">Practice Exercises</div>
+            <h2 class="topic-title"><span class="zh-only">實作練習</span><span class="en-only">Practice Exercises</span></h2>
             <div class="topic-subtitle zh-only">用自己的專案練，不是紙上談兵</div>
             <div class="topic-subtitle en-only">Practice on your real projects</div>
             <div class="topic-tags"><span class="tag tag-green">動手做 Hands-on</span></div>
@@ -632,8 +631,7 @@
         <div class="topic-header" onclick="toggleCard('card-res')">
           <div class="topic-icon">🔗</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">參考資源</div>
-            <div class="topic-title en-only">References</div>
+            <h2 class="topic-title"><span class="zh-only">參考資源</span><span class="en-only">References</span></h2>
             <div class="topic-subtitle zh-only">官方 / 第一手研究優先</div>
             <div class="topic-subtitle en-only">Official / first-party research first</div>
           </div>

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>短影音製作方法 — Short-Form Video | Marketing Column · Matt Ye</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <meta name="description" content="Hook 公式、三平台規格與 safe zone、CapCut/DaVinci/Descript 工具選型、一源多用 repurposing 系統與 social SEO 發布策略。中英雙語行銷學習單元 W8-10。">
+  <meta name="description" content="Hook 公式、三平台規格與 safe zone、剪輯工具選型、一源多用 repurposing 系統，以及 social SEO 發布策略。">
   <meta name="author" content="Ching-Wei Ye">
   <link rel="canonical" href="https://mattye.dev/projects/marketing/short-video/">
   <meta property="og:type" content="article">
@@ -122,7 +122,7 @@
     .practice-box strong { color:var(--green); display:block; margin-bottom:6px; }
     .hook-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; margin:10px 0; }
     .hook-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; }
-    .hook-card h4 { font-size:.82rem; font-weight:700; color:var(--accent); margin-bottom:4px; }
+    
     .hook-card p { font-size:.78rem; color:var(--muted); margin:0; }
     .table-wrap { overflow-x:auto; margin:8px 0; }
     .data-table { width:100%; border-collapse:collapse; font-size:.84rem; }
@@ -183,6 +183,11 @@
       .header-title .week { display:none; }
       #searchWrap { max-width:170px; }
     }
+  
+    /* 這兩個標題原本是 div，改成 heading 是為了讓爬蟲讀得到文件結構；
+       margin 歸零讓視覺與改動前一致（font-size/font-weight 原本就有明確設定）。 */
+    .topic-title { margin:0; }
+    .hook-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
   </style>
   <script type="application/ld+json">
   {
@@ -264,8 +269,7 @@
     <section id="overview">
       <div class="hero">
         <div class="crumb"><a href="/projects/marketing/">← 行銷專欄 Marketing</a> · 行銷學習地圖 W8-10</div>
-        <h1 class="zh-only">短影音製作方法</h1>
-        <h1 class="en-only">Short-Form Video Production</h1>
+        <h1><span class="zh-only">短影音製作方法</span><span class="en-only">Short-Form Video Production</span></h1>
         <p class="zh-only">從前 3 秒的 hook 到一源多用的內容系統——短影音先求量與迭代速度，再求精。</p>
         <p class="en-only">From the 3-second hook to a repurposing system — in short-form video, volume and iteration speed come before polish.</p>
         <div class="hero-goals">
@@ -285,8 +289,7 @@
         <div class="topic-header" onclick="toggleCard('card-structure')">
           <div class="topic-icon">🏗️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">四段式腳本框架</div>
-            <div class="topic-title en-only">The 4-Part Script Framework</div>
+            <h2 class="topic-title"><span class="zh-only">四段式腳本框架</span><span class="en-only">The 4-Part Script Framework</span></h2>
             <div class="topic-subtitle">Hook → Value Drop → Story/Payoff → CTA</div>
             <div class="topic-tags"><span class="tag tag-green">Week 8</span><span class="tag tag-violet">必讀 Core</span></div>
           </div>
@@ -332,8 +335,7 @@
         <div class="topic-header" onclick="toggleCard('card-hooks')">
           <div class="topic-icon">🪝</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">六種 Hook 公式</div>
-            <div class="topic-title en-only">Six Hook Formulas</div>
+            <h2 class="topic-title"><span class="zh-only">六種 Hook 公式</span><span class="en-only">Six Hook Formulas</span></h2>
             <div class="topic-subtitle zh-only">前 3 秒的武器庫</div>
             <div class="topic-subtitle en-only">Your 3-second arsenal</div>
             <div class="topic-tags"><span class="tag tag-green">Week 8</span></div>
@@ -343,12 +345,12 @@
         <div class="topic-body">
           <div class="sub-content" style="padding-top:16px">
             <div class="hook-grid">
-              <div class="hook-card"><h4>1. <span class="zh-only">反直覺陳述</span><span class="en-only">Contrarian Statement</span></h4><p class="zh-only">「大家都教你 X，但 X 正是你失敗的原因」</p><p class="en-only">"Everyone teaches X — and X is exactly why you're failing"</p></div>
-              <div class="hook-card"><h4>2. <span class="zh-only">驚人數據</span><span class="en-only">Shocking Statistic</span></h4><p class="zh-only">「97% 的 Pinterest 搜尋不含品牌名」</p><p class="en-only">"97% of Pinterest searches contain no brand name"</p></div>
-              <div class="hook-card"><h4>3. <span class="zh-only">大膽提問</span><span class="en-only">Bold Question</span></h4><p class="zh-only">「你知道你的影片為什麼沒人看完嗎？」</p><p class="en-only">"Do you know why nobody finishes your videos?"</p></div>
-              <div class="hook-card"><h4>4. <span class="zh-only">視覺 Pattern Interrupt</span><span class="en-only">Visual Pattern Interrupt</span></h4><p class="zh-only">開頭放最戲劇性的畫面（成品 reveal、意外瞬間）再倒敘</p><p class="en-only">Open with the most dramatic frame (the reveal, the surprise), then rewind</p></div>
-              <div class="hook-card"><h4>5. <span class="zh-only">「別做 X，改做 Y」</span><span class="en-only">"Stop X, Do Y Instead"</span></h4><p class="zh-only">「別再買現成的捕夢網了」</p><p class="en-only">"Stop buying mass-produced dreamcatchers"</p></div>
-              <div class="hook-card"><h4>6. <span class="zh-only">開放式懸念</span><span class="en-only">Curiosity Gap</span></h4><p class="zh-only">「這個圖案是一條數學公式畫出來的」</p><p class="en-only">"This pattern was drawn by a single math formula"</p></div>
+              <div class="hook-card"><h3>1. <span class="zh-only">反直覺陳述</span><span class="en-only">Contrarian Statement</span></h3><p class="zh-only">「大家都教你 X，但 X 正是你失敗的原因」</p><p class="en-only">"Everyone teaches X — and X is exactly why you're failing"</p></div>
+              <div class="hook-card"><h3>2. <span class="zh-only">驚人數據</span><span class="en-only">Shocking Statistic</span></h3><p class="zh-only">「97% 的 Pinterest 搜尋不含品牌名」</p><p class="en-only">"97% of Pinterest searches contain no brand name"</p></div>
+              <div class="hook-card"><h3>3. <span class="zh-only">大膽提問</span><span class="en-only">Bold Question</span></h3><p class="zh-only">「你知道你的影片為什麼沒人看完嗎？」</p><p class="en-only">"Do you know why nobody finishes your videos?"</p></div>
+              <div class="hook-card"><h3>4. <span class="zh-only">視覺 Pattern Interrupt</span><span class="en-only">Visual Pattern Interrupt</span></h3><p class="zh-only">開頭放最戲劇性的畫面（成品 reveal、意外瞬間）再倒敘</p><p class="en-only">Open with the most dramatic frame (the reveal, the surprise), then rewind</p></div>
+              <div class="hook-card"><h3>5. <span class="zh-only">「別做 X，改做 Y」</span><span class="en-only">"Stop X, Do Y Instead"</span></h3><p class="zh-only">「別再買現成的捕夢網了」</p><p class="en-only">"Stop buying mass-produced dreamcatchers"</p></div>
+              <div class="hook-card"><h3>6. <span class="zh-only">開放式懸念</span><span class="en-only">Curiosity Gap</span></h3><p class="zh-only">「這個圖案是一條數學公式畫出來的」</p><p class="en-only">"This pattern was drawn by a single math formula"</p></div>
             </div>
             <p style="font-size:.82rem;color:var(--muted)" class="zh-only">💡 同一支影片可以剪三個版本、各用不同 hook 發布測試——hook 是最值得 A/B 的變數。</p>
             <p style="font-size:.82rem;color:var(--muted)" class="en-only">💡 Cut three versions of the same video with different hooks — the hook is the single most testable variable.</p>
@@ -363,8 +365,7 @@
         <div class="topic-header" onclick="toggleCard('card-specs')">
           <div class="topic-icon">📐</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">三平台規格與 Safe Zone</div>
-            <div class="topic-title en-only">Specs & Safe Zones</div>
+            <h2 class="topic-title"><span class="zh-only">三平台規格與 Safe Zone</span><span class="en-only">Specs & Safe Zones</span></h2>
             <div class="topic-subtitle zh-only">一支母檔通投三平台</div>
             <div class="topic-subtitle en-only">One master file, three platforms</div>
             <div class="topic-tags"><span class="tag tag-green">Week 9</span><span class="tag tag-blue">規格 Specs</span></div>
@@ -410,8 +411,7 @@
         <div class="topic-header" onclick="toggleCard('card-tools')">
           <div class="topic-icon">✂️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">剪輯工具選型</div>
-            <div class="topic-title en-only">Editing Tool Selection</div>
+            <h2 class="topic-title"><span class="zh-only">剪輯工具選型</span><span class="en-only">Editing Tool Selection</span></h2>
             <div class="topic-subtitle zh-only">先求量與迭代速度，再求專業</div>
             <div class="topic-subtitle en-only">Volume and iteration before polish</div>
             <div class="topic-tags"><span class="tag tag-green">Week 9</span><span class="tag tag-orange">CapCut 2025 改制</span></div>
@@ -455,8 +455,7 @@
         <div class="topic-header" onclick="toggleCard('card-captions')">
           <div class="topic-icon">💬</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">字幕、標題與封面</div>
-            <div class="topic-title en-only">Captions, Headlines & Covers</div>
+            <h2 class="topic-title"><span class="zh-only">字幕、標題與封面</span><span class="en-only">Captions, Headlines & Covers</span></h2>
             <div class="topic-subtitle zh-only">大量觀眾靜音觀看——字幕不是選配</div>
             <div class="topic-subtitle en-only">Many watch on mute — captions aren't optional</div>
             <div class="topic-tags"><span class="tag tag-green">Week 9</span></div>
@@ -491,8 +490,7 @@
         <div class="topic-header" onclick="toggleCard('card-repurpose')">
           <div class="topic-icon">♻️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">一源多用 Repurposing 系統</div>
-            <div class="topic-title en-only">The Repurposing System</div>
+            <h2 class="topic-title"><span class="zh-only">一源多用 Repurposing 系統</span><span class="en-only">The Repurposing System</span></h2>
             <div class="topic-subtitle zh-only">一次錄製、四種產出</div>
             <div class="topic-subtitle en-only">Record once, publish four ways</div>
             <div class="topic-tags"><span class="tag tag-green">Week 10</span><span class="tag tag-violet">系統 System</span></div>
@@ -542,8 +540,7 @@
         <div class="topic-header" onclick="toggleCard('card-publish')">
           <div class="topic-icon">📅</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">發布策略：頻率、時段、Hashtag 現況</div>
-            <div class="topic-title en-only">Publishing: Cadence, Timing, Hashtags</div>
+            <h2 class="topic-title"><span class="zh-only">發布策略：頻率、時段、Hashtag 現況</span><span class="en-only">Publishing: Cadence, Timing, Hashtags</span></h2>
             <div class="topic-subtitle zh-only">穩定 &gt; 爆量 · Social SEO 已取代 hashtag</div>
             <div class="topic-subtitle en-only">Consistency beats bursts · Social SEO has replaced hashtags</div>
             <div class="topic-tags"><span class="tag tag-green">Week 10</span><span class="tag tag-orange">2025-26 轉變</span></div>
@@ -582,8 +579,7 @@
         <div class="topic-header" onclick="toggleCard('card-practice')">
           <div class="topic-icon">✏️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">實作練習</div>
-            <div class="topic-title en-only">Practice Exercises</div>
+            <h2 class="topic-title"><span class="zh-only">實作練習</span><span class="en-only">Practice Exercises</span></h2>
             <div class="topic-subtitle zh-only">三週做完，你會有一條自己的短影音生產線</div>
             <div class="topic-subtitle en-only">Three weeks to your own short-form pipeline</div>
             <div class="topic-tags"><span class="tag tag-green">動手做 Hands-on</span></div>
