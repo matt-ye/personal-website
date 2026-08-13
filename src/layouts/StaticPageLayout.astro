@@ -1,0 +1,79 @@
+---
+/*
+ * 從 public/ 遷移過來的手刻頁共用版型。
+ *
+ * 這些頁刻意不走 BaseLayout：每一頁都是自包含的教材／筆記，有自己的導覽、
+ * 主題切換與版面，不需要站台的 header／footer。這裡只負責 <head>。
+ *
+ * 遷移前 14 頁各自帶一份完整的 head（15 個共通 meta ＋ 各自的選配項），
+ * 改一個 meta 標籤要動 14 個檔案。現在 meta 從 src/data/staticPageMeta.ts 來。
+ *
+ * ⚠ 幾個刻意不「順手統一」的地方：
+ *   htmlAttrs  各頁自己的 data-theme／data-lang 初始值，改了會影響首屏狀態
+ *   jsonLd     原始字串原樣輸出；各頁結構不同（Article／+CreativeWorkSeries／
+ *              +Person／WebPage），重組等於把已經正確的東西再賭一次
+ *   選配 meta  有才輸出，不補預設值——補了就是替作者決定他沒決定的事
+ */
+import type { StaticPageMeta } from '../data/staticPageMeta';
+
+interface Props {
+  meta: StaticPageMeta;
+}
+
+const { meta } = Astro.props;
+const htmlAttrs = { lang: 'zh-TW', ...(meta.htmlAttrs ?? {}) };
+---
+
+<!doctype html>
+<html {...htmlAttrs}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{meta.title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="description" content={meta.description} />
+    <meta name="author" content="Ching-Wei Ye" />
+    <link rel="canonical" href={meta.canonical} />
+
+    <meta property="og:type" content={meta.ogType} />
+    <meta property="og:title" content={meta.ogTitle} />
+    <meta property="og:description" content={meta.ogDescription} />
+    <meta property="og:url" content={meta.canonical} />
+    <meta property="og:site_name" content="葉淨維 Matt Ye" />
+    <meta property="og:image" content={meta.ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {meta.ogLocale && <meta property="og:locale" content={meta.ogLocale} />}
+    {meta.ogImageAlt && <meta property="og:image:alt" content={meta.ogImageAlt} />}
+    {meta.articlePublishedTime && (
+      <meta property="article:published_time" content={meta.articlePublishedTime} />
+    )}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.ogTitle} />
+    <meta name="twitter:description" content={meta.ogDescription} />
+    <meta name="twitter:image" content={meta.ogImage} />
+    {meta.twitterSite && <meta name="twitter:site" content={meta.twitterSite} />}
+    {meta.twitterCreator && <meta name="twitter:creator" content={meta.twitterCreator} />}
+
+    {meta.themeColor && <meta name="theme-color" content={meta.themeColor} />}
+
+    {meta.jsonLd?.map((ld) => <script type="application/ld+json" set:html={ld} />)}
+
+    {/* Google Analytics 4——與 BaseLayout 同一組設定。
+        遷移前這些頁沒有 GA，靠 astro.config 的 inject-ga-static-html 在建置後
+        用字串手術補上。現在頁面由 Astro 產生，直接放在這裡；那個外掛也就不必再跑。 */}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1RKL72DPPW"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-1RKL72DPPW');
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
