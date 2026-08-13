@@ -151,7 +151,8 @@ draft: false
 
 ## 參考資料
 
-1. Gary P. Brinson, L. Randolph Hood, Gilbert L. Beebower, *"Determinants of Portfolio Performance"*, Financial Analysts Journal, 1986 — 資產配置決定報酬波動 90% 的原始研究
+1. Gary P. Brinson, L. Randolph Hood, Gilbert L. Beebower, [*"Determinants of Portfolio Performance"*](https://doi.org/10.2469/faj.v42.n4.39), Financial Analysts Journal, 42(4), 1986, pp. 39–44 — 資產配置決定報酬波動 90% 的原始研究
+   <span class="source-note" style="display:block; border:0; padding:0; margin:0.35rem 0 0;">⚠ 這個數字最常被誤讀成「報酬的 90% 由資產配置決定」。原始研究講的是**同一個投資組合的報酬隨時間的變異**有九成以上可由資產配置解釋——不是報酬水準，也不是不同投資組合之間的高下。本文採前者的說法。</span>
 2. Vanguard Research, *"Dollar-cost averaging just means taking risk later"*, Vanguard, 2012 — Lump Sum vs DCA 回測
 3. Ray Dalio / Bridgewater, *All Weather Portfolio* 概念 — 全天候資產配置框架
 4. John C. Bogle, *The Little Book of Common Sense Investing*, Wiley, 2007

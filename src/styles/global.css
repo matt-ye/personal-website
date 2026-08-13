@@ -568,6 +568,24 @@ footer .container {
 .prose tr:last-child td { border-bottom: none; }
 .prose tbody tr:hover { background: var(--color-surface); }
 
+/* 出處註記：緊接在數據圖表之後，說明數字從哪來。
+   刻意做得小而不搶戲——它的作用是讓讀者「查得到」，不是強調。
+   YMYL 主題（財經、醫療、法律）的數據一律要有這個。 */
+.source-note {
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  margin: -0.5rem 0 1.75rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--color-border);
+}
+.source-note a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.source-note a:hover { color: var(--color-accent); }
+
 /* Prose visual components */
 .callout {
   background: var(--color-surface);
