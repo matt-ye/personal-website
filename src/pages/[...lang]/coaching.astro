@@ -1,13 +1,25 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import T from '../components/T.astro';
-import { AWARD } from '../i18n/dict';
-import { getMenteesAwards, getTestimonials } from '../lib/sheets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import T from '../../components/T.astro';
+import { AWARD } from '../../i18n/dict';
+import { getMenteesAwards, getTestimonials } from '../../lib/sheets';
 
 /* 資料在 build 期備好（src/data/sheets/*.json，每日由 Actions 同步）。
    原本在瀏覽器端 fetch Google Sheet，培訓戰績與學員回饋都不在 HTML 裡。 */
 
 /* 形狀對齊下方 client script 的 data——那些 render 函式吃這組欄名。 */
+/* 同時產出 /coaching/ 與 /en/coaching/，見 [...lang]/about.astro 的說明。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+
+/* 與下方 client script 的 tr()/pick() 是同一套規則。兩邊必須一致——不一致的話
+   畫面會先顯示 build 期那版、JS 載入後再跳成另一版，使用者看到閃動。 */
+const tr = (map: Record<string, string>, v: string) => (isEn && map && map[v]) ? map[v] : v;
+const pick = (zh: string, en: string) => (isEn && en) ? en : (zh || en || '');
+
 const awardsData = getMenteesAwards()
   .filter((a) => a.contest.zh && a.year)
   .map((a) => ({
@@ -44,8 +56,11 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
 }, 0);
 ---
 <BaseLayout
-  title="Coaching — Matt Ye"
-  description="葉淨維 Matt Ye 的競賽培訓成果。協助 MAIC、Falling Walls Lab、ATCC 等學生團隊奪獎，獎金逾 147 萬。"
+  title={isEn ? 'Coaching' : 'Coaching — Matt Ye'}
+  description={isEn
+    ? 'Competition coaching results by Ching-Wei (Matt) Ye — mentoring student teams to wins at MAIC, Falling Walls Lab and ATCC, with over NT$1.47M in prize money.'
+    : '葉淨維 Matt Ye 的競賽培訓成果。協助 MAIC、Falling Walls Lab、ATCC 等學生團隊奪獎，獎金逾 147 萬。'}
+  lang={isEn ? 'en' : 'zh-TW'}
   image="/OG.png"
 >
   <div class="container-wide">
@@ -90,17 +105,17 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
         <ul class="static-award-list">
           {maicRows.map((r) => (
             <li>
-              <b>{r.year}</b>　{r.name}　{r.award}
+              <b>{r.year}</b>　{pick(r.name, r.contestName)}　{tr(AWARD, r.award)}
               {r.mentee && <span>　—　{r.mentee}</span>}
               {/* 連結也要進 build 期版本——只渲染文字的話，這些外連對爬蟲等於不存在 */}
               {/* ⚠ 「報導連結」欄在 MAIC/ATCC 放網址，在 Falling Walls 卻放
                   「年份｜人名｜主題」（client 端靠 split('｜') 取人名）。
                   同一欄兩種語意，所以這裡必須先確認它真的是網址才做成連結。 */}
-              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　觀賽紀錄 →</a>}
+              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　<T zh="觀賽紀錄 →" en="Match notes →" /></a>}
               {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
-                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　觀賽影片 {arr.length > 1 ? i + 1 : ''}▶</a>
+                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　<T zh="觀賽影片" en="Match video" /> {arr.length > 1 ? i + 1 : ''}▶</a>
               ))}
-              {r.highlightZh && <div class="static-award-note">{r.highlightZh}</div>}
+              {pick(r.highlightZh, r.highlightEn) && <div class="static-award-note">{pick(r.highlightZh, r.highlightEn)}</div>}
             </li>
           ))}
         </ul>
@@ -117,17 +132,17 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
         <ul class="static-award-list">
           {fwRows.map((r) => (
             <li>
-              <b>{r.year}</b>　{r.name}　{r.award}
+              <b>{r.year}</b>　{pick(r.name, r.contestName)}　{tr(AWARD, r.award)}
               {r.mentee && <span>　—　{r.mentee}</span>}
               {/* 連結也要進 build 期版本——只渲染文字的話，這些外連對爬蟲等於不存在 */}
               {/* ⚠ 「報導連結」欄在 MAIC/ATCC 放網址，在 Falling Walls 卻放
                   「年份｜人名｜主題」（client 端靠 split('｜') 取人名）。
                   同一欄兩種語意，所以這裡必須先確認它真的是網址才做成連結。 */}
-              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　觀賽紀錄 →</a>}
+              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　<T zh="觀賽紀錄 →" en="Match notes →" /></a>}
               {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
-                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　觀賽影片 {arr.length > 1 ? i + 1 : ''}▶</a>
+                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　<T zh="觀賽影片" en="Match video" /> {arr.length > 1 ? i + 1 : ''}▶</a>
               ))}
-              {r.highlightZh && <div class="static-award-note">{r.highlightZh}</div>}
+              {pick(r.highlightZh, r.highlightEn) && <div class="static-award-note">{pick(r.highlightZh, r.highlightEn)}</div>}
             </li>
           ))}
         </ul>
@@ -144,17 +159,17 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
         <ul class="static-award-list">
           {atccRows.map((r) => (
             <li>
-              <b>{r.year}</b>　{r.name}　{r.award}
+              <b>{r.year}</b>　{pick(r.name, r.contestName)}　{tr(AWARD, r.award)}
               {r.mentee && <span>　—　{r.mentee}</span>}
               {/* 連結也要進 build 期版本——只渲染文字的話，這些外連對爬蟲等於不存在 */}
               {/* ⚠ 「報導連結」欄在 MAIC/ATCC 放網址，在 Falling Walls 卻放
                   「年份｜人名｜主題」（client 端靠 split('｜') 取人名）。
                   同一欄兩種語意，所以這裡必須先確認它真的是網址才做成連結。 */}
-              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　觀賽紀錄 →</a>}
+              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　<T zh="觀賽紀錄 →" en="Match notes →" /></a>}
               {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
-                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　觀賽影片 {arr.length > 1 ? i + 1 : ''}▶</a>
+                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　<T zh="觀賽影片" en="Match video" /> {arr.length > 1 ? i + 1 : ''}▶</a>
               ))}
-              {r.highlightZh && <div class="static-award-note">{r.highlightZh}</div>}
+              {pick(r.highlightZh, r.highlightEn) && <div class="static-award-note">{pick(r.highlightZh, r.highlightEn)}</div>}
             </li>
           ))}
         </ul>
@@ -168,8 +183,8 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
         <div class="testi-track" id="testi-track">
           {testimonialsData.map((t) => (
             <blockquote class="static-testi">
-              <p>{t.quote}</p>
-              <cite>{t.team}{t.context && `　${t.context}`}</cite>
+              <p>{pick(t.quote, t.quoteEn)}</p>
+              <cite>{t.team}{pick(t.context, t.contextEn) && `　${pick(t.context, t.contextEn)}`}</cite>
             </blockquote>
           ))}
         </div>

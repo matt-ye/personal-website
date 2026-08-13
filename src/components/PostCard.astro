@@ -2,6 +2,9 @@
 interface Props {
   id: string;
   title: string;
+  /* 標題退回中文時傳 'zh-TW'——英文頁上沒有英文標題的文章會顯示中文，
+     不標的話爬蟲會把中文當成英文，污染整頁的語言判定。 */
+  titleLang?: string;
   description: string;
   pubDate: Date;
   lang: 'zh' | 'en';
@@ -14,7 +17,7 @@ interface Props {
   headingLevel?: 2 | 3;
 }
 
-const { id, title, description, pubDate, lang, series, headingLevel = 3 } = Astro.props;
+const { id, title, titleLang, description, pubDate, lang, series, headingLevel = 3 } = Astro.props;
 
 const Heading = `h${headingLevel}` as 'h2' | 'h3';
 
@@ -30,7 +33,7 @@ const dateFormatted = pubDate.toLocaleDateString('en-US', {
         語意上是標題，但不產生自己的盒子，所以 .post-card-header 的 flex
         排版與原本完全一致——標題、日期、語言標籤仍然是同一層的 flex 子元素。 */}
     <Heading class="post-card-heading">
-      <a href={`/writing/${id}/`} class="post-card-title">{title}</a>
+      <a href={`/writing/${id}/`} class="post-card-title" lang={titleLang}>{title}</a>
     </Heading>
     <span class="post-card-date">
       <time datetime={pubDate.toISOString()}>{dateFormatted}</time>

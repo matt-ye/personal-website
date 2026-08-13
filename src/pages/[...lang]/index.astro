@@ -1,27 +1,27 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import T from '../components/T.astro';
-import PostCard from '../components/PostCard.astro';
-import Tour from '../components/Tour.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import T from '../../components/T.astro';
+import PostCard from '../../components/PostCard.astro';
+import Tour from '../../components/Tour.astro';
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
-import { projects } from '../data/projects';
+import { projects } from '../../data/projects';
 /* hero 照片放 src/assets/ 而非 public/：只有前者會經過 Astro 的圖片最佳化。
    原始檔是相機直出的 6.5–7.5 MB，直接送出去就是首頁 20.8 MB 的來源。 */
-import photoPointing from '../assets/photo-pointing.jpg';
-import photoStanding from '../assets/photo-standing.jpg';
-import photo5 from '../assets/photo-5.jpg';
+import photoPointing from '../../assets/photo-pointing.jpg';
+import photoStanding from '../../assets/photo-standing.jpg';
+import photo5 from '../../assets/photo-5.jpg';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
   .slice(0, 3);
 
-import speechesRaw from '../data/sheets/speeches.json';
-import siteContentRaw from '../data/sheets/site-content.json';
-import coreStrengthsRaw from '../data/sheets/core-strengths.json';
-import experienceRolesRaw from '../data/sheets/experience-roles.json';
-import personalAwardsRaw from '../data/sheets/personal-awards.json';
-import { getSpeeches, getSiteContent, getCoreStrengths, getExperienceRoles, getPersonalAwards } from '../lib/sheets';
+import speechesRaw from '../../data/sheets/speeches.json';
+import siteContentRaw from '../../data/sheets/site-content.json';
+import coreStrengthsRaw from '../../data/sheets/core-strengths.json';
+import experienceRolesRaw from '../../data/sheets/experience-roles.json';
+import personalAwardsRaw from '../../data/sheets/personal-awards.json';
+import { getSpeeches, getSiteContent, getCoreStrengths, getExperienceRoles, getPersonalAwards } from '../../lib/sheets';
 
 /* 五個 Sheet 的資料在 build 期就備好（每日由 Actions 同步進 src/data/sheets/）。
    原本是瀏覽器端 fetch——首頁因此有 8 處「載入中」，核心內容不在 HTML 裡。
@@ -41,6 +41,18 @@ const CONTENT_ROWS = toRows(siteContentRaw as Record<string, string>[]);
 const STRENGTHS_ROWS = toRows(coreStrengthsRaw as Record<string, string>[]);
 const ROLES_ROWS = toRows(experienceRolesRaw as Record<string, string>[]);
 const AWARDS_ROWS = toRows(personalAwardsRaw as Record<string, string>[]);
+
+/* 同時產出 / 與 /en/，見 [...lang]/about.astro 的說明。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+
+/* 與 client script 的 pick() 同一套規則：沒有英文就退回中文。
+   ⚠ 這一頁在遷移前，build 期只輸出 .zh——Sheet 裡的英文從未進入 HTML，
+   只有 JS 載入後才會被換掉。爬蟲與不執行 JS 的讀者因此永遠看到中文。 */
+const pick = (zh: string, en: string) => (isEn && en) ? en : (zh || en || '');
 
 /* 給不執行 JS 的訪客（含爬蟲）用的 build 期版本 */
 const EXCLUDED_TYPES = new Set(['彩排', '教材製作']);
@@ -70,7 +82,7 @@ const content = getSiteContent();
 const heroTagline = Object.keys(content)
   .filter((k) => k.startsWith('hero_tagline_line'))
   .sort()
-  .map((k) => content[k].zh)
+  .map((k) => pick(content[k].zh, content[k].en))
   .join(' ');
 
 const strengths = getCoreStrengths();
@@ -78,8 +90,11 @@ const roles = getExperienceRoles();
 const awards = getPersonalAwards();
 ---
 <BaseLayout
-  title="葉淨維 Matt Ye"
-  description="葉淨維 Ching-Wei (Matt) Ye — 職能治療師、研究者、溝通教育者。PhD @ NTU，150+ 場演講，專注 AI 輔助診斷與簡報教育。"
+  title={isEn ? 'Matt Ye' : '葉淨維 Matt Ye'}
+  description={isEn
+    ? 'Ching-Wei (Matt) Ye — occupational therapist, researcher and communication educator. NTU PhD candidate, 150+ talks, AI-assisted diagnosis and presentation.'
+    : '葉淨維 Ching-Wei (Matt) Ye — 職能治療師、研究者、溝通教育者。PhD @ NTU，150+ 場演講，專注 AI 輔助診斷與簡報教育。'}
+  lang={isEn ? 'en' : 'zh-TW'}
   image="/OG.png"
 >
   <div class="container-wide">
@@ -191,8 +206,8 @@ const awards = getPersonalAwards();
         {strengths.map((s) => (
           <div class="pillar-card">
             <div class="pillar-icon">{s.icon}</div>
-            <div class="pillar-title">{s.title.zh}</div>
-            <p class="pillar-desc">{s.description.zh}</p>
+            <div class="pillar-title">{pick(s.title.zh, s.title.en)}</div>
+            <p class="pillar-desc">{pick(s.description.zh, s.description.en)}</p>
           </div>
         ))}
       </div>
@@ -206,9 +221,15 @@ const awards = getPersonalAwards();
           <div class="role-item">
             <div class="role-icon">{r.icon}</div>
             <div class="role-body">
-              <div class="role-title">{r.title.zh}</div>
-              <div class="role-org">{r.org.zh}{r.period && `　${r.period}`}</div>
-              {r.description.zh && <p class="role-desc">{r.description.zh}</p>}
+              <div class="role-title">{pick(r.title.zh, r.title.en)}</div>
+              <div class="role-org">{pick(r.org.zh, r.org.en)}{r.period && `　${r.period}`}</div>
+              {/* set:html 而非插值：這些描述有 5 筆含 <a> 連結，用 {} 會被轉義成字面文字
+                  ——遷移前的 build 產物確實有 9 處 &lt;a href=...，那些外連對爬蟲等於
+                  不存在（使用者看得到是因為 JS 載入後重繪過）。
+                  資料來源是自己維護的 Sheet，不是使用者輸入。 */}
+              {pick(r.description.zh, r.description.en) && (
+                <p class="role-desc" set:html={pick(r.description.zh, r.description.en)} />
+              )}
             </div>
           </div>
         ))}
@@ -224,10 +245,10 @@ const awards = getPersonalAwards();
             <b>{a.year}</b>
             {/* 有連結就做成連結——只渲染文字的話這些外連對爬蟲不存在 */}
             {a.link
-              ? <a href={a.link} target="_blank" rel="noopener">{a.contest.zh}</a>
-              : <span>{a.contest.zh}</span>}
-            　{a.award.zh}
-            {a.host.zh && <span>　{a.host.zh}</span>}
+              ? <a href={a.link} target="_blank" rel="noopener">{pick(a.contest.zh, a.contest.en)}</a>
+              : <span>{pick(a.contest.zh, a.contest.en)}</span>}
+            　{pick(a.award.zh, a.award.en)}
+            {pick(a.host.zh, a.host.en) && <span>　{pick(a.host.zh, a.host.en)}</span>}
           </div>
         ))}
       </div>
@@ -241,7 +262,7 @@ const awards = getPersonalAwards();
           <div class="org-row">
             <span class={`org-rank${p.rank <= 3 ? ' org-rank-top' : ''}`}>{String(p.rank).padStart(2, '0')}</span>
             <span class="org-name">
-              <span class="org-name-zh">
+              <span class="org-name-zh" lang="zh-TW">
                 {p.url
                   ? <a href={p.url} target="_blank" rel="noopener">{p.name}</a>
                   : p.name}
@@ -286,7 +307,8 @@ const awards = getPersonalAwards();
           {posts.map(post => (
             <PostCard
               id={post.id}
-              title={post.data.title}
+              title={isEn ? (post.data.titleEn ?? post.data.title) : post.data.title}
+            titleLang={isEn && !post.data.titleEn ? 'zh-TW' : undefined}
               description={post.data.description}
               pubDate={post.data.pubDate}
               lang={post.data.lang}
