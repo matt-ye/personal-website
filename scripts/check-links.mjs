@@ -35,6 +35,31 @@ function collectHtml(dir, out = []) {
   return out;
 }
 
+/**
+ * href 屬性值裡的 HTML 實體要先解碼再拿去 fetch。
+ *
+ * `&` 在屬性值裡本來就該寫成 `&amp;`——那是正確的 HTML，瀏覽器解析後送出的是 `&`。
+ * 直接拿原始字串去 fetch，等於送出一個瀏覽器永遠不會送的網址。
+ *
+ * 實際踩到：`press.ntu.edu.tw/...?act=book&amp;refer=...` 被報成 404，
+ * 換成 `&` 之後是 200——網址是好的，是檢查器沒解碼。
+ * 有些站（YouTube）會容忍多餘的 `amp;` 參數，所以這個 bug 只在嚴格的站上顯形，
+ * 更難被發現。
+ *
+ * 驗證工具要模擬真實客戶端的行為：它驗的是「使用者點下去會怎樣」，
+ * 不是「原始碼字面長怎樣」。
+ */
+function decodeEntities(s) {
+  return s
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;|&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_m, d) => String.fromCodePoint(Number(d)))
+    .replace(/&#x([0-9a-f]+);/gi, (_m, h) => String.fromCodePoint(parseInt(h, 16)));
+}
+
 /** 讀一行一個網址的清單檔（# 開頭是註解） */
 function readUrlList(name) {
   const p = path.join(ROOT, 'scripts', name);
@@ -84,7 +109,7 @@ for (const file of files) {
 
   // 只看 <a> 的 href：<link rel="preconnect"> / canonical 之類不是給人點的連結
   for (const m of html.matchAll(/<a\b[^>]*?href="([^"]+)"/g)) {
-    const href = m[1];
+    const href = decodeEntities(m[1]);
     if (href.includes("' +")) continue; // JS 樣板字串組出來的連結，另行人工確認
 
     // mailto:／tel:／javascript: 沒有可檢查的目標，不是站內路徑也不是可 fetch 的網址
