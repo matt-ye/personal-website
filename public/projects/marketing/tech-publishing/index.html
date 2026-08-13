@@ -190,6 +190,11 @@
       .header-title .week { display:none; }
       #searchWrap { max-width:170px; }
     }
+  
+    /* 這兩個標題原本是 div，改成 heading 是為了讓爬蟲讀得到文件結構；
+       margin 歸零讓視覺與改動前一致（font-size/font-weight 原本就有明確設定）。 */
+    .topic-title { margin:0; }
+    .hook-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
   </style>
   <script type="application/ld+json">
   {
@@ -268,8 +273,7 @@
     <section id="overview">
       <div class="hero">
         <div class="crumb"><a href="/projects/marketing/">← 行銷專欄 Marketing</a> · 行銷學習地圖 W6-7</div>
-        <h1 class="zh-only">技術人發文平台：文化與禁忌</h1>
-        <h1 class="en-only">Tech Publishing Platforms: Culture & Taboos</h1>
+        <h1><span class="zh-only">技術人發文平台：文化與禁忌</span><span class="en-only">Tech Publishing Platforms: Culture & Taboos</span></h1>
         <p class="zh-only">每個平台的反 spam 免疫系統不同，但原理相同——社群先於促銷。學會各平台的語言，你的產品才有資格被看見。</p>
         <p class="en-only">Every platform has a different anti-spam immune system, but the principle is the same — community before promotion.</p>
         <div class="hero-goals">
@@ -287,8 +291,7 @@
         <div class="topic-header" onclick="toggleCard('card-chain')">
           <div class="topic-icon">⛓️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">標準 Launch 鏈路（大圖景）</div>
-            <div class="topic-title en-only">The Standard Launch Chain</div>
+            <h2 class="topic-title"><span class="zh-only">標準 Launch 鏈路（大圖景）</span><span class="en-only">The Standard Launch Chain</span></h2>
             <div class="topic-subtitle zh-only">先看整條路，再學每一站</div>
             <div class="topic-subtitle en-only">See the whole road before each stop</div>
             <div class="topic-tags"><span class="tag tag-orange">總覽 Map</span></div>
@@ -632,8 +635,7 @@
         <div class="topic-header" onclick="toggleCard('card-practice')">
           <div class="topic-icon">✏️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">實作練習</div>
-            <div class="topic-title en-only">Practice Exercises</div>
+            <h2 class="topic-title"><span class="zh-only">實作練習</span><span class="en-only">Practice Exercises</span></h2>
             <div class="topic-subtitle zh-only">用捕夢網生成器當 launch 素材</div>
             <div class="topic-subtitle en-only">Use the dreamcatcher generator as launch material</div>
             <div class="topic-tags"><span class="tag tag-green">動手做 Hands-on</span></div>

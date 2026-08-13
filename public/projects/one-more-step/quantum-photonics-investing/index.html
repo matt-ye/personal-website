@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>矽光子 × 量子電腦 × PQC — 趨勢與投資地圖 · One More Step</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <meta name="description" content="從 AppWorks AW#32 / AW#33 的 PQC 與矽光子趨勢出發，整理矽光子、量子電腦五大硬體路線、光子 EDA / 光運算、光互連物理層（光纖／連接器／FAU），以及 Nvidia 逾 65 億美元光子投資版圖與對應的台股、美股投資標的總覽。" />
+  <meta name="description" content="矽光子、量子電腦五大硬體路線、光子 EDA 與光互連物理層的技術地圖，以及 Nvidia 逾 65 億美元光子投資版圖與對應台股標的。" />
   <link rel="canonical" href="https://mattye.dev/projects/one-more-step/quantum-photonics-investing/">
   <meta name="author" content="Ching-Wei (Matt) Ye">
   <meta property="article:published_time" content="2026-06-25T00:00:00+08:00" />
@@ -171,14 +171,12 @@
       padding: 1.25rem 1.5rem;
       box-shadow: var(--card-shadow);
     }
-    .concept-card h4 {
-      font-size: 0.95rem;
+    .concept-card h3 { font-size: 0.95rem;
       font-weight: 700;
-      margin-bottom: 0.5rem;
+      
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-    }
+      gap: 0.5rem; margin:0 0 4px; }
     .dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; flex-shrink: 0; }
     .dot-1 { background: var(--A1); }
     .dot-2 { background: var(--A2); }
@@ -426,7 +424,7 @@
 
       <div class="concept-grid">
         <div class="concept-card">
-          <h4><span class="dot dot-1"></span>① PQC 後量子密碼</h4>
+          <h3><span class="dot dot-1"></span>① PQC 後量子密碼</h3>
           <p>RSA 等公鑰加密的安全性，建立在「大數分解很難」這個假設上：傳統電腦只能一個一個組合慢慢試。量子電腦的 <strong>Shor 演算法</strong>則繞過暴力嘗試，利用量子疊加態同時探索一個週期函數的所有可能值，把「分解大數」轉換成「找週期」這個量子電腦能高效解的問題，使破解時間從天文數字降到可行範圍；而 Grover 演算法對 AES 等對稱式加密的影響小很多，只把安全強度打對折（用更長金鑰即可應對）。即使能破解 RSA 的量子電腦還沒出現，威脅已經存在：<strong>HNDL（Harvest Now, Decrypt Later）</strong>是指攻擊者現在就攔截、儲存加密資料，等未來量子電腦成熟後再回頭解密——對國家機密、病歷、金融紀錄這類「保密期限本來就要拉很長」的資料來說，換密碼演算法是現在就要做的事，不是等量子電腦出現才開始。</p>
           <ul>
             <li>NIST 標準：FIPS 203(ML-KEM/Kyber)、204(ML-DSA/Dilithium)、205(SLH-DSA/SPHINCS+) 已定案，206(FN-DSA/FALCON) 仍在審定中，HQC 作為備援 KEM（2025/3 選定）</li>
@@ -436,7 +434,7 @@
         </div>
 
         <div class="concept-card">
-          <h4><span class="dot dot-2"></span>② 量子電腦五大硬體路線</h4>
+          <h3><span class="dot dot-2"></span>② 量子電腦五大硬體路線</h3>
           <p>量子電腦需要「製備、操控、讀出」量子位元（qubit），五種主流硬體方案中，三種的核心操控機制都是「光」：</p>
           <ul>
             <li><strong>超導 Superconducting</strong>（不靠光，靠微波脈衝操控）— IBM、Google、Rigetti</li>
@@ -449,7 +447,7 @@
         </div>
 
         <div class="concept-card">
-          <h4><span class="dot dot-3"></span>③ 矽光子 Silicon Photonics — 其實是兩條不同賽道</h4>
+          <h3><span class="dot dot-3"></span>③ 矽光子 Silicon Photonics — 其實是兩條不同賽道</h3>
           <p>核心元件：<strong>波導 Waveguide</strong>（像電路板上的銅線一樣，把光侷限在一條路徑裡導引，差別是導的是光不是電流）、<strong>微環諧振器 MRR</strong>（一個環形波導，只允許特定波長的光在環內共振、被選擇性截留或濾除，像收音機的調頻電路）、<strong>馬赫－曾德爾干涉儀 MZI</strong>（把光分成兩條路徑，其中一條用熱光、PN 接面電光或 GeSi 電吸收方式微調相位，再讓兩束光重新匯合，靠路徑差造成的干涉把相位變化轉成可偵測的強度訊號，類似兩條賽道長度被悄悄調整後，看誰先抵達）。矽是間接能隙材料不能自己發光，因此仍需混合整合 III-V 族雷射。</p>
           <p><strong>必須先說清楚一個常被混為一談的誤區：「矽光子晶圓代工」其實分裂成兩條不同的路。</strong></p>
           <ul>
@@ -462,7 +460,7 @@
         </div>
 
         <div class="concept-card">
-          <h4><span class="dot dot-4"></span>④ 光子 EDA × 數位光學運算</h4>
+          <h3><span class="dot dot-4"></span>④ 光子 EDA × 數位光學運算</h3>
           <p><strong>先了解 EDA 的由來：</strong>傳統矽晶片因為能持續 scaling，設計複雜度爆炸後催生了 EDA（電子設計自動化）。EDA 流程分兩段：前端的<strong>邏輯合成</strong>——把 Verilog 描述語言像 compiler 一樣自動轉換成邏輯閘電路，輸出 GDS-II 格式；後端的<strong>實體設計</strong>——把邏輯閘在晶片上做 placement（鋪排）與 routing（繞線）。<strong>光子 EDA 就是把這套流程搬到光子電路</strong>，用 MZI、波導、微環諧振器等光子元件取代電晶體。</p>
           <p>「光學運算（optical computing）」內部其實有兩種截然不同的範式——<strong>類比光學運算</strong>用光的連續物理量（振幅、相位）做矩陣乘法與 Fourier 運算，是 Lightmatter、Lightelligence 等 AI 加速器的路線；<strong>數位光學運算</strong>則用電光調變器與干涉儀組合出布林邏輯閘，在光子基材上實現傳統數位電路的功能。<strong>真正的交集在這裡：數位光學運算電路本身也需要 EDA 工具</strong>——邏輯合成從邏輯需求自動合成光學閘電路，繞線最佳化讓訊號在 MZI mesh 上高效排布。這兩件事是疊合的，不是對立的。台大團隊近期三篇論文正落在這個交集上：</p>
           <ul>

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>不露臉短影音 Pipeline — Faceless Video | Marketing Column · Matt Ye</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <meta name="description" content="Faceless 頻道類型、中文 TTS 選型、AI 影片工具現況、n8n 自動化管線、YouTube/TikTok AI 內容政策紅線，與手作 process video 實戰。中英雙語行銷學習單元 W11-12。">
+  <meta name="description" content="Faceless 頻道類型、中文 TTS 選型、n8n 自動化管線、YouTube/TikTok 的 AI 內容政策紅線，與手作 process video 實戰。">
   <meta name="author" content="Ching-Wei Ye">
   <link rel="canonical" href="https://mattye.dev/projects/marketing/faceless-pipeline/">
   <meta property="og:type" content="article">
@@ -130,7 +130,7 @@
     .case-box a { color:var(--blue); }
     .type-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; margin:10px 0; }
     .type-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; }
-    .type-card h4 { font-size:.82rem; font-weight:700; color:var(--accent); margin-bottom:4px; }
+    .type-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
     .type-card p { font-size:.78rem; color:var(--muted); margin:0; }
     .table-wrap { overflow-x:auto; margin:8px 0; }
     .data-table { width:100%; border-collapse:collapse; font-size:.84rem; }
@@ -191,6 +191,11 @@
       .header-title .week { display:none; }
       #searchWrap { max-width:170px; }
     }
+  
+    /* 這兩個標題原本是 div，改成 heading 是為了讓爬蟲讀得到文件結構；
+       margin 歸零讓視覺與改動前一致（font-size/font-weight 原本就有明確設定）。 */
+    .topic-title { margin:0; }
+    .hook-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
   </style>
   <script type="application/ld+json">
   {
@@ -274,8 +279,7 @@
     <section id="overview">
       <div class="hero">
         <div class="crumb"><a href="/projects/marketing/">← 行銷專欄 Marketing</a> · 行銷學習地圖 W11-12 · Q1 完結</div>
-        <h1 class="zh-only">不露臉短影音 Pipeline</h1>
-        <h1 class="en-only">The Faceless Video Pipeline</h1>
+        <h1><span class="zh-only">不露臉短影音 Pipeline</span><span class="en-only">The Faceless Video Pipeline</span></h1>
         <p class="zh-only">YouTube 前 1000 大頻道超過 40% 從不露臉。學會工具鏈與合規紅線——以及為什麼手作 process video 是你最安全的路線。</p>
         <p class="en-only">Over 40% of YouTube's top 1000 channels never show a face. Learn the toolchain, the compliance red lines — and why process video is your safest route.</p>
         <div class="hero-goals">
@@ -295,8 +299,7 @@
         <div class="topic-header" onclick="toggleCard('card-types')">
           <div class="topic-icon">🎬</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">五種 Faceless 頻道類型</div>
-            <div class="topic-title en-only">Five Faceless Channel Types</div>
+            <h2 class="topic-title"><span class="zh-only">五種 Faceless 頻道類型</span><span class="en-only">Five Faceless Channel Types</span></h2>
             <div class="topic-subtitle zh-only">不露臉 ≠ 沒特色——聲音與視覺風格仍是品牌資產</div>
             <div class="topic-subtitle en-only">Faceless ≠ featureless — voice and visual style are still brand assets</div>
             <div class="topic-tags"><span class="tag tag-green">Week 11</span><span class="tag tag-sky">類型學 Typology</span></div>
@@ -306,11 +309,11 @@
         <div class="topic-body">
           <div class="sub-content" style="padding-top:16px">
             <div class="type-grid">
-              <div class="type-card"><h4>1. <span class="zh-only">螢幕錄製教學</span><span class="en-only">Screen Recording</span></h4><p class="zh-only">軟體/AI 工具 demo——螢幕即畫面，零成本。SaaS 首選。</p><p class="en-only">Software/AI demos — the screen is the footage. Zero cost; SaaS favorite.</p></div>
-              <div class="type-card"><h4>2. <span class="zh-only">AI 旁白＋素材</span><span class="en-only">AI Narration + Footage</span></h4><p class="zh-only">腳本→AI 配音→stock/AI 畫面。歷史、財經、科普解說最常見。</p><p class="en-only">Script → AI voice → stock/AI visuals. History, finance, science explainer staple.</p></div>
-              <div class="type-card"><h4>3. <span class="zh-only">動畫解說</span><span class="en-only">Animated Explainer</span></h4><p class="zh-only">The Infographics Show 模式，可建角色 IP。</p><p class="en-only">The Infographics Show model; can build a character IP.</p></div>
-              <div class="type-card"><h4>4. Kinetic Typography</h4><p class="zh-only">文字動態＋B-roll＋配樂。金句、勵志、語錄類；B2B LinkedIn 影片也適用。</p><p class="en-only">Animated text + B-roll + music. Quotes and motivation; also fits B2B LinkedIn video.</p></div>
-              <div class="type-card"><h4>5. <span class="zh-only">ASMR / 過程影片</span><span class="en-only">ASMR / Process Video</span></h4><p class="zh-only">手作、烹飪、陶藝——拍手與作品即可。<strong>手作工藝類最相關</strong>，詳見 W12。</p><p class="en-only">Crafts, cooking, pottery — just hands and the work. <strong>Most relevant for makers</strong>; see W12.</p></div>
+              <div class="type-card"><h3>1. <span class="zh-only">螢幕錄製教學</span><span class="en-only">Screen Recording</span></h3><p class="zh-only">軟體/AI 工具 demo——螢幕即畫面，零成本。SaaS 首選。</p><p class="en-only">Software/AI demos — the screen is the footage. Zero cost; SaaS favorite.</p></div>
+              <div class="type-card"><h3>2. <span class="zh-only">AI 旁白＋素材</span><span class="en-only">AI Narration + Footage</span></h3><p class="zh-only">腳本→AI 配音→stock/AI 畫面。歷史、財經、科普解說最常見。</p><p class="en-only">Script → AI voice → stock/AI visuals. History, finance, science explainer staple.</p></div>
+              <div class="type-card"><h3>3. <span class="zh-only">動畫解說</span><span class="en-only">Animated Explainer</span></h3><p class="zh-only">The Infographics Show 模式，可建角色 IP。</p><p class="en-only">The Infographics Show model; can build a character IP.</p></div>
+              <div class="type-card"><h3>4. Kinetic Typography</h3><p class="zh-only">文字動態＋B-roll＋配樂。金句、勵志、語錄類；B2B LinkedIn 影片也適用。</p><p class="en-only">Animated text + B-roll + music. Quotes and motivation; also fits B2B LinkedIn video.</p></div>
+              <div class="type-card"><h3>5. <span class="zh-only">ASMR / 過程影片</span><span class="en-only">ASMR / Process Video</span></h3><p class="zh-only">手作、烹飪、陶藝——拍手與作品即可。<strong>手作工藝類最相關</strong>，詳見 W12。</p><p class="en-only">Crafts, cooking, pottery — just hands and the work. <strong>Most relevant for makers</strong>; see W12.</p></div>
             </div>
             <ul class="bullet-list">
               <li class="zh-only">統計：YouTube 前 1000 大頻道<strong>超過 40% 從不露臉</strong>；faceless 內容佔 2025 新創作者變現項目約 38%</li>
@@ -328,8 +331,7 @@
         <div class="topic-header" onclick="toggleCard('card-tts')">
           <div class="topic-icon">🗣️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">AI 語音：中文品質是選型重點</div>
-            <div class="topic-title en-only">AI Voice: Chinese Quality Drives Selection</div>
+            <h2 class="topic-title"><span class="zh-only">AI 語音：中文品質是選型重點</span><span class="en-only">AI Voice: Chinese Quality Drives Selection</span></h2>
             <div class="topic-subtitle zh-only">別用英文評測結論選中文工具</div>
             <div class="topic-subtitle en-only">Never pick Chinese TTS from English benchmarks</div>
             <div class="topic-tags"><span class="tag tag-green">Week 11</span><span class="tag tag-blue">TTS</span></div>
@@ -374,8 +376,7 @@
         <div class="topic-header" onclick="toggleCard('card-visuals')">
           <div class="topic-icon">🖼️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">畫面來源：Stock 打底、AI 補特殊鏡頭</div>
-            <div class="topic-title en-only">Visual Sources: Stock as Base, AI for the Impossible</div>
+            <h2 class="topic-title"><span class="zh-only">畫面來源：Stock 打底、AI 補特殊鏡頭</span><span class="en-only">Visual Sources: Stock as Base, AI for the Impossible</span></h2>
             <div class="topic-subtitle zh-only">⚠️ Sora 已關閉消費端（2026-04）</div>
             <div class="topic-subtitle en-only">⚠️ Sora consumer app discontinued (2026-04)</div>
             <div class="topic-tags"><span class="tag tag-green">Week 11</span><span class="tag tag-orange">時效敏感 Time-sensitive</span></div>
@@ -416,8 +417,7 @@
         <div class="topic-header" onclick="toggleCard('card-automation')">
           <div class="topic-icon">⚙️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">n8n 自動化管線</div>
-            <div class="topic-title en-only">The n8n Automation Pipeline</div>
+            <h2 class="topic-title"><span class="zh-only">n8n 自動化管線</span><span class="en-only">The n8n Automation Pipeline</span></h2>
             <div class="topic-subtitle zh-only">自動化「產」、人工把關「選題與終審」</div>
             <div class="topic-subtitle en-only">Automate production; humans own topics and final review</div>
             <div class="topic-tags"><span class="tag tag-green">Week 12</span><span class="tag tag-sky">Matt 技術可直接上手</span></div>
@@ -476,8 +476,7 @@
         <div class="topic-header" onclick="toggleCard('card-policy')">
           <div class="topic-icon">⚖️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">平台 AI 政策紅線（避免 demonetize）</div>
-            <div class="topic-title en-only">Platform AI Policy Red Lines</div>
+            <h2 class="topic-title"><span class="zh-only">平台 AI 政策紅線（避免 demonetize）</span><span class="en-only">Platform AI Policy Red Lines</span></h2>
             <div class="topic-subtitle zh-only">兩層規範別混淆：揭露義務 ≠ 變現資格</div>
             <div class="topic-subtitle en-only">Two layers, don't conflate: disclosure ≠ monetization eligibility</div>
             <div class="topic-tags"><span class="tag tag-green">Week 12</span><span class="tag tag-red">合規 Compliance</span></div>
@@ -523,8 +522,7 @@
         <div class="topic-header" onclick="toggleCard('card-process')">
           <div class="topic-icon">🧶</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">手作 Process Video：最安全的 Faceless 路線</div>
-            <div class="topic-title en-only">Process Video: The Safest Faceless Route</div>
+            <h2 class="topic-title"><span class="zh-only">手作 Process Video：最安全的 Faceless 路線</span><span class="en-only">Process Video: The Safest Faceless Route</span></h2>
             <div class="topic-subtitle zh-only">零合規風險 + 真實性是賣點 + 影片即產品展示</div>
             <div class="topic-subtitle en-only">Zero compliance risk + authenticity as the selling point</div>
             <div class="topic-tags"><span class="tag tag-green">Week 12</span><span class="tag tag-sky">Matt 主場 Home turf</span></div>
@@ -564,8 +562,7 @@
         <div class="topic-header" onclick="toggleCard('card-cases')">
           <div class="topic-icon">🏆</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">成功案例：一致性是共同因子</div>
-            <div class="topic-title en-only">Success Cases: Consistency Is the Common Factor</div>
+            <h2 class="topic-title"><span class="zh-only">成功案例：一致性是共同因子</span><span class="en-only">Success Cases: Consistency Is the Common Factor</span></h2>
             <div class="topic-subtitle zh-only">觀眾訂閱的是「可預期的體驗」，不是人</div>
             <div class="topic-subtitle en-only">Audiences subscribe to a predictable experience, not a person</div>
             <div class="topic-tags"><span class="tag tag-green">Week 12</span></div>
@@ -606,8 +603,7 @@
         <div class="topic-header" onclick="toggleCard('card-budget')">
           <div class="topic-icon">💰</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">附錄 A：免費/低成本實戰方案</div>
-            <div class="topic-title en-only">Appendix A: The Free / Low-Cost Stack</div>
+            <h2 class="topic-title"><span class="zh-only">附錄 A：免費/低成本實戰方案</span><span class="en-only">Appendix A: The Free / Low-Cost Stack</span></h2>
             <div class="topic-subtitle zh-only">$0/月可完整起步——工具價格查證於 2026-07</div>
             <div class="topic-subtitle en-only">A complete $0/month starting stack — prices verified 2026-07</div>
             <div class="topic-tags"><span class="tag tag-green">實戰 Practical</span><span class="tag tag-orange">價格時效敏感 Prices change</span></div>
@@ -680,8 +676,7 @@
         <div class="topic-header" onclick="toggleCard('card-blueprint')">
           <div class="topic-icon">🛠️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">附錄 B：全自動化工程藍圖</div>
-            <div class="topic-title en-only">Appendix B: The Full-Automation Engineering Blueprint</div>
+            <h2 class="topic-title"><span class="zh-only">附錄 B：全自動化工程藍圖</span><span class="en-only">Appendix B: The Full-Automation Engineering Blueprint</span></h2>
             <div class="topic-subtitle zh-only">從手動生產線到 n8n 自動工廠，需要哪些工程</div>
             <div class="topic-subtitle en-only">The engineering path from manual pipeline to n8n factory</div>
             <div class="topic-tags"><span class="tag tag-sky">工程 Engineering</span><span class="tag tag-green">可自架 Self-hostable</span></div>
@@ -760,8 +755,7 @@
         <div class="topic-header" onclick="toggleCard('card-practice')">
           <div class="topic-icon">✏️</div>
           <div class="topic-title-wrap">
-            <div class="topic-title zh-only">實作練習（Q1 畢業製作）</div>
-            <div class="topic-title en-only">Practice (Q1 Capstone)</div>
+            <h2 class="topic-title"><span class="zh-only">實作練習（Q1 畢業製作）</span><span class="en-only">Practice (Q1 Capstone)</span></h2>
             <div class="topic-subtitle zh-only">整合 W1-12 所學，為捕夢網建一條生產線</div>
             <div class="topic-subtitle en-only">Integrate W1-12 into a real pipeline for the dreamcatcher</div>
             <div class="topic-tags"><span class="tag tag-green">動手做 Hands-on</span><span class="tag tag-sky">Q1 完結</span></div>
