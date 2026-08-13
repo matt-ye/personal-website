@@ -1,0 +1,569 @@
+<!-- 由 scripts/extract-course-weeks.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 九宮格 */
+  .grid9{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .grid9 h3{margin-top:0}
+  .gtable{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:.35rem;margin-top:1rem}
+  .gh{font-size:.72rem;font-weight:800;color:var(--ink-3);display:flex;align-items:center;justify-content:center;text-align:center;padding:.3rem .2rem;font-family:ui-monospace,Menlo,monospace}
+  .gcell{font:inherit;padding:.75rem .3rem;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);cursor:pointer;text-align:center;font-size:1.05rem;font-weight:800;font-family:ui-monospace,Menlo,monospace;transition:border-color .15s;position:relative}
+  .gcell:hover{border-color:var(--pine)}
+  .gcell.base{background:var(--pine-soft)}
+  .gcell.on{border-color:var(--pine);box-shadow:0 0 0 2px var(--pine) inset}
+  .gcell.mkt::after{content:"市價";position:absolute;top:-8px;right:-4px;font-size:.6rem;font-weight:800;background:var(--coin);color:var(--on-pine);padding:.06rem .35rem;border-radius:99px}
+  .gcell.lo{color:var(--down)}
+  .gcell.hi{color:var(--up)}
+  .gdetail{margin-top:.8rem;padding:1rem 1.2rem;background:var(--paper);border-radius:10px;border:1px dashed var(--line);font-size:.92rem;min-height:5em}
+  .gdetail b{color:var(--pine)}
+  .sl{margin-top:.9rem}
+  .sl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .sl label output{color:var(--pine);font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .sl input[type=range]{width:100%;accent-color:var(--pine);margin-top:.3rem}
+  .gnote{margin-top:.6rem;font-size:.78rem;color:var(--ink-3)}
+
+  /* 安全邊際計算器 */
+  .mos{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .mos h3{margin-top:0}
+  .mosgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem;margin-top:1rem}
+  .moscell{padding:.7rem .9rem;border-radius:10px;border:1.5px solid var(--line);background:var(--paper)}
+  .moscell .sn{font-size:.72rem;color:var(--ink-3);font-weight:700}
+  .moscell .sv{font-size:1.3rem;font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .moscell.cap{border-color:var(--pine)}
+  .moscell.cap .sv{color:var(--pine);font-size:1.5rem}
+  .mosbar{position:relative;height:2.4rem;margin-top:1.2rem;border-radius:8px;background:linear-gradient(90deg,var(--pine-soft) 0%,var(--pine-soft) var(--cappct,50%),var(--line-soft) var(--cappct,50%));border:1px solid var(--line)}
+  .mosmark{position:absolute;top:-6px;bottom:-6px;width:0;border-left:2.5px solid var(--coin)}
+  .mosmark .ml{position:absolute;top:-16px;left:-1.2rem;font-size:.68rem;font-weight:800;color:var(--coin);white-space:nowrap}
+  .moscap{position:absolute;top:-6px;bottom:-6px;width:0;border-left:2.5px dashed var(--pine)}
+  .moscap .ml{position:absolute;bottom:-16px;left:-1.6rem;font-size:.68rem;font-weight:800;color:var(--pine);white-space:nowrap}
+  .mosverdict{margin-top:1.4rem;padding:.7rem 1rem;border-radius:9px;font-size:.9rem;background:var(--coin-soft);color:var(--ink-2)}
+  .mosverdict b{color:var(--coin)}
+  .mosverdict.go{background:color-mix(in srgb,var(--up) 12%,transparent)}
+  .mosverdict.go b{color:var(--up)}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .formula{margin:1.1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+  .formula .fx{display:block;font-size:.95rem;color:var(--ink);white-space:nowrap}
+  .formula .note{font-size:.82rem;color:var(--ink-3);margin-top:.4rem}
+  .formula .note b{color:var(--coin)}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 21</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q2 投資人季 · Week 21</p>
+  <h1>估值三——敏感度、情境與安全邊際</h1>
+  <p class="lead" style="margin-top:.5rem">W19 給了相對的尺、W20 給了絕對的尺，本週回答最後的問題：尺本身不準怎麼辦？</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-20-dcf/">第 20 週</a></span><span class="chip">52 週 · 第 21 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>Graham 的百年智慧——把單點變區間、用安全邊際吸收誤差。這是價值投資的哲學核心，也是 W26 投資論文估值章的最終形態。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週分享「金蛋鵝」的反應——「目標價底下藏著假設」講通了嗎、兩把尺的比喻對方記住了嗎。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">上週的 DCF 算出每股 17.68。只把折現率和永續成長率各動 ±1%（每個假設都「聽起來合理」）——最保守和最樂觀的結果會差多少？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">差不到 2 成</button>
+    <button data-g="b">差大約 5 成</button>
+    <button data-g="c">差 2 倍</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. 先親眼看看你的 DCF 有多脆弱：敏感度九宮格</h2>
+  <p>延用 W20 的算例（基準：WACC 9%、g 3% → 每股 17.68），只動兩個終值假設。<strong>點任一格看它的假設；拉「市價」滑桿反推市場的想法</strong>：</p>
+  </div>
+
+  <!-- 九宮格 -->
+  <div class="grid9" id="grid9">
+    <h3>敏感度九宮格（每股內在價值）</h3>
+    <div class="gtable" id="gtable">
+      <div class="gh"></div><div class="gh">g＝2%</div><div class="gh">g＝3%</div><div class="gh">g＝4%</div>
+    </div>
+    <div class="gdetail" id="gdetail" aria-live="polite"></div>
+    <div class="sl">
+      <label>市價（反推市場預期） <output id="o-mkt" class="num">25.0</output></label>
+      <input type="range" id="in-mkt" min="10" max="30" step="0.5" value="25" aria-label="市價">
+    </div>
+    <div class="gdetail" id="mktdetail" aria-live="polite" style="min-height:4em"></div>
+    <p class="gnote">練習第 1 步的驗證點：用講義參數應重現 13.2–26.7 這張表。綠底＝基準格；紅字＝最保守角、綠字＝最樂觀角。</p>
+  </div>
+
+  <div class="prose">
+  <div class="example">
+    <span class="tag">九宮格的三個用法</span>
+    <p>①<strong>誠實面對區間</strong>：你的估值不是 17.68，是「大約 13–27，中心 18 附近」②<strong>找出主導假設</strong>：沿對角線變化最劇——WACC 與 g 同時往樂觀走時價值爆增，代表兩者都要保守才穩 ③<strong>反推市場預期</strong>：市價對到哪一格，就是市場隱含的假設——你同意嗎？不同意就是機會（或你錯了）。</p>
+  </div>
+
+  <h2>2. 三情境法：讓區間有商業故事</h2>
+  <p>九宮格只動財務參數；三情境法動<strong>商業假設</strong>（營收成長、利潤率），每個情境是一個完整的故事：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>情境</th><th>故事要求</th><th>例（示意）</th></tr></thead>
+      <tbody>
+        <tr><td class="f">悲觀（bear）</td><td>競爭惡化／掉單／衰退——<strong>要具體到「什麼事發生」</strong></td><td>成長 2%、利潤率 −3pp → 每股 12</td></tr>
+        <tr><td class="f">基準（base）</td><td>延續現況、略保守</td><td>每股 17.7</td></tr>
+        <tr><td class="f">樂觀（bull）</td><td>新產品／擴產順利——同樣要具體</td><td>成長 12%、利潤率 +2pp → 每股 25</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>兩個紀律：<strong>悲觀情境不是「基準打 9 折」</strong>，要真的想一個壞劇本（W36 的事前驗屍在估值裡的前身）；可以為三情境配上主觀機率（如 25/50/25）算期望值——但機率本身也是假設，別假精確。</p>
+
+  <h2>3. 安全邊際：Graham 的核心發明</h2>
+  </div>
+  <div class="formula">
+    <span class="fx">買價上限 ＝ 保守估值 × (1 − 要求邊際)</span>
+    <p class="note">「安全邊際」＝<b>只在價格顯著低於保守估值時才買</b>。不是預測它會跌到那裡，而是「不到這個價，這筆交易的容錯不夠」。</p>
+  </div>
+
+  <!-- 安全邊際計算器 -->
+  <div class="mos" id="mos">
+    <h3>安全邊際計算器</h3>
+    <div class="sl">
+      <label>保守估值（九宮格保守列） <output id="o-cons" class="num">14.8</output></label>
+      <input type="range" id="in-cons" min="12" max="22" step="0.1" value="14.8" aria-label="保守估值">
+    </div>
+    <div class="sl">
+      <label>要求邊際 <output id="o-mgn" class="num">30%</output></label>
+      <input type="range" id="in-mgn" min="10" max="60" step="5" value="30" aria-label="要求邊際">
+    </div>
+    <div class="sl">
+      <label>目前市價 <output id="o-px" class="num">17.0</output></label>
+      <input type="range" id="in-px" min="6" max="30" step="0.5" value="17" aria-label="市價">
+    </div>
+    <div class="mosgrid">
+      <div class="moscell"><div class="sn">保守估值</div><div class="sv" id="m-cons">14.8</div></div>
+      <div class="moscell cap"><div class="sn">買價上限</div><div class="sv" id="m-cap">10.4</div></div>
+      <div class="moscell"><div class="sn">市價 vs 上限</div><div class="sv" id="m-gap">+63%</div></div>
+    </div>
+    <div class="mosbar" id="mosbar" aria-hidden="true">
+      <div class="moscap" id="moscap"><span class="ml">上限</span></div>
+      <div class="mosmark" id="mosmark"><span class="ml">市價</span></div>
+    </div>
+    <div class="mosverdict" id="mosverdict" aria-live="polite"></div>
+    <p class="gnote">邊際要求量級：穩定公用事業 15–20%、一般公司 30%、高不確定成長股 50% 以上——或誠實承認「這家我算不了」，跳過。跳過永遠是選項。講義例：14.8 × (1−30%) ＝ 買價上限 10.4。</p>
+  </div>
+
+  <div class="prose">
+  <p>安全邊際在吸收三種誤差：①<strong>你算錯</strong>（模型、假設、資料）②<strong>世界變了</strong>（技術、競爭、法規）③<strong>運氣不好</strong>（對的決策也可能遇到壞結果，W38 的 resulting）。</p>
+
+  <h2>4. 市場先生：價格與價值的分離</h2>
+  <p>Graham 的寓言（《智慧型股票投資人》第 8 章，本週必讀原文）：你和「市場先生」合夥開公司，他每天報一個價要買你的股份或賣你他的——<strong>他情緒極不穩定</strong>，亢奮時報天價、憂鬱時跳樓價。三個推論：</p>
+  <ol class="tasks">
+    <li><strong>報價是服務，不是指令</strong>——你可以利用它（他憂鬱時買）、也可以無視它（價格不合理就不交易）</li>
+    <li><strong>價格波動不是風險，是機會的來源</strong>——真正的風險是永久損失（付太貴、公司壞掉），這與 W15「σ 不等於風險全部」一脈相承</li>
+    <li>但前提是<strong>你對價值有獨立判斷</strong>（W19–20 的兩把尺）——沒有價值錨的人，市場先生的情緒就會變成你的情緒（W23 的羊群）</li>
+  </ol>
+
+  <h2>5. 「模糊的正確」勝過「精確的錯誤」</h2>
+  <div class="example">
+    <span class="tag">估值訓練的終點</span>
+    <p><strong>你永遠不知道精確價值，但你經常能判斷「明顯太便宜」或「明顯太貴」。</strong>投資賺錢靠的是後者——在極端處行動、在模糊區等待。九宮格與三情境的功能，就是幫你畫出「明顯」的邊界。</p>
+  </div>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「安全邊際＝買低 P/E」</p><p>不是；是「價格 vs 保守內在價值」的折扣。低 P/E 可能毫無邊際（價值陷阱，W19）。</p></div>
+  <div class="myth"><p class="say">「要求 50% 邊際就永遠買不到」</p><p>對高不確定的公司，買不到就是正確結果；把要求降到「買得到」是本末倒置。</p></div>
+  <div class="myth"><p class="say">「三情境的期望值是科學」</p><p>機率是你編的；期望值只是把主觀判斷結構化，別把它當定理。</p></div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">80 分</span>
+    <div class="body"><b>《智慧型股票投資人》第 8 章（市場先生）＋第 20 章（安全邊際）</b>
+      <p>本週主菜，投資史上被引用最多的兩章；Zweig 註解版可連當代案例一起讀。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">30 分</span>
+    <div class="body"><b><a class="srclink" href="https://pages.stern.nyu.edu/~adamodar/" target="_blank" rel="noopener">Damodaran：估值不確定性相關講次 ↗</a></b>
+      <p>選讀 "uncertainty" 相關主題——學院派怎麼處理同一個問題。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">10 分</span>
+    <div class="body"><b><a class="srclink" href="/projects/family-investing-course/week-20-dcf/">回顧 W20 你自己的 DCF ↗</a></b>
+      <p>本週練習直接在它上面加工。</p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>把你的 DCF 升級成估值區間</h2>
+  <p>延用 W20 為目標公司建的 DCF：</p>
+  <ol class="tasks">
+    <li><strong>九宮格</strong>：WACC ±1%、g ±1% 共九格，算出每股價值矩陣。<strong>驗證：講義參數下應重現 13.2–26.7</strong>（和上面互動格對答案）</li>
+    <li><strong>三情境</strong>：為悲觀／樂觀各寫一個 50 字的具體商業故事（什麼事發生了），對應調整成長與利潤率假設，得出三個每股價值</li>
+    <li><strong>安全邊際</strong>：取保守估值、寫下你對這家公司要求的邊際 %（附一句理由），算出買價上限</li>
+    <li><strong>結論卡</strong>：<span class="num">估值區間 ＿–＿｜保守值 ＿｜要求邊際 ＿%｜買價上限 ＿｜現價 ＿｜行動：買進/等待/跳過</span></li>
+    <li>寫 100 字：市價隱含了九宮格的哪一格？你同意市場的假設嗎？</li>
+  </ol>
+  <div class="verify">✅ <b>驗收標準：</b>九宮格驗證通過；悲觀情境有具體事件（不是基準打折）；結論卡完成且行動欄有明確選擇。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w21-practice">
+    <li><label><input type="checkbox"><span>九宮格驗證通過（講義參數下重現 13.2–26.7）</span></label></li>
+    <li><label><input type="checkbox"><span>悲觀情境有具體事件（不是基準打折）</span></label></li>
+    <li><label><input type="checkbox"><span>結論卡完成且行動欄有明確選擇</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼安全邊際對「越難預測的公司」要求越大？</summary>
+      <div class="ans"><p>→ 邊際吸收的是<strong>預測誤差</strong>——公司越難預測（新產業、高變動、無歷史），你的估值誤差分布越寬，需要越大的折扣才能讓「買貴」的機率降到可接受；穩定公司誤差窄，小邊際即可。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 市場先生寓言裡，什麼時候該交易、什麼時候該無視他？</summary>
+      <div class="ans"><p>→ <strong>該交易</strong>：他的報價與你的獨立估值出現極端偏離（跳樓價買進；瘋狂溢價時可考慮賣出）。<strong>該無視</strong>：報價落在你的估值區間內——模糊區不行動。前提永遠是你有自己的估值錨。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 「跳過」在什麼情況下是最好的估值結論？</summary>
+      <div class="ans"><p>→ 當公司落在你的<strong>能力圈外</strong>（商業模式看不懂、關鍵變數無法評估）——任何數字都是假精確，「我不知道」是最誠實也最賺錢的答案，因為它讓你把時間花在算得了的機會上。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>阿嬤的買菜哲學</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（買菜哲學）</p>
+    <p>「阿嬤買菜有一個天生的投資智慧：她知道高麗菜『正常』大概多少錢一顆。颱風後一顆 150 她搖頭走開，盛產期一顆 20 她多買兩顆——<strong>她從不預測菜價，她只是知道什麼價格叫離譜。</strong>」</p>
+  </div>
+  <div class="script">
+    <p class="who">核心觀念</p>
+    <p>「投資的最高境界跟阿嬤一樣：我們花三週學會估『合理價』（跟隔壁比、算金蛋），但最後一步是——<strong>只在明顯便宜時出手，價格普通就等</strong>。這個『打折才買』的折扣，就叫安全邊際：它保護我們算錯的時候。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動（市場先生）</p>
+    <p>「想像有個瘋瘋的鄰居，每天敲門報一個價要買你的房子：今天喊 2000 萬、明天心情差喊 800 萬。他喊 800 萬時你要賣嗎？」（不用——除非你自己知道房子值多少，他的情緒才傷不到你。）「股市就是這個鄰居，每天報價。<strong>知道自己東西值多少的人，把他的瘋當機會；不知道的人，被他的瘋牽著走。</strong>」</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「等打折等不到怎麼辦？」</b><br>「那就繼續持有原本的配置（W14–18 的系統）。安全邊際是給『加碼個股』用的高標準，不是叫你空手等待。」</p>
+    <p class="qa"><b>「怎麼知道自己沒算錯？」</b><br>「不知道，所以才要折扣——邊際就是『我可能錯 30%』的保險。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w21-final">
+    <li><label><input type="checkbox"><span>能做出九宮格並指出主導假設</span></label></li>
+    <li><label><input type="checkbox"><span>目標公司的估值區間＋結論卡完成</span></label></li>
+    <li><label><input type="checkbox"><span>能複述市場先生寓言與三個推論</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 22：質化分析——護城河進階＋波特五力</b>——估值三部曲完成：comps（相對）＋DCF（絕對）＋區間與邊際（哲學）。下週補上質化的另一半：這家公司的護城河，撐得起你估值裡的那些假設嗎？
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-20-dcf/">上一週：DCF 基礎</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "c"
+      ? "答對了——最保守角 13.2、最樂觀角 26.7，剛好差 2 倍。而每一格的假設都「聽起來合理」。所以誠實的說法不是「它值 17.68」，是「大約 13–27，中心 18 附近」——本週學怎麼跟這個區間共處。"
+      : "更大——最保守角 13.2、最樂觀角 26.7，差了 2 倍。而每一格的假設都「聽起來合理」（折現率差 1%、永續成長差 1%，誰敢說哪個一定對？）。所以誠實的說法不是「它值 17.68」，是「大約 13–27」——本週學怎麼跟這個區間共處。";
+  });
+
+  /* ---------- 九宮格 ---------- */
+  var WACCS = [0.08, 0.09, 0.10], GS = [0.02, 0.03, 0.04];
+  function ps(r, g){
+    var fcf = [], f = 100;
+    for (var t = 0; t < 5; t++){ fcf.push(f); f *= 1.08; }
+    var pv = 0;
+    for (var t2 = 0; t2 < 5; t2++){ pv += fcf[t2] / Math.pow(1 + r, t2 + 1); }
+    var tv = fcf[4] * (1 + g) / (r - g);
+    return (pv + tv / Math.pow(1 + r, 5) - 200) / 100;
+  }
+  var CELLS = [];
+  var gtable = document.getElementById("gtable");
+  WACCS.forEach(function(r, i){
+    var rowHead = document.createElement("div");
+    rowHead.className = "gh";
+    rowHead.textContent = "WACC " + (r*100) + "%";
+    gtable.appendChild(rowHead);
+    GS.forEach(function(g, j){
+      var v = ps(r, g);
+      var btn = document.createElement("button");
+      btn.className = "gcell";
+      btn.textContent = v.toFixed(1);
+      if (i === 1 && j === 1) btn.classList.add("base");
+      if (i === 2 && j === 0) btn.classList.add("lo");
+      if (i === 0 && j === 2) btn.classList.add("hi");
+      btn.dataset.i = i; btn.dataset.j = j;
+      gtable.appendChild(btn);
+      CELLS.push({ i: i, j: j, v: v, el: btn });
+    });
+  });
+  var gdetail = document.getElementById("gdetail");
+  function showCell(i, j){
+    CELLS.forEach(function(c){ c.el.classList.toggle("on", c.i === i && c.j === j); });
+    var c = CELLS.find(function(x){ return x.i === i && x.j === j; });
+    var tag = (i === 1 && j === 1) ? "（基準）" : (i === 2 && j === 0) ? "（最保守角）" : (i === 0 && j === 2) ? "（最樂觀角）" : "";
+    gdetail.innerHTML = "<b>WACC " + (WACCS[i]*100) + "% × g " + (GS[j]*100) + "% → 每股 " + c.v.toFixed(1) + tag + "</b><br>" +
+      (i === 0 && j === 2 ? "兩個假設同時往樂觀走——對角線是九宮格變化最劇的方向，也是「用 Excel 許願」最常發生的地方。"
+       : i === 2 && j === 0 ? "兩個假設都保守——安全邊際計算通常從這附近取「保守估值」。"
+       : i === 1 && j === 1 ? "上週的單點估值。現在你知道：它只是九格裡的一格。"
+       : "折現率與永續成長各差 1% 以內——「聽起來都合理」的假設，結果差這麼多。");
+  }
+  gtable.addEventListener("click", function(e){
+    var btn = e.target.closest(".gcell"); if(!btn) return;
+    showCell(+btn.dataset.i, +btn.dataset.j);
+  });
+  showCell(1, 1);
+
+  /* 市價反推 */
+  var inMkt = document.getElementById("in-mkt");
+  function runMkt(){
+    var px = +inMkt.value;
+    document.getElementById("o-mkt").textContent = px.toFixed(1);
+    var best = CELLS[0], bd = Infinity;
+    CELLS.forEach(function(c){
+      var d = Math.abs(c.v - px);
+      if (d < bd){ bd = d; best = c; }
+    });
+    CELLS.forEach(function(c){ c.el.classList.toggle("mkt", c === best); });
+    var md = document.getElementById("mktdetail");
+    var lo = 13.2, hi = 26.7;
+    if (px < lo){
+      md.innerHTML = "<b>市價 " + px.toFixed(1) + "：低於整張表的最保守角（13.2）。</b>市場的悲觀超出「合理假設」的範圍——可能是機會（明顯太便宜），也可能市場知道你不知道的事。先查，再撿。";
+    } else if (px > hi){
+      md.innerHTML = "<b>市價 " + px.toFixed(1) + "：高於最樂觀角（26.7）。</b>市場隱含的假設比「8% 折現＋4% 永續成長」還樂觀——明顯太貴的區域，價值投資者的答案是等待。";
+    } else {
+      md.innerHTML = "<b>市價 " + px.toFixed(1) + " ≈ 「WACC " + (WACCS[best.i]*100) + "%＋g " + (GS[best.j]*100) + "%」那一格（" + best.v.toFixed(1) + "）。</b>市場正在用這組假設定價——你同意嗎？不同意就是機會（或你錯了）。";
+    }
+  }
+  inMkt.addEventListener("input", runMkt);
+  runMkt();
+
+  /* ---------- 安全邊際計算器 ---------- */
+  var inCons = document.getElementById("in-cons"), inMgn = document.getElementById("in-mgn"), inPx = document.getElementById("in-px");
+  var BARMAX = 30;
+  function runMos(){
+    var cons = +inCons.value, mgn = +inMgn.value, px = +inPx.value;
+    document.getElementById("o-cons").textContent = cons.toFixed(1);
+    document.getElementById("o-mgn").textContent = mgn + "%";
+    document.getElementById("o-px").textContent = px.toFixed(1);
+    var cap = cons * (1 - mgn/100);
+    var gap = (px - cap) / cap * 100;
+    document.getElementById("m-cons").textContent = cons.toFixed(1);
+    document.getElementById("m-cap").textContent = cap.toFixed(1);
+    document.getElementById("m-gap").textContent = (gap >= 0 ? "+" : "−") + Math.abs(gap).toFixed(0) + "%";
+    var bar = document.getElementById("mosbar");
+    bar.style.setProperty("--cappct", (cap / BARMAX * 100) + "%");
+    document.getElementById("moscap").style.left = (cap / BARMAX * 100) + "%";
+    document.getElementById("mosmark").style.left = (Math.min(px, BARMAX) / BARMAX * 100) + "%";
+    var v = document.getElementById("mosverdict");
+    if (px <= cap){
+      v.className = "mosverdict go";
+      v.innerHTML = "<b>市價落在買價上限之內</b>——邊際條件成立。這不代表「衝」：回頭確認保守估值是真保守（不是湊出來的）、悲觀情境想過了、W18 的倉位上限還管著你。";
+    } else if (gap <= 20){
+      v.className = "mosverdict";
+      v.innerHTML = "<b>接近了，但還差 " + gap.toFixed(0) + "%</b>——模糊區。Graham 的答案是等待：不是預測它會跌到 " + cap.toFixed(1) + "，而是「不到這個價，容錯不夠」。等不到就是市場先生沒給機會。";
+    } else {
+      v.className = "mosverdict";
+      v.innerHTML = "<b>市價高出上限 " + gap.toFixed(0) + "%</b>——這筆交易的容錯不夠。選項：等待、或把時間花在別的機會上。把要求降到「買得到」是本末倒置。";
+    }
+  }
+  [inCons, inMgn, inPx].forEach(function(el){ el.addEventListener("input", runMos); });
+  runMos();
+
+  /* ---------- 檢核持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w21-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w21-final"){
+          document.getElementById("checkdone").textContent = st.every(Boolean) ? "🎓 第 21 週完成——估值三部曲收官。下週見：護城河進階＋波特五力。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w21-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 21 週完成——估值三部曲收官。下週見：護城河進階＋波特五力。";
+    }
+  });
+})();
+</script>

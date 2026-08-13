@@ -1,0 +1,607 @@
+<!-- 由 scripts/extract-course-weeks.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --chart:#1F8A5F; --chart2:#A87B1F;
+    --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --chart:#35A878; --chart2:#BA8A25;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  .formula{margin:1.1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+  .formula .fx{display:block;font-size:.95rem;color:var(--ink);white-space:nowrap}
+  .formula .note{font-size:.82rem;color:var(--ink-3);margin-top:.4rem}
+  .formula .note b{color:var(--coin)}
+
+  /* 效率前緣繪圖器 */
+  .frontier{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .frontier h3{margin-top:0}
+  .sl{margin-top:.7rem}
+  .sl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .sl label output{color:var(--pine);font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .sl input[type=range]{width:100%;accent-color:var(--pine);margin-top:.3rem}
+  #chartwrap{margin-top:1rem}
+  #chart{width:100%;height:auto;display:block}
+  #chart .axis{stroke:var(--line);stroke-width:1}
+  #chart .grid{stroke:var(--line-soft);stroke-width:1}
+  #chart .curve{stroke:var(--chart);stroke-width:2.5;fill:none}
+  #chart .avgline{stroke:var(--chart2);stroke-width:1.5;stroke-dasharray:5 4;fill:none}
+  #chart .ticklab{fill:var(--ink-3);font-size:10px;font-family:ui-monospace,Menlo,monospace}
+  #chart .axlab{fill:var(--ink-2);font-size:11px;font-weight:700}
+  #chart .mark{fill:var(--pine)}
+  #chart .markring{fill:none;stroke:var(--pine);stroke-width:2}
+  #chart .minvar{fill:var(--chart2)}
+  #chart .endlab{fill:var(--ink-2);font-size:10.5px;font-weight:700}
+  .legend{display:flex;flex-wrap:wrap;gap:1rem;font-size:.78rem;color:var(--ink-2);margin-top:.4rem}
+  .legend span{display:inline-flex;align-items:center;gap:.4rem}
+  .legend i{width:14px;height:0;border-top:2.5px solid var(--chart);display:inline-block}
+  .legend i.avg{border-top:2px dashed var(--chart2)}
+  .legend i.dot{width:9px;height:9px;border:none;border-radius:99px;background:var(--pine)}
+  .legend i.mv{width:9px;height:9px;border:none;background:var(--chart2);transform:rotate(45deg)}
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem;margin-top:1rem}
+  .fcell{padding:.7rem .9rem;border-radius:10px;border:1.5px solid var(--line);background:var(--paper)}
+  .fcell .sn{font-size:.72rem;color:var(--ink-3);font-weight:700}
+  .fcell .sv{font-size:1.25rem;font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .fcell .sv small{font-size:.8rem;color:var(--ink-3);font-weight:700}
+  .fcell.lunch .sv{color:var(--up)}
+  .fverdict{margin-top:.9rem;padding:.7rem 1rem;border-radius:9px;font-size:.9rem;background:var(--coin-soft);color:var(--ink-2)}
+  .fverdict b{color:var(--coin)}
+  .fnote{margin-top:.6rem;font-size:.78rem;color:var(--ink-3)}
+
+  /* 幾檔才算分散 */
+  .ncalc{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .ncalc h3{margin-top:0}
+  .riskbar{display:flex;height:1.8rem;border-radius:8px;overflow:hidden;margin-top:1rem;border:1px solid var(--line)}
+  .riskbar div{display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;min-width:0;overflow:hidden;white-space:nowrap;transition:width .15s}
+  .riskbar .rb-sys{background:var(--pine);color:var(--on-pine)}
+  .riskbar .rb-idio{background:var(--coin);color:var(--on-pine)}
+  .nverdict{margin-top:.9rem;padding:.7rem 1rem;border-radius:9px;font-size:.9rem;background:var(--pine-soft);color:var(--ink-2)}
+  .nverdict b{color:var(--pine)}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 15</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q2 投資人季 · Week 15</p>
+  <h1>現代投資組合理論（MPT）入門</h1>
+  <p class="lead" style="margin-top:.5rem">上週的配置是「該擺多少」，本週是它背後的數學——為什麼分散是投資裡唯一的免費午餐。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-14-asset-allocation/">第 14 週</a></span><span class="chip">52 週 · 第 15 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>MPT 是 Q2 配置哲學的理論根、Q3 整季（Sharpe、因子、歸因）的語言基礎、以及 CAPM（Q4 週 42 算資金成本）的前身。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週家庭心理測試的結果——「100 萬變 60 萬」對方的第一個念頭是什麼？記下來了嗎？煮湯比喻（火／鍋蓋／那杯水）講通了嗎。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">一個 100% 債券的組合（波動 6%），加入一成「更危險」的股票（波動 18%）——整體波動會怎樣？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">升高一點</button>
+    <button data-g="b">幾乎不變</button>
+    <button data-g="c">反而下降</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. 用兩個數字描述一個資產</h2>
+  <p>MPT（Markowitz, 1952）的起手式：任何資產壓縮成兩個數字——<strong>期望報酬 E(r)</strong>（平均賺多少）與<strong>標準差 σ</strong>（波動多大）。本週沿用上週的量級：</p>
+  <ol class="tasks">
+    <li>股票：E ＝ 7%、σ ＝ 18%</li>
+    <li>債券：E ＝ 3%、σ ＝ 6%</li>
+  </ol>
+  <p class="muted">σ 的直覺：報酬大約 2/3 的年份落在「平均 ± 1σ」內——股票即 −11% ～ +25%，這就是「正常的一年也可能是負的」的數學表達。</p>
+
+  <h2>2. 組合的魔術：報酬是加權平均，風險不是</h2>
+  <p>兩資產組合（權重 w 與 1−w）：</p>
+  </div>
+  <div class="formula">
+    <span class="fx">E(r<sub>p</sub>) = w·E₁ + (1−w)·E₂</span>
+    <p class="note">報酬：乖乖加權平均，沒有魔術。</p>
+  </div>
+  <div class="formula">
+    <span class="fx">σ<sub>p</sub>² = w²σ₁² + (1−w)²σ₂² + 2·w(1−w)·<b>ρ</b>·σ₁σ₂</span>
+    <p class="note">風險：<b>有第三項！</b>ρ（相關係數，−1～+1）就是整個 MPT 的靈魂——兩資產不完全同步（ρ&lt;1）時，組合波動<b>小於</b>加權平均，互相抵消的部分就是免費午餐。</p>
+  </div>
+
+  <div class="prose">
+  <h2>3. 親手拉一次：效率前緣繪圖器</h2>
+  <p>下面的曲線是「股票權重從 0% 拉到 100%」的所有組合。<strong>拉 ρ 看曲線怎麼彎、拉權重看你的點在哪</strong>：</p>
+  </div>
+
+  <!-- 效率前緣繪圖器 -->
+  <div class="frontier" id="frontier">
+    <h3>效率前緣繪圖器（股 E7%/σ18% · 債 E3%/σ6%）</h3>
+    <div class="sl">
+      <label>相關係數 ρ <output id="o-rho" class="num">+0.3</output></label>
+      <input type="range" id="in-rho" min="-1" max="1" step="0.1" value="0.3" aria-label="相關係數">
+    </div>
+    <div class="sl">
+      <label>股票權重 w <output id="o-w" class="num">60%</output></label>
+      <input type="range" id="in-w" min="0" max="100" step="5" value="60" aria-label="股票權重">
+    </div>
+    <div id="chartwrap">
+      <svg id="chart" viewBox="0 0 460 300" role="img" aria-label="風險報酬座標上的組合曲線">
+        <g id="g-grid"></g>
+        <line class="axis" x1="52" y1="260" x2="440" y2="260"></line>
+        <line class="axis" x1="52" y1="20"  x2="52"  y2="260"></line>
+        <g id="g-ticks"></g>
+        <text class="axlab" x="246" y="292" text-anchor="middle">風險 σ（%）</text>
+        <text class="axlab" x="14" y="140" text-anchor="middle" transform="rotate(-90 14 140)">期望報酬 E（%）</text>
+        <line id="avgline" class="avgline" x1="0" y1="0" x2="0" y2="0"></line>
+        <polyline id="curve" class="curve" points=""></polyline>
+        <rect id="minvar" class="minvar" width="9" height="9" transform="rotate(45)"></rect>
+        <circle id="markring" class="markring" r="7"></circle>
+        <circle id="mark" class="mark" r="4"></circle>
+        <text id="lab-stock" class="endlab"></text>
+        <text id="lab-bond" class="endlab"></text>
+      </svg>
+      <div class="legend">
+        <span><i></i>所有股債組合</span>
+        <span><i class="avg"></i>「風險＝加權平均」的假想線（ρ＝+1）</span>
+        <span><i class="dot"></i>你的組合</span>
+        <span><i class="mv"></i>最小波動點</span>
+      </div>
+    </div>
+    <div class="fgrid">
+      <div class="fcell"><div class="sn">期望報酬 E(r<sub>p</sub>)</div><div class="sv" id="f-er">5.40<small>%</small></div></div>
+      <div class="fcell"><div class="sn">組合波動 σ<sub>p</sub></div><div class="sv" id="f-sd">11.75<small>%</small></div></div>
+      <div class="fcell"><div class="sn">加權平均波動</div><div class="sv" id="f-avg">13.20<small>%</small></div></div>
+      <div class="fcell lunch"><div class="sn">免費午餐（省下的波動）</div><div class="sv" id="f-lunch">−1.45<small> pt</small></div></div>
+    </div>
+    <div class="fverdict" id="fverdict" aria-live="polite"></div>
+    <p class="fnote">練習的驗證點就在預設值：ρ=+0.3、股 60%——E 應為 5.40%、σ 應為 11.75%。數字為講義量級假設，非預測。</p>
+  </div>
+
+  <div class="prose">
+  <p style="margin-top:1.2rem"><strong>免費午餐的極致示範</strong>：把 ρ 調到 0、權重拉到 10%——純債券組合（σ＝6%）加入一成股票後，<strong>波動降到 5.69%、期望報酬還從 3% 升到 3.4%</strong>。對「一點股票都不敢碰」的極保守者，這是最有力的一課：適量的「危險資產」反而讓整體更安全——因為它跟債券走不同的路。</p>
+
+  <h2>4. 效率前緣：所有聰明組合的天際線</h2>
+  <p>曲線上緣叫<strong>效率前緣（efficient frontier）</strong>：同樣風險下報酬最高的組合集合。三個判讀：</p>
+  <ol class="tasks">
+    <li>前緣<strong>下方</strong>的組合都是輸家（同風險、較低報酬）——「全債券」通常就在前緣下方（第 3 節的原因）</li>
+    <li>前緣上<strong>沒有唯一最佳點</strong>——選哪個點由你的風險承受度決定（接回 W14 的三要素）</li>
+    <li>加入更多低相關資產（全球股票、不同天期債券），整條前緣<strong>往左上推</strong>——這就是 W14「多元分散」的數學版</li>
+  </ol>
+
+  <h2>5. 分散的極限：系統性風險</h2>
+  <p>把股票從 1 檔加到 20 檔，波動快速下降；加到 100 檔，幾乎不再降。因為風險有兩層：</p>
+  <ol class="tasks">
+    <li><strong>非系統性風險</strong>（個別公司的倒楣事）：可以分散掉，市場<strong>不會</strong>為它付你報酬（因為免費就能消除）</li>
+    <li><strong>系統性風險</strong>（整個市場一起跌：衰退、升息、戰爭）：分散<strong>消不掉</strong>，這才是股票長期報酬的來源（承擔它的補償）</li>
+  </ol>
+  </div>
+
+  <!-- 幾檔才算分散 -->
+  <div class="ncalc" id="ncalc">
+    <h3>幾檔才算分散？</h3>
+    <div class="sl">
+      <label>持股檔數 N <output id="o-n" class="num">1 檔</output></label>
+      <input type="range" id="in-n" min="1" max="100" step="1" value="1" aria-label="持股檔數">
+    </div>
+    <div class="riskbar" aria-hidden="true">
+      <div class="rb-sys" id="rb-sys">系統性（消不掉）</div><div class="rb-idio" id="rb-idio">非系統性</div>
+    </div>
+    <div class="nverdict" id="nverdict" aria-live="polite"></div>
+    <p class="fnote">量級示意模型：市場層波動 16%、個股獨有波動 25%，等權重、獨有風險互相獨立（σ² = 16² + 25²/N）。實務結論：15–20 檔不同產業已消除大部分非系統性風險——這是 W18 倉位管理與「ETF 一次到位」的理論根據。</p>
+  </div>
+
+  <div class="prose">
+  <h2>6. MPT 的三個侷限（誠實面對）</h2>
+  <ol class="tasks">
+    <li><strong>輸入是歷史，未來會變</strong>：E、σ、ρ 全是回頭看的估計；尤其 ρ——<strong>危機時相關性趨近 1</strong>（2008、2020 各資產齊跌），減震器在最需要時最弱（Q3 週 37 主題）</li>
+    <li><strong>σ 不等於風險的全部</strong>：把「漲很多」和「跌很多」同等計為波動；Marks 的批評（W25）：真正的風險是本金永久損失</li>
+    <li><strong>常態分布假設</strong>：真實市場「肥尾」——極端事件遠比鐘形曲線預測的頻繁</li>
+  </ol>
+  <div class="example">
+    <span class="tag">結論</span>
+    <p>MPT 是<strong>思考框架</strong>（分散為什麼有效、風險怎麼組合）而非精密儀器；用它的直覺，不迷信它的小數點。</p>
+  </div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">60 分</span>
+    <div class="body"><b><a class="srclink" href="https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/" target="_blank" rel="noopener">MIT OCW 15.401 組合理論講次 ↗</a></b>
+      <p>學術版推導（Lecture: Portfolio Theory）；目標是看懂每個符號，不需背證明。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">20 分</span>
+    <div class="body"><b><a class="srclink" href="https://www.jstor.org/stable/2975974" target="_blank" rel="noopener">Markowitz (1952)「Portfolio Selection」↗</a></b>
+      <p>選讀導論與結論——讀原典開頭那句精神：投資人該關心的是<strong>組合整體</strong>，不是單一證券。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">15 分</span>
+    <div class="body"><b><a class="srclink" href="https://www.investopedia.com/terms/e/efficientfrontier.asp" target="_blank" rel="noopener">Investopedia「Efficient Frontier」↗</a></b>
+      <p>看圖補直覺——和上面的繪圖器對照。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">選讀</span>
+    <div class="body"><b>《漫步華爾街》MPT 章節</b>
+      <p>科普版再走一遍。</p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>親手畫出效率前緣</h2>
+  <p>用試算表（延用 W1 複利表的檔案，開新分頁）：</p>
+  <ol class="tasks">
+    <li>參數格：E_股=7%、σ_股=18%、E_債=3%、σ_債=6%、ρ（可切換）</li>
+    <li>權重欄：股票 0%、10%、…、100%（11 列）</li>
+    <li>每列計算 E(r<sub>p</sub>) 與 σ<sub>p</sub>（用講義公式；<strong>驗證</strong>：ρ=0.3、60/40 那列應為 E=5.4%、σ=11.75%——和上面繪圖器的預設值對照）</li>
+    <li>畫散布圖（X=σ、Y=E），分別把 ρ 設 0.3／0／−0.3 看曲線怎麼彎</li>
+    <li><strong>找出</strong>：ρ=0 時，哪個權重的 σ 最低？（應在股票 10% 附近——親眼看到「加股票降風險」）</li>
+    <li>寫 100 字：我的 W14 目標配置落在曲線的哪一段？我對它的位置滿意嗎？</li>
+  </ol>
+  <div class="verify">✅ <b>驗收標準：</b>驗證點（5.4%、11.75%）通過；三條 ρ 曲線畫出；找到 ρ=0 的最小波動點。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w15-practice">
+    <li><label><input type="checkbox"><span>驗證點（5.4%、11.75%）通過</span></label></li>
+    <li><label><input type="checkbox"><span>三條曲線畫出且能解釋 ρ 越低越彎</span></label></li>
+    <li><label><input type="checkbox"><span>找到 ρ=0 的最小波動點</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 兩資產 ρ＝+1 時，組合波動是什麼？免費午餐還在嗎？</summary>
+      <div class="ans"><p>→ σ<sub>p</sub> ＝ w·σ₁＋(1−w)·σ₂（恰好是加權平均）——第三項不再打折，<strong>免費午餐消失</strong>；完全同步的資產放再多也沒有分散效果。把繪圖器的 ρ 拉到 +1 看：曲線變成直線、貼上虛線。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 為什麼市場不補償非系統性風險？</summary>
+      <div class="ans"><p>→ 因為它<strong>免費就能消除</strong>（多買幾檔即可）——市場只補償「無法逃避」的承擔；不肯分散而承擔個股風險，是自願不領免費午餐，市場不會另發薪水。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 2008 年「股債分散」有用、「股票內部分散 50 檔」沒用——用兩層風險解釋。</summary>
+      <div class="ans"><p>→ 50 檔台股消除的是<strong>非系統性風險</strong>（個別公司），但 2008 是<strong>系統性風險</strong>（整個市場）——只有跨資產類別（股 vs 債）的分散碰得到系統性層次；而且即使如此，危機中 ρ 上升也會讓效果打折。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>雨傘店與冰淇淋店</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（雨傘與冰淇淋）</p>
+    <p>「一個小鎮只有兩家店：雨傘店和冰淇淋店。你只能投資一家、或各投一半——哪個選擇讓你<strong>每年都睡得著</strong>？」（下雨傘店賺、出太陽冰店賺——各一半的人旱澇保收。）</p>
+  </div>
+  <div class="script">
+    <p class="who">核心觀念</p>
+    <p>「這就是分散的祕密：<strong>不是選更多股票，是選走不同路的資產</strong>。數學上還有個神奇結果——全部買最安全的債券，再加一成股票，整體反而<strong>更穩</strong>，因為它們常常一個跌時另一個沒跌。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動：家庭資產健檢</p>
+    <p>「我們家的資產：房子、薪水、存款、股票——哪些其實是『同一家店』？」（引導發現：幾乎全是「台灣景氣」這家店——連回上週的全球化配置。）</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那多買幾檔台股就分散了？」</b><br>「50 檔台股在海嘯來時一起跌——分散要跨『會不會一起跌』的界線（資產類別、國家），不是湊數量。」</p>
+    <p class="qa"><b>「聽起來分散就無敵了？」</b><br>誠實講侷限：「真正的大風暴裡大家會一起跌（2008）；分散讓你跌得淺、活得下來，不是不會跌。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w15-final">
+    <li><label><input type="checkbox"><span>能寫出兩資產組合的 E 與 σ 公式並解釋第三項</span></label></li>
+    <li><label><input type="checkbox"><span>效率前緣試算表完成（三條 ρ 曲線）</span></label></li>
+    <li><label><input type="checkbox"><span>能說出 MPT 三個侷限</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 16：指數化投資與成本侵蝕</b>——MPT 說「買組合整體」，下週看實務上最便宜的一次到位工具：為什麼「買下整個市場＋壓低成本」是連專業者都難以打敗的預設答案。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-14-asset-allocation/">上一週：資產配置</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "c"
+      ? "答對了——直覺上加「更危險」的東西該更危險，但只要兩者不同步（ρ 夠低），波動從 6% 降到約 5.69%、期望報酬還從 3% 升到 3.4%。這就是本週的主角：分散，唯一的免費午餐。"
+      : "直覺的答案——但只要股債走不同的路（相關性夠低），波動反而從 6% 降到約 5.69%、期望報酬還從 3% 升到 3.4%。加一點「危險資產」讓整體更安全——這就是本週的主角：分散，唯一的免費午餐。";
+  });
+
+  /* ---------- 效率前緣繪圖器 ---------- */
+  var ES = 7, EB = 3, SS = 18, SB = 6;
+  // 座標：X σ 0–20%，Y E 2–8%
+  var X0 = 52, X1 = 440, Y0 = 260, Y1 = 20;
+  function px(s){ return X0 + (s - 0) / 20 * (X1 - X0); }
+  function py(e){ return Y0 - (e - 2) / 6 * (Y0 - Y1); }
+  function port(w, rho){
+    var E = w*ES + (1-w)*EB;
+    var v = w*w*SS*SS + (1-w)*(1-w)*SB*SB + 2*w*(1-w)*rho*SS*SB;
+    return { E: E, s: Math.sqrt(Math.max(v, 0)) };
+  }
+  // 靜態：格線與刻度
+  (function(){
+    var grid = document.getElementById("g-grid"), ticks = document.getElementById("g-ticks");
+    var gh = "", th = "";
+    for (var sv = 5; sv <= 20; sv += 5){
+      gh += '<line class="grid" x1="'+px(sv)+'" y1="'+Y1+'" x2="'+px(sv)+'" y2="'+Y0+'"/>';
+      th += '<text class="ticklab" x="'+px(sv)+'" y="'+(Y0+14)+'" text-anchor="middle">'+sv+'</text>';
+    }
+    for (var ev = 2; ev <= 8; ev += 1){
+      gh += '<line class="grid" x1="'+X0+'" y1="'+py(ev)+'" x2="'+X1+'" y2="'+py(ev)+'"/>';
+      th += '<text class="ticklab" x="'+(X0-7)+'" y="'+(py(ev)+3.5)+'" text-anchor="end">'+ev+'</text>';
+    }
+    grid.innerHTML = gh; ticks.innerHTML = th;
+  })();
+  var inRho = document.getElementById("in-rho"), inW = document.getElementById("in-w");
+  function fmtRho(r){ return (r > 0 ? "+" : r < 0 ? "−" : "") + Math.abs(r).toFixed(1); }
+  function draw(){
+    var rho = +inRho.value, w = +inW.value / 100;
+    document.getElementById("o-rho").textContent = fmtRho(rho);
+    document.getElementById("o-w").textContent = Math.round(w*100) + "%";
+    // 曲線
+    var pts = [], minS = Infinity, minP = null, minW = 0;
+    for (var i = 0; i <= 100; i++){
+      var p = port(i/100, rho);
+      pts.push(px(p.s).toFixed(1) + "," + py(p.E).toFixed(1));
+      if (p.s < minS){ minS = p.s; minP = p; minW = i; }
+    }
+    document.getElementById("curve").setAttribute("points", pts.join(" "));
+    // ρ=+1 假想直線（兩端點連線）
+    var e0 = port(0, 1), e1 = port(1, 1);
+    var avg = document.getElementById("avgline");
+    avg.setAttribute("x1", px(e0.s)); avg.setAttribute("y1", py(e0.E));
+    avg.setAttribute("x2", px(e1.s)); avg.setAttribute("y2", py(e1.E));
+    // 端點標籤
+    var ls = document.getElementById("lab-stock"), lb = document.getElementById("lab-bond");
+    ls.setAttribute("x", px(e1.s) - 6); ls.setAttribute("y", py(e1.E) - 8); ls.setAttribute("text-anchor","end"); ls.textContent = "100% 股";
+    lb.setAttribute("x", px(e0.s) + 8); lb.setAttribute("y", py(e0.E) + 4); lb.textContent = "100% 債";
+    // 最小波動點（◆）
+    var mv = document.getElementById("minvar");
+    var mx = px(minP.s), my = py(minP.E);
+    mv.setAttribute("transform", "translate(" + mx + " " + (my - 6.36) + ") rotate(45)");
+    // 你的點
+    var cp = port(w, rho);
+    document.getElementById("mark").setAttribute("cx", px(cp.s));
+    document.getElementById("mark").setAttribute("cy", py(cp.E));
+    document.getElementById("markring").setAttribute("cx", px(cp.s));
+    document.getElementById("markring").setAttribute("cy", py(cp.E));
+    // 數字
+    var avgS = w*SS + (1-w)*SB;
+    var lunch = cp.s - avgS;
+    document.getElementById("f-er").innerHTML = cp.E.toFixed(2) + "<small>%</small>";
+    document.getElementById("f-sd").innerHTML = cp.s.toFixed(2) + "<small>%</small>";
+    document.getElementById("f-avg").innerHTML = avgS.toFixed(2) + "<small>%</small>";
+    document.getElementById("f-lunch").innerHTML = (lunch >= -0.005 ? "0.00" : "−" + Math.abs(lunch).toFixed(2)) + "<small> pt</small>";
+    // 判詞
+    var v = document.getElementById("fverdict");
+    if (rho >= 1){
+      v.innerHTML = "<b>ρ = +1：免費午餐消失。</b>曲線貼上虛線變成直線——完全同步的資產，放再多也沒有分散效果（快問快答 Q1）。";
+    } else if (rho <= -0.9){
+      v.innerHTML = "<b>ρ ≈ −1：教科書極限。</b>理論上可以把波動壓到接近 0——現實中找不到長期 ρ=−1 的資產對，但方向是對的：越不同步，省越多。";
+    } else if (Math.round(w*100) === minW){
+      v.innerHTML = "<b>你正站在最小波動點（股 " + minW + "%）：</b>比 100% 債券更穩、報酬還更高——「加一點危險資產反而更安全」的那個點。";
+    } else {
+      v.innerHTML = "同樣的期望報酬 " + cp.E.toFixed(2) + "%，波動 " + cp.s.toFixed(2) + "%——比「加權平均」少 " + Math.abs(lunch).toFixed(2) + " 個百分點。<b>什麼都沒犧牲，這就是免費午餐</b>；ρ 越低省越多。";
+    }
+  }
+  inRho.addEventListener("input", draw);
+  inW.addEventListener("input", draw);
+  draw();
+
+  /* ---------- 幾檔才算分散 ---------- */
+  var SM = 16, SI = 25;
+  var inN = document.getElementById("in-n");
+  function drawN(){
+    var n = +inN.value;
+    var s = Math.sqrt(SM*SM + SI*SI/n);
+    var s1 = Math.sqrt(SM*SM + SI*SI);
+    document.getElementById("o-n").textContent = n + " 檔";
+    var sysPct = (SM / s1) * 100;
+    var totPct = (s / s1) * 100;
+    var sys = document.getElementById("rb-sys"), idio = document.getElementById("rb-idio");
+    sys.style.width = sysPct + "%";
+    idio.style.width = (totPct - sysPct) + "%";
+    sys.textContent = "系統性 " + SM + "%（消不掉）";
+    idio.textContent = totPct - sysPct > 12 ? "非系統性" : "";
+    var v = document.getElementById("nverdict");
+    var left = s - SM;
+    if (n === 1){
+      v.innerHTML = "<b>1 檔：波動約 " + s.toFixed(1) + "%</b>——市場的風險加上「這一家公司的所有倒楣事」全押在一起。";
+    } else if (n < 15){
+      v.innerHTML = "<b>" + n + " 檔：波動約 " + s.toFixed(1) + "%</b>——下降得很快，每加一檔都有感。";
+    } else if (n <= 25){
+      v.innerHTML = "<b>" + n + " 檔：波動約 " + s.toFixed(1) + "%</b>——距離 16% 的地板只剩 " + left.toFixed(1) + " pt。15–20 檔不同產業已消除大部分非系統性風險。";
+    } else {
+      v.innerHTML = "<b>" + n + " 檔：波動約 " + s.toFixed(1) + "%</b>——曲線已經躺平：再加檔數幾乎不再降，剩下的是分散消不掉的系統性風險（它才是長期報酬的來源）。";
+    }
+  }
+  inN.addEventListener("input", drawN);
+  drawN();
+
+  /* ---------- 檢核持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w15-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w15-final"){
+          document.getElementById("checkdone").textContent = st.every(Boolean) ? "🎓 第 15 週完成——免費午餐已領。下週見：指數化投資與成本侵蝕。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w15-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 15 週完成——免費午餐已領。下週見：指數化投資與成本侵蝕。";
+    }
+  });
+})();
+</script>

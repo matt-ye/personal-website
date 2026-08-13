@@ -1,0 +1,515 @@
+<!-- 由 scripts/extract-course-weeks.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --biz:#1F8A5F; --lev:#B4552D; --tax:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --biz:#35A878; --lev:#E08054; --tax:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* ROE 果汁機 */
+  .juicer{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .juicer h3{margin-top:0}
+  .presets{display:flex;gap:.5rem;flex-wrap:wrap;margin:.9rem 0}
+  .presets button{font:inherit;font-size:.85rem;font-weight:700;padding:.4rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink-2)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .presets button.on{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  .chain{display:flex;gap:.4rem;align-items:stretch;flex-wrap:wrap;margin:1rem 0 .4rem}
+  .ftile{flex:1;min-width:96px;padding:.6rem .5rem;border-radius:10px;text-align:center;border:1.5px solid var(--line);background:var(--paper)}
+  .ftile .fn{font-size:.68rem;font-weight:800;letter-spacing:.05em;color:var(--ink-3)}
+  .ftile .fv{font-size:1.15rem;font-weight:800;font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;margin:.1rem 0}
+  .ftile.tax .fv{color:var(--tax)} .ftile.biz .fv{color:var(--biz)} .ftile.lev .fv{color:var(--lev)}
+  .ftile .fh{font-size:.68rem;color:var(--ink-3)}
+  .xsign{align-self:center;font-weight:800;color:var(--ink-3);font-size:1.1rem}
+  .roeout{display:flex;align-items:baseline;gap:.8rem;justify-content:center;margin:.8rem 0 .2rem;flex-wrap:wrap}
+  .roeout .eq{font-size:1.2rem;font-weight:800;color:var(--ink-3)}
+  .roeout .val{font-size:clamp(2rem,6vw,2.7rem);font-weight:800;color:var(--pine);font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+  .roeout .lbl{font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.9rem 1.4rem;margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--line)}
+  .sl label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--ink-2);font-weight:700}
+  .sl label output{color:var(--pine);font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .sl input[type=range]{width:100%;accent-color:var(--pine);margin-top:.25rem}
+  .jalert{margin-top:.9rem;padding:.7rem 1rem;border-radius:9px;font-size:.9rem;background:color-mix(in srgb,var(--lev) 12%,transparent);display:none}
+  .jalert.show{display:block}
+  .jalert b{color:var(--lev)}
+  .jnote{margin-top:.7rem;font-size:.85rem;color:var(--ink-3);text-align:center}
+  .jnote b{color:var(--coin)}
+
+  .formula{margin:1.1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto;font-size:.98rem;text-align:center}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .12em;line-height:1.3;font-size:.9em}
+  .frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .25em}
+  .frac>span:last-child{padding:0 .25em}
+  .fdesc{font-size:.72rem;color:var(--ink-3);display:block;margin-top:.15rem}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 09</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q1 共同地基 · Week 09</p>
+  <h1>財務比率體系與杜邦五因子</h1>
+  <p class="lead" style="margin-top:.5rem">Q1 分析工具的最後一塊：把 ROE 拆開，看出「同樣賺 20%」背後完全不同的體質。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-05-income-statement/">第 5</a>–<a href="/projects/family-investing-course/week-08-quality-red-flags/">8 週</a></span><span class="chip">52 週 · 第 9 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>投資人用比率跨公司比較（Q2 comps 的前身）、操盤手用它篩選與監控（Q3）、財務長用它對董事會解釋績效（Q4）。學完本週，第 13 週 capstone 的工具就齊了。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週分享「三句護身咒」時對方卡住的點——還背得出來嗎（現金跟上、應收別超速、有錢還借錢的離遠點）。先用自己的話再講一次。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">巷口兩家店，去年都讓老闆的錢賺了 <strong>17.3%</strong>。一家是精品店：東西貴、客人少、零借款；一家是自助餐：便宜、翻桌快、跟銀行借了不少錢。你比較想當哪家的股東？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">精品店</button>
+    <button data-g="b">自助餐</button>
+    <button data-g="c">一樣，反正都賺 17.3%</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. 比率的體系感：四個抽屜</h2>
+  <p>散落的比率背不完，裝進四個抽屜就永遠不會亂：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>抽屜</th><th>回答的問題</th><th>代表比率</th></tr></thead>
+      <tbody>
+        <tr><td class="f">獲利能力</td><td>賺得多不多？</td><td>毛利率、營業利益率、淨利率、ROE、ROIC</td></tr>
+        <tr><td class="f">經營效率</td><td>資產用得勤不勤？</td><td>總資產周轉率、存貨／應收周轉天數</td></tr>
+        <tr><td class="f">償債能力</td><td>撐不撐得住？</td><td>流動比、速動比、有息負債／權益、利息保障倍數</td></tr>
+        <tr><td class="f">估值</td><td>市場開價貴不貴？</td><td>P/E、P/B、EV/EBITDA、殖利率（Q2 深談）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>前三個抽屜你在第 5–8 週已各學了一半。<strong>使用鐵律（烙在腦裡）：比率永遠要「跟自己比（5 年趨勢）＋跟同業比（相對位置）」，單一時點的單一比率沒有資訊量。</strong></p>
+
+  <h2>2. 先用飲料店驗證三因子</h2>
+  <p>專欄 #7 學過三因子，用你自己的店驗證一次（第 2 個月，月頻）：</p>
+  <div class="example">
+    <span class="tag">飲料店 ROE 拆解</span>
+    <p><span class="fx">淨利率 47.8% × 周轉率 0.218 × 權益乘數 1.15 ＝ <b>11.98%</b> ＝ 71,667 ÷ 598,334</span> ✓</p>
+    <p>飲料店是「超高利潤率、低周轉、幾乎無槓桿」——精品店的賺法。（一個月 12% 是剛開業基期小，別當常態。）</p>
+  </div>
+
+  <h2>3. 五因子：把「利息」和「稅」也拆出來</h2>
+  <p>三因子的淨利率混雜了本業、利息、稅三件事。五因子把它拆乾淨：</p>
+  <div class="formula">
+    <span class="fx">ROE ＝
+      <span class="frac"><span>淨利</span><span>稅前淨利</span></span> ×
+      <span class="frac"><span>稅前淨利</span><span>EBIT</span></span> ×
+      <span class="frac"><span>EBIT</span><span>營收</span></span> ×
+      <span class="frac"><span>營收</span><span>總資產</span></span> ×
+      <span class="frac"><span>總資產</span><span>股東權益</span></span>
+    </span>
+    <span class="fdesc">①稅負效應 × ②利息負擔 × ③營業利益率 × ④資產周轉率 × ⑤權益乘數</span>
+  </div>
+  <ol class="tasks">
+    <li><strong>①稅負效應</strong>（≤1）：留下幾成給股東？0.8 ＝ 有效稅率 20%</li>
+    <li><strong>②利息負擔</strong>（≤1）：EBIT 被利息咬掉多少？1 ＝ 無借款；越小＝債越重</li>
+    <li><strong>③④⑤</strong>：就是三因子的本業版（分子換成 EBIT 更純粹）</li>
+  </ol>
+  <div class="example">
+    <span class="tag">完整算例｜虛構「大樹製造」</span>
+    <p>營收 1,000、EBIT 150、利息 20、稅率 20%、總資產 800、權益 500 → 稅前淨利 130、淨利 104</p>
+    <p><span class="fx">ROE ＝ 0.800 × 0.867 × 15% × 1.25 × 1.6 ＝ <b>20.8%</b> ＝ 104 ÷ 500</span> ✓</p>
+    <p>判讀：本業（③×④）打底 18.75% 的資產報酬，槓桿（⑤）放大 1.6 倍，但利息（②）咬回 13%、稅（①）再咬 20%。<strong>同樣 ROE 20%，五因子組成不同，體質與風險完全不同。</strong></p>
+  </div>
+  </div>
+
+  <!-- ROE 果汁機 -->
+  <div class="juicer" id="juicer">
+    <h3>ROE 果汁機：五個因子連乘的實驗台</h3>
+    <p class="muted" style="margin:.2rem 0 0">先按預設鍵看「精品店」和「自助餐」——<strong>同樣 17.3%，配方完全不同</strong>。再自己拉滑桿，感受每個因子的力量。</p>
+    <div class="presets" id="presets">
+      <button data-p="boutique">精品店</button>
+      <button data-p="buffet">自助餐（有槓桿）</button>
+      <button data-p="tree">大樹製造</button>
+    </div>
+    <div class="chain" id="chain">
+      <div class="ftile tax"><div class="fn">① 稅負效應</div><div class="fv" id="v1">0.80</div><div class="fh">留給股東的成數</div></div>
+      <div class="xsign">×</div>
+      <div class="ftile lev"><div class="fn">② 利息負擔</div><div class="fv" id="v2">1.00</div><div class="fh">被利息咬剩的</div></div>
+      <div class="xsign">×</div>
+      <div class="ftile biz"><div class="fn">③ 營業利益率</div><div class="fv" id="v3">30%</div><div class="fh">本業賺錢力</div></div>
+      <div class="xsign">×</div>
+      <div class="ftile biz"><div class="fn">④ 資產周轉率</div><div class="fv" id="v4">0.60</div><div class="fh">資產轉速</div></div>
+      <div class="xsign">×</div>
+      <div class="ftile lev"><div class="fn">⑤ 權益乘數</div><div class="fv" id="v5">1.20</div><div class="fh">槓桿放大鏡</div></div>
+    </div>
+    <div class="roeout"><span class="eq">＝</span><span class="val" id="roe">17.3%</span><span class="lbl">ROE</span></div>
+    <div class="sliders">
+      <div class="sl"><label>① 稅負效應 <output id="o1">0.80</output></label><input type="range" id="s1" min="0.6" max="1" step="0.05" value="0.8"></div>
+      <div class="sl"><label>② 利息負擔 <output id="o2">1.00</output></label><input type="range" id="s2" min="0.6" max="1" step="0.001" value="1"></div>
+      <div class="sl"><label>③ 營業利益率 <output id="o3">30%</output></label><input type="range" id="s3" min="2" max="40" step="1" value="30"></div>
+      <div class="sl"><label>④ 資產周轉率 <output id="o4">0.60</output></label><input type="range" id="s4" min="0.2" max="3" step="0.05" value="0.6"></div>
+      <div class="sl"><label>⑤ 權益乘數 <output id="o5">1.20</output></label><input type="range" id="s5" min="1" max="4" step="0.1" value="1.2"></div>
+    </div>
+    <div class="jalert" id="jalert"></div>
+    <p class="jnote">看 ROE 的變化，先問一句：<b>「哪個因子動了？」</b>——來自⑤的上升，品質遠低於來自③。</p>
+  </div>
+
+  <div class="prose">
+  <h2>4. 三條路的風險畫像</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>高 ROE 的來源</th><th>典型產業</th><th>風險本質</th></tr></thead>
+      <tbody>
+        <tr><td class="f" style="color:var(--biz)">高利潤率（③）</td><td>晶圓龍頭、精品、軟體</td><td>護城河被侵蝕（技術追趕、品牌老化）</td></tr>
+        <tr><td class="f">高周轉率（④）</td><td>超商、量販、快時尚</td><td>薄利模式，成本些微失控就轉虧</td></tr>
+        <tr><td class="f" style="color:var(--lev)">高權益乘數（⑤）</td><td>銀行、營建、高槓桿股</td><td>景氣反轉時虧損同樣被放大；升息直接咬②</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+  <h2>5. 周轉天數：效率抽屜的顯微鏡</h2>
+  <div class="formula">
+    <span class="fx">應收天數 ＝ <span class="frac"><span>應收帳款</span><span>營收</span></span> × 365
+    <span style="display:inline-block;width:1.6rem"></span>
+    存貨天數 ＝ <span class="frac"><span>存貨</span><span>銷貨成本</span></span> × 365</span>
+  </div>
+  <p>注意存貨天數的分母是<strong>成本</strong>不是營收——存貨以成本計價。這兩個天數是上週紅旗 #1、#2 的精確化：<strong>天數逐年拉長＝收錢變慢／貨賣變慢</strong>，比「增速比較」更早出現訊號。</p>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「ROE 高就是好公司」</p><p>先拆五因子看來源；再看它能不能<strong>持續</strong>（護城河問題，Q2）；最後才是「用什麼價格買」（估值問題）。</p></div>
+  <div class="myth"><p class="say">「比率可以跨產業排名」</p><p>超商周轉 2.5 vs 晶圓廠 0.5 沒有優劣，是商業模式；只有同業比較有意義。</p></div>
+  <div class="myth"><p class="say">「數字自己會說話」</p><p>比率只會提出好問題，不會給答案；答案在年報的文字裡（MD&amp;A、附註）。</p></div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">10 分</span>
+    <div class="body"><b><a class="srclink" href="/writing/family-investing-07-financial-statements/">專欄 #7 杜邦樹重讀 ↗</a></b>
+      <p>三因子的樹狀圖；本週在中段插入②①兩層就是五因子。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">30 分</span>
+    <div class="body"><b><a class="srclink" href="https://www.investopedia.com/terms/d/dupontanalysis.asp" target="_blank" rel="noopener">Investopedia「DuPont Analysis」↗</a></b>
+      <p>對照英文的 5-step decomposition，確認每因子的英文名（tax burden / interest burden / operating margin / asset turnover / equity multiplier）。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">40 分</span>
+    <div class="body"><b><a class="srclink" href="https://statementdog.com/" target="_blank" rel="noopener">財報狗 ↗</a> 或 <a class="srclink" href="https://goodinfo.tw/" target="_blank" rel="noopener">Goodinfo ↗</a> 實戰</b>
+      <p>找到追蹤公司的「ROE 拆解」頁（多數工具內建三因子），核對工具算的跟你手算是否一致——<strong>工具是加速器，手算過才有資格用工具。</strong></p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>台積電 vs 聯電：五因子對決</h2>
+  <p>同產業、同市場、規模不同的兩家公司，是杜邦拆解最好的教材。</p>
+  <ol class="tasks">
+    <li>從公開資訊觀測站（或財報狗輔助）取兩家最新年度：營收、EBIT（營業利益近似）、利息費用、稅前淨利、淨利、總資產、股東權益</li>
+    <li>建五因子對照表（2 公司 × 5 因子 × 直接 ROE 驗算）</li>
+    <li>驗算：五因子相乘要等於 淨利÷權益（誤差 &lt; 1%；不合就檢查「歸屬母公司」口徑是否一致）</li>
+    <li>寫 200 字：兩家 ROE 的差距<strong>主要</strong>來自哪個因子？這個因子差距的商業原因是什麼（製程領先→定價權→③？）</li>
+    <li>加做：算兩家的應收天數與存貨天數，順手檢查紅旗 #1、#2</li>
+  </ol>
+  <div class="verify">✅ <b>本週工具驗證：</b>大樹製造五因子相乘 ＝ <b class="num">20.8%</b> ＝ 104÷500；飲料店三因子 ＝ <b class="num">11.98%</b> ＝ 71,667÷598,334——你的表也要這樣勾稽通過。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w9-practice">
+    <li><label><input type="checkbox"><span>兩家五因子相乘皆與直接 ROE 相符</span></label></li>
+    <li><label><input type="checkbox"><span>200 字歸因有指出主導因子與商業解釋</span></label></li>
+    <li><label><input type="checkbox"><span>周轉天數計算用對分母（存貨÷成本）</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 兩家公司 ROE 都是 15%：A 是 ③高④低⑤低，B 是 ③低④中⑤高——升息環境下誰危險？</summary>
+      <div class="ans"><p>→ <strong>B 危險</strong>——⑤高＝債重，升息直接推高利息、咬小②，且景氣反轉時槓桿反向放大虧損；A 的風險在護城河長期侵蝕，但對利率不敏感。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 某公司 ROE 從 12% 升到 18%，但營業利益率持平、周轉持平——發生什麼事？該開心嗎？</summary>
+      <div class="ans"><p>→ ROE 上升來自<strong>⑤權益乘數</strong>（加槓桿）或①（減稅優惠）——本業（③④）沒變好；謹慎大於開心，去資產負債表查有息負債是否明顯增加。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 為什麼五因子的②「利息負擔」永遠 ≤ 1（正常情況下）？</summary>
+      <div class="ans"><p>→ 因為稅前淨利＝EBIT−利息（正常無大額業外時），有借款利息就有 稅前淨利 &lt; EBIT；等於 1 表示零借款（如帳上無債的公司）。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>把果汁倒回去看原料</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（兩家店的謎題）</p>
+    <p>「巷口有兩家店，去年都讓老闆的錢賺了 17.3%。一家是精品店：東西貴、客人少；一家是自助餐：便宜、翻桌快、而且跟銀行借了不少錢。<strong>同樣 17.3%，你比較想當哪家的股東？</strong>」（可以打開上面的果汁機，按兩個預設鍵給對方看配方差多少。）</p>
+  </div>
+  <div class="script">
+    <p class="who">核心比喻：果汁機</p>
+    <p>「ROE 像一台果汁機的產出，杜邦拆解是把果汁倒回去看原料：幾分是<strong>真材實料</strong>（產品賺錢）、幾分是<strong>轉速快</strong>（薄利多銷）、幾分是<strong>加水</strong>（借錢放大）。加水的果汁，一停電（升息、景氣反轉）就露餡。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動</p>
+    <p>指著五個因子問：「銀行的 ROE 主要靠哪一格？精品靠哪一格？」——讓對方把產業對號入座，對了就代表懂了。</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「借錢放大不好嗎？賺更多耶」</b><br>「放大鏡不分方向：賺放大、虧也放大。所以看到高 ROE，我們家的第一句話永遠是『它怎麼賺的？』」</p>
+    <p class="qa"><b>「這些你都手算？」</b><br>「網站一鍵就有，但手算過一次才知道網站有沒有騙我——就像會心算的人用計算機更安心。」</p>
+  </div>
+  <p class="muted">本腳本可搭配專欄 <a class="srclink" href="/writing/family-investing-07-financial-statements/">#7《財務報表三表》</a>的杜邦樹一起用。</p>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w9-final">
+    <li><label><input type="checkbox"><span>能默寫五因子公式並解釋每個因子的含義</span></label></li>
+    <li><label><input type="checkbox"><span>台積電 vs 聯電對照表完成且驗算通過</span></label></li>
+    <li><label><input type="checkbox"><span>能說出「ROE 上升但品質變差」的至少一種情境</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記下對方聽不懂的點（下週單元開頭回補）</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>里程碑 · 下週預告 · Week 10：台股交易制度與成本</b>——第 5–9 週的五樣工具（利潤率趨勢、體質比率、三線表、紅旗清單、杜邦拆解）已經到齊，第 13 週 capstone 會把它們組裝成「20 分鐘財報健檢」限時演出。下週先換個場景：錢進市場之前，先搞懂交易怎麼運作、過路費有多貴。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-08-quality-red-flags/">上一週：三表勾稽與財報紅旗</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    var g = btn.dataset.g;
+    verdict.textContent = g === "c"
+      ? "這正是本週要打破的想法——同樣 17.3%，一家靠產品真賺錢、一家靠借錢放大。升息或景氣反轉時，兩家的命運完全不同。杜邦拆解就是把這件事看穿的工具，往下用果汁機拆給你看。"
+      : (g === "a"
+        ? "多數人的直覺——精品店的 17.3% 是「真材實料」賺的，零借款、不怕升息。但先別急：答案取決於價格與護城河，本週先學會「把 17.3% 拆開看配方」這個動作。"
+        : "有趣的選擇——自助餐的 17.3% 有一部分是借錢放大出來的：賺放大、虧也放大，升息還會直接咬獲利。不是不能選，但你得知道自己買的是「加了水的果汁」。往下拆給你看。");
+  });
+
+  /* ---------- ROE 果汁機 ---------- */
+  var S = [document.getElementById("s1"),document.getElementById("s2"),document.getElementById("s3"),document.getElementById("s4"),document.getElementById("s5")];
+  var O = [document.getElementById("o1"),document.getElementById("o2"),document.getElementById("o3"),document.getElementById("o4"),document.getElementById("o5")];
+  var V = [document.getElementById("v1"),document.getElementById("v2"),document.getElementById("v3"),document.getElementById("v4"),document.getElementById("v5")];
+  var roeEl = document.getElementById("roe"), jalert = document.getElementById("jalert");
+  var presets = {
+    boutique: [0.80, 1.00, 30, 0.60, 1.2],
+    buffet:   [0.80, 0.85, 6, 2.50, 1.7],
+    tree:     [0.80, 0.867, 15, 1.25, 1.6]
+  };
+  function upd(fromPreset){
+    var v1=+S[0].value, v2=+S[1].value, v3=+S[2].value, v4=+S[3].value, v5=+S[4].value;
+    O[0].textContent = v1.toFixed(2); V[0].textContent = v1.toFixed(2);
+    O[1].textContent = v2.toFixed(3).replace(/0$/,""); V[1].textContent = v2.toFixed(3).replace(/0$/,"");
+    O[2].textContent = v3 + "%";      V[2].textContent = v3 + "%";
+    O[3].textContent = v4.toFixed(2); V[3].textContent = v4.toFixed(2);
+    O[4].textContent = v5.toFixed(1); V[4].textContent = v5.toFixed(1);
+    var roe = v1 * v2 * (v3/100) * v4 * v5;
+    roeEl.textContent = (roe*100).toFixed(1) + "%";
+    // 槓桿警示
+    if (v5 >= 2 && v2 < 1){
+      jalert.classList.add("show");
+      jalert.innerHTML = "<b>放大鏡警示：</b>權益乘數 " + v5.toFixed(1) + " 倍——這杯果汁加了不少水。升息會咬小②（現在 " + v2.toFixed(2) + "）、景氣反轉時虧損同樣被放大 " + v5.toFixed(1) + " 倍。";
+    } else {
+      jalert.classList.remove("show");
+    }
+    if (!fromPreset){
+      document.querySelectorAll("#presets button").forEach(function(b){ b.classList.remove("on"); });
+    }
+  }
+  S.forEach(function(s){ s.addEventListener("input", function(){ upd(false); }); });
+  document.getElementById("presets").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("on"); });
+    btn.classList.add("on");
+    var p = presets[btn.dataset.p];
+    S.forEach(function(s,i){ s.value = p[i]; });
+    upd(true);
+  });
+  // 初始：精品店
+  document.querySelector('#presets [data-p="boutique"]').classList.add("on");
+  upd(true);
+
+  /* ---------- 檢核持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w09-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w9-final"){
+          document.getElementById("checkdone").textContent = st.every(Boolean) ? "🎓 第 9 週完成——Q1 分析工具全數到齊。下週見：台股交易制度與成本。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w9-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 9 週完成——Q1 分析工具全數到齊。下週見：台股交易制度與成本。";
+    }
+  });
+})();
+</script>

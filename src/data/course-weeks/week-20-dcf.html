@@ -1,0 +1,516 @@
+<!-- 由 scripts/extract-course-weeks.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  .formula{margin:1.1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+  .formula .fx{display:block;font-size:.95rem;color:var(--ink);white-space:nowrap}
+  .formula .note{font-size:.82rem;color:var(--ink-3);margin-top:.4rem}
+  .formula .note b{color:var(--coin)}
+
+  /* DCF 組裝台 */
+  .dcf{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .dcf h3{margin-top:0}
+  .sl{margin-top:.7rem}
+  .sl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .sl label output{color:var(--pine);font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .sl input[type=range]{width:100%;accent-color:var(--pine);margin-top:.3rem}
+  .fcfrow{display:flex;gap:.4rem;margin-top:1rem;overflow-x:auto;padding-bottom:.2rem}
+  .fcfrow .fc{flex:1;min-width:70px;padding:.5rem .4rem;border-radius:9px;border:1px solid var(--line);background:var(--paper);text-align:center}
+  .fcfrow .fc .yn{font-size:.68rem;color:var(--ink-3);font-weight:700}
+  .fcfrow .fc .yv{font-size:.95rem;font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .evbar{display:flex;height:2rem;border-radius:8px;overflow:hidden;margin-top:1.1rem;border:1px solid var(--line)}
+  .evbar div{display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:var(--on-pine);min-width:0;overflow:hidden;white-space:nowrap;transition:width .15s}
+  .evbar .eb-ex{background:var(--pine)}
+  .evbar .eb-tv{background:var(--coin)}
+  .evlab{font-size:.72rem;color:var(--ink-3);margin-top:.35rem}
+  .dcfgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem;margin-top:1rem}
+  .dcfcell{padding:.7rem .9rem;border-radius:10px;border:1.5px solid var(--line);background:var(--paper)}
+  .dcfcell .sn{font-size:.72rem;color:var(--ink-3);font-weight:700}
+  .dcfcell .sv{font-size:1.22rem;font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .dcfcell .sv small{font-size:.78rem;color:var(--ink-3);font-weight:700}
+  .dcfcell.main{border-color:var(--pine)}
+  .dcfcell.main .sv{color:var(--pine);font-size:1.5rem}
+  .dcfcell.tvpct .sv{color:var(--coin)}
+  .dcfverdict{margin-top:.9rem;padding:.7rem 1rem;border-radius:9px;font-size:.9rem;background:var(--coin-soft);color:var(--ink-2)}
+  .dcfverdict b{color:var(--coin)}
+  .dcfverdict.boom{background:color-mix(in srgb,var(--down) 12%,transparent)}
+  .dcfverdict.boom b{color:var(--down)}
+  .dcfnote{margin-top:.6rem;font-size:.78rem;color:var(--ink-3)}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 20</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q2 投資人季 · Week 20</p>
+  <h1>估值二——DCF 基礎</h1>
+  <p class="lead" style="margin-top:.5rem">不靠跟別人比，直接從公司未來的現金流算出它值多少——「內在價值」這顆投資的北極星。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-01-tvm/">第 1</a>、<a href="/projects/family-investing-course/week-07-cash-flow/">7</a>、<a href="/projects/family-investing-course/week-19-relative-valuation/">19 週</a></span><span class="chip">52 週 · 第 20 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>DCF 是 W1 折現的終極應用、W7 自由現金流的去處、Q4 週 41 資本預算 NPV 的孿生兄弟。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週分享「買房比價／凶宅」的討論——「便宜先問為什麼」對方記住了嗎、PEG 的兩家店比喻講通了嗎。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">一個典型的「預測 5 年」DCF 估值裡，「5 年後的那一大包」（終值）通常佔總價值的幾成？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">兩三成——重點在看得見的 5 年</button>
+    <button data-g="b">大約一半</button>
+    <button data-g="c">六到八成</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. DCF 的一句話</h2>
+  <p><strong>公司值它未來能生出的所有現金，折現到今天。</strong>回到 W1 的核心：未來的錢要折現。一家公司的內在價值，就是它未來每一年能產出的自由現金流（FCF，W7），各自折回今天、全部加總：</p>
+  </div>
+  <div class="formula">
+    <span class="fx">企業價值 ＝ Σ FCF<sub>t</sub> ÷ (1+r)<sup>t</sup> ＋ 終值 ÷ (1+r)<sup>n</sup></span>
+    <p class="note">三個零件：<b>①預測期的 FCF ②折現率 r ③終值</b>。DCF 難不在公式，在這三個零件的假設——所以它被稱為「假設的放大器」。</p>
+  </div>
+
+  <div class="prose">
+  <h2>2. 三個零件</h2>
+  <p><strong>零件一｜預測期 FCF（通常 5–10 年）</strong>：從營收出發一路推到 FCF——營收成長 → 利潤率 → 稅後營業利益 → 減再投資（CapEx＋營運資金增額）→ FCF。這正是 W5–7 的三表在「未來」的延伸。</p>
+  <p><strong>零件二｜折現率 r（用 WACC，概念版）</strong>：反映「這些未來現金的風險」——越不確定，折現率越高、現值越低。本週先用給定值 r ＝ 9%；完整的 WACC 估算是 Q4 週 42 的主題。直覺檢查：9% 意味著「這家公司的風險，讓投資人要求每年 9% 才願意持有」。</p>
+  <p><strong>零件三｜終值（Terminal Value）</strong>：預測期之後所有現金流的打包現值，用永續成長模型：</p>
+  </div>
+  <div class="formula">
+    <span class="fx">終值<sub>第5年末</sub> ＝ FCF₅ × (1+g) ÷ (r − g)</span>
+    <p class="note"><b>永續成長率 g 必須 &lt; 長期經濟成長率</b>（否則公司終將大過整個經濟）——通常取 2–3%。算出的是「第 5 年末」的值，還要再折回今天。</p>
+  </div>
+
+  <div class="prose">
+  <h2>3. 親手組一次：DCF 組裝台</h2>
+  <p>預設值就是講義算例（FCF 第 1 年 100、成長 8%、r 9%、g 3%、淨負債 200、股數 100）。<strong>拉動三個假設，看每股價值和終值佔比怎麼跳</strong>：</p>
+  </div>
+
+  <!-- DCF 組裝台 -->
+  <div class="dcf" id="dcf">
+    <h3>DCF 組裝台（FCF₁ ＝ 100 · 預測 5 年）</h3>
+    <div class="sl">
+      <label>FCF 年成長率（第 2–5 年） <output id="o-gr" class="num">8%</output></label>
+      <input type="range" id="in-gr" min="0" max="15" step="1" value="8" aria-label="FCF 成長率">
+    </div>
+    <div class="sl">
+      <label>折現率 r <output id="o-r" class="num">9.0%</output></label>
+      <input type="range" id="in-r" min="6" max="12" step="0.5" value="9" aria-label="折現率">
+    </div>
+    <div class="sl">
+      <label>永續成長率 g <output id="o-g" class="num">3.0%</output></label>
+      <input type="range" id="in-g" min="1" max="5.5" step="0.5" value="3" aria-label="永續成長率">
+    </div>
+    <div class="fcfrow" id="fcfrow" aria-hidden="true"></div>
+    <div class="evbar" aria-hidden="true">
+      <div class="eb-ex" id="eb-ex">明確期</div><div class="eb-tv" id="eb-tv">終值</div>
+    </div>
+    <p class="evlab">▲ 企業價值的組成：明確期 5 年（綠）vs 終值（金）</p>
+    <div class="dcfgrid">
+      <div class="dcfcell"><div class="sn">企業價值 EV</div><div class="sv" id="d-ev">1968</div></div>
+      <div class="dcfcell"><div class="sn">權益價值（減淨負債 200）</div><div class="sv" id="d-eq">1768</div></div>
+      <div class="dcfcell main"><div class="sn">每股內在價值（÷100 股）</div><div class="sv" id="d-ps">17.68</div></div>
+      <div class="dcfcell tvpct"><div class="sn">終值佔 EV</div><div class="sv" id="d-tv">77<small>%</small></div></div>
+    </div>
+    <div class="dcfverdict" id="dcfverdict" aria-live="polite"></div>
+    <p class="dcfnote">練習第 1 步的驗證點就是預設值：EV＝1968.3、每股＝17.68、終值佔比＝77%。不合就檢查：終值是否忘了折現、分母是否用 r−g。（g 的合理上限是 2–3%；滑桿故意開到 5.5%，是為了讓你親眼看見 g 逼近 r 時分母怎麼爆炸。）</p>
+  </div>
+
+  <div class="prose">
+  <div class="example">
+    <span class="tag">致命觀察</span>
+    <p><strong>終值佔了 EV 的 77%</strong>——這不是本例特例，大多數 DCF 的終值都佔 60–80%。意思是：<strong>你的估值主要由「5 年後、你最看不清的部分」決定</strong>，而終值又高度受 g 和 r 的微小變化牽動。這就是為什麼 DCF 是「假設的放大器」——也是為什麼下週（W21）要用敏感度與情境把單一數字變成區間。</p>
+  </div>
+
+  <h2>4. 組裝明細（講義算例）</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>項目</th><th>值</th></tr></thead>
+      <tbody>
+        <tr><td>明確期 5 年 FCF 折現值加總</td><td class="num">450.4</td></tr>
+        <tr><td>終值（2335.5）折現值</td><td class="num">1517.9</td></tr>
+        <tr><td class="f">企業價值（EV）</td><td class="num f">1968.3</td></tr>
+        <tr><td>減：淨負債（有息負債−現金）</td><td class="num">200</td></tr>
+        <tr><td class="f">權益價值</td><td class="num f">1768.3</td></tr>
+        <tr><td class="f">÷ 流通股數 100 ＝ 每股內在價值</td><td class="num f">17.68</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>拿 17.68 跟市價比：市價 &lt; 17.68 且有安全邊際（W21）＝ 可能低估。</p>
+
+  <h2>5. DCF 的正確心態</h2>
+  <ol class="tasks">
+    <li><strong>DCF 的價值不在那個「精確」的 17.68</strong>——那是假精確。它的價值在<strong>逼你把假設攤開講清楚</strong>：你對成長、利潤率、風險的看法，每一個都要寫成數字、都要能被質疑</li>
+    <li><strong>垃圾進、垃圾出（GIGO）</strong>：微調成長率和折現率就能得到任何你想要的答案；誠實的 DCF 是「保守假設下仍便宜」，不是「湊出便宜的假設」</li>
+    <li><strong>與相對估值交叉</strong>（W19）：DCF（絕對）與 comps（相對）都指向低估時，信心才夠</li>
+  </ol>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「DCF 算出 17.68，所以它就值 17.68」</p><p>假精確；它是「在我這組假設下」的估計，換個合理假設可能是 14 或 22（下週的敏感度）。</p></div>
+  <div class="myth"><p class="say">「終值佔比高是模型有問題」</p><p>不是，這是 DCF 的常態；正確的回應是對 g、r 做敏感度，不是忽略終值。</p></div>
+  <div class="myth"><p class="say">「成長率調高一點沒差」</p><p>差很多：g 從 3% 到 4%、或 r 從 9% 到 8%，終值（佔 77%）會大幅跳動——用上面的組裝台試一次，下週再看九宮格的完整跨度。</p></div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">40 分</span>
+    <div class="body"><b>《The Little Book of Valuation》DCF 章節</b>
+      <p>Damodaran 的 DCF 入門，最好讀的版本。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">40 分</span>
+    <div class="body"><b><a class="srclink" href="https://pages.stern.nyu.edu/~adamodar/" target="_blank" rel="noopener">Damodaran 線上課程：DCF 入門講次 ↗</a></b>
+      <p>大師示範一次完整 DCF；注意他花多少時間在「假設」而非「公式」。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">15 分</span>
+    <div class="body"><b><a class="srclink" href="/projects/family-investing-course/week-01-tvm/">回顧 W1 ↗</a>＋<a class="srclink" href="/projects/family-investing-course/week-07-cash-flow/">W7 ↗</a></b>
+      <p>折現公式與 FCF 定義——DCF 的兩塊地基。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">10 分</span>
+    <div class="body"><b><a class="srclink" href="/projects/family-investing-course/week-19-relative-valuation/">回顧 W19 ↗</a></b>
+      <p>相對估值，本週的交叉驗證夥伴。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">選讀</span>
+    <div class="body"><b>《Valuation》(McKinsey) 現金流折現章節</b>
+      <p>機構級的嚴謹版。</p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>建你的第一個 DCF</h2>
+  <p>用試算表（延用複利表檔案，新分頁）：</p>
+  <ol class="tasks">
+    <li>複製講義的算例，<strong>驗證：EV ＝ 1968.3、每股 ＝ 17.68、終值佔比 ＝ 77%</strong>（不合就檢查終值是否忘了折現、或分母用 r−g——也可和上面組裝台對答案）</li>
+    <li>為 W13/W19 的目標公司建一個簡化 DCF：用它近年實際 FCF（W7 取得）當起點；自估未來 5 年成長率（保守一點；參考歷史成長但打折）；折現率先用 9%（或你查到的產業量級）；g 用 2.5%</li>
+    <li>算出每股內在價值，跟現在的市價比：折價還溢價？</li>
+    <li>寫 100 字：你的 DCF 對哪個假設最敏感？（先感覺一下，下週正式做敏感度）</li>
+  </ol>
+  <div class="verify">✅ <b>驗收標準：</b>講義算例驗證通過（17.68、77%）；目標公司 DCF 跑出每股價值並與市價對比。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w20-practice">
+    <li><label><input type="checkbox"><span>講義算例驗證通過（17.68、77%）</span></label></li>
+    <li><label><input type="checkbox"><span>目標公司 DCF 跑出每股價值並與市價對比</span></label></li>
+    <li><label><input type="checkbox"><span>能指出自己模型中「終值佔比」有多高</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼永續成長率 g 不能設得比長期經濟成長率高？</summary>
+      <div class="ans"><p>→ 因為永續成長是「直到永遠」——若 g &gt; 經濟成長率，這家公司終將大過整個經濟體，數學上不可能。所以 g 的上限是長期名目 GDP 成長（約略等於長期通膨＋實質成長，常取 2–3%）。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 終值佔 EV 的 77%，這對「該把力氣花在哪」有什麼提示？</summary>
+      <div class="ans"><p>→ 估值主要由「最遙遠、最不確定」的部分決定——提示：<strong>力氣要花在檢驗終值的假設（g 與 r）上</strong>，對它們做敏感度分析（W21），而不是糾結前 5 年 FCF 的第二位小數。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> DCF 和 W19 相對估值，各自最大的優點與盲點是什麼？</summary>
+      <div class="ans"><p>→ <strong>DCF</strong>：優點＝絕對估值、逼你攤開假設；盲點＝終值主導、對假設極敏感、易假精確。<strong>相對估值</strong>：優點＝快、直覺、貼市場；盲點＝只給相對貴賤、產業泡沫時集體失真。兩者交叉使用互補。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>會生金蛋的鵝</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（會生金蛋的鵝）</p>
+    <p>「有人要賣你一隻鵝，每年會生一顆金蛋，你願意付多少錢買？」（引導：要看牠每年生幾顆、能生幾年、還有你要求的報酬率——把未來的蛋『折算』成今天的價值。）</p>
+  </div>
+  <div class="script">
+    <p class="who">核心觀念</p>
+    <p>「這就是 DCF——公司就是那隻鵝，未來每年生出的『現金』（金蛋）折算到今天，加起來就是它該值多少。跟隔壁賣多少無關，是從頭算出它的『真價值』。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動（假設的力量）</p>
+    <p>「但這裡有個陷阱：如果我假設這隻鵝能活 100 年、每年多生 10%——我可以把牠估到天價。所以看到別人給的『目標價』，要問一句：<strong>你假設牠能生多久、生多快？</strong>換個假設，價錢差好幾倍。」（可以打開上面的組裝台拉給對方看。）</p>
+  </div>
+  <div class="script">
+    <p class="who">收尾（兩把尺）</p>
+    <p>「所以我們家看一家公司值多少，會用兩把尺：一把跟隔壁比（上週的），一把從頭算（這週的）。<strong>兩把尺都說便宜，才比較敢相信。</strong>」</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「未來怎麼算得準？」</b><br>「算不準，這正是重點——DCF 不是水晶球，是逼我們把『憑什麼看好』講清楚。下週學怎麼把一個數字變成一個範圍。」</p>
+    <p class="qa"><b>「那分析師的目標價可信嗎？」</b><br>「先看他的假設。目標價底下藏著成長率和折現率——假設太樂觀的目標價，是用 Excel 許願。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w20-final">
+    <li><label><input type="checkbox"><span>能說出 DCF 的三個零件與公式</span></label></li>
+    <li><label><input type="checkbox"><span>手建 DCF 並驗證講義算例（17.68、終值佔 77%）</span></label></li>
+    <li><label><input type="checkbox"><span>理解「終值主導」與「假設放大器」的意義</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 21：估值三——敏感度、情境與安全邊際</b>——把 DCF 的單一數字，用敏感度九宮格與三情境變成「估值區間」，再套上 Graham 的安全邊際。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-19-relative-valuation/">上一週：相對估值深用</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "c"
+      ? "答對了——大多數 DCF 的終值佔 60–80%（講義算例是 77%）。你的估值主要由「5 年後、你最看不清的部分」決定——這就是為什麼 DCF 被稱為「假設的放大器」，也是本週最重要的一個觀察。"
+      : "直覺會以為重點在看得見的 5 年——但大多數 DCF 的終值佔 60–80%（講義算例是 77%）。估值主要由「5 年後、你最看不清的部分」決定——這就是為什麼 DCF 被稱為「假設的放大器」，也是本週最重要的一個觀察。";
+  });
+
+  /* ---------- DCF 組裝台 ---------- */
+  var inGr = document.getElementById("in-gr"), inR = document.getElementById("in-r"), inG = document.getElementById("in-g");
+  function runDcf(){
+    var gr = +inGr.value / 100, r = +inR.value / 100, g = +inG.value / 100;
+    document.getElementById("o-gr").textContent = (gr*100).toFixed(0) + "%";
+    document.getElementById("o-r").textContent = (r*100).toFixed(1) + "%";
+    document.getElementById("o-g").textContent = (g*100).toFixed(1) + "%";
+    // FCF 5 年
+    var fcf = [], f = 100;
+    for (var t = 0; t < 5; t++){ fcf.push(f); f *= (1 + gr); }
+    document.getElementById("fcfrow").innerHTML = fcf.map(function(v, i){
+      return '<div class="fc"><div class="yn">第 ' + (i+1) + ' 年</div><div class="yv">' + v.toFixed(1) + '</div></div>';
+    }).join("");
+    // g >= r 防呆
+    var v = document.getElementById("dcfverdict");
+    if (g >= r - 0.005){
+      v.className = "dcfverdict boom";
+      v.innerHTML = "<b>分母爆炸：r − g ≈ " + ((r-g)*100).toFixed(1) + " pp。</b>永續成長率逼近折現率時，終值趨向無限大——數學在告訴你這組假設不合理（公司不可能永遠以接近資本成本的速度成長）。把 g 降回 2–3%。";
+      ["d-ev","d-eq","d-ps","d-tv"].forEach(function(id){ document.getElementById(id).innerHTML = "—"; });
+      document.getElementById("eb-ex").style.width = "0%";
+      document.getElementById("eb-tv").style.width = "100%";
+      document.getElementById("eb-ex").textContent = "";
+      document.getElementById("eb-tv").textContent = "終值 → ∞";
+      return;
+    }
+    var pvEx = 0;
+    for (var t2 = 0; t2 < 5; t2++){ pvEx += fcf[t2] / Math.pow(1 + r, t2 + 1); }
+    var tv = fcf[4] * (1 + g) / (r - g);
+    var pvTv = tv / Math.pow(1 + r, 5);
+    var ev = pvEx + pvTv;
+    var eq = ev - 200;
+    var ps = eq / 100;
+    var tvPct = pvTv / ev * 100;
+    document.getElementById("d-ev").textContent = Math.round(ev).toLocaleString("en-US");
+    document.getElementById("d-eq").textContent = Math.round(eq).toLocaleString("en-US");
+    document.getElementById("d-ps").textContent = ps.toFixed(2);
+    document.getElementById("d-tv").innerHTML = tvPct.toFixed(0) + "<small>%</small>";
+    var ex = document.getElementById("eb-ex"), tvb = document.getElementById("eb-tv");
+    ex.style.width = (100 - tvPct) + "%";
+    tvb.style.width = tvPct + "%";
+    ex.textContent = (100 - tvPct) >= 14 ? "明確期 " + (100 - tvPct).toFixed(0) + "%" : "";
+    tvb.textContent = "終值 " + tvPct.toFixed(0) + "%";
+    v.className = "dcfverdict";
+    var base = 17.68;
+    var diffPct = (ps - base) / base * 100;
+    if (Math.abs(diffPct) < 1){
+      v.innerHTML = "<b>講義算例：每股 17.68。</b>接著做一件事：把 r 降 1 個百分點、或把 g 加 1 個百分點——看每股價值跳多少。這就是「假設的放大器」。";
+    } else {
+      v.innerHTML = "同一家公司、同一個公式，每股從 17.68 變成 <b>" + ps.toFixed(2) + "</b>（" + (diffPct > 0 ? "+" : "−") + Math.abs(diffPct).toFixed(0) + "%）——你只動了假設。<b>誠實的 DCF 是「保守假設下仍便宜」，不是「湊出便宜的假設」。</b>終值目前佔 " + tvPct.toFixed(0) + "%。";
+    }
+  }
+  [inGr, inR, inG].forEach(function(el){ el.addEventListener("input", runDcf); });
+  runDcf();
+
+  /* ---------- 檢核持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w20-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w20-final"){
+          document.getElementById("checkdone").textContent = st.every(Boolean) ? "🎓 第 20 週完成——內在價值的北極星已點亮。下週見：敏感度、情境與安全邊際。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w20-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 20 週完成——內在價值的北極星已點亮。下週見：敏感度、情境與安全邊際。";
+    }
+  });
+})();
+</script>
