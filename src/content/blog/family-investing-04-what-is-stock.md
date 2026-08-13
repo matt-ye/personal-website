@@ -179,6 +179,8 @@ draft: false
 
 EPS 代表「持有一股，等於分到多少獲利」。這個數字越高、成長越穩定，公司通常越值錢。
 
+<p class="source-note">台積電數字出處：<a href="https://www.sec.gov/Archives/edgar/data/1046179/000104617925000004/a4q24e_withguidancexfinal.htm" target="_blank" rel="noopener">2024 第四季法說新聞稿</a>（向美國 SEC 申報之 6-K）載明加權平均流通在外股數 25,929 百萬股。全年淨利為四季合計 1,173,268 百萬元（<a href="https://www.sec.gov/Archives/edgar/data/1046179/000104617924000046/a1q24e_withguidancexfinal.htm" target="_blank" rel="noopener">Q1 225,485</a>＋<a href="https://www.sec.gov/Archives/edgar/data/1046179/000104617924000083/a2q24e_withguidancexfinal.htm" target="_blank" rel="noopener">Q2 247,845</a>＋Q3 325,258＋Q4 374,680），約 1.17 兆元，除以股數得 EPS 約 45.25 元。<br>上面的 800 元股價僅為便於計算的示例，非特定日期報價。</p>
+
 **P/E 本益比（Price-to-Earnings Ratio）**
 
 <div class="formula">
