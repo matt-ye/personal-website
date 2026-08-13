@@ -7,6 +7,18 @@ export interface OmsDoc {
   description: string;
   tags: string[];
   date: string;       // publish date for the Writing hub
+  /*
+   * 真正的公開日，只在 date 不是公開日時才需要填。
+   *
+   * 目前唯一的使用者是 familyInvestingCourse：那裡的 date 是「課程第幾週」的
+   * 進度表（每週遞增到 2026-12），不是發佈日——26 頁全部在 2026-07 就上線了。
+   * astro.config 的 readPairs 會跳過未來日期（那是為排程內容設計的），結果
+   * 20 頁明明公開可讀，卻因為進度表日期在未來而不輸出 datePublished。
+   *
+   * 填了 published 就用它當 datePublished，且不做未來日期檢查——這個欄位的
+   * 定義就是「已經公開的那一天」，不可能在未來。
+   */
+  published?: string;
   url?: string;       // explicit path for static-HTML subpages; omit to use slug routing
 }
 

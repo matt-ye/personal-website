@@ -1,8 +1,8 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import T from '../components/T.astro';
-import { EVENT_TYPE, MODE, LANG, EDU } from '../i18n/dict';
-import { getSpeeches, speechesUnmatchedOrgs } from '../lib/sheets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import T from '../../components/T.astro';
+import { EVENT_TYPE, MODE, LANG, EDU } from '../../i18n/dict';
+import { getSpeeches, speechesUnmatchedOrgs } from '../../lib/sheets';
 
 /* 資料在 build 期就備好（來源：src/data/sheets/speeches.json，每日由 Actions 同步）。
    原本是瀏覽器端 fetch Google Sheet——那讓整份演講紀錄不在 HTML 裡，
@@ -44,6 +44,19 @@ const speechData = speechList.map((s) => ({
   url: s.otherUrl,
 }));
 
+/* 同時產出 /speeches/ 與 /en/speeches/，見 [...lang]/about.astro 的說明。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+
+/* 與下方 client script 的 pick()/tr() 同一套規則。這一頁的 build 期版本就是
+   爬蟲看到的版本（見 .speech-cards-grid 的註解），JS 載入後 renderCards()
+   會重畫——兩邊規則不一致的話，使用者會看到內容跳動。 */
+const pick = (zh: string, en: string) => (isEn && en) ? en : (zh || en || '');
+const tr = (map: Record<string, string>, v: string) => (isEn && map && map[v]) ? map[v] : v;
+
 /* 還沒進字典的單位在 build log 列出來，逐步補完用；不影響 build 成敗 */
 const missingOrgs = speechesUnmatchedOrgs();
 if (missingOrgs.length) {
@@ -62,7 +75,10 @@ const yearSpan = (() => {
 ---
 <BaseLayout
   title="Speeches"
-  description="葉淨維 Matt Ye 的演講、工作坊、競賽作品集。2020 年至今，涵蓋學術簡報、表達技巧、EMI教學等主題。"
+  description={isEn
+    ? 'Talks, workshops and competition work by Ching-Wei (Matt) Ye since 2020 — academic presentation, communication skills and EMI teaching.'
+    : '葉淨維 Matt Ye 的演講、工作坊、競賽作品集。2020 年至今，涵蓋學術簡報、表達技巧、EMI教學等主題。'}
+  lang={isEn ? 'en' : 'zh-TW'}
   image="/OG.png"
 >
   <script slot="head" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -239,20 +255,20 @@ const yearSpan = (() => {
           <div class="speech-card">
             <div class="card-meta-row">
               <span>{d.date}</span>
-              <span>{d.edu}</span>
+              <span>{tr(EDU, d.edu)}</span>
             </div>
             {/* 演講主題是卡片標題 → h3（這一區的 h2 是「類型分佈」等區塊標題）。
                 ⚠ 下方 client script 的 cardHTML() 必須產生相同結構，
                 否則 JS 重畫後 heading 會消失。 */}
             <h3 class="card-heading">
               {linkUrl
-                ? <a class="card-topic card-topic-link" href={linkUrl} target="_blank" rel="noopener">{d.topic}</a>
-                : <div class="card-topic">{d.topic}</div>}
+                ? <a class="card-topic card-topic-link" href={linkUrl} target="_blank" rel="noopener" lang={isEn && !d.topicEn ? 'zh-TW' : undefined}>{pick(d.topic, d.topicEn)}</a>
+                : <div class="card-topic" lang={isEn && !d.topicEn ? 'zh-TW' : undefined}>{pick(d.topic, d.topicEn)}</div>}
             </h3>
             {/* 單位有官網就做成連結——這些是指向真實機構的外連，對 E-E-A-T 有幫助；
                 字典查不到的單位沒有網址，就只顯示文字 */}
             {d.org && (
-              <div class="card-org">
+              <div class="card-org" lang="zh-TW">
                 {d.orgUrl
                   ? <a href={d.orgUrl} target="_blank" rel="noopener">{d.org}</a>
                   : d.org}
@@ -260,23 +276,23 @@ const yearSpan = (() => {
             )}
             {d.orgEn && <div class="card-org-en" lang="en">{d.orgEn}</div>}
             {d.coOrg1 && (
-              <div class="card-org-co">協辦：{d.coOrg1Url
+              <div class="card-org-co" lang="zh-TW"><T zh="協辦：" en="Co-host: " />{d.coOrg1Url
                 ? <a href={d.coOrg1Url} target="_blank" rel="noopener">{d.coOrg1}</a>
                 : d.coOrg1}</div>
             )}
             {d.coOrg2 && (
-              <div class="card-org-co">協辦：{d.coOrg2Url
+              <div class="card-org-co" lang="zh-TW"><T zh="協辦：" en="Co-host: " />{d.coOrg2Url
                 ? <a href={d.coOrg2Url} target="_blank" rel="noopener">{d.coOrg2}</a>
                 : d.coOrg2}</div>
             )}
             <div class="card-stats">
-              {d.audience > 0 && <span><b>{d.audience}</b>人</span>}
+              {d.audience > 0 && <span><b>{d.audience}</b><T zh="人" en=" people" /></span>}
               {d.hours > 0 && <span><b>{d.hours}</b>hr</span>}
             </div>
             <div class="card-badges">
-              {d.type && <span class={`badge badge-type-${d.type}`}>{d.type}</span>}
-              {d.mode && <span class={`badge badge-mode-${d.mode}`}>{d.mode}</span>}
-              {d.lang && <span class="badge badge-lang">{d.lang}</span>}
+              {d.type && <span class={`badge badge-type-${d.type}`}>{tr(EVENT_TYPE, d.type)}</span>}
+              {d.mode && <span class={`badge badge-mode-${d.mode}`}>{tr(MODE, d.mode)}</span>}
+              {d.lang && <span class="badge badge-lang">{tr(LANG, d.lang)}</span>}
             </div>
           </div>
         );
@@ -660,7 +676,7 @@ function cardHTML(d) {
         <span>${tr(EDU, d.edu)}</span>
       </div>
       ${topicHTML}
-      ${d.org ? `<div class="card-org">${d.org}</div>` : ''}
+      ${d.org ? `<div class="card-org" lang="zh-TW">${d.org}</div>` : ''}
       ${d.orgEn ? `<div class="card-org-en">${d.orgEn}</div>` : ''}
       ${coOrgHTML}
       <div class="card-stats">
