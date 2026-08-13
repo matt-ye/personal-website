@@ -56,7 +56,7 @@ draft: false
 
 看起來很小對不對？但時間拉長，效果很驚人。
 
-<p class="source-note">資料來源：行政院主計總處各年 12 月<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=232877" target="_blank" rel="noopener">消費者物價指數新聞稿</a>所載全年平均年增率（<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=230621" target="_blank" rel="noopener">2022 年 2.95%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=232877" target="_blank" rel="noopener">2023 年 2.50%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=234403" target="_blank" rel="noopener">2024 年 2.18%</a>）。上表四捨五入至小數第一位。</p>
+<p class="source-note">資料來源：行政院主計總處各年 12 月消費者物價指數新聞稿所載全年平均年增率——<a href="https://www.stat.gov.tw/News_Content.aspx?n=2668&s=27514" target="_blank" rel="noopener">2021 年 1.96%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=230621" target="_blank" rel="noopener">2022 年 2.95%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=232877" target="_blank" rel="noopener">2023 年 2.50%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=234403" target="_blank" rel="noopener">2024 年 2.18%</a>。上表四捨五入至小數第一位。</p>
 
 ---
 

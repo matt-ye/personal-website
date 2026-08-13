@@ -21,7 +21,7 @@ draft: false
 
 這就是**通貨膨脹**（Inflation）在做的事：你的錢沒有減少，但它能買到的東西越來越少。台灣近年的通膨率大約在 2–3%，看起來很小，但 72 年法則告訴我們：以 2% 的通膨率，物價大約每 36 年翻一倍。
 
-<p class="source-note">近年台灣 CPI 全年平均年增率：<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=230621" target="_blank" rel="noopener">2022 年 2.95%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=232877" target="_blank" rel="noopener">2023 年 2.50%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=234403" target="_blank" rel="noopener">2024 年 2.18%</a>（行政院主計總處各年 12 月消費者物價指數新聞稿）。</p>
+<p class="source-note">近年台灣 CPI 全年平均年增率：<a href="https://www.stat.gov.tw/News_Content.aspx?n=2668&s=27514" target="_blank" rel="noopener">2021 年 1.96%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=230621" target="_blank" rel="noopener">2022 年 2.95%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=232877" target="_blank" rel="noopener">2023 年 2.50%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=234403" target="_blank" rel="noopener">2024 年 2.18%</a>（行政院主計總處各年 12 月消費者物價指數新聞稿）。</p>
 
 所以問題不是「要不要投資」，而是「我能不能承受不投資的代價」。
 
