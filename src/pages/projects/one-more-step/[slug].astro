@@ -1,0 +1,34 @@
+---
+/*
+ * One More Step 底下手刻頁的動態路由。
+ *
+ * 遷移前：public/projects/one-more-step/<slug>/index.html，每頁自帶完整的 head。
+ * 遷移後：meta 在 src/data/staticPageMeta.ts、內容在 src/data/static-pages/。
+ *
+ * ⚠ 這一批的頁面彼此毫無共用模板（aw32 與 daniels-talk 各自內建 data-i18n
+ *   雙語機制、investment-notes 有獨立的 modal 筆記架構）。共用的只有 head
+ *   的形狀，內容一律原樣搬。
+ *
+ * ⚠ 這裡有兩個已經預渲染過的頁面（aw32、daniels-talk）：內容片段裡的
+ *   data-i18n 元素已經填好中文，astro.config 的 verifyI18nPrerendered
+ *   會在建置期確認它們沒有變回空的。
+ */
+import StaticPageLayout from '../../../layouts/StaticPageLayout.astro';
+import StaticPageContent from '../../../components/StaticPageContent.astro';
+import { staticPageMeta } from '../../../data/staticPageMeta';
+
+/* ⚠ 前綴字串寫在函式內、不抽成模組層常數：Astro 會把 getStaticPaths
+     抽出來獨立執行，看不到 frontmatter 的模組作用域。 */
+export function getStaticPaths() {
+  const prefix = 'projects__one-more-step__';
+  return staticPageMeta
+    .filter((m) => m.key.startsWith(prefix))
+    .map((m) => ({ params: { slug: m.key.slice(prefix.length) }, props: { meta: m } }));
+}
+
+const { meta } = Astro.props;
+---
+
+<StaticPageLayout meta={meta}>
+  <StaticPageContent pageKey={meta.key} />
+</StaticPageLayout>

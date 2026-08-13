@@ -1,0 +1,30 @@
+---
+/*
+ * 渲染 src/data/static-pages/<key>.html 的內容片段。
+ *
+ * 用 set:html 原樣輸出，一個字都不改——那些片段裡有各頁自己的互動邏輯
+ * （GA4 教學的搜尋與術語面板、lemon-squeezy 的步驟導覽、紀念頁的留言板…），
+ * 每一支都不一樣。
+ *
+ * 靜態產生時 set:html 是把字串寫進輸出的 HTML，不是瀏覽器端的 innerHTML，
+ * 所以裡面的 <script> 會照常執行。
+ */
+interface Props {
+  pageKey: string;
+}
+
+const { pageKey } = Astro.props;
+
+/* eager: true 讓內容在建置時併進來——這些是靜態頁，沒有動態載入的必要 */
+const fragments = import.meta.glob('../data/static-pages/*.html', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+}) as Record<string, string>;
+
+const path = Object.keys(fragments).find((p) => p.endsWith(`/${pageKey}.html`));
+/* 找不到就讓建置失敗——安靜輸出一個空白頁比壞掉更難發現 */
+if (!path) throw new Error(`找不到內容片段：src/data/static-pages/${pageKey}.html`);
+---
+
+<Fragment set:html={fragments[path]} />
