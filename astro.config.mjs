@@ -444,9 +444,28 @@ function verifyI18nPrerendered() {
         };
         walk(root);
 
+        /* 紀念頁用的是 id 容器而不是 data-i18n，上面那個掃描抓不到。
+           這些 id 必須逐一列出——實際發生過：另一個分支重寫了頁面區塊，
+           git 自動合併沒有衝突，四個容器被改回空的而完全沒有訊號。
+
+           #boardWall 刻意不在清單裡：留言從 Sheet 即時抓，含學生姓名，
+           不寫進版控（見 scripts/prerender-i18n.mjs 的說明）。 */
+        const MEMORIAL = 'writing/In-Memory-of-Miguel-Li/index.html';
+        const MEMORIAL_IDS = ['nameZh', 'bioParas', 'facts', 'stats', 'courseList', 'tributeList', 'qtext', 'footer'];
+        try {
+          const html = readFileSync(join(root, ...MEMORIAL.split('/')), 'utf8')
+            .replace(/<script\b[\s\S]*?<\/script>/gi, '');
+          const empty = MEMORIAL_IDS.filter((id) =>
+            new RegExp(`<(\\w+)[^>]*\\bid="${id}"[^>]*>\\s*</\\1>`).test(html),
+          );
+          if (empty.length) problems.push(`${MEMORIAL}：${empty.length} 個空容器（${empty.join(', ')}）`);
+          if (!/data-related-links/.test(html)) problems.push(`${MEMORIAL}：缺站內相關連結區塊`);
+          checked++;
+        } catch { /* 檔案不在就跳過，不擋建置 */ }
+
         if (problems.length) {
           throw new Error(
-            'data-i18n 佔位沒有內容，爬蟲會看到空殼。修法：node scripts/prerender-i18n.mjs\n  ' +
+            '預渲染的內容不見了，爬蟲會看到空殼。修法：node scripts/prerender-i18n.mjs\n  ' +
               problems.join('\n  '),
           );
         }
