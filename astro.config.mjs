@@ -451,10 +451,21 @@ function readPairs(file, urlOf) {
     const slug = block.match(/slug:\s*'([^']+)'/);
     const date = block.match(/date:\s*'(\d{4}-\d{2}-\d{2})'/);
     const url = block.match(/url:\s*'([^']+)'/);
-    if (!date || date[1] > TODAY) continue;
+
+    /* published 優先於 date。
+       兩個欄位的語意不同：date 可能是排程／課綱進度（familyInvestingCourse 的
+       date 是「課程第幾週」，排到 2026-12），published 是「實際公開的那一天」。
+
+       以前只有 date，未來日期一律跳過——結果 20 個課程頁明明公開可讀、內容
+       完整、也在 sitemap 裡，卻因為進度表日期在未來而不輸出 datePublished。
+       填了 published 就不做未來檢查：這個欄位的定義就是已經公開，不可能在未來。 */
+    const published = block.match(/published:\s*'(\d{4}-\d{2}-\d{2})'/);
+    const when = published ? published[1] : (date && date[1] <= TODAY ? date[1] : null);
+    if (!when) continue;
+
     const href = url ? url[1] : (slug ? urlOf(slug[1]) : null);
     if (!href) continue;
-    map.set(href.startsWith('http') ? href : SITE + href, date[1]);
+    map.set(href.startsWith('http') ? href : SITE + href, when);
   }
   return map;
 }
