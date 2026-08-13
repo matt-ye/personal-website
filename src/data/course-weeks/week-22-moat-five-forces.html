@@ -1,0 +1,593 @@
+<!-- 由 scripts/extract-course-weeks.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --chart:#1F8A5F; --chart2:#A87B1F;
+    --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --chart:#35A878; --chart2:#BA8A25;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 五力雷達 */
+  .radar{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .radar h3{margin-top:0}
+  .radarwrap{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-items:center;margin-top:.6rem}
+  @media (max-width:640px){ .radarwrap{grid-template-columns:1fr} }
+  #rchart{width:100%;height:auto;display:block}
+  #rchart .rgrid{stroke:var(--line-soft);fill:none;stroke-width:1}
+  #rchart .raxis{stroke:var(--line);stroke-width:1}
+  #rchart .rpoly{fill:color-mix(in srgb,var(--chart) 22%,transparent);stroke:var(--chart);stroke-width:2}
+  #rchart .rdot{fill:var(--chart)}
+  #rchart .rlab{fill:var(--ink-2);font-size:10.5px;font-weight:700}
+  .sl{margin-top:.55rem}
+  .sl label{display:flex;justify-content:space-between;font-size:.82rem;color:var(--ink-2);font-weight:700;gap:.5rem}
+  .sl label output{color:var(--pine);font-weight:800;font-family:ui-monospace,Menlo,monospace;flex:none}
+  .sl input[type=range]{width:100%;accent-color:var(--pine);margin-top:.2rem}
+  .rverdict{margin-top:1rem;padding:.7rem 1rem;border-radius:9px;font-size:.9rem;background:var(--coin-soft);color:var(--ink-2)}
+  .rverdict b{color:var(--coin)}
+  .rnote{margin-top:.6rem;font-size:.78rem;color:var(--ink-3)}
+
+  /* 真假護城河快篩 */
+  .fake{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .fake h3{margin-top:0}
+  .fitem{margin-top:.7rem;padding:.9rem 1rem;border-radius:12px;border:1.5px solid var(--line);background:var(--paper)}
+  .fitem .fq{font-size:.95rem;font-weight:700}
+  .fitem .fbtns{display:flex;gap:.5rem;margin-top:.6rem}
+  .fitem .fbtns button{font:inherit;font-size:.85rem;padding:.4rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .fitem .fbtns button:hover:not(:disabled){border-color:var(--pine);color:var(--pine)}
+  .fitem .fbtns button:disabled{cursor:default;opacity:.55}
+  .fitem .fbtns button.correct{background:var(--pine);border-color:var(--pine);color:var(--on-pine);opacity:1}
+  .fitem .fbtns button.wrongpick{background:color-mix(in srgb,var(--down) 15%,transparent);border-color:var(--down);color:var(--down);opacity:1}
+  .fitem .fans{display:none;margin-top:.6rem;padding-top:.6rem;border-top:1px dashed var(--line);font-size:.88rem;color:var(--ink-2)}
+  .fitem .fans.show{display:block}
+  .fitem .fans b{color:var(--pine)}
+  #fscore{margin-top:1rem;font-size:.9rem;font-weight:700;color:var(--pine);min-height:1.5em}
+
+  /* 質化分析模板 */
+  .tmpl{margin:1.3rem 0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .tmpl .tmpl-head{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;border-bottom:1px solid var(--line-soft)}
+  .tmpl .tmpl-head b{font-size:.85rem}
+  .tmpl button{font:inherit;font-size:.78rem;padding:.28rem .8rem;border-radius:99px;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink-2)}
+  .tmpl button:hover{border-color:var(--pine);color:var(--pine)}
+  .tmpl pre{margin:0;padding:1rem 1.2rem;overflow-x:auto;font-size:.8rem;line-height:1.8;color:var(--ink-2);font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 22</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q2 投資人季 · Week 22</p>
+  <h1>質化分析——護城河進階＋波特五力</h1>
+  <p class="lead" style="margin-top:.5rem">估值三部曲全是數字，但數字的假設（成長能不能持續、利潤率守不守得住）要靠質化分析回答。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-13-q1-capstone/">第 13</a>、<a href="/projects/family-investing-course/week-19-relative-valuation/">19–21 週</a></span><span class="chip">52 週 · 第 22 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>把專欄 #6 的護城河從「有／沒有」升級到「來源×寬度×趨勢」，加上 Porter 五力當產業掃描儀——這是 W26 投資論文的質化章，也是 W20 終值假設的品質保證。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週分享「阿嬤買菜哲學」的反應——「只在離譜便宜時出手」講通了嗎、瘋鄰居的比喻對方記住了嗎。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">檢驗一家公司有沒有護城河，最好的「單一問題」是哪個？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">它是市佔第一嗎？</button>
+    <button data-g="b">它敢漲價嗎？漲了客戶還在嗎？</button>
+    <button data-g="c">它的產品是最好的嗎？</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. 為什麼估值需要質化：終值的品質保證</h2>
+  <p>W20 的 DCF 裡，終值假設公司「永續」產出現金；W21 的九宮格顯示 g 差 1% 價值差一大截。但經濟學的預設是<strong>高獲利會被競爭侵蝕</strong>（資本湧入 → 殺價 → ROIC 回落到資金成本）——這叫<strong>均值回歸</strong>。</p>
+  <div class="example">
+    <span class="tag">護城河的估值意義</span>
+    <p><strong>護城河越寬，高 ROIC 能撐越久、均值回歸越慢</strong>——你的 DCF 用比較高的 g、比較長的優勢期才站得住腳。沒有護城河的公司套用高成長假設，是用 Excel 說謊。</p>
+  </div>
+
+  <h2>2. 護城河 2.0：從「有沒有」到「來源×寬度×趨勢」</h2>
+  <p>專欄 #6 的五種來源（無形資產、轉換成本、網路效應、成本優勢、有效規模）是第一層。進階分析加兩個維度：</p>
+  <p><strong>寬度</strong>——優勢能撐多久？（Morningstar 的粗略標準：wide ≈ 20 年+、narrow ≈ 10 年）判斷依據不是故事，是<strong>財務證據</strong>：ROIC 高於 WACC 的幅度與年數（W9＋Q4 W42）。</p>
+  <p><strong>趨勢</strong>——變寬還是變窄？這比「現在有沒有」更值錢，看三個訊號：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>訊號</th><th>變寬</th><th>變窄</th></tr></thead>
+      <tbody>
+        <tr><td class="f">ROIC 趨勢</td><td>高檔持平或上升</td><td>逐年下滑向資金成本靠攏</td></tr>
+        <tr><td class="f">定價權</td><td>敢漲價、客戶不跑（毛利率守住）</td><td>只能跟進殺價（毛利率被侵蝕，W5）</td></tr>
+        <tr><td class="f">市佔與客戶黏性</td><td>市佔穩中有升、回購率高</td><td>被新進者一口口咬掉</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>經典警示</strong>：曾經的寬護城河也會乾涸——底片（數位化）、傳統媒體（網路）、實體零售（電商）。護城河分析是<strong>動態監控</strong>，不是一次性認證。</p>
+
+  <h2>3. 先玩一輪：真假護城河快篩</h2>
+  <p>Dorsey 的「假護城河」清單是質化分析的第一道濾網——六個說法，逐一判斷：</p>
+  </div>
+
+  <!-- 真假護城河快篩 -->
+  <div class="fake" id="fake">
+    <h3>真假護城河快篩</h3>
+    <div id="flist"></div>
+    <p id="fscore" aria-live="polite"></p>
+  </div>
+
+  <div class="prose">
+  <h2>4. Porter 五力：產業的地形圖</h2>
+  <p>護城河看「這家公司」，五力看「這家公司站的戰場」——再強的公司在爛戰場也難賺（Porter, 2008）：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>力</th><th>問的問題</th><th>力量大（產業難賺）的特徵</th></tr></thead>
+      <tbody>
+        <tr><td class="f">① 既有競爭</td><td>同業打得多兇？</td><td>玩家多、產品無差異、退出成本高（殺價循環）</td></tr>
+        <tr><td class="f">② 新進入者威脅</td><td>進場門檻高嗎？</td><td>資本／技術／法規門檻低，賺錢就有人湧入</td></tr>
+        <tr><td class="f">③ 替代品威脅</td><td>客戶有別的解法嗎？</td><td>替代方案更便宜方便（高鐵之於國內線航空）</td></tr>
+        <tr><td class="f">④ 客戶議價力</td><td>客戶敢壓你價嗎？</td><td>客戶集中、轉單容易（單一大客戶佔營收過半）</td></tr>
+        <tr><td class="f">⑤ 供應商議價力</td><td>上游敢漲你價嗎？</td><td>關鍵投入被少數供應商壟斷</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>用下面的評分器幫目標公司掃一次戰場（練習第 1 步會正式做，每力要附證據句）：</p>
+  </div>
+
+  <!-- 五力雷達 -->
+  <div class="radar" id="radar">
+    <h3>五力雷達評分器（5 分＝該力對公司有利）</h3>
+    <div class="radarwrap">
+      <svg id="rchart" viewBox="0 0 400 300" role="img" aria-label="五力雷達圖">
+        <g id="rg-grid"></g>
+        <g id="rg-axes"></g>
+        <polygon id="rpoly" class="rpoly" points=""></polygon>
+        <g id="rg-dots"></g>
+        <g id="rg-labs"></g>
+      </svg>
+      <div>
+        <div class="sl"><label>① 既有競爭 <output id="ro-0" class="num">3</output></label><input type="range" id="rin-0" min="1" max="5" step="1" value="3" aria-label="既有競爭"></div>
+        <div class="sl"><label>② 新進入者威脅 <output id="ro-1" class="num">3</output></label><input type="range" id="rin-1" min="1" max="5" step="1" value="3" aria-label="新進入者威脅"></div>
+        <div class="sl"><label>③ 替代品威脅 <output id="ro-2" class="num">3</output></label><input type="range" id="rin-2" min="1" max="5" step="1" value="3" aria-label="替代品威脅"></div>
+        <div class="sl"><label>④ 客戶議價力 <output id="ro-3" class="num">3</output></label><input type="range" id="rin-3" min="1" max="5" step="1" value="3" aria-label="客戶議價力"></div>
+        <div class="sl"><label>⑤ 供應商議價力 <output id="ro-4" class="num">3</output></label><input type="range" id="rin-4" min="1" max="5" step="1" value="3" aria-label="供應商議價力"></div>
+      </div>
+    </div>
+    <div class="rverdict" id="rverdict" aria-live="polite"></div>
+    <p class="rnote">五力與護城河的關係：護城河本質上就是「讓五力對你失效的結構」——轉換成本壓制④、成本優勢嚇阻②、網路效應削弱①③。台灣視角：晶圓代工（②極高門檻、但④大客戶集中）、手搖飲（②幾乎無門檻→靠品牌撐①）、超商（①雙寡頭默契、⑤對供應商強勢）。</p>
+  </div>
+
+  <div class="prose">
+  <h2>5. 質化分析的輸出格式（一頁）</h2>
+  </div>
+  <div class="tmpl">
+    <div class="tmpl-head"><b>一頁質化分析</b><button id="copytmpl">複製模板</button></div>
+    <pre id="tmpltext">【公司】＿＿＿  【產業戰場評分】五力各 1–5 分（5=對公司有利）
+① 既有競爭 ＿ ② 新進者 ＿ ③ 替代品 ＿ ④ 客戶力 ＿ ⑤ 供應商力 ＿
+【護城河】來源：＿＿（五選）｜寬度證據：ROIC ＿% > WACC ＿%，持續 ＿年
+【趨勢】變寬/持平/變窄——三訊號各一句（ROIC 趨勢／定價權／市佔）
+【對估值的含義】支持 g ＝＿%？優勢期估 ＿年？（回填 W20-21 的假設）
+【最大質化風險】一句話（＝W26 論文反方論證的種子）</pre>
+  </div>
+
+  <div class="prose">
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「好產品＝護城河」</p><p>產品會被模仿；護城河是<strong>結構</strong>（成本、網路、轉換成本），不是單一產品。iPhone 的護城河是生態系轉換成本，不是某一代手機。</p></div>
+  <div class="myth"><p class="say">「市佔第一＝有護城河」</p><p>市佔是結果不是原因；沒有結構保護的第一名，只是還沒被追上（檢查：它敢漲價嗎？）。</p></div>
+  <div class="myth"><p class="say">「五力分析做一次就好」</p><p>技術變遷會重畫地形（串流之於有線電視）；每年年報季重掃一次，特別注意②和③。</p></div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">50 分</span>
+    <div class="body"><b>《護城河投資優勢》（Dorsey）選章</b>
+      <p>五種來源的深化；特別讀「假護城河」章——好產品、市佔、執行力為什麼不算。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">40 分</span>
+    <div class="body"><b><a class="srclink" href="https://hbr.org/2008/01/the-five-competitive-forces-that-shape-strategy" target="_blank" rel="noopener">Porter「The Five Competitive Forces That Shape Strategy」(HBR 2008) ↗</a></b>
+      <p>原典；讀不完全文就精讀每一力的定義段。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">10 分</span>
+    <div class="body"><b><a class="srclink" href="/writing/family-investing-06-economic-moat/">專欄 #6 重讀 ↗</a></b>
+      <p>五來源＋台積電案例，本週在其上加寬度與趨勢。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">選讀</span>
+    <div class="body"><b><a class="srclink" href="https://www.berkshirehathaway.com/letters/1995.html" target="_blank" rel="noopener">Buffett 1995 年信 ↗</a></b>
+      <p>談 See's Candies 定價權的段落（搜 "See's"）——定價權作為護城河試金石的原始出處。</p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>目標公司的一頁質化分析</h2>
+  <p>延用 W13/W19–21 的目標公司：</p>
+  <ol class="tasks">
+    <li><strong>五力評分</strong>：逐力給 1–5 分，每力寫一句證據（從年報「市場概況」章、產業新聞找）——上面的雷達可以先草擬</li>
+    <li><strong>護城河三問</strong>：來源是五種中的哪種（可複選但要排序）？寬度的財務證據（拉 W9 的 ROIC 數據，對照估計的資金成本 ~8–10%）？趨勢三訊號各判一次？</li>
+    <li><strong>回填估值</strong>：這份質化分析支持你 W20 用的成長假設嗎？需要下修 g 或縮短優勢期嗎？（若需要，回去改 DCF——這就是質化與量化的迴圈）</li>
+    <li><strong>一句話風險</strong>：寫下最可能讓護城河失效的單一情境</li>
+  </ol>
+  <div class="verify">✅ <b>驗收標準：</b>五力各有證據句（不是憑感覺打分）；護城河寬度有 ROIC 數字支撐；完成「質化→回填估值假設」的迴圈。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w22-practice">
+    <li><label><input type="checkbox"><span>五力各有證據句（不是憑感覺打分）</span></label></li>
+    <li><label><input type="checkbox"><span>護城河寬度有 ROIC 數字支撐</span></label></li>
+    <li><label><input type="checkbox"><span>完成「質化→回填估值假設」的迴圈</span></label></li>
+    <li><label><input type="checkbox"><span>一頁分析存檔（W26 論文直接取用）</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼「定價權」是護城河最好的單一試金石？</summary>
+      <div class="ans"><p>→ 因為定價權<strong>直接檢驗了所有五力的合力</strong>：敢漲價且客戶不跑，代表競爭者無法趁機搶客（①②）、替代品不夠好（③）、客戶離不開（④）——一個行為驗證了整個結構；且它直接反映在毛利率上（W5），可用財報驗證。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 一家 ROIC 25% 的公司，DCF 卻只敢給 g=2%——什麼質化判斷會導致這個組合？</summary>
+      <div class="ans"><p>→ 「<strong>現在很賺，但護城河在變窄</strong>」——例如技術典範轉移在即、專利即將到期、大客戶正在扶植第二供應商；高 ROIC 是過去式，質化判斷它撐不了太久，所以永續成長只敢給低值（甚至縮短優勢期）。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 五力中哪一力對台灣電子代工業通常最不利？</summary>
+      <div class="ans"><p>→ 通常是 <strong>④客戶議價力</strong>——代工模式客戶高度集中（少數國際品牌佔營收大宗），客戶掌握訂單與規格主導權，可要求年降（cost down）；這是同樣製造業中「品牌廠 vs 代工廠」利潤率差距的結構性原因。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>巷口兩家店</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（巷口兩家店）</p>
+    <p>「巷口的手搖飲店生意超好，你猜半年後會發生什麼事？」（對面開第二家、隔壁開第三家——然後大家都賺不到錢。）「這就是商業的地心引力：<strong>好賺的生意會把競爭者吸過來，直到大家都不好賺</strong>。」</p>
+  </div>
+  <div class="script">
+    <p class="who">核心觀念</p>
+    <p>「所以真正值錢的公司，不是『現在很賺』的，是『別人搶不走』的。搶不走靠什麼？護城河——像城堡外面那圈水。」（用家人熟的例子：全聯的成本優勢、健保卡綁定的系統轉換成本、LINE 的網路效應。）</p>
+  </div>
+  <div class="script">
+    <p class="who">互動（試金石遊戲）</p>
+    <p>「檢驗一家店有沒有護城河，問一個問題就夠：<strong>它敢漲價嗎？漲了你還會去嗎？</strong>」（讓對方輪流出題：中華電信漲月租費？巷口麵店漲 10 元？台積電漲代工價？——判斷誰敢誰不敢，就是在做定價權分析。）</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那現在最紅的那家不就最有護城河？」</b><br>「紅是結果，要問『為什麼別人抄不走』——葡式蛋塔當年也很紅。」</p>
+    <p class="qa"><b>「護城河的公司就可以隨便買？」</b><br>「好公司＋壞價格＝壞投資（上週的安全邊際）；護城河只回答『值得排隊』，價格回答『現在上車嗎』。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w22-final">
+    <li><label><input type="checkbox"><span>能說出護城河的「來源×寬度×趨勢」三維與各自證據</span></label></li>
+    <li><label><input type="checkbox"><span>能逐力解釋五力並舉台灣產業實例</span></label></li>
+    <li><label><input type="checkbox"><span>目標公司一頁質化分析完成且回填了估值假設</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（定價權試金石遊戲），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 23：行為財務學——認知偏誤與對策工程</b>——工具都齊了：健檢、估值、質化。下週面對最後一個、也是最難的敵人：你自己的大腦。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-21-margin-of-safety/">上一週：敏感度與安全邊際</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——定價權一個行為就檢驗了整個競爭結構：敢漲價且客戶不跑，代表對手搶不走、替代品不夠好、客戶離不開；而且它直接反映在毛利率上，可以用財報驗證。市佔和產品都只是「結果」，本週講為什麼。"
+      : "常見的答案——但市佔是結果不是原因、產品會被模仿。最好的試金石是「它敢漲價嗎？漲了客戶還在嗎？」：一個行為就檢驗了整個競爭結構，而且直接反映在毛利率上、可用財報驗證。本週講為什麼。";
+  });
+
+  /* ---------- 真假護城河快篩 ---------- */
+  var FAKES = [
+    { q: "「我們的產品比對手好用得多。」", real: false,
+      why: "假護城河——產品會被模仿、被超越；護城河是結構（成本、網路、轉換成本），不是單一產品。iPhone 的護城河是生態系轉換成本，不是某一代手機。" },
+    { q: "「客戶要換掉我們，得重寫整套系統、重訓全部員工。」", real: true,
+      why: "真護城河——轉換成本。客戶離開的代價高到寧可留下，這直接壓制了客戶議價力（五力的④）。" },
+    { q: "「我們是市佔率第一。」", real: false,
+      why: "假護城河——市佔是結果不是原因；沒有結構保護的第一名，只是還沒被追上。檢查法：它敢漲價嗎？" },
+    { q: "「用的人越多，這個服務對每個人越好用。」", real: true,
+      why: "真護城河——網路效應。規模自我強化，後進者難以冷啟動，同時削弱既有競爭與替代品（①③）。" },
+    { q: "「我們團隊執行力超強、比誰都拚。」", real: false,
+      why: "假護城河——執行力值得敬佩，但可以被模仿、也會隨人員流動枯竭；Dorsey 明確把它列入假護城河清單。" },
+    { q: "「我們的規模讓單位成本壓到全行業最低。」", real: true,
+      why: "真護城河——成本優勢。同樣售價下利潤更厚、殺價戰打得起，直接嚇阻新進入者（②）。" }
+  ];
+  var flist = document.getElementById("flist");
+  var answered = 0, correct = 0;
+  FAKES.forEach(function(f, idx){
+    var div = document.createElement("div");
+    div.className = "fitem";
+    div.innerHTML = '<p class="fq">' + (idx+1) + '. ' + f.q + '</p>' +
+      '<div class="fbtns"><button data-a="true">真護城河</button><button data-a="false">假護城河</button></div>' +
+      '<div class="fans"></div>';
+    var btns = div.querySelectorAll("button");
+    var ans = div.querySelector(".fans");
+    btns.forEach(function(b){
+      b.addEventListener("click", function(){
+        var pick = b.dataset.a === "true";
+        btns.forEach(function(x){
+          x.disabled = true;
+          var isReal = x.dataset.a === "true";
+          if (isReal === f.real) x.classList.add("correct");
+          else if (x === b) x.classList.add("wrongpick");
+        });
+        var ok = pick === f.real;
+        answered++; if (ok) correct++;
+        ans.innerHTML = (ok ? "<b>答對。</b>" : "<b>不是——</b>") + f.why;
+        ans.classList.add("show");
+        var sc = document.getElementById("fscore");
+        if (answered === FAKES.length){
+          sc.textContent = "完成：" + correct + " / " + FAKES.length +
+            (correct === FAKES.length ? "——全對！記住口訣：護城河是「結構」，不是產品、市佔或努力。" : "——回頭看錯的那幾題：共同點是把「結果或努力」誤認成「結構」。");
+        } else {
+          sc.textContent = "已答 " + answered + " / " + FAKES.length;
+        }
+      });
+    });
+    flist.appendChild(div);
+  });
+
+  /* ---------- 五力雷達 ---------- */
+  var RLABELS = ["① 既有競爭", "② 新進入者", "③ 替代品", "④ 客戶力", "⑤ 供應商力"];
+  var CX = 200, CY = 152, R = 108;
+  function pt(k, val){
+    var a = -Math.PI/2 + k * 2*Math.PI/5;
+    var r = val/5 * R;
+    return [CX + r*Math.cos(a), CY + r*Math.sin(a)];
+  }
+  (function(){
+    var grid = document.getElementById("rg-grid"), axes = document.getElementById("rg-axes"), labs = document.getElementById("rg-labs");
+    var gh = "";
+    for (var lvl = 1; lvl <= 5; lvl++){
+      var pts = [];
+      for (var k = 0; k < 5; k++){ var p = pt(k, lvl); pts.push(p[0].toFixed(1) + "," + p[1].toFixed(1)); }
+      gh += '<polygon class="rgrid" points="' + pts.join(" ") + '"/>';
+    }
+    grid.innerHTML = gh;
+    var ah = "", lh = "";
+    for (var k2 = 0; k2 < 5; k2++){
+      var pe = pt(k2, 5);
+      ah += '<line class="raxis" x1="' + CX + '" y1="' + CY + '" x2="' + pe[0].toFixed(1) + '" y2="' + pe[1].toFixed(1) + '"/>';
+      var pl = pt(k2, 6.2);
+      var anchor = Math.abs(pl[0] - CX) < 12 ? "middle" : (pl[0] > CX ? "start" : "end");
+      lh += '<text class="rlab" x="' + pl[0].toFixed(1) + '" y="' + (pl[1] + 3.5).toFixed(1) + '" text-anchor="' + anchor + '">' + RLABELS[k2] + '</text>';
+    }
+    axes.innerHTML = ah; labs.innerHTML = lh;
+  })();
+  var rIns = [0,1,2,3,4].map(function(i){ return document.getElementById("rin-" + i); });
+  function drawRadar(){
+    var vals = rIns.map(function(el, i){
+      var v = +el.value;
+      document.getElementById("ro-" + i).textContent = v;
+      return v;
+    });
+    var pts = vals.map(function(v, k){ var p = pt(k, v); return p[0].toFixed(1) + "," + p[1].toFixed(1); });
+    document.getElementById("rpoly").setAttribute("points", pts.join(" "));
+    document.getElementById("rg-dots").innerHTML = vals.map(function(v, k){
+      var p = pt(k, v);
+      return '<circle class="rdot" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="3.5"/>';
+    }).join("");
+    var sum = vals.reduce(function(a, b){ return a + b; }, 0);
+    var minV = Math.min.apply(null, vals);
+    var weak = [];
+    vals.forEach(function(v, k){ if (v === minV) weak.push(RLABELS[k]); });
+    var v = document.getElementById("rverdict");
+    if (weak.length === 5){
+      v.innerHTML = "<b>五力平盤（" + sum + "/25）：</b>還沒開始評——逐力拉動滑桿；正式做練習時，每力要附一句證據（年報「市場概況」章、產業新聞），不是憑感覺打分。";
+    } else if (sum >= 20){
+      v.innerHTML = "<b>好戰場（" + sum + "/25）：</b>五力多數對公司有利——但記得問：這是產業結構使然，還是公司自己的護城河擋出來的？兩者對「別家公司也能複製嗎」的答案不同。";
+    } else if (sum >= 13){
+      v.innerHTML = "<b>普通戰場（" + sum + "/25）：</b>最弱的一環是「" + weak.join("、") + "」——它就是你「最大質化風險」欄的頭號候選，也是估值該保守的理由。";
+    } else {
+      v.innerHTML = "<b>爛戰場（" + sum + "/25）：</b>再強的公司在這種地形也難賺——五力全開的產業，高獲利很難撐過均值回歸。DCF 的 g 與優勢期都該從嚴，或者直接跳過。";
+    }
+  }
+  rIns.forEach(function(el){ el.addEventListener("input", drawRadar); });
+  drawRadar();
+
+  /* ---------- 模板複製 ---------- */
+  var copyBtn = document.getElementById("copytmpl");
+  copyBtn.addEventListener("click", function(){
+    var text = document.getElementById("tmpltext").textContent;
+    function done(ok){
+      copyBtn.textContent = ok ? "已複製 ✓" : "複製失敗，請手動選取";
+      setTimeout(function(){ copyBtn.textContent = "複製模板"; }, 2000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ done(false); });
+    } else { done(false); }
+  });
+
+  /* ---------- 檢核持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w22-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w22-final"){
+          document.getElementById("checkdone").textContent = st.every(Boolean) ? "🎓 第 22 週完成——質化的另一半補齊了。下週見：行為財務學，面對你自己的大腦。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w22-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 22 週完成——質化的另一半補齊了。下週見：行為財務學，面對你自己的大腦。";
+    }
+  });
+})();
+</script>

@@ -1,0 +1,690 @@
+<!-- 由 scripts/extract-course-weeks.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --d-fv:#1F8A5F; --d-pv:#A87B1F; --on-pine:#FFFFFF;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --d-fv:#35A878; --d-pv:#BA8A25; --on-pine:#0D1410;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased;
+  }
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums; }
+
+  /* ---------- 導航 ---------- */
+  #topnav{
+    position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent);
+    backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
+  }
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{
+    font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap;
+  }
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{
+    margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;
+    background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2);
+  }
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  /* ---------- 版面 ---------- */
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{
+    display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;
+    letter-spacing:.14em;color:var(--pine);
+  }
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  /* ---------- Header ---------- */
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}
+  .chip a:hover{text-decoration:underline}
+  .position{
+    margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;
+    font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine);
+  }
+  .position b{color:var(--pine)}
+  .recall{
+    margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;
+    font-size:.88rem;color:var(--ink-2);
+  }
+  .recall b{color:var(--coin)}
+
+  /* ---------- Hero 猜謎 ---------- */
+  .hero{
+    margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+  }
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{
+    font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;
+    border:1.5px solid var(--line);background:var(--paper);color:var(--ink);
+  }
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  .bignum{font-size:clamp(2.1rem,7vw,3.1rem);font-weight:800;color:var(--pine);letter-spacing:-.01em;line-height:1.15}
+  .bignum small{font-size:45%;font-weight:700;color:var(--ink-2);letter-spacing:.05em}
+  .split{display:flex;gap:1.6rem;flex-wrap:wrap;margin-top:.6rem}
+  .split .item{font-size:.9rem;color:var(--ink-2)}
+  .split .item b{display:block;font-size:1.15rem;font-weight:800}
+  .split .item.fv b{color:var(--d-fv)} .split .item.pv b{color:var(--d-pv)}
+
+  /* ---------- 圖表 ---------- */
+  .chartwrap{position:relative;margin-top:1.2rem}
+  .legend{display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.8rem;color:var(--ink-2);margin-bottom:.4rem}
+  .legend .k{display:inline-flex;align-items:center;gap:.4rem}
+  .legend .sw{width:14px;height:4px;border-radius:2px}
+  svg.chart{width:100%;height:auto;display:block}
+  .tip{
+    position:absolute;pointer-events:none;background:var(--ink);color:var(--paper);
+    font-size:.75rem;line-height:1.5;padding:.4rem .6rem;border-radius:7px;white-space:nowrap;
+    transform:translate(-50%,-110%);opacity:0;transition:opacity .12s;
+  }
+  .tip .num{font-weight:700}
+  details.datatable{margin-top:.6rem;font-size:.85rem}
+  details.datatable summary{cursor:pointer;color:var(--ink-3);font-size:.8rem}
+  details.datatable table{border-collapse:collapse;margin-top:.5rem;width:100%}
+  details.datatable th,details.datatable td{border-bottom:1px solid var(--line-soft);padding:.3rem .6rem;text-align:right}
+  details.datatable th:first-child,details.datatable td:first-child{text-align:left}
+
+  /* ---------- 計算機 ---------- */
+  .calc{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .calc h3{margin-top:0}
+  .sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem 1.6rem;margin:1rem 0 .4rem}
+  .sl label{display:flex;justify-content:space-between;font-size:.82rem;color:var(--ink-2);font-weight:700}
+  .sl label output{color:var(--pine);font-weight:800}
+  .sl input[type=range]{width:100%;accent-color:var(--pine);margin-top:.3rem}
+  .sl input[type=range]:focus-visible{outline:2px solid var(--pine);outline-offset:3px}
+  .readout{display:flex;flex-wrap:wrap;gap:1.6rem;margin-top:.9rem;padding-top:.9rem;border-top:1px dashed var(--line)}
+  .readout .item{font-size:.82rem;color:var(--ink-2)}
+  .readout .item b{display:block;font-size:1.3rem;font-weight:800;color:var(--ink)}
+  .readout .item.fv b{color:var(--d-fv)} .readout .item.pv b{color:var(--d-pv)} .readout .item.gold b{color:var(--coin)}
+
+  /* ---------- 公式 ---------- */
+  .formula{
+    margin:1.1rem 0;padding:.9rem 1.2rem;background:var(--card);border:1px solid var(--line);
+    border-radius:10px;overflow-x:auto;font-size:1.02rem;text-align:center;
+  }
+  .formula .fx{color:var(--ink)}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .15em;line-height:1.35}
+  .frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .3em}
+  .frac>span:last-child{padding:0 .3em}
+  sup{font-size:.72em}
+  .varlist{font-size:.88rem;color:var(--ink-2);margin:.4rem 0 0;padding-left:1.2rem}
+  .varlist li{margin:.15rem 0}
+
+  /* ---------- 算例卡 / 表格 ---------- */
+  .example{
+    margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px;
+  }
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.92rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.06em;color:var(--ink-3);text-align:right;padding:.45rem .8rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .8rem;text-align:right;border-bottom:1px solid var(--line-soft)}
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data td.hi{font-weight:800;color:var(--pine)}
+  table.data td.warn{font-weight:800;color:#B4552D}
+  table.data tr:last-child td{border-bottom:none}
+
+  /* ---------- 闢謠 / 導讀 / 腳本卡 ---------- */
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}
+  .myth .say::before{content:"✕ ";color:#B4552D;font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}
+  .readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}
+  a.srclink:hover{text-decoration:underline}
+  a.srclink:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}
+  .script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}
+  .qa b{color:var(--coin)}
+
+  /* ---------- 任務 / 檢核 ---------- */
+  ol.tasks{padding-left:1.3rem}
+  ol.tasks li{margin:.7rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}
+  .verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus summary:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.95rem}
+  details.bonus .ans p{margin:.4rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{
+    margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)
+  }
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}
+  footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 02</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q1 共同地基 · Week 02</p>
+  <h1>通膨與實質報酬</h1>
+  <p class="lead" style="margin-top:.5rem">上週學會「錢會長大」，這週學「錢同時在縮水」。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-01-tvm/">第 1 週</a></span><span class="chip">52 週 · 第 2 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>實質報酬是投資人設定報酬目標的基準（Q2）、操盤手評估績效的底線（Q3）、財務長設定資金成本的背景參數（Q4）。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週分享時對方卡住的點——是複利的「後段爆發」，還是 72 法則？先用自己的話再講一次，講順了再往下。
+  </div>
+</header>
+
+<!-- Hero：先猜再學 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">把 100 萬現金鎖進保險箱 30 年，期間通膨每年 2%——打開時，這 100 萬的購買力剩多少？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="100">還是 100 萬啊</button>
+    <button data-g="90">大約 90 萬</button>
+    <button data-g="75">大約 75 萬</button>
+    <button data-g="55">只剩一半多</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <div class="bignum"><span class="num" id="counter">100.0</span><small> 萬元的購買力</small></div>
+    <div class="split">
+      <div class="item pv"><b class="num">100 萬</b>帳面數字（一毛沒少）</div>
+      <div class="item" style="color:#B4552D"><b class="num" style="color:#B4552D">−44.8 萬</b>被通膨吃掉的購買力</div>
+      <div class="item fv"><b class="num">35 年</b>2% 通膨的購買力半衰期</div>
+    </div>
+    <p id="verdict" style="margin-top:.8rem;font-size:.95rem;color:var(--ink-2)"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. 通膨是「反向複利」</h2>
+  <p>上週的複利公式讓錢變多；通膨用<strong>同一條公式</strong>讓錢的購買力變少：</p>
+  <div class="formula"><span class="fx">購買力 = <span class="frac"><span>1</span><span>(1 + π)<sup>n</sup></span></span></span></div>
+  <ul class="varlist"><li><span class="fx">π</span>：年通膨率　<span class="fx">n</span>：年數</li></ul>
+  <p>複利是你的資產在滾雪球，通膨是物價在滾雪球——<strong>兩顆雪球在賽跑</strong>。</p>
+  <p><strong>購買力半衰期表</strong>（多少年後你的錢「只值一半」）：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>年通膨率</th><th>購買力減半</th><th>30 年後購買力剩</th></tr></thead>
+      <tbody>
+        <tr><td class="num">1%</td><td class="num">69.7 年</td><td class="num">74.2%</td></tr>
+        <tr><td class="num">2%</td><td class="num hi">35.0 年</td><td class="num hi">55.2%</td></tr>
+        <tr><td class="num">3%</td><td class="num">23.4 年</td><td class="num">41.2%</td></tr>
+        <tr><td class="num">5%</td><td class="num warn">14.2 年</td><td class="num warn">23.1%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>注意 2% 這一行：<strong>2% 是多數央行（含美國 Fed）的通膨目標</strong>，代表「正常運作的經濟」也會讓你的現金每 35 年減半。通膨不是意外，是制度的預設值——這就是為什麼「不投資」本身是一個有成本的決定。</p>
+
+  <h2>2. 名目 vs 實質：費雪方程式</h2>
+  <p><strong>名目報酬</strong>（nominal）：帳戶數字的成長率。<strong>實質報酬</strong>（real）：購買力的成長率——你真正變有錢的速度。</p>
+  <div class="formula">
+    <span class="fx">精確式：(1 + r<sub>實質</sub>) = <span class="frac"><span>1 + r<sub>名目</sub></span><span>1 + π</span></span></span>
+    <span style="display:inline-block;width:2.2rem"></span>
+    <span class="fx">近似式：r<sub>實質</sub> ≈ r<sub>名目</sub> − π</span>
+  </div>
+  <div class="example">
+    <span class="tag">算例 1</span>
+    <p>名目 6%、通膨 2.5%：精確 <span class="fx">1.06 ÷ 1.025 − 1 = <b>3.41%</b></span>；近似 <span class="fx">6% − 2.5% = 3.5%</span></p>
+    <p>低通膨時近似夠用；通膨大（例如 8%、10%）時兩者差距會明顯拉開，要用精確式。</p>
+  </div>
+  <div class="example">
+    <span class="tag">算例 2 ／ 定存的真相</span>
+    <p>定存名目 1.5%、通膨 2% → 實質約 <span class="fx"><b>−0.5%</b></span>。錢在帳面上變多、在購買力上變少。<strong>「保本」保的是名目，不是購買力。</strong></p>
+  </div>
+  <div class="example">
+    <span class="tag">算例 3</span>
+    <p>通膨 1.5% 走 20 年：今天的 100 萬，20 年後購買力只剩 <span class="fx"><b>74.2 萬</b></span>。規劃退休金時若忘了這一步，會系統性少準備 25–30%。</p>
+  </div>
+  </div>
+
+  <!-- 互動計算機：雙雪球賽跑 -->
+  <div class="calc" id="calc">
+    <h3>雙雪球賽跑</h3>
+    <p class="muted" style="margin:.2rem 0 0">延續上週的計算機：每月投入 1 萬元，這次加入通膨——看「帳面數字」與「真實購買力」的差距怎麼拉開。</p>
+    <div class="sliders">
+      <div class="sl">
+        <label>名目年化報酬 <output id="o-r" class="num">6%</output></label>
+        <input type="range" id="in-r" min="0" max="12" step="0.5" value="6" aria-label="名目年化報酬率">
+      </div>
+      <div class="sl">
+        <label>年通膨率 <output id="o-p" class="num">2%</output></label>
+        <input type="range" id="in-p" min="0" max="6" step="0.5" value="2" aria-label="年通膨率">
+      </div>
+      <div class="sl">
+        <label>投資年數 <output id="o-n" class="num">30 年</output></label>
+        <input type="range" id="in-n" min="5" max="40" step="1" value="30" aria-label="投資年數">
+      </div>
+    </div>
+    <div class="chartwrap">
+      <div class="legend">
+        <span class="k"><span class="sw" style="background:var(--d-pv)"></span>名目終值（帳面數字）</span>
+        <span class="k"><span class="sw" style="background:var(--d-fv)"></span>實質購買力（今日物價表示）</span>
+      </div>
+      <svg class="chart" id="chart" viewBox="0 0 720 320" role="img" aria-label="名目終值與實質購買力隨年數變化的折線圖"></svg>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="readout">
+      <div class="item pv"><b class="num" id="r-nom">1,004.5 萬</b>名目終值</div>
+      <div class="item fv"><b class="num" id="r-real">554.6 萬</b>實質購買力</div>
+      <div class="item gold"><b class="num" id="r-fisher">3.92%</b>實質報酬率（費雪精確式）</div>
+      <div class="item"><b class="num" id="r-half">35.0 年</b>購買力半衰期</div>
+    </div>
+    <details class="datatable">
+      <summary>以表格檢視資料（每 5 年）</summary>
+      <table id="dtable"><thead><tr><th>年</th><th>名目終值</th><th>實質購買力</th><th>差距</th></tr></thead><tbody></tbody></table>
+    </details>
+  </div>
+
+  <div class="prose">
+  <h2>3. CPI：通膨怎麼被測量</h2>
+  <p>CPI（消費者物價指數）＝追蹤一籃固定商品與服務的價格變化。台灣由<strong>行政院主計總處</strong>每月 5 日左右發布上月數據。要知道的三件事：</p>
+  <ol class="tasks">
+    <li><strong>權重結構</strong>：食物、居住、交通是大宗——所以「感覺物價漲很兇」常常是因為你的個人消費籃（例如外食比重高）跟官方籃子不同</li>
+    <li><strong>核心 CPI</strong>：剔除蔬果與能源（波動大的項目），央行看趨勢時更重視它</li>
+    <li><strong>侷限</strong>：CPI 是平均概念，抓不到個人差異；房價（資產價格）不直接計入，只透過房租間接反映——這是「CPI 低但買房痛苦」的原因</li>
+  </ol>
+  <p class="muted">台灣的歷史量級（教學參考，精確數字以主計總處為準）：台灣長期屬於低通膨經濟體，多數年份 CPI 年增率在 0–2% 之間；2022 年受全球通膨影響升破 2.9%，是近十幾年高點——對照美國同年一度突破 9%，台灣相對溫和。</p>
+
+  <h2>4. 通膨對各類資產的影響</h2>
+  <p class="muted">（Q1 第 12 週景氣循環、Q2 資產配置的伏筆）</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>資產</th><th>高通膨環境</th><th style="text-align:left">原因</th></tr></thead>
+      <tbody>
+        <tr><td>現金／定存</td><td class="num warn">最傷</td><td style="text-align:left">名目報酬固定且低，實質直接轉負</td></tr>
+        <tr><td>名目債券</td><td class="num">受損</td><td style="text-align:left">固定票息的購買力被侵蝕；利率隨通膨上升 → 債價下跌（下週講為什麼）</td></tr>
+        <tr><td>股票</td><td class="num">長期尚可</td><td style="text-align:left">好公司能漲價轉嫁成本（定價權＝護城河）；但升息會壓估值、短期會痛</td></tr>
+        <tr><td>房地產／實質資產</td><td class="num hi">相對保值</td><td style="text-align:left">租金與重置成本跟著物價走</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+  <h2>5. 常見誤解闢謠</h2>
+  <div class="myth">
+    <p class="say">「通縮（物價下跌）不是更好嗎？」</p>
+    <p>對持有現金的人短期是，但通縮讓企業收入萎縮→裁員→需求更弱的惡性循環，對經濟整體比溫和通膨危險——這是央行寧可要 2% 通膨的原因。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「黃金一定抗通膨」</p>
+    <p>黃金長期大致保值，但中短期與通膨的相關性並不穩定，不是自動避險器。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「薪水有調就不怕通膨」</p>
+    <p>要比較的是調薪率 vs 通膨率；名目調薪 2%、通膨 3%，實質是減薪。</p>
+  </div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">15 分</span>
+    <div class="body"><b><a class="srclink" href="/writing/family-investing-02-inflation/">專欄 #2《通貨膨脹》重讀 ↗</a></b>
+      <p>已有的基礎。重點放在銜接：專欄講「為什麼」，本週補「怎麼算」。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">40 分</span>
+    <div class="body"><b><a class="srclink" href="https://www.dgbas.gov.tw/" target="_blank" rel="noopener">行政院主計總處 → 物價指數專區 ↗</a></b>
+      <p>找到最新一期 CPI 新聞稿。讀法：先看年增率總數 → 再看七大類哪類漲最多 → 對照自己家的消費結構。預期收穫：第一次「用官方原始來源」取數據——這個習慣之後每週都用。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">20 分</span>
+    <div class="body"><b><a class="srclink" href="https://www.investopedia.com/terms/f/fishereffect.asp" target="_blank" rel="noopener">Investopedia「Fisher Effect」↗</a></b>
+      <p>用英文材料驗證你對費雪方程式的理解。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">選讀</span>
+    <div class="body"><b><a class="srclink" href="https://fred.stlouisfed.org/series/CPIAUCSL" target="_blank" rel="noopener">FRED：美國 CPI（CPIAUCSL）↗</a></b>
+      <p>把美國 CPI 畫成 50 年圖，找出 1970s 與 2021–22 兩段高通膨。</p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>三個任務</h2>
+  <h3>任務 A｜購買力還原（20 分鐘）</h3>
+  <ol class="tasks">
+    <li>到主計總處查「消費者物價指數及其年增率」歷年表</li>
+    <li>取 20 年前與最新的指數值，計算：20 年前的 100 萬相當於今天多少購買力？</li>
+    <li>公式：<span class="fx">100萬 × CPI<sub>今</sub> ÷ CPI<sub>20年前</sub></span>（用指數相除，不要用年增率累乘，比較準）</li>
+  </ol>
+  <h3>任務 B｜升級上週的複利表（30 分鐘）</h3>
+  <ol class="tasks">
+    <li>在第 1 週的試算表加參數格：<span class="fx">通膨率 = 2%</span></li>
+    <li>新增兩欄：<span class="fx">實質報酬率</span>（用費雪精確式）、<span class="fx">實質終值</span>（購買力表示）</li>
+    <li>對照：月存 1 萬 30 年，名目千萬 vs 實質購買力是多少？寫下感想一句（可先用上面的雙雪球計算機對答案）</li>
+  </ol>
+  <div class="verify">✅ <b>驗證點：</b>名目 6%／通膨 2.5% 時，實質報酬率欄應顯示 <b class="num">3.41%</b>。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w2-practice">
+    <li><label><input type="checkbox"><span>任務 A 用了官方指數原始值（不是新聞轉述）</span></label></li>
+    <li><label><input type="checkbox"><span>複利表新增欄位公式正確（驗證值 3.41% 通過）</span></label></li>
+    <li><label><input type="checkbox"><span>快問快答三題全對（見下）</span></label></li>
+  </ul>
+
+  <p class="qalabel">任務 C｜快問快答三題（先心算，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 通膨 3%，你的錢幾年購買力減半？（用 72 法則的變形心算）</summary>
+      <div class="ans"><p>→ 約 <strong class="num">23–24 年</strong>（72÷3 = 24；精確 23.4 年）。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 定存 1.6%、通膨 2.2%，實質報酬近似是多少？</summary>
+      <div class="ans"><p>→ 1.6% − 2.2% ≈ <strong class="num">−0.6%</strong>（實質負報酬）。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 為什麼房價漲很兇的年份，CPI 可能還是很低？</summary>
+      <div class="ans"><p>→ 因為<strong>房價是資產價格，不直接進 CPI</strong>；CPI 只透過「房租」間接反映居住成本，而房租漲幅通常遠比房價平緩。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享這個概念（費曼學習法） -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>從一碗牛肉麵開始</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（體感提問）</p>
+    <p>「你記得 20 年前一碗牛肉麵多少錢？現在呢？」</p>
+    <p class="aside">讓對方自己說出「差不多變兩倍」之類的答案——這就是通膨的體感版。</p>
+  </div>
+  <div class="script">
+    <p class="who">核心比喻：口袋破洞</p>
+    <p>「通膨像一個<strong>看不見的口袋破洞</strong>。錢放著不動，每年從洞裡漏掉 2%。一年感覺不到，但 35 年會漏掉一半。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動：半衰期表</p>
+    <p>拿出上面的半衰期表——「所以銀行定存不是『安全』，是『慢慢變少的安全』。真正的比較不是『投資 vs 不動』，是<strong>『雪球滾得快 vs 口袋漏得快』</strong>。」</p>
+  </div>
+  <div class="script">
+    <p class="who">連回上週</p>
+    <p>「上週說投資 6% 很好，但要誠實地扣掉通膨——實際變有錢的速度大概是 3.5–4%。聽起來變少了，但這才是真的數字，我們家做規劃都用真的數字。」</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那錢都拿去投資，急用怎麼辦？」</b><br>正好預告資金分配觀念：預備金要留，那部分「漏一點」是買安心的保費。</p>
+    <p class="qa"><b>「政府數字不可信，我感覺漲更多」</b><br>承認個人籃子與官方籃子不同（外食族感受特別深），但趨勢方向官方數據仍是最可靠的。</p>
+  </div>
+  <p class="muted">本腳本可搭配專欄 <a class="srclink" href="/writing/family-investing-02-inflation/">#2《通貨膨脹》</a>一起給對方讀。</p>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w2-final">
+    <li><label><input type="checkbox"><span>能寫出費雪精確式並解釋何時近似式不夠用</span></label></li>
+    <li><label><input type="checkbox"><span>完成 20 年購買力還原（用官方 CPI 指數）</span></label></li>
+    <li><label><input type="checkbox"><span>複利表已含實質報酬欄位</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記下對方聽不懂的點（下週單元開頭回補）</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 03：利率與殖利率曲線</b>——通膨的孿生兄弟。你會學「利率是錢的價格」、央行怎麼用它對抗通膨，以及為什麼利率上升時債券價格會下跌。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-01-tvm/">上一週：複利與時間價值</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- 主題切換（與主站共用 key） ---------- */
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+
+  /* ---------- 閱讀進度 ---------- */
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero 猜謎：購買力縮水 ---------- */
+  var TARGET = 55.2; // 100 / 1.02^30
+  var reveal = document.getElementById("reveal");
+  var counter = document.getElementById("counter");
+  var verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    var g = +btn.dataset.g;
+    verdict.textContent = g <= 60
+      ? "答對了。帳面上一毛都沒少，但它能買到的東西只剩一半多一點——這就是「反向複利」，本週的主角。"
+      : "比你想的更嚴重：只剩 55.2 萬的購買力。帳面數字一毛沒少，縮水的是它能買到的東西——通膨是看不見的反向複利。";
+    if (reduced){ counter.textContent = "55.2"; return; }
+    var t0 = null;
+    function step(t){
+      if(!t0) t0 = t;
+      var k = Math.min((t - t0)/1400, 1);
+      k = 1 - Math.pow(1-k, 3);
+      var v = 100 - (100-TARGET)*k; // 從 100 縮到 55.2
+      counter.textContent = v.toLocaleString("zh-TW",{minimumFractionDigits:1, maximumFractionDigits:1});
+      if(k<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+
+  /* ---------- 雙雪球計算機＋圖表 ---------- */
+  var C = 10000; // 每月投入固定 1 萬（延續上週）
+  var inR = document.getElementById("in-r"), inP = document.getElementById("in-p"), inN = document.getElementById("in-n");
+  var svg = document.getElementById("chart"), tip = document.getElementById("tip");
+  var css = getComputedStyle(document.documentElement);
+  function color(name){ return css.getPropertyValue(name).trim(); }
+
+  function series(){
+    var R = +inR.value, P = +inP.value, N = +inN.value;
+    var rm = R/100/12;
+    var nom = [0], real = [0];
+    for (var y=1; y<=N; y++){
+      var m = y*12;
+      var fv = rm===0 ? C*m : C*(Math.pow(1+rm,m)-1)/rm;
+      nom.push(fv);
+      real.push(fv / Math.pow(1+P/100, y));
+    }
+    return {R:R, P:P, N:N, nom:nom, real:real};
+  }
+
+  function draw(){
+    css = getComputedStyle(document.documentElement);
+    var s = series();
+    var W=720, H=320, L=64, Rp=16, T=14, B=34;
+    var iw = W-L-Rp, ih = H-T-B;
+    var maxV = s.nom[s.N]*1.06;
+    var x = function(y){ return L + iw*y/s.N; };
+    var yv = function(v){ return T + ih*(1 - v/maxV); };
+    var inkFaint = color("--line-soft"), ink3 = color("--ink-3");
+    var cReal = color("--d-fv"), cNom = color("--d-pv"), surface = color("--card");
+
+    var g = "";
+    for (var i=0;i<=4;i++){
+      var v = maxV*i/4, yy = yv(v);
+      g += '<line x1="'+L+'" y1="'+yy+'" x2="'+(W-Rp)+'" y2="'+yy+'" stroke="'+inkFaint+'" stroke-width="1"/>';
+      g += '<text x="'+(L-8)+'" y="'+(yy+4)+'" text-anchor="end" font-size="11" fill="'+ink3+'" font-family="ui-monospace,Menlo,monospace">'+ Math.round(v/10000) +'萬</text>';
+    }
+    var stepY = s.N > 25 ? 10 : 5;
+    for (var y2=0; y2<=s.N; y2+=stepY){
+      g += '<text x="'+x(y2)+'" y="'+(H-10)+'" text-anchor="middle" font-size="11" fill="'+ink3+'" font-family="ui-monospace,Menlo,monospace">'+ y2 +'年</text>';
+    }
+    function path(arr){ var d=""; for(var i2=0;i2<=s.N;i2++){ d += (i2?"L":"M") + x(i2).toFixed(1) + " " + yv(arr[i2]).toFixed(1) + " "; } return d; }
+    // 名目與實質之間的「通膨蝕掉區」淡染
+    var gap = path(s.nom);
+    for (var i3=s.N; i3>=0; i3--){ gap += "L" + x(i3).toFixed(1) + " " + yv(s.real[i3]).toFixed(1) + " "; }
+    g += '<path d="'+gap+'Z" fill="'+cNom+'" opacity="0.08"/>';
+    var areaReal = path(s.real) + "L"+x(s.N)+" "+yv(0)+" L"+x(0)+" "+yv(0)+" Z";
+    g += '<path d="'+areaReal+'" fill="'+cReal+'" opacity="0.10"/>';
+    g += '<path d="'+path(s.nom)+'" fill="none" stroke="'+cNom+'" stroke-width="2" stroke-dasharray="5 4"/>';
+    g += '<path d="'+path(s.real)+'" fill="none" stroke="'+cReal+'" stroke-width="2.5" stroke-linejoin="round"/>';
+    g += '<circle cx="'+x(s.N)+'" cy="'+yv(s.nom[s.N])+'" r="4.5" fill="'+cNom+'" stroke="'+surface+'" stroke-width="2"/>';
+    g += '<circle cx="'+x(s.N)+'" cy="'+yv(s.real[s.N])+'" r="5" fill="'+cReal+'" stroke="'+surface+'" stroke-width="2"/>';
+    var lblY = Math.max(yv(s.nom[s.N]), T+12);
+    g += '<text x="'+(x(s.N)-10)+'" y="'+(lblY-12)+'" text-anchor="end" font-size="12" font-weight="700" fill="'+cNom+'" font-family="ui-monospace,Menlo,monospace">'+ (s.nom[s.N]/10000).toFixed(0) +'萬</text>';
+    var lblY2 = Math.min(yv(s.real[s.N])+22, T+ih-6);
+    g += '<text x="'+(x(s.N)-10)+'" y="'+lblY2+'" text-anchor="end" font-size="12" font-weight="700" fill="'+cReal+'" font-family="ui-monospace,Menlo,monospace">'+ (s.real[s.N]/10000).toFixed(0) +'萬</text>';
+    g += '<line id="xh" x1="0" y1="'+T+'" x2="0" y2="'+(T+ih)+'" stroke="'+ink3+'" stroke-width="1" opacity="0"/>';
+    g += '<rect id="hit" x="'+L+'" y="'+T+'" width="'+iw+'" height="'+ih+'" fill="transparent"/>';
+    svg.innerHTML = g;
+
+    var nomE = s.nom[s.N], realE = s.real[s.N];
+    var fisher = (1 + s.R/100) / (1 + s.P/100) - 1;
+    document.getElementById("o-r").textContent = s.R + "%";
+    document.getElementById("o-p").textContent = s.P + "%";
+    document.getElementById("o-n").textContent = s.N + " 年";
+    document.getElementById("r-nom").textContent = (nomE/10000).toLocaleString("zh-TW",{maximumFractionDigits:1}) + " 萬";
+    document.getElementById("r-real").textContent = (realE/10000).toLocaleString("zh-TW",{maximumFractionDigits:1}) + " 萬";
+    document.getElementById("r-fisher").textContent = (fisher*100).toFixed(2) + "%";
+    document.getElementById("r-half").textContent = s.P===0 ? "∞" : (Math.LN2/Math.log(1+s.P/100)).toFixed(1) + " 年";
+
+    var tb = document.querySelector("#dtable tbody"), rows = "";
+    for (var y3=5; y3<=s.N; y3+=5){
+      rows += "<tr><td>"+y3+"</td><td class='num'>"+(s.nom[y3]/10000).toFixed(1)+"萬</td><td class='num'>"+(s.real[y3]/10000).toFixed(1)+"萬</td><td class='num'>−"+((s.nom[y3]-s.real[y3])/10000).toFixed(1)+"萬</td></tr>";
+    }
+    tb.innerHTML = rows;
+
+    var hit = document.getElementById("hit"), xh = document.getElementById("xh");
+    function onMove(ev){
+      var r2 = svg.getBoundingClientRect();
+      var px = (ev.touches? ev.touches[0].clientX : ev.clientX) - r2.left;
+      var sx = px * (W / r2.width);
+      var yr = Math.round((sx - L)/iw * s.N);
+      yr = Math.max(0, Math.min(s.N, yr));
+      var cx = x(yr);
+      xh.setAttribute("x1", cx); xh.setAttribute("x2", cx); xh.setAttribute("opacity", "0.5");
+      tip.style.opacity = 1;
+      tip.style.left = (cx * (r2.width/W)) + "px";
+      tip.style.top = (yv(s.nom[yr]) * (r2.height/H)) + "px";
+      tip.innerHTML = "第 <span class='num'>"+yr+"</span> 年<br>名目 <span class='num'>"+(s.nom[yr]/10000).toFixed(1)+"萬</span><br>實質 <span class='num'>"+(s.real[yr]/10000).toFixed(1)+"萬</span>";
+    }
+    function onLeave(){ xh.setAttribute("opacity","0"); tip.style.opacity = 0; }
+    hit.addEventListener("mousemove", onMove);
+    hit.addEventListener("touchmove", onMove, {passive:true});
+    hit.addEventListener("mouseleave", onLeave);
+    hit.addEventListener("touchend", onLeave);
+  }
+  [inR,inP,inN].forEach(function(el){ el.addEventListener("input", draw); });
+  new MutationObserver(draw).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
+  draw();
+
+  /* ---------- 檢核清單持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w02-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w2-final"){
+          var done = st.every(Boolean);
+          document.getElementById("checkdone").textContent = done ? "🎓 第 2 週完成——下週見：利率與殖利率曲線。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w2-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 2 週完成——下週見：利率與殖利率曲線。";
+    }
+  });
+})();
+</script>

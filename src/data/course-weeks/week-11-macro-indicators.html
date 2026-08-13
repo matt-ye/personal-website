@@ -1,0 +1,509 @@
+<!-- 由 scripts/extract-course-weeks.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --lead:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --lead:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 驚奇模擬器 */
+  .sim{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .sim h3{margin-top:0}
+  .presets{display:flex;gap:.5rem;flex-wrap:wrap;margin:.9rem 0}
+  .presets button{font:inherit;font-size:.82rem;font-weight:700;padding:.4rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink-2)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .presets button.on{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  .sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem 1.6rem;margin:.6rem 0}
+  .sl label{display:flex;justify-content:space-between;font-size:.82rem;color:var(--ink-2);font-weight:700}
+  .sl label output{color:var(--pine);font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .sl input[type=range]{width:100%;accent-color:var(--pine);margin-top:.3rem}
+  .simout{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--line);align-items:stretch}
+  .surp{flex:1;min-width:150px;padding:1rem 1.1rem;border-radius:12px;background:var(--paper);border:1px solid var(--line);text-align:center}
+  .surp .sl2{font-size:.78rem;color:var(--ink-2);font-weight:700}
+  .surp .sv{font-size:1.7rem;font-weight:800;font-family:ui-monospace,Menlo,monospace;margin:.15rem 0}
+  .react{flex:2;min-width:220px;padding:1rem 1.1rem;border-radius:12px;border:1.5px solid var(--line);background:var(--paper)}
+  .react .emo{font-size:1.6rem;line-height:1}
+  .react .rt{font-weight:800;font-size:1.05rem;margin:.2rem 0}
+  .react .rd{font-size:.88rem;color:var(--ink-2)}
+  .react.up{border-color:var(--up)} .react.up .rt{color:var(--up)}
+  .react.down{border-color:var(--down)} .react.down .rt{color:var(--down)}
+  .simnote{margin-top:.7rem;font-size:.8rem;color:var(--ink-3);text-align:center}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data td.tag-lead{color:var(--lead);font-weight:800}
+  table.data td.tag-now{color:var(--pine);font-weight:800}
+  table.data td.tag-lag{color:var(--coin);font-weight:800}
+  table.data tr:last-child td{border-bottom:none}
+
+  /* 指標卡 */
+  .icards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin:1.1rem 0}
+  .icard{padding:1rem 1.1rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .icard .in{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem}
+  .icard .it{font-weight:800;font-size:.98rem}
+  .icard .ig{font-size:.68rem;font-weight:800;letter-spacing:.06em;padding:.12rem .5rem;border-radius:99px;white-space:nowrap}
+  .icard .ig.lead{background:color-mix(in srgb,var(--lead) 15%,transparent);color:var(--lead)}
+  .icard .ig.now{background:var(--pine-soft);color:var(--pine)}
+  .icard .ig.lag{background:var(--coin-soft);color:var(--coin)}
+  .icard p{margin:.4rem 0 0;font-size:.88rem;color:var(--ink-2)}
+  .icard p b{color:var(--ink)}
+
+  .formula{margin:1.1rem 0;padding:.9rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto;font-size:1.02rem;text-align:center;font-weight:700}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 11</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q1 共同地基 · Week 11</p>
+  <h1>總經指標判讀</h1>
+  <p class="lead" style="margin-top:.5rem">個股分析是顯微鏡，總經是氣象台——本週交付一個你會每月更新的儀表板。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-03-interest-rates/">第 3 週</a></span><span class="chip">52 週 · 第 11 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>投資人用它理解估值環境（Q2）、操盤手用它做風險定位與配置傾斜（Q3）、財務長用它做預算假設與資金調度（Q4）。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週分享「過路費」時對方卡住的點——T+2 後天扣款、永遠用限價，兩個防身知識還記得嗎。先用自己的話再講一次。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">國發會每月幫台灣經濟亮一個燈：<strong>藍燈＝景氣最差、紅燈＝景氣最熱</strong>。歷史上，在哪種燈號買股票，長期報酬通常比較好？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="red">紅燈（景氣正好）</button>
+    <button data-g="green">綠燈（穩穩的）</button>
+    <button data-g="blue">藍燈（景氣最差）</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. 先建座標：領先、同時、落後</h2>
+  <p>總經指標不是都一樣「新」——它們報告的是<strong>不同時間點的經濟</strong>：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>類型</th><th>含義</th><th>代表指標</th></tr></thead>
+      <tbody>
+        <tr><td class="tag-lead">領先</td><td>預告未來 3–12 個月</td><td>PMI、殖利率曲線（第 3 週）、股價指數本身、建照／新訂單</td></tr>
+        <tr><td class="tag-now">同時</td><td>描述現在</td><td>GDP、工業生產、零售銷售</td></tr>
+        <tr><td class="tag-lag">落後</td><td>確認已發生的事</td><td>失業率、CPI（政策反應慢半拍）、企業財報</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>最常見的判讀錯誤就是把落後指標當領先用</strong>：「失業率創新低」常出現在景氣頂部（因為它落後），「失業率飆高」常出現在股市已觸底回升之後。看到指標，先問一句：<strong>「它在報告過去、現在、還是未來？」</strong></p>
+
+  <h2>2. 六個核心指標的判讀卡</h2>
+  </div>
+  <div class="icards">
+    <div class="icard"><div class="in"><span class="it">GDP</span><span class="ig now">同時</span></div><p>經濟的總成績單。看<b>年增率的趨勢</b>（連兩季負成長＝技術性衰退的慣用定義）。台灣 GDP 高度綁出口，全球景氣的 beta 很大。</p></div>
+    <div class="icard"><div class="in"><span class="it">CPI</span><span class="ig lag">落後</span></div><p>第 2 週學過編製；重點是它跟央行的連動：CPI 高於目標越多越久 → 升息壓力越大 → 第 3 週的整條傳導鏈啟動。<b>看 CPI 不是看物價，是看央行的下一步。</b></p></div>
+    <div class="icard"><div class="in"><span class="it">失業率</span><span class="ig lag">落後</span></div><p>確認衰退用。搭配「初領失業救濟金人數」（美國，週頻）可以稍微變快。</p></div>
+    <div class="icard"><div class="in"><span class="it">PMI 採購經理人指數</span><span class="ig lead">領先</span></div><p>每月問採購經理「訂單、生產、僱用比上月好嗎」。<b>50 為榮枯線</b>：&gt;50 擴張、&lt;50 收縮；「從 55 滑向 51」的<b>方向</b>比水平更重要。台灣看中經院、美國看 ISM——本儀表板的主角。</p></div>
+    <div class="icard"><div class="in"><span class="it">殖利率曲線</span><span class="ig lead">領先</span></div><p>第 3 週學過：10Y−2Y 倒掛是歷史上可靠（但時點模糊）的衰退領先信號。FRED 代碼 <span class="fx">T10Y2Y</span>。</p></div>
+    <div class="icard"><div class="in"><span class="it">台灣特色組</span><span class="ig lead">領先</span></div><p><b>外銷訂單年增率</b>（經濟部，領先出口 2–3 個月）＝台灣經濟的體溫計；<b>景氣對策信號</b>（國發會）9–45 分的燈號系統——歷史經驗上「藍燈區間」常是長期投資人的貪婪時刻（前提：敢在壞消息裡執行）。</p></div>
+  </div>
+
+  <div class="prose">
+  <h2>3. 央行怎麼用這些數字</h2>
+  <p>央行的反應函數（簡化版）：<strong>通膨高於目標＋就業強 → 升息；通膨受控＋成長失速 → 降息</strong>。所以市場的遊戲是「猜央行」：每次 CPI、就業數據公布，市場在重新定價「央行下一步」——這就是為什麼<strong>數據好、股市卻跌</strong>會發生（好數據 → 升息預期升溫 → 折現率預期上升）。</p>
+
+  <h2>4. 「預期 vs 現實」：總經交易的核心機制</h2>
+  <p>市場價格永遠<strong>先反映共識預期</strong>，數據公布時真正交易的是<strong>驚奇（surprise）</strong>：</p>
+  <div class="formula"><span class="fx">市場反應 ≈ f（實際值 − 預期值）</span></div>
+  </div>
+
+  <!-- 驚奇模擬器 -->
+  <div class="sim" id="sim">
+    <h3>驚奇模擬器：CPI 公布日</h3>
+    <p class="muted" style="margin:.2rem 0 0">拉兩個滑桿，看市場大概率的反應——重點永遠是<strong>與預期的差</strong>，不是絕對值。先按兩個經典情境。</p>
+    <div class="presets" id="presets">
+      <button data-p="a">通膨 8.2%，市場卻大漲？</button>
+      <button data-p="b">通膨才 3.1%，市場卻下跌？</button>
+    </div>
+    <div class="sliders">
+      <div class="sl">
+        <label>市場預期 CPI 年增率 <output id="o-exp">8.5%</output></label>
+        <input type="range" id="in-exp" min="1.5" max="9.5" step="0.1" value="8.5" aria-label="市場預期 CPI">
+      </div>
+      <div class="sl">
+        <label>實際公布 CPI 年增率 <output id="o-act">8.2%</output></label>
+        <input type="range" id="in-act" min="1.5" max="9.5" step="0.1" value="8.2" aria-label="實際公布 CPI">
+      </div>
+    </div>
+    <div class="simout">
+      <div class="surp">
+        <div class="sl2">驚奇（實際 − 預期）</div>
+        <div class="sv num" id="r-surp">−0.3pp</div>
+      </div>
+      <div class="react" id="react">
+        <span class="emo" id="r-emo">📈</span>
+        <div class="rt" id="r-title"></div>
+        <div class="rd" id="r-desc"></div>
+      </div>
+    </div>
+    <p class="simnote">「大概率」不是保證——同日還有其他數據、財報與市場情緒。這台機器教的是機制，不是預測。</p>
+  </div>
+
+  <div class="prose">
+  <p><strong>對本課程的含義</strong>：你的優勢不在「比市場早知道數據」（不可能），而在<strong>紀律</strong>——理解機制後，就不會被「數據好股市跌」的新聞嚇到亂動（連回上週：亂動＝付過路費）。</p>
+
+  <h2>5. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「GDP 成長好，股市就會好」</p><p>長期兩者相關性出乎意料地弱（股市反映的是上市公司獲利與折現率，不是全體經濟）；短期更是被預期主導。</p></div>
+  <div class="myth"><p class="say">「總經大師能預測市場」</p><p>連央行自己的預測都經常大幅修正；儀表板的目的是<strong>定位</strong>（現在大概在週期哪裡）不是<strong>預測</strong>（下個月漲跌）。</p></div>
+  <div class="myth"><p class="say">「指標越多越好」</p><p>超過一頁的儀表板不會被持續更新；六到八個指標、每月 30 分鐘，勝過五十個指標的一次性熱情。</p></div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">30 分</span>
+    <div class="body"><b><a class="srclink" href="https://www.dgbas.gov.tw/" target="_blank" rel="noopener">主計總處 ↗</a> 最新 GDP 統計新聞稿</b>
+      <p>只讀前兩頁摘要，找出：年增率、對全年的預測值、上修還是下修。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">20 分</span>
+    <div class="body"><b><a class="srclink" href="https://index.ndc.gov.tw/" target="_blank" rel="noopener">國發會 景氣指標查詢系統 ↗</a></b>
+      <p>查當前景氣對策信號燈號與分數、近 24 個月的燈號序列——台灣官方領先／同時指標的家。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">20 分</span>
+    <div class="body"><b><a class="srclink" href="https://www.cier.edu.tw/" target="_blank" rel="noopener">中經院 ↗</a> 台灣製造業 PMI 最新月報</b>
+      <p>看總指數與「新增訂單」分項。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">20 分</span>
+    <div class="body"><b><a class="srclink" href="https://fred.stlouisfed.org/series/T10Y2Y" target="_blank" rel="noopener">FRED：T10Y2Y ↗</a>＋<a class="srclink" href="https://fred.stlouisfed.org/series/UNRATE" target="_blank" rel="noopener">UNRATE ↗</a></b>
+      <p>複習第 3 週的利差；把失業率疊上衰退帶，親眼看它的「落後」性格。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">選讀</span>
+    <div class="body"><b>Howard Marks《掌握市場週期》前兩章</b>
+      <p>「定位 vs 預測」的哲學——本週的靈魂註解。</p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>建立你的總經儀表板（本週交付物，之後每月更新）</h2>
+  <p>建一張表（試算表），欄位：<strong>指標｜類型｜最新值｜前值｜方向（↑↓→）｜資料來源｜更新日</strong>。必收錄的八個：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>#</th><th>指標</th><th>類型</th><th>來源／頻率</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="f">台灣 GDP 年增率</td><td class="tag-now">同時</td><td>主計總處，季</td></tr>
+        <tr><td>2</td><td class="f">台灣 CPI 年增率</td><td class="tag-lag">落後</td><td>主計總處，月</td></tr>
+        <tr><td>3</td><td class="f">台灣製造業 PMI</td><td class="tag-lead">領先</td><td>中經院，月</td></tr>
+        <tr><td>4</td><td class="f">外銷訂單年增率</td><td class="tag-lead">領先</td><td>經濟部，月</td></tr>
+        <tr><td>5</td><td class="f">景氣對策信號分數與燈號</td><td class="tag-now">綜合</td><td>國發會，月</td></tr>
+        <tr><td>6</td><td class="f">央行重貼現率</td><td class="tag-now">政策</td><td>中央銀行</td></tr>
+        <tr><td>7</td><td class="f">美國 10Y−2Y 利差</td><td class="tag-lead">領先</td><td>FRED，日</td></tr>
+        <tr><td>8</td><td class="f">美國 CPI 年增率</td><td class="tag-lag">落後（驅動 Fed）</td><td>FRED，月</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <ol class="tasks">
+    <li>全部填入<strong>本月實際值</strong>（親手查一輪官方來源——這就是練習的主體）</li>
+    <li>表底寫三行「本月定位」：偏熱／中性／偏冷＋一句依據</li>
+    <li>行事曆設定每月固定一天（建議 CPI 公布後的週末）花 30 分鐘更新</li>
+  </ol>
+  <div class="verify">✅ <b>驗收標準：</b>八個指標全部有值、有來源、有日期——查不到的不能空著，要找到官方頁面為止（這正是本週要建立的能力）。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w11-practice">
+    <li><label><input type="checkbox"><span>八個指標全部有值、有來源、有日期</span></label></li>
+    <li><label><input type="checkbox"><span>能對每個指標說出它是領先／同時／落後、為什麼</span></label></li>
+    <li><label><input type="checkbox"><span>「本月定位」三行完成</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> PMI 從 58 降到 53——經濟在擴張還是收縮？該注意什麼？</summary>
+      <div class="ans"><p>→ <strong>仍在擴張</strong>（&gt;50），但<strong>動能減速</strong>（方向向下）——領先指標的方向轉變常是週期轉折的第一個訊號，該開始留意而非恐慌。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 為什麼「失業率創歷史新低」不是進場的好理由？</summary>
+      <div class="ans"><p>→ 失業率是<strong>落後指標</strong>——「創新低」描述的是已經走完的好日子，歷史上常出現在景氣頂部附近；它適合用來「確認衰退結束」，不適合當進場鈴。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 美國 CPI 公布 3.1%、市場原預期 2.9%，當天股市大概率怎麼反應？為什麼？</summary>
+      <div class="ans"><p>→ 大概率<strong>下跌</strong>——實際 &gt; 預期是「通膨驚奇」，市場上調升息（或延後降息）預期 → 折現率上升壓估值；重點永遠是與預期的差，不是絕對值。（拿上面的模擬器對一次。）</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>經濟的紅綠燈</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（紅綠燈）</p>
+    <p>打開國發會景氣燈號頁面：「政府每個月幫台灣經濟打一個分數、亮一個燈——紅燈是發燒、藍燈是著涼、綠燈剛剛好。你猜現在亮什麼燈？」（看實際燈號、講當前定位。）</p>
+  </div>
+  <div class="script">
+    <p class="who">核心比喻：氣象台</p>
+    <p>「總經指標是氣象預報，不是命運。氣象台說可能有颱風（藍燈、倒掛），我們做的是<strong>檢查門窗</strong>（預備金、配置），不是把房子賣掉逃難；說天氣很好（紅燈），反而要小心大家都出門了、風景區在最擠的時候（估值最貴）。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動：反直覺時刻</p>
+    <p>「猜猜看：歷史上台灣亮<strong>藍燈</strong>（景氣最差）的時候買股票，跟亮<strong>紅燈</strong>（景氣最好）的時候買，長期哪個賺比較多？」——引導出「便宜在壞消息裡」，並誠實補充：這需要紀律和閒錢，正是我們家在學的東西。</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「新聞說 GDP 很好，可以買股票嗎？」</b><br>「GDP 說的是現在，股價說的是未來——而且大家都看得到的好消息，通常已經變成價格了。」</p>
+    <p class="qa"><b>「那到底什麼時候買？」</b><br>「下季會學：與其猜時機，不如定期定額＋壞時候不逃跑。氣象台是拿來『不慌』的，不是拿來『算命』的。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w11-final">
+    <li><label><input type="checkbox"><span>總經儀表板建立且填滿本月實值（八個指標）</span></label></li>
+    <li><label><input type="checkbox"><span>每月更新的行事曆提醒已設定</span></label></li>
+    <li><label><input type="checkbox"><span>能解釋「預期 vs 現實」機制與一個實例</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記下對方聽不懂的點（下週單元開頭回補）</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 12：景氣循環與資產輪動</b>——儀表板建好了，下週學怎麼用它：景氣的四個季節、各季節誰漲誰跌、為什麼「錯過最好的十天」代價巨大——以及為什麼答案還是「留在場上」。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-10-market-structure/">上一週：台股交易制度與成本</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "blue"
+      ? "答對了——而且這很反直覺。藍燈代表景氣最差、新聞最悲觀，但也代表價格最便宜；紅燈人人樂觀，價格早就漲上去了。「便宜在壞消息裡」——前提是有紀律和閒錢，這正是整套課程在練的。"
+      : "直覺的答案——但歷史經驗相反：藍燈（景氣最差）區間買進的長期報酬通常更好。因為藍燈時新聞最悲觀、價格最便宜；紅燈時人人樂觀、價格早已反映。「便宜在壞消息裡」——前提是紀律和閒錢。";
+  });
+
+  /* ---------- 驚奇模擬器 ---------- */
+  var inExp = document.getElementById("in-exp"), inAct = document.getElementById("in-act");
+  var react = document.getElementById("react");
+  var presets = { a:[8.5, 8.2], b:[2.9, 3.1] };
+  function sim(fromPreset){
+    var exp = +inExp.value, act = +inAct.value;
+    var d = act - exp;
+    document.getElementById("o-exp").textContent = exp.toFixed(1) + "%";
+    document.getElementById("o-act").textContent = act.toFixed(1) + "%";
+    document.getElementById("r-surp").textContent = (d>0?"+":"") + d.toFixed(1) + "pp";
+    var emo, title, desc, cls;
+    if (Math.abs(d) < 0.05){
+      emo = "😐"; cls = "";
+      title = "符合預期：市場大概率平靜";
+      desc = "數字早就在價格裡了——「沒有驚奇」本身就是資訊，市場把注意力轉向下一個數據。";
+    } else if (d > 0){
+      emo = "📉"; cls = "down";
+      title = "通膨驚奇：股債大概率下跌";
+      desc = "實際比預期熱 " + d.toFixed(1) + "pp → 市場上調升息（或延後降息）預期 → 折現率預期上升、壓低估值。注意：就算絕對值不高，只要比預期熱，反應方向就是這樣。";
+    } else {
+      emo = "📈"; cls = "up";
+      title = "涼爽驚奇：股債大概率上漲";
+      desc = "實際比預期涼 " + Math.abs(d).toFixed(1) + "pp → 市場下調升息預期 → 折現率預期下降、估值鬆一口氣。就算絕對值很高（例如 8.2%），只要比預期低，也是「利多」。";
+    }
+    document.getElementById("r-emo").textContent = emo;
+    document.getElementById("r-title").textContent = title;
+    document.getElementById("r-desc").textContent = desc;
+    react.className = "react " + cls;
+    if (!fromPreset){
+      document.querySelectorAll("#presets button").forEach(function(b){ b.classList.remove("on"); });
+    }
+  }
+  [inExp,inAct].forEach(function(el){ el.addEventListener("input", function(){ sim(false); }); });
+  document.getElementById("presets").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("on"); });
+    btn.classList.add("on");
+    var p = presets[btn.dataset.p];
+    inExp.value = p[0]; inAct.value = p[1];
+    sim(true);
+  });
+  document.querySelector('#presets [data-p="a"]').classList.add("on");
+  sim(true);
+
+  /* ---------- 檢核持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w11-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w11-final"){
+          document.getElementById("checkdone").textContent = st.every(Boolean) ? "🎓 第 11 週完成——下週見：景氣循環與資產輪動。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w11-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 11 週完成——下週見：景氣循環與資產輪動。";
+    }
+  });
+})();
+</script>

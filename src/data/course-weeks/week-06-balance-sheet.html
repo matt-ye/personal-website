@@ -1,0 +1,551 @@
+<!-- 由 scripts/extract-course-weeks.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --asset:#1F8A5F; --freeliab:#A87B1F; --debt:#B4552D; --equity:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --asset:#35A878; --freeliab:#BA8A25; --debt:#E08054; --equity:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  .versus{display:flex;gap:1rem;flex-wrap:wrap}
+  .vcard{flex:1;min-width:170px;padding:1rem 1.1rem;border-radius:12px;background:var(--paper);border:1px solid var(--line)}
+  .vcard .vlabel{font-size:.82rem;color:var(--ink-2);font-weight:700}
+  .vcard .vnum{font-size:1.3rem;font-weight:800;line-height:1.3;margin:.2rem 0}
+  .vcard.safe .vnum{color:var(--freeliab)} .vcard.risky .vnum{color:var(--debt)}
+  .vcard .vsub{font-size:.82rem;color:var(--ink-3)}
+  #verdict{margin-top:.9rem;font-size:.95rem;color:var(--ink-2)}
+
+  /* 分類挑戰 */
+  .game{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .game h3{margin-top:0}
+  .gcard{margin:1rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .gcard .gq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .gcard .gname{font-size:1.35rem;font-weight:900;margin:.3rem 0 .1rem}
+  .gcard .ghint{font-size:.85rem;color:var(--ink-2)}
+  .gbtns{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.5rem;margin-top:.9rem}
+  .gbtns button{font:inherit;font-size:.85rem;font-weight:700;padding:.55rem .4rem;border-radius:10px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .gbtns button:hover{border-color:var(--pine);color:var(--pine)}
+  .gbtns button:disabled{cursor:default;opacity:.55}
+  .gbtns button.correct{background:var(--asset);border-color:var(--asset);color:#fff;opacity:1}
+  .gbtns button.wrong{background:var(--debt);border-color:var(--debt);color:#fff;opacity:1}
+  .gfeed{margin-top:.9rem;padding:.75rem 1rem;border-radius:9px;font-size:.9rem;display:none;text-align:left}
+  .gfeed.show{display:block}
+  .gfeed.good{background:color-mix(in srgb,var(--asset) 12%,transparent)}
+  .gfeed.bad{background:color-mix(in srgb,var(--debt) 12%,transparent)}
+  .gfeed b{color:var(--pine)}
+  .gnav{display:flex;justify-content:space-between;align-items:center;margin-top:1rem}
+  .gscore{font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .gnav button{font:inherit;font-size:.9rem;font-weight:700;padding:.5rem 1.2rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--pine);background:var(--pine);color:var(--on-pine)}
+  .gnav button:disabled{opacity:.4;cursor:not-allowed}
+  .gdone{display:none;margin-top:1rem;padding:1rem 1.2rem;background:var(--pine-soft);border-radius:10px;font-size:.95rem}
+  .gdone.show{display:block}
+  .gdone b{color:var(--pine)}
+
+  .formula{margin:1.1rem 0;padding:.9rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto;font-size:1.02rem;text-align:center}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .15em;line-height:1.35}
+  .frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .3em}
+  .frac>span:last-child{padding:0 .3em}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.92rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:right;padding:.45rem .8rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .8rem;text-align:right;border-bottom:1px solid var(--line-soft)}
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data td.hi{font-weight:800;color:var(--pine)}
+  table.data tr.sum td{font-weight:800;border-top:1.5px solid var(--line)}
+  table.data tr.grp td{font-weight:700;color:var(--ink-2);font-size:.85rem}
+  table.data tr:last-child td{border-bottom:none}
+  table.data .cat{font-weight:700}
+  table.data td.l{text-align:left}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 06</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q1 共同地基 · Week 06</p>
+  <h1>資產負債表深讀</h1>
+  <p class="lead" style="margin-top:.5rem">損益表看「賺不賺」，資產負債表看「撐不撐得住」。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-04-accounting/">第 4</a>、<a href="/projects/family-investing-course/week-05-income-statement/">5 週</a></span><span class="chip">52 週 · 第 6 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>投資人用它判斷財務安全性（Q2）、操盤手用它算 ROE 分母與槓桿（Q3）、財務長的資本結構決策直接寫在這張表上（Q4 的地基）。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週分享「利潤率瀑布」時對方卡住的點——尤其「是本業賺的嗎？」有沒有變成對方的反射動作。先用自己的話再講一次。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">A 公司總負債 <strong>300 億</strong>（全是應付帳款與客戶預收）；B 公司總負債只有 <strong>100 億</strong>（全是銀行借款）。哪家的財務風險比較高？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">A（欠比較多）</button>
+    <button data-g="b">B</button>
+    <button data-g="c">一樣危險</button>
+    <button data-g="d">看不出來</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <div class="versus">
+      <div class="vcard safe">
+        <div class="vlabel">A 公司：300 億無息負債</div>
+        <div class="vnum">不用付利息</div>
+        <div class="vsub">應付帳款＝供應商免費借你錢；預收＝客戶先付錢。生意好的副產品。</div>
+      </div>
+      <div class="vcard risky">
+        <div class="vlabel">B 公司：100 億有息負債</div>
+        <div class="vnum">利息照付、到期要還</div>
+        <div class="vsub">銀行不會因為你生意差就免收利息——這才是財務風險的來源。</div>
+      </div>
+    </div>
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. 把飲料店月底排成正式資產負債表</h2>
+  <p>延續第 4 週的期末數字，正式排版——依<strong>流動性排序</strong>（變現最快的排最上面）：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>資產</th><th>金額</th><th>負債與權益</th><th>金額</th></tr></thead>
+      <tbody>
+        <tr class="grp"><td class="l">流動資產</td><td></td><td class="l">流動負債</td><td></td></tr>
+        <tr><td class="l">　現金</td><td class="num">420,000</td><td class="l">　應付帳款</td><td class="num">60,000</td></tr>
+        <tr><td class="l">　應收帳款</td><td class="num">50,000</td><td class="l">　預收收入</td><td class="num">30,000</td></tr>
+        <tr><td class="l">　存貨</td><td class="num">25,000</td><td class="l"><b>非流動負債</b></td><td class="num">0</td></tr>
+        <tr class="grp"><td class="l">非流動資產</td><td></td><td class="l">權益</td><td></td></tr>
+        <tr><td class="l">　設備淨額</td><td class="num">193,334</td><td class="l">　股本</td><td class="num">500,000</td></tr>
+        <tr><td class="l"></td><td></td><td class="l">　保留盈餘</td><td class="num">98,334</td></tr>
+        <tr class="sum"><td class="l">資產總計</td><td class="num hi">688,334</td><td class="l">負債＋權益總計</td><td class="num hi">688,334</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>左右永遠相等（第 4 週的恆等式），而右邊回答「左邊的錢從哪來」：這家店 <strong>87% 靠股東、13% 靠欠供應商</strong>——幾乎沒有財務風險。</p>
+
+  <h2>2. 流動 vs 非流動：一年線</h2>
+  <p><strong>一年內會變現／到期的</strong>歸流動，其餘非流動。這條線是償債分析的基礎：</p>
+  <div class="formula">
+    <span class="fx">流動比 = <span class="frac"><span>流動資產</span><span>流動負債</span></span></span>
+    <span style="display:inline-block;width:2rem"></span>
+    <span class="fx">速動比 = <span class="frac"><span>流動資產 − 存貨</span><span>流動負債</span></span></span>
+  </div>
+  <div class="example">
+    <span class="tag">飲料店體檢</span>
+    <p>流動比 ＝ 495,000 ÷ 90,000 ＝ <b class="num">5.5</b>、速動比 ＝ <b class="num">5.2</b>（超健康；一般標準：流動比 &gt; 1.5–2、速動比 &gt; 1 算穩）。</p>
+    <p><strong>營運資金</strong>（Working Capital）＝ 流動資產 − 流動負債 ＝ <b class="num">405,000</b>——公司日常周轉的緩衝墊。</p>
+  </div>
+  <p class="muted">速動比剔除存貨的原因：存貨是流動資產裡最不保證變現的——賣不掉的珍珠與過季的衣服，帳上值錢、現實不值錢。</p>
+
+  <h2>3. 負債的兩張臉：有息 vs 無息</h2>
+  <p>負債不是都一樣可怕（hero 那題你已經見識過了），關鍵分類是<strong>要不要付利息</strong>：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>類型</th><th>例子</th><th style="text-align:left">性質</th></tr></thead>
+      <tbody>
+        <tr><td class="cat" style="color:var(--freeliab)">無息負債</td><td class="l">應付帳款、預收收入、應付費用</td><td class="l"><strong>營運自然產生</strong>，通常是好事——等於供應商和客戶免費借你錢</td></tr>
+        <tr><td class="cat" style="color:var(--debt)">有息負債</td><td class="l">短期借款、長期借款、公司債</td><td class="l"><strong>財務槓桿</strong>，要付利息、到期要還——風險的主要來源</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>所以「負債比（總負債÷總資產）」只是第一眼，真正的風險指標是：</p>
+  <div class="formula">
+    <span class="fx">有息負債 ÷ 股東權益</span>
+    <span style="display:inline-block;width:2rem"></span>
+    <span class="fx">利息保障倍數 = <span class="frac"><span>營業利益</span><span>利息費用</span></span></span>
+  </div>
+  <p class="muted">回想專欄 #7：EV 計算用的正是<strong>有息負債</strong>，不是總負債——同一個道理。</p>
+  <p><strong>長短錯配</strong>是另一個隱形殺手：用一年內到期的短債，去蓋十年才回本的廠房——利率一升或銀行不續借，馬上斷鏈。看「一年內到期之長期負債」科目，對照手上現金夠不夠還。</p>
+  </div>
+
+  <!-- 科目分類挑戰 -->
+  <div class="game" id="game">
+    <h3>科目分類挑戰</h3>
+    <p class="muted" style="margin:.2rem 0 0">分析師拿到資產負債表的第一個動作：把科目標成三色（流動性 × 計息性 × 權益）。十題練出這個反射——這也是本週導讀的實戰任務。</p>
+    <div class="gcard">
+      <div class="gq" id="g-progress">第 1 題 / 10</div>
+      <div class="gname" id="g-name">現金</div>
+      <div class="ghint" id="g-hint"></div>
+      <div class="gbtns" id="g-btns">
+        <button data-c="ca">流動資產</button>
+        <button data-c="nca">非流動資產</button>
+        <button data-c="fl">無息負債</button>
+        <button data-c="dl">有息負債</button>
+        <button data-c="eq">權益</button>
+      </div>
+      <div class="gfeed" id="g-feed"></div>
+    </div>
+    <div class="gnav">
+      <span class="gscore" id="g-score">答對 0 / 0</span>
+      <button id="g-next" disabled>下一題 →</button>
+    </div>
+    <div class="gdone" id="g-done"></div>
+  </div>
+
+  <div class="prose">
+  <h2>4. 資產端的三個地雷區</h2>
+  <ol class="tasks">
+    <li><strong>應收帳款</strong>：客戶欠的錢。看兩件事——收得回來嗎（呆帳準備）、越欠越久嗎（應收帳款周轉天數上升是紅旗）</li>
+    <li><strong>存貨</strong>：三種業態三種風險——電子業怕跌價（過時）、食品業怕過期、營建業存貨是蓋一半的房子（變現週期以年計）。<strong>存貨增速 &gt; 營收增速＝賣不動的前兆</strong></li>
+    <li><strong>商譽與無形資產</strong>：商譽＝併購時付的溢價，<strong>不攤銷但每年做減損測試</strong>——被併公司表現不如預期時，一次性減損可以炸掉整年獲利（歷史上多起百億級案例）。商譽佔總資產比重高的公司，把它從權益裡扣掉再算一次「有形淨值」，安全邊際更誠實</li>
+  </ol>
+
+  <h2>5. 從資產負債表看商業模式</h2>
+  <ol class="tasks">
+    <li><strong>重資產</strong>（晶圓廠、航空）：非流動資產佔比高 → 高折舊、高資本支出、景氣下行時固定成本壓力大</li>
+    <li><strong>輕資產</strong>（軟體、顧問）：資產少 → ROA 高，護城河不在資產在無形（人才、網路效應）</li>
+    <li><strong>金融業</strong>：資產負債表本身就是生意（吸存款＝負債、放貸款＝資產），槓桿天生高，比率標準完全不同——<strong>金融股的分析框架獨立於一般產業</strong>，本課程後段另行處理</li>
+  </ol>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「負債比低＝好公司」</p><p>蘋果、可口可樂都刻意維持不低的負債（便宜的債換昂貴的股權，Q4 會講）；負債比要配「利息保障倍數」一起看。</p></div>
+  <div class="myth"><p class="say">「帳上現金多＝安全」</p><p>要問現金的來源：本業賺的？借來的？增資來的？現金多但同時短債更多，是假安全。</p></div>
+  <div class="myth"><p class="say">「淨值高於股價（P/B&lt;1）＝撿便宜」</p><p>先問淨值裡有多少是商譽和收不回的應收（連回專欄 #7 的 P/B 討論）。</p></div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">40 分</span>
+    <div class="body"><b>《財報就像一本故事書》資產負債表章節</b>
+      <p>MJ 的「資產負債表是體質」框架。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">50 分</span>
+    <div class="body"><b><a class="srclink" href="https://mops.twse.com.tw/mops/web/index" target="_blank" rel="noopener">公開資訊觀測站 實戰 ↗</a></b>
+      <p>下載追蹤公司最新年度「合併資產負債表」逐行讀，把每個科目標成三色：流動/非流動資產、無息/有息負債、權益（就是上面遊戲練的動作）。特別找出：「一年內到期之長期借款」、「存貨」明細附註、「商譽」有沒有。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">20 分</span>
+    <div class="body"><b><a class="srclink" href="https://www.investopedia.com/terms/w/workingcapital.asp" target="_blank" rel="noopener">Investopedia「Working Capital」↗</a>＋<a class="srclink" href="https://www.investopedia.com/terms/g/goodwill-impairment.asp" target="_blank" rel="noopener">「Goodwill Impairment」↗</a></b>
+      <p>營運資金與商譽減損的標準定義。</p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>體質檢查五比率＋同業對照</h2>
+  <ol class="tasks">
+    <li>對追蹤公司計算最新年度：<strong>流動比、速動比、負債比、有息負債÷股東權益、利息保障倍數</strong>（利息保障倍數需要從損益表拿營業利益、從附註拿利息費用）</li>
+    <li>選一家<strong>同業</strong>做同樣計算，並排對照</li>
+    <li>寫 150 字結論：哪家體質好？差異主要來自哪個科目？</li>
+    <li>加做：把兩家的「商譽＋無形資產」佔股東權益比重算出來——誰的淨值比較「有形」？</li>
+  </ol>
+  <div class="verify">✅ <b>本週工具驗證：</b>飲料店流動比 <b class="num">5.5</b>、速動比 <b class="num">5.2</b>、負債全是無息、利息保障倍數 ∞（無借款）——真實公司極少這麼乾淨，比率跑出來後記得跟商業模式對照。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w6-practice">
+    <li><label><input type="checkbox"><span>五比率 × 兩家公司完成，數據出自官方財報</span></label></li>
+    <li><label><input type="checkbox"><span>能指出兩家負債結構的本質差異（有息 vs 無息的組成）</span></label></li>
+    <li><label><input type="checkbox"><span>150 字結論寫完</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> A 公司流動比 2.0，B 公司 1.2，B 一定比較危險嗎？</summary>
+      <div class="ans"><p>→ <strong>不一定</strong>——要看產業：超商、量販靠「先收現金、月結付供應商」營運，流動比常年 &lt; 1 也很健康（負營運資金模式，之後會深談）；比率脫離商業模式就沒有意義。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 為什麼「預收收入很多」通常是好事？</summary>
+      <div class="ans"><p>→ 預收＝客戶<strong>先付錢</strong>給你——現金已入袋、風險在客戶端，同時代表產品搶手（訂金、儲值、預售）；它雖列負債，卻是「欠貨不欠錢」的好負債。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 一家公司負債比 85%——什麼情況下這完全正常？</summary>
+      <div class="ans"><p>→ <strong>金融業</strong>（銀行、保險）：吸收存款本來就是負債，85% 是常態；一般製造業若 85% 就要高度警戒。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>成績單 vs 健檢報告</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（家庭版資產負債表）</p>
+    <p>拿一張紙畫 T 字：「左邊寫我們家有什麼：房子、車、存款。右邊寫錢從哪來：房貸＋我們自己的。左邊加總一定等於右邊——這就是公司資產負債表，我們家也有一張。」</p>
+  </div>
+  <div class="script">
+    <p class="who">核心比喻：健檢報告</p>
+    <p>「損益表是這個月的<strong>成績單</strong>，資產負債表是<strong>健檢報告</strong>。成績單可以靠熬夜衝一次，健檢報告騙不了人——骨質（權益）夠不夠、血壓（負債）高不高，都是長年累積。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動：好債 vs 壞債</p>
+    <p>「欠供應商的貨款（月結）跟跟銀行借的錢，哪個比較可怕？」——引導：前者不用利息、是生意好的副產品；後者要利息、到期要還。「所以聽到『那家公司負債幾百億』，先問一句：<strong>要付利息的有多少？</strong>」</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「房貸是不是壞事？」</b><br>「跟公司一樣：比率合理、付得起利息的槓桿是工具；付不起的才是災難。重點永遠是『利息保障倍數』——我們家的版本就是月收入除以月房貸。」</p>
+    <p class="qa"><b>「存貨也算資產？賣不掉怎麼辦」</b><br>正是速動比存在的原因——分析師也不完全信任存貨。</p>
+  </div>
+  <p class="muted">本腳本可搭配專欄 <a class="srclink" href="/writing/family-investing-07-financial-statements/">#7《財務報表三表》</a>服用。</p>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w6-final">
+    <li><label><input type="checkbox"><span>能把真實資產負債表科目分成三色（流動性 × 計息性 × 權益）</span></label></li>
+    <li><label><input type="checkbox"><span>五比率同業對照表完成</span></label></li>
+    <li><label><input type="checkbox"><span>能解釋「有息 vs 無息負債」與「商譽減損」兩個概念</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記下對方聽不懂的點（下週單元開頭回補）</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 07：現金流量表深讀</b>——第 4 週你就發現「賺錢≠現金變多」，下週用第三張表把這件事講完整：營業／投資／融資三大活動、自由現金流，以及為什麼現金流量表被稱為「最誠實的報表」。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-05-income-statement/">上一週：損益表深讀</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了。負債的重點不是「多少」，是「要不要付利息」——A 的 300 億是供應商與客戶免費借的營運負債；B 的 100 億利息照付、到期要還。這是本週的核心分類。"
+      : "答案是 B。A 的 300 億全是「無息負債」——供應商月結、客戶預付，等於免費借你錢，是生意好的副產品；B 的 100 億是銀行借款，利息照付、到期要還。負債的重點不是多少，是要不要付利息。";
+  });
+
+  /* ---------- 科目分類挑戰 ---------- */
+  var QUIZ = [
+    {name:"現金", hint:"公司帳上的活錢", ans:"ca", why:"變現最快的流動資產——資產負債表的第一行。"},
+    {name:"應付帳款", hint:"欠供應商的貨款（月結）", ans:"fl", why:"一年內要付、但不用利息——供應商免費借你錢，營運自然產生的無息負債。"},
+    {name:"設備", hint:"製茶機、店面裝潢", ans:"nca", why:"用超過一年、不打算賣掉變現——非流動資產，之後逐年折舊。"},
+    {name:"預收收入", hint:"客戶先付的團購訂金", ans:"fl", why:"第 4 週的老朋友：錢已收、貨未交——是負債（欠客戶東西），但不用付利息，還代表產品搶手。"},
+    {name:"短期借款", hint:"跟銀行借的一年期周轉金", ans:"dl", why:"要付利息、一年內到期要還——有息負債，財務風險的主要來源。"},
+    {name:"存貨", hint:"倉庫裡的茶葉與珍珠", ans:"ca", why:"預期一年內賣掉變現——流動資產；但它是流動資產裡最不保證變現的，所以速動比會剔除它。"},
+    {name:"保留盈餘", hint:"歷年賺來還沒分掉的錢", ans:"eq", why:"權益——淨利的累積，屬於股東。飲料店兩個月存了 98,334。"},
+    {name:"一年內到期之長期借款", hint:"五年貸款裡明年要還的那期", ans:"dl", why:"有息負債，而且是「長短錯配」的檢查點——對照手上現金夠不夠還這筆。"},
+    {name:"應收帳款", hint:"企業客戶月結還沒付的貨款", ans:"ca", why:"一年內會收到的錢——流動資產；但要盯「收得回來嗎、越欠越久嗎」。"},
+    {name:"商譽", hint:"併購別家公司時付的溢價", ans:"nca", why:"非流動資產，也是地雷區：不攤銷但每年減損測試，被併公司不如預期時可以一次炸掉整年獲利。"}
+  ];
+  var LABEL = {ca:"流動資產", nca:"非流動資產", fl:"無息負債", dl:"有息負債", eq:"權益"};
+  var qi = 0, score = 0, answered = 0;
+  var gName = document.getElementById("g-name"), gHint = document.getElementById("g-hint"),
+      gProg = document.getElementById("g-progress"), gBtns = document.getElementById("g-btns"),
+      gFeed = document.getElementById("g-feed"), gScore = document.getElementById("g-score"),
+      gNext = document.getElementById("g-next"), gDone = document.getElementById("g-done");
+
+  function showQ(){
+    var q = QUIZ[qi];
+    gProg.textContent = "第 " + (qi+1) + " 題 / " + QUIZ.length;
+    gName.textContent = q.name;
+    gHint.textContent = q.hint;
+    gFeed.className = "gfeed"; gFeed.innerHTML = "";
+    gNext.disabled = true;
+    gBtns.querySelectorAll("button").forEach(function(b){
+      b.disabled = false; b.className = "";
+    });
+  }
+  gBtns.addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn || btn.disabled) return;
+    var q = QUIZ[qi];
+    var right = btn.dataset.c === q.ans;
+    answered++;
+    if (right) score++;
+    gBtns.querySelectorAll("button").forEach(function(b){
+      b.disabled = true;
+      if (b.dataset.c === q.ans) b.classList.add("correct");
+      else if (b === btn && !right) b.classList.add("wrong");
+    });
+    gFeed.className = "gfeed show " + (right ? "good" : "bad");
+    gFeed.innerHTML = (right ? "✓ 答對。" : "✗ 是「<b>"+LABEL[q.ans]+"</b>」。") + " " + q.why;
+    gScore.textContent = "答對 " + score + " / " + answered;
+    gNext.disabled = false;
+    if (qi === QUIZ.length-1){
+      gNext.textContent = "看結果";
+    }
+  });
+  gNext.addEventListener("click", function(){
+    if (qi < QUIZ.length-1){ qi++; showQ(); return; }
+    // 完成
+    document.querySelector(".gcard").style.display = "none";
+    gNext.style.display = "none";
+    gDone.classList.add("show");
+    var msg = score === 10 ? "滿分！你已經有分析師拿到報表的第一反射了。"
+            : score >= 7 ? "不錯——錯的那幾題正是最常混淆的科目，重看一次解說再進導讀實戰。"
+            : "沒關係，這十個科目就是本週的核心詞彙——回講義第 1、3 節走一遍，再回來重玩。";
+    gDone.innerHTML = "<b>完成：" + score + " / 10</b>　" + msg + '　<button style="font:inherit;font-size:.85rem;font-weight:700;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--pine);background:transparent;color:var(--pine)" id="g-retry">再玩一次</button>';
+    document.getElementById("g-retry").addEventListener("click", function(){
+      qi = 0; score = 0; answered = 0;
+      gScore.textContent = "答對 0 / 0";
+      gDone.classList.remove("show");
+      document.querySelector(".gcard").style.display = "";
+      gNext.style.display = ""; gNext.textContent = "下一題 →";
+      showQ();
+    });
+  });
+  showQ();
+
+  /* ---------- 檢核持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w06-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w6-final"){
+          document.getElementById("checkdone").textContent = st.every(Boolean) ? "🎓 第 6 週完成——下週見：現金流量表深讀。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w6-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 6 週完成——下週見：現金流量表深讀。";
+    }
+  });
+})();
+</script>

@@ -1,0 +1,632 @@
+<!-- 由 scripts/extract-course-weeks.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --chart:#1F8A5F; --chart2:#A87B1F;
+    --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --chart:#35A878; --chart2:#BA8A25;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 路徑實驗室 */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .scen{display:flex;flex-wrap:wrap;gap:.5rem;margin:.7rem 0 .9rem}
+  .scen button{font:inherit;font-size:.85rem;padding:.42rem .95rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .scen button:hover{border-color:var(--pine);color:var(--pine)}
+  .scen button.on{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  .labchart{width:100%;height:auto;display:block;margin-top:.4rem}
+  .labchart .axis{stroke:var(--line);stroke-width:1}
+  .labchart .grid{stroke:var(--line-soft);stroke-width:1}
+  .labchart .pline{stroke:var(--ink-3);stroke-width:1.8;fill:none}
+  .labchart .pdot{fill:var(--ink-3)}
+  .labchart .vlsi{stroke:var(--chart);stroke-width:2.5;fill:none}
+  .labchart .vdca{stroke:var(--chart2);stroke-width:2.5;fill:none}
+  .labchart .base{stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+  .labchart .ticklab{fill:var(--ink-3);font-size:10px;font-family:ui-monospace,Menlo,monospace}
+  .labchart .axlab{fill:var(--ink-2);font-size:11px;font-weight:700}
+  .labchart .paneltitle{fill:var(--ink-2);font-size:11px;font-weight:700}
+  .lablegend{display:flex;flex-wrap:wrap;gap:1rem;font-size:.78rem;color:var(--ink-2);margin-top:.3rem}
+  .lablegend span{display:inline-flex;align-items:center;gap:.4rem}
+  .lablegend i{width:14px;height:0;border-top:2.5px solid var(--chart);display:inline-block}
+  .lablegend i.dca{border-top-color:var(--chart2)}
+  .lablegend i.price{border-top:1.8px solid var(--ink-3)}
+  .lablegend i.base{border-top:1.2px dashed var(--line)}
+  .duel{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:1rem}
+  .duelcell{padding:.8rem 1rem;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);position:relative}
+  .duelcell .dn{font-size:.75rem;font-weight:800;color:var(--ink-3);padding-right:3.4rem}
+  .duelcell .dv{font-size:1.35rem;font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .duelcell .dbar{height:.55rem;border-radius:99px;background:var(--line-soft);margin-top:.5rem;overflow:hidden}
+  .duelcell .dbar i{display:block;height:100%;background:var(--ink-3);border-radius:99px;transition:width .2s}
+  .duelcell.win{border-color:var(--up)}
+  .duelcell.win .dv{color:var(--up)}
+  .duelcell.win .dbar i{background:var(--up)}
+  .duelcell .crown{position:absolute;top:.6rem;right:.8rem;font-size:.72rem;font-weight:800;color:var(--up);display:none}
+  .duelcell.win .crown{display:block}
+  .labverdict{margin-top:.9rem;padding:.7rem 1rem;border-radius:9px;font-size:.9rem;background:var(--coin-soft);color:var(--ink-2)}
+  .labverdict b{color:var(--coin)}
+  .labnote{margin-top:.6rem;font-size:.78rem;color:var(--ink-3)}
+
+  /* 三問決策器 */
+  .wizard{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .wizard h3{margin-top:0}
+  .wq{margin-top:1rem;padding-top:.9rem;border-top:1px dashed var(--line-soft)}
+  .wq:first-of-type{border-top:none;padding-top:0}
+  .wq .wt{font-size:.9rem;font-weight:700;color:var(--ink)}
+  .wq .wt small{color:var(--ink-3);font-weight:400}
+  .wopts{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
+  .wopts button{font:inherit;font-size:.85rem;padding:.4rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .wopts button:hover{border-color:var(--pine);color:var(--pine)}
+  .wopts button.on{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  .wq.dim{opacity:.45;pointer-events:none}
+  .wresult{margin-top:1.1rem;padding:1rem 1.2rem;background:var(--pine-soft);border-radius:10px;font-size:.95rem}
+  .wresult b{color:var(--pine)}
+  .wiron{margin-top:.7rem;padding:.7rem 1rem;border-radius:9px;font-size:.88rem;background:var(--coin-soft);color:var(--ink-2)}
+  .wiron b{color:var(--coin)}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 17</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q2 投資人季 · Week 17</p>
+  <h1>入場策略——Lump Sum vs DCA</h1>
+  <p class="lead" style="margin-top:.5rem">W14 決定了「擺多少」，本週決定「怎麼把錢放進去」——用數據回答，不用感覺回答。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-14-asset-allocation/">第 14 週</a></span><span class="chip">52 週 · 第 17 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>專欄 #10 的深化版。操盤手部署資金（Q3）、財務長調度現金（Q4）都會回到這個決策框架。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧 W16 家庭基金體檢的發現——加權費率算出來了嗎、高費率部位「處理或保留」的決定寫了嗎。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">手上有一筆 120 萬要投入。歷史數據中，「一次全投」和「分 12 個月慢慢投」——哪個比較常贏？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">分批——比較安全</button>
+    <button data-g="b">一次全投——約三次裡贏兩次</button>
+    <button data-g="c">差不多五五波</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. 先分清楚兩種「定期定額」</h2>
+  <p>它們常被混為一談，但決策邏輯完全相反：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>類型</th><th>情境</th><th>本質</th></tr></thead>
+      <tbody>
+        <tr><td class="f">持續型 DCA</td><td>每月薪水撥一筆投入</td><td><strong>沒有選擇</strong>——你的錢本來就是每月進來的，分批是唯一可能。這是專欄 #5 講的、絕大多數上班族的常態</td></tr>
+        <tr><td class="f">整筆分批型 DCA</td><td>手上已有一大筆錢（獎金、遺產、賣房），分 N 個月投入 vs 一次投入</td><td><strong>有選擇</strong>——這才是本週「Lump Sum vs DCA」要辯論的題目</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>本週的所有數據討論，都是針對第二種。第一種你已經在做、也該繼續做，沒有爭議。</p>
+
+  <h2>2. 數據結論：LSI 期望值較高，但代價是後悔風險</h2>
+  <p>Vanguard 的經典研究回測數十年、多市場：<strong>約 2/3 的歷史區間，一次投入（LSI）的最終結果優於 12 個月分批（DCA）</strong>。原因很單純——市場長期向上（W1 複利、W12 循環），錢越早到位、越早開始複利；分批等於「平均而言持有較多現金」，而現金的期望報酬最低。</p>
+  <p>用三條自製路徑看清楚（120 萬；DCA ＝ 每月 10 萬 × 12 個月）——<strong>點三個情境，看誰贏、為什麼</strong>：</p>
+  </div>
+
+  <!-- 路徑實驗室 -->
+  <div class="lab" id="lab">
+    <h3>路徑實驗室：LSI vs DCA（120 萬 · 12 個月）</h3>
+    <div class="scen" id="scen">
+      <button data-s="A" class="on">A 穩步上漲</button>
+      <button data-s="B">B 先跌後回</button>
+      <button data-s="C">C 先漲後跌回起點</button>
+    </div>
+    <svg id="pricechart" class="labchart" viewBox="0 0 460 128" role="img" aria-label="十二個月的市場價格路徑">
+      <text class="paneltitle" x="46" y="12">市場價格路徑（指數）</text>
+      <g id="pg-grid"></g>
+      <line class="axis" x1="46" y1="108" x2="446" y2="108"></line>
+      <line class="axis" x1="46" y1="20"  x2="46"  y2="108"></line>
+      <g id="pg-ticks"></g>
+      <polyline id="pline" class="pline" points=""></polyline>
+      <g id="pdots"></g>
+    </svg>
+    <svg id="valuechart" class="labchart" viewBox="0 0 460 252" role="img" aria-label="兩種策略的資產價值逐月變化" style="margin-top:.6rem">
+      <text class="paneltitle" x="46" y="12">兩種策略的資產價值（萬）</text>
+      <g id="vg-grid"></g>
+      <line class="axis" x1="46" y1="218" x2="446" y2="218"></line>
+      <line class="axis" x1="46" y1="20"  x2="46"  y2="218"></line>
+      <g id="vg-ticks"></g>
+      <text class="axlab" x="246" y="248" text-anchor="middle">月份（買點）</text>
+      <line id="vbase" class="base" x1="46" y1="0" x2="446" y2="0"></line>
+      <polyline id="vlsi" class="vlsi" points=""></polyline>
+      <polyline id="vdca" class="vdca" points=""></polyline>
+    </svg>
+    <div class="lablegend">
+      <span><i></i>LSI 資產價值</span>
+      <span><i class="dca"></i>DCA 資產價值（含未投入現金）</span>
+      <span><i class="price"></i>市場價格</span>
+      <span><i class="base"></i>本金 120 萬</span>
+    </div>
+    <div class="duel">
+      <div class="duelcell" id="cell-lsi">
+        <div class="dn">LSI 一次投入 · 期末</div>
+        <div class="dv num" id="v-lsi">146.4 萬</div>
+        <div class="dbar"><i id="b-lsi"></i></div>
+        <span class="crown">🏆 贏家</span>
+      </div>
+      <div class="duelcell" id="cell-dca">
+        <div class="dn">DCA 分 12 個月 · 期末</div>
+        <div class="dv num" id="v-dca">132.4 萬</div>
+        <div class="dbar"><i id="b-dca"></i></div>
+        <span class="crown">🏆 贏家</span>
+      </div>
+    </div>
+    <div class="labverdict" id="labverdict" aria-live="polite"></div>
+    <p class="labnote">教學示意路徑（非真實行情）：LSI 期初以 100 全數買入；DCA 每月 10 萬買在當月價格、未投入部分以現金持有（不計息），各月價值皆以當月價格計。順便觀察：DCA 那條線前期比較平——現金墊著跌不深，這就是「行為保險」的長相。練習任務 A 的驗證點：情境 B 應得 LSI≈126 萬、DCA≈136.8 萬。</p>
+  </div>
+
+  <div class="prose">
+  <div class="example">
+    <span class="tag">關鍵洞察</span>
+    <p>DCA 只在「進場後<strong>先跌、之後才漲</strong>」的路徑贏（情境 B）。因為市場上漲的月份多於下跌，這種路徑是少數——這就是「2/3 LSI 勝」的來源。DCA <strong>不是</strong>穩賺的保守策略；情境 C 顯示它在震盪盤反而可能追高。</p>
+  </div>
+
+  <h2>3. 那 DCA 到底在買什麼？答案：行為保險</h2>
+  <p>如果 LSI 期望值較高，為什麼 DCA 仍值得存在？因為投資的最大風險不是「少賺一點」，是<strong>「一次投入後隔天崩盤，從此再也不敢進場」</strong>。DCA 的真正價值是<strong>行為保險</strong>：</p>
+  <ol class="tasks">
+    <li>降低「單日進場點」的重要性 → 降低極端後悔</li>
+    <li>心理上更容易「開始」——對第一次投入大筆錢的人，跨出第一步比最優化期望值更重要</li>
+    <li>保費就是那 1/3 機率下少賺的錢——跟所有保險一樣，你為「不會發生最壞情況」付費</li>
+  </ol>
+
+  <h2>4. 決策框架：三個問題</h2>
+  <p>回答三題，看你的入場建議（做完練習 B 會把它寫成文字規則）：</p>
+  </div>
+
+  <!-- 三問決策器 -->
+  <div class="wizard" id="wizard">
+    <h3>三問決策器</h3>
+    <div class="wq" id="wq1">
+      <p class="wt">Q1 這筆錢佔你總投資資產的比重大嗎？</p>
+      <div class="wopts" data-q="q1">
+        <button data-v="small">小（如 &lt;10%）</button>
+        <button data-v="big">大（如一次讓部位翻倍）</button>
+      </div>
+    </div>
+    <div class="wq dim" id="wq2">
+      <p class="wt">Q2 你的風險承受（W14 心理那項）誠實地說如何？</p>
+      <div class="wopts" data-q="q2">
+        <button data-v="steady">穩健，能接受帳面大跌</button>
+        <button data-v="panic">容易恐慌，會半夜看盤</button>
+      </div>
+    </div>
+    <div class="wq dim" id="wq3">
+      <p class="wt">Q3 是否有估值極端訊號？ <small>（W12 市場溫度）</small></p>
+      <div class="wopts" data-q="q3">
+        <button data-v="normal">沒有特別訊號</button>
+        <button data-v="hot">市場明顯過熱</button>
+      </div>
+    </div>
+    <div class="wresult" id="wresult" aria-live="polite">先回答 Q1。</div>
+    <div class="wiron"><b>鐵律：</b>無論選哪個，<strong>先把日期定死、寫進 IPS</strong>（例：「分 6 個月、每月 15 日投入」）。DCA 最大的失敗模式是「跌了不敢買、想等更低」——那不是 DCA，是擇時。機械化執行才是 DCA 的靈魂。</div>
+  </div>
+
+  <div class="prose">
+  <h2>5. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「DCA 比較安全、比較聰明」</p><p>期望值上它較低；它買的是心理安穩不是超額報酬。清楚知道自己在買保險，就不會用錯地方。</p></div>
+  <div class="myth"><p class="say">「等回檔再一次進場」</p><p>這是偽裝成謹慎的擇時；回檔真來時你會想等更低（W12）。要嘛 LSI、要嘛機械化 DCA，別留「看情況」的空間。</p></div>
+  <div class="myth"><p class="say">「持續型 DCA 也要考慮該不該一次投入」</p><p>不用，你的錢每月才進來，沒有「一次」的選項；照常投入即可。</p></div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">15 分</span>
+    <div class="body"><b><a class="srclink" href="/writing/family-investing-05-etf-dca/">專欄 #5 重讀 ↗</a>（#10 發布後改讀 #10）</b>
+      <p>持續型 DCA 的原點；本週補上整筆分批的完整數據與行為框架。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">45 分</span>
+    <div class="body"><b><a class="srclink" href="https://corporate.vanguard.com/content/dam/corp/research/pdf/cost_averaging_invest_now_or_temporarily_hold_your_cash.pdf" target="_blank" rel="noopener">Vanguard「Cost averaging: Invest now or temporarily hold your cash?」↗</a></b>
+      <p>本週主文；重點看「2/3 勝率」與「平均超額幅度」兩張圖，把數字抄進筆記。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">20 分</span>
+    <div class="body"><b><a class="srclink" href="https://www.bogleheads.org/wiki/Dollar_cost_averaging" target="_blank" rel="noopener">Bogleheads Wiki「Dollar cost averaging」↗</a></b>
+      <p>社群對 LSI vs DCA 的實務共識。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">選讀</span>
+    <div class="body"><b>《快思慢想》損失趨避章節</b>
+      <p>理解為什麼「後悔」對人的重量遠超「少賺」——DCA 存在的心理學基礎（也預告 W23）。</p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>回測與決策規則</h2>
+  <h3>任務 A｜自製回測（30 分鐘）</h3>
+  <ol class="tasks">
+    <li>用試算表建一欄 12 個月的價格路徑，先手動輸入情境 B（100→80→105），計算 LSI 與 DCA 期末值——<strong>驗證：LSI≈126 萬、DCA≈136.8 萬</strong>（和上面實驗室對答案）</li>
+    <li>改成情境 A 與 C 各驗一次</li>
+    <li>進階：找一段<strong>真實</strong>指數月資料（台股或 S&amp;P 500），挑三個起點（含 2008 年中這種「進場後大跌」的起點），比較 LSI vs 6 個月 DCA</li>
+    <li>寫 150 字：哪種市場路徑 DCA 才贏？這種路徑常見嗎？</li>
+  </ol>
+  <h3>任務 B｜寫下你的入場規則（20 分鐘）</h3>
+  <p>針對「假如明天收到一筆佔投資資產 ＿% 的錢」，用三問框架寫出你的決策規則（含分批月數與<strong>固定日期</strong>），加進 W14 的目標配置文件。</p>
+  <div class="verify">✅ <b>驗收標準：</b>回測驗證點通過；個人入場規則寫入 IPS 草稿，含固定日期。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w17-practice">
+    <li><label><input type="checkbox"><span>回測驗證點（情境 B：LSI≈126 萬、DCA≈136.8 萬）通過</span></label></li>
+    <li><label><input type="checkbox"><span>個人入場規則寫入 IPS 草稿，含固定日期</span></label></li>
+    <li><label><input type="checkbox"><span>能說出「DCA 是行為保險而非超額報酬來源」</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼「2/3 機率 LSI 勝」的根本原因，跟 W1、W12 學的是同一件事？</summary>
+      <div class="ans"><p>→ 因為<strong>市場長期向上</strong>（W1 複利、W12 循環的上升傾向）——LSI 讓錢早到位、早複利；DCA 平均持有較多低報酬的現金。三者是同一個「時間在市場裡」的道理。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> DCA 在哪一種市場路徑會輸得最難看？</summary>
+      <div class="ans"><p>→ <strong>一路上漲</strong>的市場（情境 A／C 類）——DCA 每個月都買在更高的價格，等於持續追高，最後平均成本高於一次到位。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 持續型 DCA 需要做「LSI vs DCA」的決策嗎？</summary>
+      <div class="ans"><p>→ <strong>不需要</strong>——持續型 DCA 的錢每月才進帳，根本沒有「一次投入」的選項；照紀律投入即可，別被本週的辯論干擾。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>中獎難題</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（中獎難題）</p>
+    <p>「假設你中了 120 萬，要投入我們講好的配置——你會一次全買，還是分成一年慢慢買？」（讓對方選並說理由，通常會選「分批比較安全」——正好是切入點。）</p>
+  </div>
+  <div class="script">
+    <p class="who">核心觀念</p>
+    <p>「直覺上分批比較穩，但數據說：因為市場長期往上，<strong>三次裡有兩次是『一次買』賺比較多</strong>——因為錢早點到位、早點開始滾。」（用 W1 的雪球回扣。）</p>
+  </div>
+  <div class="script">
+    <p class="who">但是（關鍵轉折）</p>
+    <p>「那為什麼還有人分批？因為分批買的不是『多賺』，是『安心』——萬一你一次全買、隔天大跌，你可能從此嚇到再也不敢投資。分批就像<strong>分期付款的勇氣</strong>，讓你走得出第一步、也睡得著。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動（機械化）</p>
+    <p>「所以我們家的規則是：小錢一次進、大錢分批進，而且——日期先講死，跌了照買不准反悔。因為『等更低點』的人，通常永遠在等。」</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那到底該選哪個？」</b><br>「看金額大小和你的心臟。這筆錢佔比小就一次進；大到你會焦慮，就分 6 個月——買的是好眠，不是更高報酬。」</p>
+    <p class="qa"><b>「分批期間跌了不是很虧？」</b><br>「反過來想：分批的人最怕的是『一路漲』（追高），最愛的是『先跌』（買便宜）——跌反而是分批策略的朋友。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w17-final">
+    <li><label><input type="checkbox"><span>能區分持續型 DCA 與整筆分批型 DCA</span></label></li>
+    <li><label><input type="checkbox"><span>回測試算完成（三情境）並理解「2/3 LSI 勝」的成因</span></label></li>
+    <li><label><input type="checkbox"><span>個人入場規則寫入 IPS 草稿（含固定日期的機械化執行）</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 18：倉位管理與再平衡</b>——配置、入場都定了，下週補上最後兩個決定（倉位上限、再平衡規則），並把全部規則固化成一份投資政策聲明書（IPS）：寫給恐慌時自己的信。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-16-index-investing/">上一週：指數化投資與成本侵蝕</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——Vanguard 的經典回測顯示，約 2/3 的歷史區間一次投入勝出，因為市場長期向上、錢越早到位越早複利。但「比較常贏」不等於「該無腦選它」——本週講清楚分批到底在買什麼。"
+      : "多數人的直覺——但 Vanguard 的經典回測顯示，約 2/3 的歷史區間是「一次全投」勝出，因為市場長期向上、錢越早到位越早複利。分批買到的其實不是安全，是另一樣東西——本週講清楚它是什麼、什麼時候值得買。";
+  });
+
+  /* ---------- 路徑實驗室 ---------- */
+  var SCEN = {
+    A: { path: [100,102,104,106,108,110,112,114,116,118,120,122],
+         name: "A 穩步上漲（100→122）",
+         why: "<b>LSI 贏：</b>早到位吃滿整段漲幅；DCA 每個月都買在更高的價格，平均成本被一路墊高。" },
+    B: { path: [100,96,92,88,84,80,84,89,94,99,102,105],
+         name: "B 先跌後回（100→80→105）",
+         why: "<b>DCA 贏：</b>前半段的下跌讓每筆 10 萬買到更多股數——低點的便宜貨在回升時放大戰果。這是 DCA 唯一的勝利劇本：進場後先跌、之後才漲。" },
+    C: { path: [100,104,108,112,116,120,116,112,108,104,102,100],
+         name: "C 先漲後跌回起點（100→120→100）",
+         why: "<b>LSI 贏（雖然只是打平）：</b>價格繞一圈回到原點，LSI 不賺不賠；DCA 卻有大半資金買在 104–120 的半山腰——震盪盤中分批反而是追高。" }
+  };
+  var X0 = 46, X1 = 446;
+  function px(m){ return X0 + m/11 * (X1 - X0); }
+  // 上圖：價格（75–125）
+  var PY0 = 108, PY1 = 20, PMIN = 75, PMAX = 125;
+  function py(p){ return PY0 - (p - PMIN)/(PMAX - PMIN) * (PY0 - PY1); }
+  // 下圖：資產價值（90–150 萬）
+  var VY0 = 218, VY1 = 20, VMIN = 90, VMAX = 150;
+  function vy(w){ return VY0 - (w - VMIN)/(VMAX - VMIN) * (VY0 - VY1); }
+  (function(){
+    var gh = "", th = "";
+    for (var pv = 80; pv <= 120; pv += 20){
+      gh += '<line class="grid" x1="'+X0+'" y1="'+py(pv)+'" x2="'+X1+'" y2="'+py(pv)+'"/>';
+      th += '<text class="ticklab" x="'+(X0-6)+'" y="'+(py(pv)+3.5)+'" text-anchor="end">'+pv+'</text>';
+    }
+    document.getElementById("pg-grid").innerHTML = gh;
+    document.getElementById("pg-ticks").innerHTML = th;
+    var vh = "", vt = "";
+    for (var wv = 90; wv <= 150; wv += 15){
+      vh += '<line class="grid" x1="'+X0+'" y1="'+vy(wv)+'" x2="'+X1+'" y2="'+vy(wv)+'"/>';
+      vt += '<text class="ticklab" x="'+(X0-6)+'" y="'+(vy(wv)+3.5)+'" text-anchor="end">'+wv+'</text>';
+    }
+    for (var mv = 1; mv <= 12; mv++){
+      vt += '<text class="ticklab" x="'+px(mv-1)+'" y="'+(VY0+13)+'" text-anchor="middle">'+mv+'</text>';
+    }
+    document.getElementById("vg-grid").innerHTML = vh;
+    document.getElementById("vg-ticks").innerHTML = vt;
+    var vb = document.getElementById("vbase");
+    vb.setAttribute("y1", vy(120)); vb.setAttribute("y2", vy(120));
+  })();
+  function fmtWan(x){ return (x/10000).toFixed(1) + " 萬"; }
+  function showScen(k){
+    var s = SCEN[k], p = s.path;
+    document.getElementById("pline").setAttribute("points",
+      p.map(function(v, i){ return px(i).toFixed(1) + "," + py(v).toFixed(1); }).join(" "));
+    document.getElementById("pdots").innerHTML = p.map(function(v, i){
+      return '<circle class="pdot" cx="'+px(i).toFixed(1)+'" cy="'+py(v).toFixed(1)+'" r="2.5"/>';
+    }).join("");
+    // 逐月資產價值：LSI 全額跟價格走；DCA＝已買股數×當月價＋未投入現金
+    var lsiPts = [], dcaPts = [], shares = 0;
+    for (var i = 0; i < p.length; i++){
+      var lsiV = 1200000 / p[0] * p[i];
+      shares += 100000 / p[i];
+      var dcaV = shares * p[i] + (11 - i) * 100000;
+      lsiPts.push(px(i).toFixed(1) + "," + vy(lsiV/10000).toFixed(1));
+      dcaPts.push(px(i).toFixed(1) + "," + vy(dcaV/10000).toFixed(1));
+    }
+    document.getElementById("vlsi").setAttribute("points", lsiPts.join(" "));
+    document.getElementById("vdca").setAttribute("points", dcaPts.join(" "));
+    var end = p[p.length-1];
+    var lsi = 1200000 / p[0] * end;
+    var dca = p.reduce(function(acc, v){ return acc + 100000/v; }, 0) * end;
+    document.getElementById("v-lsi").textContent = fmtWan(lsi);
+    document.getElementById("v-dca").textContent = fmtWan(dca);
+    var mx = Math.max(lsi, dca);
+    document.getElementById("b-lsi").style.width = (lsi/mx*100) + "%";
+    document.getElementById("b-dca").style.width = (dca/mx*100) + "%";
+    document.getElementById("cell-lsi").classList.toggle("win", lsi > dca);
+    document.getElementById("cell-dca").classList.toggle("win", dca > lsi);
+    document.getElementById("labverdict").innerHTML = "<b>" + s.name + "</b>｜" + s.why;
+  }
+  document.getElementById("scen").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("on"); });
+    btn.classList.add("on");
+    showScen(btn.dataset.s);
+  });
+  showScen("A");
+
+  /* ---------- 三問決策器 ---------- */
+  var ans = { q1: null, q2: null, q3: null };
+  function wResult(){
+    var r = document.getElementById("wresult");
+    var wq2 = document.getElementById("wq2"), wq3 = document.getElementById("wq3");
+    if (!ans.q1){ r.textContent = "先回答 Q1。"; wq2.classList.add("dim"); wq3.classList.add("dim"); return; }
+    if (ans.q1 === "small"){
+      wq2.classList.add("dim"); wq3.classList.add("dim");
+      r.innerHTML = "<b>建議：直接 LSI，一次到位。</b>佔比小，錯了也傷不了配置——別想太多，早進場早複利。";
+      return;
+    }
+    wq2.classList.remove("dim");
+    if (!ans.q2){ r.textContent = "金額大——往下回答 Q2。"; wq3.classList.add("dim"); return; }
+    wq3.classList.remove("dim");
+    if (!ans.q3){ r.textContent = "再回答 Q3。"; return; }
+    if (ans.q2 === "steady" && ans.q3 === "normal"){
+      r.innerHTML = "<b>建議：LSI 或短分批（3 個月）。</b>心臟與數據都站在早進場這邊；想留一點緩衝就用 3 個月機械化分批。";
+    } else if (ans.q2 === "steady" && ans.q3 === "hot"){
+      r.innerHTML = "<b>建議：短–中分批（3–6 個月）。</b>市場明顯過熱時分批的機會成本較低——但注意，這已接近擇時；日期定死，不准變成無限期等待。";
+    } else if (ans.q2 === "panic" && ans.q3 === "normal"){
+      r.innerHTML = "<b>建議：拉長分批（6–12 個月），買安心。</b>期望值讓一點給睡眠品質——一次進場後恐慌砍在低點，比少賺更貴。";
+    } else {
+      r.innerHTML = "<b>建議：拉長分批（6–12 個月）。</b>心理與市場溫度都指向保守端——重點是寫死日期、機械化執行，跌了照買。";
+    }
+  }
+  document.querySelectorAll(".wopts").forEach(function(row){
+    row.addEventListener("click", function(e){
+      var btn = e.target.closest("button"); if(!btn) return;
+      row.querySelectorAll("button").forEach(function(b){ b.classList.remove("on"); });
+      btn.classList.add("on");
+      ans[row.dataset.q] = btn.dataset.v;
+      wResult();
+    });
+  });
+  wResult();
+
+  /* ---------- 檢核持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w17-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w17-final"){
+          document.getElementById("checkdone").textContent = st.every(Boolean) ? "🎓 第 17 週完成——入場規則已寫下。下週見：倉位管理與 IPS。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w17-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 17 週完成——入場規則已寫下。下週見：倉位管理與 IPS。";
+    }
+  });
+})();
+</script>
