@@ -401,6 +401,61 @@ function verifyI18nHreflang() {
   };
 }
 
+/*
+ * 守衛：[data-i18n] 佔位元素不能是空的。
+ *
+ * 那幾頁的文字由 applyI18n() 在瀏覽器端填入，build 產物裡本來全是空元素
+ * ——aw32 的正文只有 176 字元，整頁對爬蟲等於不存在。內容已由
+ * scripts/prerender-i18n.mjs 一次性寫進 public/ 的原始檔。
+ *
+ * 這條守衛擋的是之後的漂移：新增了 data-i18n 元素、或改了 var I 字典卻
+ * 忘記重跑腳本。症狀（爬蟲看到空殼）在瀏覽器上完全看不出來，所以只能靠
+ * 建置期檢查——同 verifyI18nHreflang 的理由。
+ *
+ * 修法：node scripts/prerender-i18n.mjs
+ */
+function verifyI18nPrerendered() {
+  return {
+    name: 'verify-i18n-prerendered',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        const problems = [];
+        let checked = 0;
+
+        const walk = (d) => {
+          let entries;
+          try { entries = readdirSync(d); } catch { return; }
+          for (const e of entries) {
+            const full = join(d, e);
+            if (statSync(full).isDirectory()) { walk(full); continue; }
+            if (e !== 'index.html') continue;
+
+            const html = readFileSync(full, 'utf8').replace(/<script\b[\s\S]*?<\/script>/gi, '');
+            if (!/data-i18n/.test(html)) continue;
+            checked++;
+            /* 只抓「開標籤後緊接關標籤」的真空元素；有巢狀內容的不算 */
+            const empty = [...html.matchAll(/<(\w+)\b([^>]*\bdata-i18n(?:-html)?\s*=\s*"[^"]+"[^>]*)>\s*<\/\1>/g)];
+            if (empty.length) {
+              const rel = full.slice(root.length).replace(/\\/g, '/');
+              problems.push(`${rel}：${empty.length} 個空的 data-i18n 元素`);
+            }
+          }
+        };
+        walk(root);
+
+        if (problems.length) {
+          throw new Error(
+            'data-i18n 佔位沒有內容，爬蟲會看到空殼。修法：node scripts/prerender-i18n.mjs\n  ' +
+              problems.join('\n  '),
+          );
+        }
+        if (checked) logger.info(`i18n prerender verified: ${checked} page(s), no empty placeholders`);
+      },
+    },
+  };
+}
+
 function findPublicHtmlPages(publicDir, siteUrl) {
   const pages = [];
   function scan(dir) {
@@ -542,5 +597,6 @@ export default defineConfig({
     injectBreadcrumbs(),
     verifyRssFeed(),
     verifyI18nHreflang(),
+    verifyI18nPrerendered(),
   ],
 });
