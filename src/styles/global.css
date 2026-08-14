@@ -203,6 +203,9 @@ nav a[aria-current="page"] {
   transition: background 0.2s, border-color 0.2s, color 0.2s;
   flex-shrink: 0;
 }
+/* 已遷移的頁面會把切換鈕渲染成 <a>（讓爬蟲看得到中↔英之間的連結），
+   未遷移的仍是 <button>。兩者要長得一模一樣，所以這裡補掉 <a> 的預設底線。 */
+a.lang-toggle { text-decoration: none; }
 .lang-toggle:hover { color: var(--color-text); border-color: var(--color-accent); }
 
 /* Language show/hide — default (no JS) shows zh; data-lang flips it.
