@@ -21,14 +21,22 @@ export function getStaticPaths() {
 const isEn = Astro.currentLocale === 'en';
 const loc = Astro.currentLocale;
 
-/* ⚠ 英文 description 要自己數長度，不能直譯了事：同樣的內容，英文天生比中文長
-   （中文版 57 字元；第一版英文直譯 177 字元，超過 L1-DESC-LONG 的 160 上限而報警）。
-   中文一個字元承載的資訊量高得多，所以「中文版過關」完全不能保證英文版過關。
-   這條在後續每一頁遷移都會遇到，不是這頁的特例。 */
+/* ⚠ 兩種語言的 description 門檻不同，而且新增條目時**兩邊都要重數**。
+   檢核器偵測中日韓字元比例後切換標準：**中文 90 字元、英文 160 字元**。
+
+   上架 YAEO 時兩邊都撞過上限，實測值：
+     中文 88 → 101（超過 90），砍掉「產生器」「工具」與結尾的「附 GitHub 連結」後 84
+     英文 直譯後 163（超過 160），砍掉結尾的「with GitHub links.」後 145
+
+   別憑印象假設「中文比較短所以安全」——中文的門檻也跟著低，這裡原本只剩
+   2 個字元的餘裕。兩個數字都要實際量。
+
+   ⚠ 這兩句是**列舉式**的，逐一點名三個 skill。第四個上架時中文很可能再次超標
+   （目前 84，餘裕 6 個字元）。屆時要改成描述整批的性質，不再逐一點名。 */
 const descriptionZh =
-  '開源的 AI agent skills：Toutour 聚光燈導覽產生器、EndNote → Zotero 文獻搬家工具。通用 SKILL.md 格式，附 GitHub 連結。';
+  '開源的 AI agent skills：YAEO 引擎可見度檢核、Toutour 聚光燈導覽、EndNote → Zotero 文獻搬家。通用 SKILL.md 格式。';
 const descriptionEn =
-  'Open-source AI agent skills: Toutour spotlight tour generator and an EndNote-to-Zotero migration tool. Universal SKILL.md format, with GitHub links.';
+  'Open-source AI agent skills: YAEO engine-visibility auditor, Toutour spotlight tours, and EndNote-to-Zotero migration. Universal SKILL.md format.';
 ---
 <BaseLayout
   title="AI Agent Skills"
