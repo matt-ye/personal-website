@@ -79,7 +79,10 @@ const websiteLd = {
   '@id': 'https://mattye.dev/#website',
   name: siteName,
   url: 'https://mattye.dev',
-  inLanguage: 'zh-TW',
+  /* 跟著頁面語言走，不要寫死。寫死的話 /en/ 頁面會在 JSON-LD 裡宣稱自己是
+     中文——那比翻譯不完整嚴重，等於直接告訴 Google 語言判斷錯了。
+     ⚠ 這行影響全部 9 個 /en/ 頁面（不只本次遷移的那一頁）；中文頁輸出不變。 */
+  inLanguage: lang === 'en' ? 'en' : 'zh-TW',
   datePublished: '2026-05-31',
   copyrightYear: 2026,
   publisher: { '@id': 'https://mattye.dev/#person' },
