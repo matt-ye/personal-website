@@ -53,7 +53,15 @@ const presentationPosts = await seriesPosts('hardcore-presentation');
     {projects.map(p => (
       <div
         class={`project-card ${p.status === 'in-progress' ? 'card-wip' : ''}`}
-        {...(p.url ? { 'data-href': p.url, ...(p.internal ? {} : { 'data-external': 'true' }) } : {})}
+        {/* 站內卡片的網址走 localeHref：已遷移的路徑在英文頁自動指向 /en/，
+            未遷移的維持中文。外部網址不經過它（localeHref 只認站內路徑）。
+            這樣往後每遷移一頁，只要改 MIGRATED_PATHS，卡片連結自動跟上。 */}
+        {...(p.url
+          ? {
+              'data-href': p.internal ? localeHref(p.url, Astro.currentLocale) : p.url,
+              ...(p.internal ? {} : { 'data-external': 'true' }),
+            }
+          : {})}
       >
         <div class="project-card-header">
           <div>
@@ -78,7 +86,7 @@ const presentationPosts = await seriesPosts('hardcore-presentation');
             {p.tags.map((tag, i) => <span class="project-tag"><T zh={tag} en={p.tagsEn[i]} /></span>)}
           </div>
           {p.url
-            ? <a href={p.url} {...(p.internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })} class="project-link"><T zh="前往 →" en="Visit →" /></a>
+            ? <a href={p.internal ? localeHref(p.url, Astro.currentLocale) : p.url} {...(p.internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })} class="project-link"><T zh="前往 →" en="Visit →" /></a>
             : <span class="project-link-disabled"><T zh="即將上線" en="Coming Soon" /></span>
           }
         </div>
@@ -100,7 +108,9 @@ const presentationPosts = await seriesPosts('hardcore-presentation');
       <ul class="series-mini-list">
         {agentSkills.map(s => (
           <li class="series-mini-item">
-            <a href={`/projects/agent-skills/#${s.slug}`} class="series-mini-title"><T zh={s.title} en={s.titleEn} /></a>
+            {/* 錨點深連結也要分流——只包外層卡片的連結不夠，
+                這些 <a> 會蓋過卡片的 data-href（script 遇到 <a> 就不攔截）。 */}
+            <a href={`${localeHref('/projects/agent-skills/', Astro.currentLocale)}#${s.slug}`} class="series-mini-title"><T zh={s.title} en={s.titleEn} /></a>
           </li>
         ))}
       </ul>

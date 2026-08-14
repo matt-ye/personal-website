@@ -1,10 +1,38 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import T from '../../components/T.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import T from '../../../components/T.astro';
+
+/* 體態管理計算機。同時產出 /projects/diet-calculator/ 與
+   /en/projects/diet-calculator/，見 [...lang]/about.astro 的說明。
+
+   ⚠ 這頁的計算結果是 client script 產生的，不是 build 期決定的。它走
+   L(zh, en) 讀 <html data-lang>，而 BaseLayout 的 inline script 已讓網址
+   決定 data-lang——所以 /en/ 的動態文字自動是英文，與 sponsor.astro 同一模式。
+
+   遷移前逐一清點過 script 內的中文字串：使用者看得到的全部有英文對應
+   （DAYS_EN、SHORT_LABEL_EN 等）。唯一沒有英文的是 CARBCYCLE_GKG 的三個
+   label 欄位，但那三個欄位全檔沒有任何地方讀取，不會出現在畫面上。
+   **刻意不動它們**——遷移換的是維護方式，不是內容，兩件事分開做。
+
+   ⚠ 這類頁面有檢核器盲區：script 沒跑過，build 產物永遠看起來是純英文。
+   執行期的語言覆蓋率只能靠讀原始碼或實際操作驗證，seo-check 驗不到。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+
+/* 英文 description 要自己數長度：同樣的內容英文天生比中文長，
+   中文版過關完全不保證英文版過關（L1-DESC-LONG 上限 160 字元）。 */
+const descriptionZh =
+  '以台灣國人膳食營養素參考攝取量（DRIs）第八版與 ISSN、ACSM 文獻為基礎的 BMR / TDEE 與碳循環計算工具。純前端，資料不上傳。';
+const descriptionEn =
+  "BMR, TDEE and carb-cycling calculator based on Taiwan's DRIs (8th ed.) plus ISSN and ACSM literature. Runs entirely in your browser.";
 ---
 <BaseLayout
-  title="體態管理計算機 · Body Composition Calculator"
-  description="以台灣國人膳食營養素參考攝取量（DRIs）第八版與 ISSN、ACSM 文獻為基礎的 BMR / TDEE 與碳循環計算工具。純前端，資料不上傳。"
+  title={isEn ? 'Body Composition Calculator' : '體態管理計算機 · Body Composition Calculator'}
+  description={isEn ? descriptionEn : descriptionZh}
+  lang={isEn ? 'en' : 'zh-TW'}
 >
   <div class="container-wide calc-page">
 
@@ -37,8 +65,8 @@ import T from '../../components/T.astro';
           <label class="form-field">
             <span><T zh="生理性別" en="Sex" /></span>
             <select id="in-sex">
-              <option value="male" data-zh="男性" data-en="Male">男性</option>
-              <option value="female" data-zh="女性" data-en="Female">女性</option>
+              <option value="male" data-zh="男性" data-en="Male">{isEn ? "Male" : "男性"}</option>
+              <option value="female" data-zh="女性" data-en="Female">{isEn ? "Female" : "女性"}</option>
             </select>
           </label>
           <label class="form-field">
@@ -64,51 +92,51 @@ import T from '../../components/T.astro';
           <label class="form-field">
             <span><T zh="活動量" en="Activity level" /></span>
             <select id="in-pal">
-              <option value="1.2" data-zh="久坐（幾乎不運動）" data-en="Sedentary (little/no exercise)">久坐（幾乎不運動）</option>
-              <option value="1.375" data-zh="輕度活動（每週運動 1–3 次）" data-en="Light (1–3×/week)">輕度活動（每週運動 1–3 次）</option>
-              <option value="1.55" selected data-zh="中度活動（每週運動 3–5 次）" data-en="Moderate (3–5×/week)">中度活動（每週運動 3–5 次）</option>
-              <option value="1.725" data-zh="高度活動（每週運動 6–7 次）" data-en="Active (6–7×/week)">高度活動（每週運動 6–7 次）</option>
-              <option value="1.9" data-zh="極高強度（勞力工作／每日訓練）" data-en="Athlete (physical job / daily training)">極高強度（勞力工作／每日訓練）</option>
+              <option value="1.2" data-zh="久坐（幾乎不運動）" data-en="Sedentary (little/no exercise)">{isEn ? "Sedentary (little/no exercise)" : "久坐（幾乎不運動）"}</option>
+              <option value="1.375" data-zh="輕度活動（每週運動 1–3 次）" data-en="Light (1–3×/week)">{isEn ? "Light (1–3×/week)" : "輕度活動（每週運動 1–3 次）"}</option>
+              <option value="1.55" selected data-zh="中度活動（每週運動 3–5 次）" data-en="Moderate (3–5×/week)">{isEn ? "Moderate (3–5×/week)" : "中度活動（每週運動 3–5 次）"}</option>
+              <option value="1.725" data-zh="高度活動（每週運動 6–7 次）" data-en="Active (6–7×/week)">{isEn ? "Active (6–7×/week)" : "高度活動（每週運動 6–7 次）"}</option>
+              <option value="1.9" data-zh="極高強度（勞力工作／每日訓練）" data-en="Athlete (physical job / daily training)">{isEn ? "Athlete (physical job / daily training)" : "極高強度（勞力工作／每日訓練）"}</option>
             </select>
           </label>
           <label class="form-field">
             <span><T zh="目標" en="Goal" /></span>
             <select id="in-goal">
-              <option value="bulk_high" data-zh="增肌增重（TDEE +20% 或 +500kcal）" data-en="Bulk (TDEE +20% or +500 kcal)">增肌增重（TDEE +20% 或 +500kcal）</option>
-              <option value="bulk_low" data-zh="增肌增重（TDEE +10% 或 +200kcal）" data-en="Bulk (TDEE +10% or +200 kcal)">增肌增重（TDEE +10% 或 +200kcal）</option>
-              <option value="maintain" selected data-zh="維持體態（100% TDEE）" data-en="Maintain (100% TDEE)">維持體態（100% TDEE）</option>
-              <option value="cut_low" data-zh="減脂減重（TDEE -10% 或 -200kcal）" data-en="Cut (TDEE −10% or −200 kcal)">減脂減重（TDEE -10% 或 -200kcal）</option>
-              <option value="cut_high" data-zh="減脂減重（TDEE -20% 或 -500kcal）" data-en="Cut (TDEE −20% or −500 kcal)">減脂減重（TDEE -20% 或 -500kcal）</option>
+              <option value="bulk_high" data-zh="增肌增重（TDEE +20% 或 +500kcal）" data-en="Bulk (TDEE +20% or +500 kcal)">{isEn ? "Bulk (TDEE +20% or +500 kcal)" : "增肌增重（TDEE +20% 或 +500kcal）"}</option>
+              <option value="bulk_low" data-zh="增肌增重（TDEE +10% 或 +200kcal）" data-en="Bulk (TDEE +10% or +200 kcal)">{isEn ? "Bulk (TDEE +10% or +200 kcal)" : "增肌增重（TDEE +10% 或 +200kcal）"}</option>
+              <option value="maintain" selected data-zh="維持體態（100% TDEE）" data-en="Maintain (100% TDEE)">{isEn ? "Maintain (100% TDEE)" : "維持體態（100% TDEE）"}</option>
+              <option value="cut_low" data-zh="減脂減重（TDEE -10% 或 -200kcal）" data-en="Cut (TDEE −10% or −200 kcal)">{isEn ? "Cut (TDEE −10% or −200 kcal)" : "減脂減重（TDEE -10% 或 -200kcal）"}</option>
+              <option value="cut_high" data-zh="減脂減重（TDEE -20% 或 -500kcal）" data-en="Cut (TDEE −20% or −500 kcal)">{isEn ? "Cut (TDEE −20% or −500 kcal)" : "減脂減重（TDEE -20% 或 -500kcal）"}</option>
             </select>
           </label>
           <label class="form-field">
             <span><T zh="蛋白質攝取量（g/kg/day）" en="Protein intake (g/kg/day)" /></span>
             <select id="in-protein-gkg">
-              <option value="1.1" data-zh="1.1 g/kg — 一般成人（台灣 DRIs RDA，無特別運動需求）" data-en="1.1 g/kg — general adults (Taiwan DRIs RDA, no special training)">1.1 g/kg — 一般成人（台灣 DRIs RDA，無特別運動需求）</option>
-              <option value="1.2" data-zh="1.2 g/kg — 70 歲以上高齡者（台灣 DRIs 建議）" data-en="1.2 g/kg — older adults 70+ (Taiwan DRIs)">1.2 g/kg — 70 歲以上高齡者（台灣 DRIs 建議）</option>
-              <option value="1.4" data-zh="1.4 g/kg — 開始運動／輕度訓練族群（ISSN 下限）" data-en="1.4 g/kg — beginners / light training (ISSN lower bound)">1.4 g/kg — 開始運動／輕度訓練族群（ISSN 下限）</option>
-              <option value="1.6" selected data-zh="1.6 g/kg — 規律阻力訓練、維持體態" data-en="1.6 g/kg — regular resistance training, maintenance">1.6 g/kg — 規律阻力訓練、維持體態</option>
-              <option value="1.8" data-zh="1.8 g/kg — 增肌訓練族群" data-en="1.8 g/kg — muscle-building training">1.8 g/kg — 增肌訓練族群</option>
-              <option value="2.0" data-zh="2.0 g/kg — 高強度訓練（ISSN 一般上限）" data-en="2.0 g/kg — high-intensity training (ISSN upper bound)">2.0 g/kg — 高強度訓練（ISSN 一般上限）</option>
-              <option value="2.3" data-zh="2.3 g/kg — 減脂期保留肌肉量（ISSN 下限）" data-en="2.3 g/kg — cutting, muscle retention (ISSN lower)">2.3 g/kg — 減脂期保留肌肉量（ISSN 下限）</option>
-              <option value="2.4" data-zh="2.4 g/kg — 減脂期保留肌肉量（中）" data-en="2.4 g/kg — cutting, muscle retention (mid)">2.4 g/kg — 減脂期保留肌肉量（中）</option>
-              <option value="3.1" data-zh="3.1 g/kg — 積極減脂／高強度保留肌肉量（ISSN 上限）" data-en="3.1 g/kg — aggressive cut / max retention (ISSN upper)">3.1 g/kg — 積極減脂／高強度保留肌肉量（ISSN 上限）</option>
+              <option value="1.1" data-zh="1.1 g/kg — 一般成人（台灣 DRIs RDA，無特別運動需求）" data-en="1.1 g/kg — general adults (Taiwan DRIs RDA, no special training)">{isEn ? "1.1 g/kg — general adults (Taiwan DRIs RDA, no special training)" : "1.1 g/kg — 一般成人（台灣 DRIs RDA，無特別運動需求）"}</option>
+              <option value="1.2" data-zh="1.2 g/kg — 70 歲以上高齡者（台灣 DRIs 建議）" data-en="1.2 g/kg — older adults 70+ (Taiwan DRIs)">{isEn ? "1.2 g/kg — older adults 70+ (Taiwan DRIs)" : "1.2 g/kg — 70 歲以上高齡者（台灣 DRIs 建議）"}</option>
+              <option value="1.4" data-zh="1.4 g/kg — 開始運動／輕度訓練族群（ISSN 下限）" data-en="1.4 g/kg — beginners / light training (ISSN lower bound)">{isEn ? "1.4 g/kg — beginners / light training (ISSN lower bound)" : "1.4 g/kg — 開始運動／輕度訓練族群（ISSN 下限）"}</option>
+              <option value="1.6" selected data-zh="1.6 g/kg — 規律阻力訓練、維持體態" data-en="1.6 g/kg — regular resistance training, maintenance">{isEn ? "1.6 g/kg — regular resistance training, maintenance" : "1.6 g/kg — 規律阻力訓練、維持體態"}</option>
+              <option value="1.8" data-zh="1.8 g/kg — 增肌訓練族群" data-en="1.8 g/kg — muscle-building training">{isEn ? "1.8 g/kg — muscle-building training" : "1.8 g/kg — 增肌訓練族群"}</option>
+              <option value="2.0" data-zh="2.0 g/kg — 高強度訓練（ISSN 一般上限）" data-en="2.0 g/kg — high-intensity training (ISSN upper bound)">{isEn ? "2.0 g/kg — high-intensity training (ISSN upper bound)" : "2.0 g/kg — 高強度訓練（ISSN 一般上限）"}</option>
+              <option value="2.3" data-zh="2.3 g/kg — 減脂期保留肌肉量（ISSN 下限）" data-en="2.3 g/kg — cutting, muscle retention (ISSN lower)">{isEn ? "2.3 g/kg — cutting, muscle retention (ISSN lower)" : "2.3 g/kg — 減脂期保留肌肉量（ISSN 下限）"}</option>
+              <option value="2.4" data-zh="2.4 g/kg — 減脂期保留肌肉量（中）" data-en="2.4 g/kg — cutting, muscle retention (mid)">{isEn ? "2.4 g/kg — cutting, muscle retention (mid)" : "2.4 g/kg — 減脂期保留肌肉量（中）"}</option>
+              <option value="3.1" data-zh="3.1 g/kg — 積極減脂／高強度保留肌肉量（ISSN 上限）" data-en="3.1 g/kg — aggressive cut / max retention (ISSN upper)">{isEn ? "3.1 g/kg — aggressive cut / max retention (ISSN upper)" : "3.1 g/kg — 積極減脂／高強度保留肌肉量（ISSN 上限）"}</option>
             </select>
           </label>
           <label class="form-field">
             <span><T zh="飲食規劃類型" en="Diet type" /></span>
             <select id="in-diettype">
-              <option value="baseline" data-zh="一般飲食（Baseline）" data-en="General (Baseline)">一般飲食（Baseline）</option>
-              <option value="balanced" data-zh="均衡飲食" data-en="Balanced">均衡飲食</option>
-              <option value="dash" data-zh="得舒飲食 DASH Diet" data-en="DASH Diet">得舒飲食 DASH Diet</option>
-              <option value="zone" data-zh="區域飲食 Zone Diet" data-en="Zone Diet">區域飲食 Zone Diet</option>
-              <option value="modlowcarb" selected data-zh="中度低醣飲食" data-en="Moderate low-carb">中度低醣飲食</option>
-              <option value="lowcarb" data-zh="低醣飲食" data-en="Low-carb">低醣飲食</option>
-              <option value="verylowcarb" data-zh="極低醣" data-en="Very low-carb">極低醣</option>
-              <option value="verylowcarbketo" data-zh="極低醣＋生酮" data-en="Very low-carb + keto">極低醣＋生酮</option>
-              <option value="keto" data-zh="生酮飲食 Keto Diet" data-en="Keto Diet">生酮飲食 Keto Diet</option>
-              <option value="highcarb" data-zh="高碳飲食" data-en="High-carb">高碳飲食</option>
-              <option value="carbcycle" data-zh="碳循環飲食（Carb Cycling）" data-en="Carb Cycling">碳循環飲食（Carb Cycling）</option>
+              <option value="baseline" data-zh="一般飲食（Baseline）" data-en="General (Baseline)">{isEn ? "General (Baseline)" : "一般飲食（Baseline）"}</option>
+              <option value="balanced" data-zh="均衡飲食" data-en="Balanced">{isEn ? "Balanced" : "均衡飲食"}</option>
+              <option value="dash" data-zh="得舒飲食 DASH Diet" data-en="DASH Diet">{isEn ? "DASH Diet" : "得舒飲食 DASH Diet"}</option>
+              <option value="zone" data-zh="區域飲食 Zone Diet" data-en="Zone Diet">{isEn ? "Zone Diet" : "區域飲食 Zone Diet"}</option>
+              <option value="modlowcarb" selected data-zh="中度低醣飲食" data-en="Moderate low-carb">{isEn ? "Moderate low-carb" : "中度低醣飲食"}</option>
+              <option value="lowcarb" data-zh="低醣飲食" data-en="Low-carb">{isEn ? "Low-carb" : "低醣飲食"}</option>
+              <option value="verylowcarb" data-zh="極低醣" data-en="Very low-carb">{isEn ? "Very low-carb" : "極低醣"}</option>
+              <option value="verylowcarbketo" data-zh="極低醣＋生酮" data-en="Very low-carb + keto">{isEn ? "Very low-carb + keto" : "極低醣＋生酮"}</option>
+              <option value="keto" data-zh="生酮飲食 Keto Diet" data-en="Keto Diet">{isEn ? "Keto Diet" : "生酮飲食 Keto Diet"}</option>
+              <option value="highcarb" data-zh="高碳飲食" data-en="High-carb">{isEn ? "High-carb" : "高碳飲食"}</option>
+              <option value="carbcycle" data-zh="碳循環飲食（Carb Cycling）" data-en="Carb Cycling">{isEn ? "Carb Cycling" : "碳循環飲食（Carb Cycling）"}</option>
             </select>
           </label>
         </div>
@@ -247,9 +275,9 @@ import T from '../../components/T.astro';
       <label class="form-field meal-count-field">
         <span><T zh="每日餐數" en="Meals per day" /></span>
         <select id="in-mealcount">
-          <option value="2" data-zh="2 餐（16:8 限時進食）" data-en="2 meals (16:8 time-restricted)">2 餐（16:8 限時進食）</option>
-          <option value="3" selected data-zh="3 餐" data-en="3 meals">3 餐</option>
-          <option value="4" data-zh="4 餐" data-en="4 meals">4 餐</option>
+          <option value="2" data-zh="2 餐（16:8 限時進食）" data-en="2 meals (16:8 time-restricted)">{isEn ? "2 meals (16:8 time-restricted)" : "2 餐（16:8 限時進食）"}</option>
+          <option value="3" selected data-zh="3 餐" data-en="3 meals">{isEn ? "3 meals" : "3 餐"}</option>
+          <option value="4" data-zh="4 餐" data-en="4 meals">{isEn ? "4 meals" : "4 餐"}</option>
         </select>
       </label>
       <p class="calc-section-desc" id="mealplan-168-note" style="display:none">

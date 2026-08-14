@@ -1,15 +1,39 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import T from '../../components/T.astro';
-import { agentSkills } from '../../data/agentSkills';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import T from '../../../components/T.astro';
+import { agentSkills } from '../../../data/agentSkills';
+import { localeHref } from '../../../lib/i18n';
 
 /* AI Agent Skills 的完整說明頁。/projects 卡片只列標題，點卡進到這裡；
    每個 skill 一段 150–200 字的長描述（agentSkills.ts 的 descriptionLong），
-   各段落有 id=slug 供卡片內標題深連結。 */
+   各段落有 id=slug 供卡片內標題深連結。
+
+   同時產出 /projects/agent-skills/ 與 /en/projects/agent-skills/，
+   見 [...lang]/about.astro 的說明。
+
+   這頁是「葉節點優先」遷移順序的第一頁：它不列出任何子頁面，
+   所以不受「未遷移的項目在英文頁隱藏」政策影響——列表頁要等它的項目
+   先有英文版，否則 /en/ 會產出空列表（薄內容頁 Google 不收）。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+const loc = Astro.currentLocale;
+
+/* ⚠ 英文 description 要自己數長度，不能直譯了事：同樣的內容，英文天生比中文長
+   （中文版 57 字元；第一版英文直譯 177 字元，超過 L1-DESC-LONG 的 160 上限而報警）。
+   中文一個字元承載的資訊量高得多，所以「中文版過關」完全不能保證英文版過關。
+   這條在後續每一頁遷移都會遇到，不是這頁的特例。 */
+const descriptionZh =
+  '開源的 AI agent skills：Toutour 聚光燈導覽產生器、EndNote → Zotero 文獻搬家工具。通用 SKILL.md 格式，附 GitHub 連結。';
+const descriptionEn =
+  'Open-source AI agent skills: Toutour spotlight tour generator and an EndNote-to-Zotero migration tool. Universal SKILL.md format, with GitHub links.';
 ---
 <BaseLayout
   title="AI Agent Skills"
-  description="開源的 AI agent skills：Toutour 聚光燈導覽產生器、EndNote → Zotero 文獻搬家工具。通用 SKILL.md 格式，附 GitHub 連結。"
+  description={isEn ? descriptionEn : descriptionZh}
+  lang={isEn ? 'en' : 'zh-TW'}
 >
   <h1 class="ask-title">AI <span class="accent-text">Agent Skills</span></h1>
 
@@ -44,7 +68,7 @@ import { agentSkills } from '../../data/agentSkills';
     </section>
   ))}
 
-  <p class="ask-back"><a href="/projects/" class="section-cta"><T zh="← 回所有專案" en="← All projects" /></a></p>
+  <p class="ask-back"><a href={localeHref('/projects/', loc)} class="section-cta"><T zh="← 回所有專案" en="← All projects" /></a></p>
 </BaseLayout>
 
 <style>
