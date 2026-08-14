@@ -14,6 +14,13 @@ export interface StaticPageMeta {
   description: string;
   ogTitle: string;
   ogDescription: string;
+  /* 英文版 meta。有填才會產出 /en/ 網址——StaticPageLayout 與 [...lang] 路由
+     都讀這四個欄位判斷「這頁準備好了沒」，不另外維護一份清單。
+     沒填的頁就單純沒有英文網址，也不輸出 hreflang（同 MIGRATED_PATHS 的判準）。 */
+  titleEn?: string;
+  descriptionEn?: string;
+  ogTitleEn?: string;
+  ogDescriptionEn?: string;
   ogType: string;
   ogImage: string;
   canonical: string;
@@ -36,6 +43,10 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "Faceless 頻道類型、中文 TTS 選型、n8n 自動化管線、YouTube/TikTok 的 AI 內容政策紅線，與手作 process video 實戰。",
     "ogTitle": "不露臉短影音 Pipeline — Faceless Video Pipeline",
     "ogDescription": "AI 工具鏈、自動化、平台政策紅線與手作 process video。中英雙語學習單元 W11-12。",
+    "titleEn": "The Faceless Video Pipeline | Marketing Column · Matt Ye",
+    "descriptionEn": "Faceless channel formats, Mandarin TTS selection, n8n automation pipelines, the AI-content policy lines on YouTube and TikTok, and hands-on process video.",
+    "ogTitleEn": "The Faceless Video Pipeline",
+    "ogDescriptionEn": "AI toolchains, automation, platform policy lines, and hands-on process video. Bilingual learning unit W11-12.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/marketing/faceless-pipeline/",
@@ -74,6 +85,10 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "Hook 公式、三平台規格與 safe zone、剪輯工具選型、一源多用 repurposing 系統，以及 social SEO 發布策略。",
     "ogTitle": "短影音製作方法 — Short-Form Video Production",
     "ogDescription": "腳本結構、剪輯工作流、一源多用系統。中英雙語學習單元 W8-10。",
+    "titleEn": "Short-Form Video Production | Marketing Column · Matt Ye",
+    "descriptionEn": "Hook formulas, specs and safe zones across three platforms, editing-tool selection, a repurposing system, and social-SEO publishing strategy.",
+    "ogTitleEn": "Short-Form Video Production",
+    "ogDescriptionEn": "Script structure, editing workflow, and a repurposing system. Bilingual learning unit W8-10.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/marketing/short-video/",
@@ -93,6 +108,10 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "TikTok/Reels/Shorts 演算法、Threads/X/LinkedIn、小紅書/Pinterest/Facebook 完整生態解析。中英雙語行銷學習單元 W3-5。",
     "ogTitle": "社交平台 2026 生態 — Social Platforms 2026",
     "ogDescription": "八大平台演算法邏輯、受眾輪廓、內容偏好與商業功能。中英雙語學習單元。",
+    "titleEn": "Social Platform Ecosystems 2026 | Marketing Column · Matt Ye",
+    "descriptionEn": "TikTok, Reels and Shorts algorithms; Threads, X and LinkedIn; Xiaohongshu, Pinterest and Facebook — a full ecosystem breakdown. Bilingual unit W3-5.",
+    "ogTitleEn": "Social Platform Ecosystems 2026",
+    "ogDescriptionEn": "Algorithm logic, audience profiles, content preferences and commerce features across eight platforms. Bilingual learning unit.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/marketing/social-platforms-2026/",
@@ -112,6 +131,10 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "Hacker News、Product Hunt、Reddit、dev.to、Substack、build in public、GitHub 行銷的文化與禁忌。中英雙語行銷學習單元 W6-7。",
     "ogTitle": "技術人發文平台 — Tech Publishing Platforms",
     "ogDescription": "HN/PH/Reddit/dev.to/Substack/GitHub 的平台文化、成功模式與絕對禁忌。中英雙語學習單元。",
+    "titleEn": "Tech Publishing Platforms | Marketing Column · Matt Ye",
+    "descriptionEn": "Hacker News, Product Hunt, Reddit, dev.to, Substack, build in public and GitHub marketing — the culture and the taboos. Bilingual unit W6-7.",
+    "ogTitleEn": "Tech Publishing Platforms",
+    "ogDescriptionEn": "Platform culture, what works and what is absolutely off-limits on HN, PH, Reddit, dev.to, Substack and GitHub. Bilingual learning unit.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/marketing/tech-publishing/",

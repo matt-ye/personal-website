@@ -21,7 +21,61 @@ interface Props {
 }
 
 const { meta } = Astro.props;
-const htmlAttrs = { lang: 'zh-TW', ...(meta.htmlAttrs ?? {}) };
+const isEn = Astro.currentLocale === 'en';
+
+/* 英文路由的 <html>：語言宣告與 data-lang 都要跟著換。
+   data-lang 尤其重要——各頁的 CSS 用它決定顯示哪一半，meta 裡寫死的是 "zh"。 */
+const htmlAttrs = {
+  lang: 'zh-TW',
+  ...(meta.htmlAttrs ?? {}),
+  ...(isEn ? { lang: 'en', ...(meta.htmlAttrs?.['data-lang'] ? { 'data-lang': 'en' } : {}) } : {}),
+};
+
+const enHref = meta.canonical.replace('https://mattye.dev/', 'https://mattye.dev/en/');
+const canonical = isEn ? enHref : meta.canonical;
+
+/* 有填英文 meta 才算「這頁有英文版」——不另外維護一份清單。
+   同 lib/i18n.ts 的判準精神：能推導的就不該讓人記得同步。 */
+const hasEn = Boolean(meta.titleEn && meta.descriptionEn);
+const title = isEn ? (meta.titleEn ?? meta.title) : meta.title;
+const description = isEn ? (meta.descriptionEn ?? meta.description) : meta.description;
+const ogTitle = isEn ? (meta.ogTitleEn ?? meta.ogTitle) : meta.ogTitle;
+const ogDescription = isEn ? (meta.ogDescriptionEn ?? meta.ogDescription) : meta.ogDescription;
+const ogLocale = isEn ? 'en_US' : meta.ogLocale;
+
+/*
+ * JSON-LD：不手改、不重組，程式覆寫 5 個鍵後再序列化。
+ *
+ * staticPageMeta.ts 的註解說「原始字串原樣輸出，重組等於把已經正確的東西再賭一次」
+ * ——那條防的是人工重寫。這裡是程式化覆寫固定鍵，而且解析失敗會讓建置失敗，
+ * 性質不同。而英文頁的 JSON-LD 若宣稱自己是中文頁的網址，比翻譯不完整嚴重得多：
+ * 那是直接告訴 Google「這兩個網址是同一個東西」。
+ */
+function localizeJsonLd(raw: string): string {
+  let node: Record<string, unknown>;
+  try {
+    node = JSON.parse(raw);
+  } catch (e) {
+    throw new Error(`${meta.key} 的 JSON-LD 無法解析，無法產生英文版：${(e as Error).message}`);
+  }
+  if (node.url) node.url = enHref;
+  if (node.mainEntityOfPage) node.mainEntityOfPage = enHref;
+  if (node.inLanguage) node.inLanguage = 'en';
+  if (node.headline && meta.ogTitleEn) node.headline = meta.ogTitleEn;
+  if (node.description && meta.ogDescriptionEn) node.description = meta.ogDescriptionEn;
+  return JSON.stringify(node, null, 2);
+}
+const jsonLd = isEn ? meta.jsonLd?.map(localizeJsonLd) : meta.jsonLd;
+
+/* hreflang：只有真的兩版都存在才輸出。指向不存在的網址比不輸出更糟——
+   同 BaseLayout 的判斷，差別只在這裡的依據是 meta 有沒有英文欄位。 */
+const alternates = hasEn
+  ? [
+      { hreflang: 'zh-TW', href: meta.canonical },
+      { hreflang: 'en', href: enHref },
+      { hreflang: 'x-default', href: meta.canonical },
+    ]
+  : [];
 ---
 
 <!doctype html>
@@ -29,36 +83,38 @@ const htmlAttrs = { lang: 'zh-TW', ...(meta.htmlAttrs ?? {}) };
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{meta.title}</title>
+    <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="description" content={meta.description} />
+    <meta name="description" content={description} />
     <meta name="author" content="Ching-Wei Ye" />
-    <link rel="canonical" href={meta.canonical} />
+    <link rel="canonical" href={canonical} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
 
     <meta property="og:type" content={meta.ogType} />
-    <meta property="og:title" content={meta.ogTitle} />
-    <meta property="og:description" content={meta.ogDescription} />
-    <meta property="og:url" content={meta.canonical} />
-    <meta property="og:site_name" content="葉淨維 Matt Ye" />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:url" content={canonical} />
+    {/* 英文頁用英文站名——中文後綴對英語使用者是雜訊，同 BaseLayout 的判斷 */}
+    <meta property="og:site_name" content={isEn ? 'Matt Ye' : '葉淨維 Matt Ye'} />
     <meta property="og:image" content={meta.ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    {meta.ogLocale && <meta property="og:locale" content={meta.ogLocale} />}
+    {ogLocale && <meta property="og:locale" content={ogLocale} />}
     {meta.ogImageAlt && <meta property="og:image:alt" content={meta.ogImageAlt} />}
     {meta.articlePublishedTime && (
       <meta property="article:published_time" content={meta.articlePublishedTime} />
     )}
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={meta.ogTitle} />
-    <meta name="twitter:description" content={meta.ogDescription} />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
     <meta name="twitter:image" content={meta.ogImage} />
     {meta.twitterSite && <meta name="twitter:site" content={meta.twitterSite} />}
     {meta.twitterCreator && <meta name="twitter:creator" content={meta.twitterCreator} />}
 
     {meta.themeColor && <meta name="theme-color" content={meta.themeColor} />}
 
-    {meta.jsonLd?.map((ld) => <script type="application/ld+json" set:html={ld} />)}
+    {jsonLd?.map((ld) => <script type="application/ld+json" set:html={ld} />)}
 
     {/* Google Analytics 4——與 BaseLayout 同一組設定。
         遷移前這些頁沒有 GA，靠 astro.config 的 inject-ga-static-html 在建置後

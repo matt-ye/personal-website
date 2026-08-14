@@ -1,0 +1,50 @@
+---
+/*
+ * 行銷專欄底下手刻頁的動態路由。
+ *
+ * 遷移前：public/projects/marketing/<slug>/index.html，每頁自帶完整的 head。
+ * 遷移後：meta 在 src/data/staticPageMeta.ts、內容在 src/data/static-pages/。
+ *
+ * 這個檔案只負責「哪些 slug 要產生」；head 由 StaticPageLayout 統一產生，
+ * 內容由 StaticPageContent 原樣輸出。
+ */
+import StaticPageLayout from '../../../../layouts/StaticPageLayout.astro';
+import StaticPageContent from '../../../../components/StaticPageContent.astro';
+import { staticPageMeta } from '../../../../data/staticPageMeta';
+
+/* key 是路徑把 / 換成 __ 的結果：projects/marketing/short-video
+   → projects__marketing__short-video
+
+   ⚠ 前綴字串寫在函式內、不抽成模組層常數：Astro 會把 getStaticPaths
+     抽出來獨立執行，看不到 frontmatter 的模組作用域。 */
+export function getStaticPaths() {
+  const prefix = 'projects__marketing__';
+  return staticPageMeta
+    .filter((m) => m.key.startsWith(prefix))
+    .flatMap((m) => {
+      const slug = m.key.slice(prefix.length);
+      /* 中文版一律產生；英文版只產「有填英文 meta」的頁。
+         判準用 meta 欄位本身、不另外維護一份清單——同 lib/i18n.ts 的精神：
+         能推導的就不該讓人記得同步，忘了同步的症狀（少一個網址）在頁面上看不出來。
+
+         marketing-foundations 沒填英文欄位，所以它單純沒有 /en/ 網址，
+         也不會輸出 hreflang。這是「未遷移的項目在英文頁隱藏」在路由層的落實。 */
+      const paths = [{ params: { lang: undefined, slug }, props: { meta: m } }];
+      if (m.titleEn && m.descriptionEn) {
+        paths.push({ params: { lang: 'en', slug }, props: { meta: m } });
+      }
+      return paths;
+    });
+}
+
+const { meta } = Astro.props;
+
+/* 有英文 meta 才傳 localized——傳了 StaticPageContent 才會把頁內的語言鈕
+   換成換網址、並停用 localStorage 的語言記憶。判準與 getStaticPaths 一致。 */
+const zhPath = new URL(meta.canonical).pathname;
+const localized = meta.titleEn && meta.descriptionEn ? { zhPath, enPath: `/en${zhPath}` } : undefined;
+---
+
+<StaticPageLayout meta={meta}>
+  <StaticPageContent pageKey={meta.key} localized={localized} />
+</StaticPageLayout>
