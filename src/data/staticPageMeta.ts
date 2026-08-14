@@ -29,6 +29,15 @@ export interface StaticPageMeta {
   twitterSite?: string;
   twitterCreator?: string;
   themeColor?: string;
+  /**
+   * 這頁自己需要的外部資源（字型等）。
+   *
+   * ⚠ 這個欄位是補上遷移時的缺口：手刻頁的 <head> 被 staticPageMeta 取代之後，
+   *   原本寫在那裡的字型連結整批消失。症狀不是頁面壞掉，而是圖示變成
+   *   ligature 文字（arrow_back、dark_mode）、字體退回系統字——
+   *   畫面「看起來只是有點怪」，所以三個月沒有人發現。
+   */
+  headLinks?: { rel: string; href: string; crossorigin?: boolean }[];
   articlePublishedTime?: string;
   /** <html> 上的 data-* 屬性（各頁自己的主題／語言機制） */
   htmlAttrs?: Record<string, string>;
@@ -164,6 +173,12 @@ export const staticPageMeta: StaticPageMeta[] = [
   },
   {
     "key": "projects__one-more-step__aw32",
+      "headLinks": [
+        { "rel": "preconnect", "href": "https://fonts.googleapis.com" },
+        { "rel": "preconnect", "href": "https://fonts.gstatic.com", "crossorigin": true },
+        { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300..700&family=Noto+Sans+TC:wght@400;500;700&display=swap" },
+        { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" }
+      ],
     "route": "/projects/one-more-step/aw32/",
     "title": "AppWorks 第 32 屆 Demo Day（AW#32）：19 家新創 | One More Step",
     "description": "AppWorks 第 32 屆 Demo Day（AW#32）×緯創：19 家新創解析、AW#33 四大 RFS、創辦人可信度與護城河矩陣。",
@@ -200,6 +215,12 @@ export const staticPageMeta: StaticPageMeta[] = [
   },
   {
     "key": "projects__one-more-step__daniels-talk",
+      "headLinks": [
+        { "rel": "preconnect", "href": "https://fonts.googleapis.com" },
+        { "rel": "preconnect", "href": "https://fonts.gstatic.com", "crossorigin": true },
+        { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300..700&family=Noto+Sans+TC:wght@400;500;700&display=swap" },
+        { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" }
+      ],
     "route": "/projects/one-more-step/daniels-talk/",
     "title": "職涯四公式：才幹、人脈、領導與傳承 — One More Step",
     "description": "整理康寧科技大中華區總裁 曾崇凱 Daniel 的演講精華：四條職涯公式、Boss vs Leader、北極星思維、英雄之旅，以及三個實用演講技巧。",
@@ -240,6 +261,9 @@ export const staticPageMeta: StaticPageMeta[] = [
   },
   {
     "key": "projects__one-more-step__investment-notes",
+      "headLinks": [
+        { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" }
+      ],
     "route": "/projects/one-more-step/investment-notes/",
     "title": "台股 × 美股投資知識庫",
     "description": "台股筆記與美股估值、財報、指標全方位知識庫。融資、籌碼、法人、選擇權、可轉債等投資概念詳解。",
