@@ -60,9 +60,14 @@ const tagLabel = (t: string) => (isEn ? TAG_EN[t] ?? t : t);
       <a href={localeHref(doc.url ?? `/projects/one-more-step/${doc.slug}/`, locale)} class="doc-card">
         <div class="doc-card-body">
           <h2 class="doc-title"><T zh={doc.title} en={doc.titleEn} /></h2>
-          {/* 沒有 descriptionEn，英文頁退回中文並標 lang——空白比中文更糟，
-              但讓爬蟲把中文當成英文更糟，那會污染整頁的語言判定。 */}
-          <p class="doc-desc">{isEn ? <span lang="zh-TW">{doc.description}</span> : doc.description}</p>
+          {/* 有 descriptionEn 就用；沒有的才退回中文並標 lang。
+              保留 fallback 不是多餘——之後新增的項目一定會有一段時間只有中文，
+              那時要壞得安靜（顯示中文）而不是壞得難看（顯示 undefined）。 */}
+          <p class="doc-desc">
+            {isEn
+              ? (doc.descriptionEn ?? <span lang="zh-TW">{doc.description}</span>)
+              : doc.description}
+          </p>
         </div>
         <div class="doc-footer">
           <div class="doc-tags">
