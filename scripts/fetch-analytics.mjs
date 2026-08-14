@@ -93,13 +93,29 @@ async function ga4Report(token, label, body, propertyId = GA4_PROPERTY_ID) {
 
 // 站別範圍過濾：streamId + hostName 雙重條件（可再 and 上其他條件，如事件白名單）。
 // 雙重過濾的原因見 analytics-config.mjs 的 MAIN_STREAM_ID 註解。
+//
+// streamId 傳 null 代表「這個 property 只有這一個網站」（站點自己獨立成一個
+// property 時就是這種情況），此時只用 hostName 過濾。
+// ⚠ 獨立 property 千萬不要沿用舊 property 的 streamId：那個 ID 在新 property
+// 裡不存在，過濾後會是零筆資料，而且 API 不會報錯——畫面只會安靜地變成 0。
 function gaScope(streamId, hosts, ...extra) {
   const expressions = [
-    { filter: { fieldName: 'streamId', inListFilter: { values: [streamId] } } },
+    ...(streamId ? [{ filter: { fieldName: 'streamId', inListFilter: { values: [streamId] } } }] : []),
     { filter: { fieldName: 'hostName', inListFilter: { values: hosts } } },
     ...extra,
   ];
   return { andGroup: { expressions } };
+}
+
+// 站點要查哪個 GA4 property：
+//   - config 有 propertyId → 該站自己獨立成一個 property（2026-08 起的捕夢網）
+//   - 沒有 → 與主站同一個 property（原本的模式，靠 streamId 切分）
+//
+// propertyId 放 config 而不是 secret：它本身不授權任何存取（要讀資料得有
+// GA4_SA_KEY），而同一個檔案裡的 streamId 本來就是公開的。主站的
+// GA4_PROPERTY_ID 走 secret 是既有作法，這裡沒有比照的必要。
+function sitePropertyId(site) {
+  return site.propertyId ?? GA4_PROPERTY_ID;
 }
 
 // KPI 時間視窗（dashboard 的 7天/28天/90天/半年/一年切換）。
@@ -119,7 +135,7 @@ export function bucketByWindow(rows, chunk, dimCount, emit) {
   }
 }
 
-async function ga4Windows(token, label, scope, metricNames, mapRow) {
+async function ga4Windows(token, label, scope, metricNames, mapRow, propertyId) {
   const keys = Object.keys(WINDOWS);
   const out = {};
   for (let i = 0; i < keys.length; i += 4) {
@@ -128,14 +144,14 @@ async function ga4Windows(token, label, scope, metricNames, mapRow) {
       dateRanges: chunk.map((k) => ({ startDate: WINDOWS[k], endDate: 'today' })),
       metrics: metricNames.map((name) => ({ name })),
       dimensionFilter: scope,
-    });
+    }, propertyId);
     bucketByWindow(res.rows ?? [], chunk, 0, (key, _d, m) => { out[key] = mapRow(m); });
   }
   return out;
 }
 
 // 單一維度 × 5 視窗：每視窗回傳排序後的 topN 清單
-async function ga4WindowsByDim(token, label, scope, dimName, metricNames, mapRow, { sortBy, topN, limit }) {
+async function ga4WindowsByDim(token, label, scope, dimName, metricNames, mapRow, { sortBy, topN, limit }, propertyId) {
   const keys = Object.keys(WINDOWS);
   const out = {};
   for (let i = 0; i < keys.length; i += 4) {
@@ -146,7 +162,7 @@ async function ga4WindowsByDim(token, label, scope, dimName, metricNames, mapRow
       metrics: metricNames.map((name) => ({ name })),
       dimensionFilter: scope,
       limit,
-    });
+    }, propertyId);
     bucketByWindow(res.rows ?? [], chunk, 1, (key, d, m) => {
       (out[key] ??= []).push(mapRow(d[0], m));
     });
@@ -159,20 +175,21 @@ async function ga4WindowsByDim(token, label, scope, dimName, metricNames, mapRow
 }
 
 // 兩站共用的維度報表組（全部 5 視窗，dashboard 的視窗切換直接可用）
-async function fetchSiteDimensions(token, scope) {
+// propertyId 省略時查主站 property（見 ga4Report 的預設值）。
+async function fetchSiteDimensions(token, scope, propertyId) {
   const topPages = await ga4WindowsByDim(token, 'topPages', scope, 'pagePath',
     ['screenPageViews', 'activeUsers', 'userEngagementDuration'],
     (d, m) => ({ path: d, views: m[0], users: m[1], engagementSec: m[2] }),
-    { sortBy: (r) => r.views, topN: 20, limit: 500 }); // 20 筆：排行顯示 10、漏斗要加總 /writing/* 長尾
+    { sortBy: (r) => r.views, topN: 20, limit: 500 }, propertyId); // 20 筆：排行顯示 10、漏斗要加總 /writing/* 長尾
   const channels = await ga4WindowsByDim(token, 'channels', scope, 'sessionDefaultChannelGroup',
     ['sessions'], (d, m) => ({ channel: d, sessions: m[0] }),
-    { sortBy: (r) => r.sessions, topN: 10, limit: 100 });
+    { sortBy: (r) => r.sessions, topN: 10, limit: 100 }, propertyId);
   const devices = await ga4WindowsByDim(token, 'devices', scope, 'deviceCategory',
     ['activeUsers'], (d, m) => ({ device: d, users: m[0] }),
-    { sortBy: (r) => r.users, topN: 5, limit: 50 });
+    { sortBy: (r) => r.users, topN: 5, limit: 50 }, propertyId);
   const countries = await ga4WindowsByDim(token, 'countries', scope, 'country',
     ['activeUsers'], (d, m) => ({ country: d, users: m[0] }),
-    { sortBy: (r) => r.users, topN: 12, limit: 250 });
+    { sortBy: (r) => r.users, topN: 12, limit: 250 }, propertyId);
   return { topPages, channels, devices, countries };
 }
 
@@ -291,17 +308,23 @@ async function fetchGa4() {
   };
 }
 
-// 同 property 底下其他網站（例如捕夢網）：與主站抓「同一組」報表（全部 5 視窗），
-// 以 streamId + hostName 切分——dashboard 用同一套渲染程式呈現兩站。
+// 其他網站（例如捕夢網）：與主站抓「同一組」報表（全部 5 視窗），
+// dashboard 用同一套渲染程式呈現兩站。
+//
+// 站點可以在主站 property 底下（用 streamId + hostName 切分），也可以自己
+// 獨立成一個 property（site.propertyId，2026-08 捕夢網即是）。兩種都走這裡：
+// 差別只在查哪個 property、以及要不要用 streamId 過濾。
 async function fetchGa4Site(site) {
   const token = await googleToken(JSON.parse(GA4_SA_KEY));
   const dims = (...names) => names.map((name) => ({ name }));
   const mets = (...names) => names.map((name) => ({ name }));
+  const propertyId = sitePropertyId(site);
   const SCOPE = gaScope(site.streamId, site.hosts);
 
   const totals = await ga4Windows(token, `totals@${site.key}`, SCOPE,
     ['activeUsers', 'newUsers', 'sessions', 'screenPageViews', 'engagementRate'],
-    (m) => ({ users: m[0], newUsers: m[1], sessions: m[2], views: m[3], engagementRate: m[4] }));
+    (m) => ({ users: m[0], newUsers: m[1], sessions: m[2], views: m[3], engagementRate: m[4] }),
+    propertyId);
 
   const dailyRes = await ga4Report(token, `daily@${site.key}`, {
     dateRanges: [{ startDate: '365daysAgo', endDate: 'today' }],
@@ -310,7 +333,7 @@ async function fetchGa4Site(site) {
     orderBys: [{ dimension: { dimensionName: 'date' } }],
     dimensionFilter: SCOPE,
     limit: 400,
-  });
+  }, propertyId);
   const daily = (dailyRes.rows ?? []).map((r) => ({
     date: gaDate(r.dimensionValues[0].value),
     users: num(r.metricValues[0].value),
@@ -318,13 +341,13 @@ async function fetchGa4Site(site) {
     sessions: num(r.metricValues[2].value),
   }));
 
-  const { topPages, channels, devices, countries } = await fetchSiteDimensions(token, SCOPE);
+  const { topPages, channels, devices, countries } = await fetchSiteDimensions(token, SCOPE, propertyId);
 
   // 站方自己的熱門事件（不套主站事件白名單）——5 視窗；濾掉每站都有的雜訊事件
   const NOISE = new Set(['page_view', 'session_start', 'first_visit', 'user_engagement', 'scroll']);
   const topEventsRaw = await ga4WindowsByDim(token, `topEvents@${site.key}`, SCOPE, 'eventName',
     ['eventCount'], (d, m) => ({ name: d, count: m[0] }),
-    { sortBy: (r) => r.count, topN: 20, limit: 120 });
+    { sortBy: (r) => r.count, topN: 20, limit: 120 }, propertyId);
   const topEvents = {};
   for (const [k, list] of Object.entries(topEventsRaw)) {
     topEvents[k] = list.filter((e) => !NOISE.has(e.name)).slice(0, 8);
@@ -724,11 +747,21 @@ const regUsers = await runSource(
   'D1:users', CF_ACCOUNT_ID && CF_D1_DB_ID && CF_D1_TOKEN, fetchRegUsers
 );
 
-// 同 property 的其他網站(config 驅動;與主站共用憑證,主站 GA 未設定時一併跳過)
+// 主站以外的網站（config 驅動；與主站共用 SA 憑證）。
+// 判斷是否 configured 用「該站自己的 property」而非主站的——獨立 property 的站
+// 不該因為主站沒設定就被跳過，反之亦然。
 const ga4Sites = [];
 for (const site of GA4_EXTRA_SITES) {
+  /* 印出實際查詢的 property／stream：拆 property 時最容易錯的是「查到別的
+     資源」或「沿用舊 stream」，兩者都不會讓 API 報錯，只會回零筆。log 寫明
+     用了哪組 ID，下次 workflow 一跑就能對照 GA4 後台自我證明。 */
+  console.log(
+    `- GA4:${site.key}: property ${sitePropertyId(site)}` +
+    (site.propertyId ? '（獨立資源）' : '（與主站同資源）') +
+    (site.streamId ? ` / stream ${site.streamId}` : ' / 不以 stream 過濾')
+  );
   const result = await runSource(
-    `GA4:${site.key}`, GA4_SA_KEY && GA4_PROPERTY_ID, () => fetchGa4Site(site)
+    `GA4:${site.key}`, GA4_SA_KEY && sitePropertyId(site), () => fetchGa4Site(site)
   );
   ga4Sites.push({ key: site.key, label: site.label, site: site.site, ...result });
 }

@@ -98,17 +98,35 @@ Pages 專案 → Settings → Environment variables →
 GA4 Admin → Events → 等自訂事件出現後（通常 24h 內），將下列標為 **key event**：
 `click_github`、`click_project`、`donate_start`（其餘視需要）。
 
-### 9. 同 property 的其他網站（捕夢網）——零額外設定
+### 9. 主站以外的網站（捕夢網）
 
-實際的 GA4 結構是**一個 property（個人網站流量）底下兩個 data stream**：
-`Matt的個人網站`（G-1RKL72DPPW，stream 14990442923）與
-`Tela Aurea Lab`（G-4MY30R916S，stream 15024877509）。
+GA4 帳戶 `Ching-Wei Ye`（396606977）底下目前有**兩個 property**：
 
-pipeline 以 **streamId + hostName 雙重過濾**在同一個 property 內切分兩站——
-**不需要**額外的 secret 或 service account 授權，主站 GA4 設定完成後
-dashboard「其他網站」區自動出現捕夢網卡片（KPI、90 天趨勢、top pages、站方熱門事件如購買）。
+| Property | ID | 串流 | 串流 ID | 評估 ID |
+|---|---|---|---|---|
+| 個人網站流量 | 539989003 | `Matt的個人網站` | 14990442923 | G-1RKL72DPPW |
+| 捕夢網網站流量 | 549920338 | `Tela Aurea Lab` | 15435291446 | G-KGQQ7E4JLG |
 
-再加網站：GA4 為該站建 data stream → `GA4_EXTRA_SITES` 加一項（key / label / site / streamId / hosts）。
+**2026-08-14 之前**捕夢網是掛在主站 property 底下的第二個 stream
+（舊 stream 15024877509），靠 streamId + hostName 切分。之後拆成獨立資源。
+
+pipeline 兩種型態都支援，差別只在 `GA4_EXTRA_SITES` 有沒有給 `propertyId`：
+
+- **有** → 查該站自己的 property（捕夢網現況）
+- **沒有** → 查主站 property，靠 streamId + hostName 切分（舊模式，仍可用）
+
+`propertyId` 放 config 不放 secret：它本身不授權任何存取（要讀資料得有
+`GA4_SA_KEY`），且同檔案的 streamId 本來就是公開的。
+
+> ⚠ **獨立 property 必須把 service account 加為該 property 的檢視者**，
+> 否則 Data API 回 403。這是拆 property 後唯一需要人工做的授權動作。
+>
+> ⚠ **拆 property 後不要沿用舊的 streamId**——舊 ID 在新資源裡不存在，
+> 過濾後是零筆資料，而且 API **不會報錯**，畫面只會安靜地變成 0。
+
+再加網站：GA4 建 property（或在既有 property 建 stream）→ `GA4_EXTRA_SITES`
+加一項（key / label / site / hosts＋`propertyId` 或 `streamId`）→ 若是獨立
+property，記得授權 service account。
 
 ### 10. dashboard-api worker（真一鍵更新 + 註冊用戶數，~15 分鐘）
 

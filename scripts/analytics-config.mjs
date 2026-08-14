@@ -51,14 +51,23 @@ export const HOSTS = ['mattye.dev', 'brain-exposome.mattye.dev'];
 // 且 2026-06-08 起 Google 代碼曾被合併（兩個目的地互灌），雙重過濾可回溯排除污染。
 export const MAIN_STREAM_ID = '14990442923';
 
-// 同一個 GA4 property 底下、有自己 data stream 的其他網站。
-// 不需要額外 secret——與主站共用 GA4_SA_KEY / GA4_PROPERTY_ID，以 streamId + hostName 切分。
+// 主站以外的網站。兩種型態都支援，差別只在有沒有給 propertyId：
+//   - 有 propertyId → 該站自己一個 GA4 property
+//   - 沒有         → 與主站同一個 property，靠 streamId + hostName 切分
+// 兩種都與主站共用 GA4_SA_KEY，不需要額外 secret；但**獨立 property 必須
+// 把同一個 service account 加為該 property 的檢視者**，否則 API 回 403。
 export const GA4_EXTRA_SITES = [
   {
     key: 'dreamcatcher',
     label: { zh: '捕夢網 Tela Aurea', en: 'Dreamcatcher · Tela Aurea' },
     site: 'https://telaaurealab.com',
-    streamId: '15024877509', // 資料串流「Tela Aurea Lab - Dreamcatcher Generator」
+    /* 2026-08-14：捕夢網從主站 property 拆成獨立資源「捕夢網網站流量」。
+       measurement ID 同時換成 G-KGQQ7E4JLG（網站端的 tag，此處用不到——
+       Data API 認的是下面這個數字 property ID，不是 G- 開頭的評估 ID）。 */
+    propertyId: '549920338',
+    /* 新資源底下的串流「Tela Aurea Lab」。舊 property 的串流是 15024877509，
+       那個 ID 在新資源裡不存在——沿用會過濾成零筆且不會報錯。 */
+    streamId: '15435291446',
     hosts: ['telaaurealab.com', 'www.telaaurealab.com'],
   },
 ];
