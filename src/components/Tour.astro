@@ -155,22 +155,22 @@
       en: ['The short version', 'These tags are the fastest introduction: research field, talks delivered, degree progress and competition results.'],
     },
     {
-      sel: 'nav a[href="/speeches/"]', ico: '🎤',
+      sel: 'nav a[data-nav="speeches"]', ico: '🎤',
       zh: ['演講', '2020 年至今 150+ 場的完整紀錄，可依主題、對象、線上／實體篩選，也有合作單位排行榜。'],
       en: ['Speeches', 'Every talk since 2020 — filter by topic, audience and format, plus a leaderboard of partner organizations.'],
     },
     {
-      sel: 'nav a[href="/coaching/"]', ico: '🏆',
+      sel: 'nav a[data-nav="coaching"]', ico: '🏆',
       zh: ['培訓', '我陪學生打competition的成果：MAIC、Falling Walls Lab、ATCC 冠軍隊伍，還有他們自己寫的回饋。'],
       en: ['Coaching', 'Competition results from teams I coached — MAIC, Falling Walls Lab, and the ATCC national champions, with their own feedback.'],
     },
     {
-      sel: 'nav a[href="/projects/"]', ico: '🛠️',
+      sel: 'nav a[data-nav="projects"]', ico: '🛠️',
       zh: ['專案', '可以實際操作的小工具，例如以文獻為基礎的體態管理計算機，以及 One More Step 學習筆記。'],
       en: ['Projects', 'Hands-on tools such as the literature-based body composition calculator, plus the One More Step learning notes.'],
     },
     {
-      sel: 'nav a[href="/writing/"]', ico: '✍️',
+      sel: 'nav a[data-nav="writing"]', ico: '✍️',
       zh: ['寫作', '投資專欄、硬核簡報系列與隨筆都在這裡，可以依系列篩選。'],
       en: ['Writing', 'The investing column, the presentation series and essays — filterable by series.'],
     },
@@ -206,15 +206,28 @@
 
   const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* 只保留「存在且真的看得見」的步驟；計數在過濾後才算，避免出現指不到東西的 n/total */
+  /* 只保留「存在且真的看得見」的步驟；計數在過濾後才算，避免出現指不到東西的 n/total
+
+     ⚠ 這個 filter 有兩種「不保留」，後果差很多：
+       · 元素存在但目前不可見（響應式收起來）→ 正常，該跳過
+       · **選擇器根本找不到元素** → 多半是那個元素改了、選擇器沒跟著改
+     第二種曾經真的發生：選擇器寫成 nav a[href="/speeches/"]，
+     導覽列改走 localeHref 之後，英文頁的四個步驟全部落空——
+     而導覽教學照跑，只是少了四步，**沒有任何錯誤訊息**。
+     所以「找不到」要出聲，「不可見」不用。 */
   function resolve(): Step[] {
-    return STEPS.filter(s => {
+    const missing: string[] = [];
+    const steps = STEPS.filter(s => {
       if (!s.sel) return true;
       const el = document.querySelector(s.sel) as HTMLElement | null;
-      if (!el) return false;
+      if (!el) { missing.push(s.sel); return false; }
       const r = el.getBoundingClientRect();
       return r.width > 4 && r.height > 4;
     });
+    if (missing.length) {
+      console.warn(`[Tour] ${missing.length} 個步驟的選擇器找不到元素，已跳過：${missing.join('、')}`);
+    }
+    return steps;
   }
 
   function build() {
