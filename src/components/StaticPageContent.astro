@@ -11,9 +11,15 @@
  */
 interface Props {
   pageKey: string;
+  /**
+   * 這頁有獨立的英文網址時傳入兩版的路徑。傳了才會做語言相關的改寫；
+   * 尚未遷移的靜態頁不傳，行為一個字都不變。
+   */
+  localized?: { zhPath: string; enPath: string };
 }
 
-const { pageKey } = Astro.props;
+const { pageKey, localized } = Astro.props;
+const isEn = Astro.currentLocale === 'en';
 
 /* eager: true 讓內容在建置時併進來——這些是靜態頁，沒有動態載入的必要 */
 const fragments = import.meta.glob('../data/static-pages/*.html', {
@@ -25,6 +31,81 @@ const fragments = import.meta.glob('../data/static-pages/*.html', {
 const path = Object.keys(fragments).find((p) => p.endsWith(`/${pageKey}.html`));
 /* 找不到就讓建置失敗——安靜輸出一個空白頁比壞掉更難發現 */
 if (!path) throw new Error(`找不到內容片段：src/data/static-pages/${pageKey}.html`);
+
+/*
+ * 英文路由在建置期剝掉中文半邊。
+ *
+ * 這些頁的雙語是成對的 <span class="zh-only"> / <span class="en-only">，靠 CSS
+ * 決定顯示哪一邊。CSS 只在瀏覽器套樣式後才成立，而許多爬蟲（含 LLM）直接讀
+ * 原始 HTML——所以 /en/ 若原樣輸出，爬蟲會讀到「時間軸結構The Timeline」這種
+ * 兩種語言黏在一起的字串，正是 L2-BILINGUAL-CONCAT 報的那件事。
+ *
+ * 既然 [...lang] 在建置期就知道語言，就不該再把判斷丟給 CSS。
+ * 中文路由維持雙 DOM 不變（切換鈕仍需要），與 T.astro 的處理一致。
+ */
+const LANG_EL = (cls: string) =>
+  new RegExp(`<(\\w+)([^>]*\\bclass="[^"]*\\b${cls}\\b[^"]*")[^>]*>[\\s\\S]*?<\\/\\1>`, 'gi');
+
+/* ⚠ 上面的非貪婪 + </\1> 反向參照，只有在「語言 span 內沒有同名巢狀標籤」時才正確
+   （<span class="zh-only">…<strong>x</strong>…</span> 沒問題，套一層 <span> 就會提早閉合）。
+   今天全部檔案實測是 0 個同名巢狀，但那是資料的性質、不是程式的保證——
+   內容之後被編輯就可能不成立，所以在這裡斷言，不只寫在註解裡。 */
+function assertNoSameTagNesting(html: string, cls: string) {
+  const re = new RegExp(`<(\\w+)([^>]*\\bclass="[^"]*\\b${cls}\\b[^"]*")[^>]*>([\\s\\S]*?)<\\/\\1>`, 'gi');
+  for (const m of html.matchAll(re)) {
+    if (new RegExp(`<${m[1]}[\\s>]`, 'i').test(m[3])) {
+      throw new Error(
+        `${pageKey}：<${m[1]} class="${cls}"> 內含同名的 <${m[1]}>，語言剝除會提早閉合。` +
+          `請改用不同標籤包內層，或改寫剝除邏輯。片段：${m[3].slice(0, 80)}`,
+      );
+    }
+  }
+}
+
+let fragment = fragments[path];
+if (isEn) {
+  assertNoSameTagNesting(fragment, 'zh-only');
+  fragment = fragment.replace(LANG_EL('zh-only'), '');
+}
+
+/*
+ * 有獨立英文網址的頁：把「頁內 CSS 切換語言」換成「換網址」。
+ *
+ * 這些頁原本自帶一顆 toggleLang() 按鈕，靠 CSS 的
+ *   [data-lang="zh"] .en-only { display:none }
+ *   [data-lang="en"] .zh-only { display:none }
+ * 決定顯示哪一半，並把選擇記在 localStorage 的 oms_lang。
+ *
+ * 一旦有了 /en/ 獨立網址，這套機制會產生兩個**畫面全空**的失效路徑：
+ *   ① 英文頁的 .zh-only 已在建置期被剝掉，讀者按 🌐 切回中文 → 什麼都不剩
+ *   ② 更糟：載入時 `if (l) { dataset.lang = l }` 會讓 localStorage 覆蓋網址，
+ *      任何曾在這批頁按過切換的回訪者，一進 /en/ 就是空白頁，不必按任何東西
+ *
+ * 所以兩件事一起做：停用 localStorage 對語言的記憶（主題不受影響），
+ * 並把按鈕換成指向另一個語言網址的 <a>。
+ *
+ * 這與第九階段對 sponsor 頁的判斷一致：**語言由網址決定**。
+ * 那次的教訓是「對的抽象層改對了，下游全部跟著對」——這裡是同一個抽象層。
+ */
+if (localized) {
+  const LANG_MEMORY = "localStorage.getItem('oms_lang')";
+  if (!fragment.includes(LANG_MEMORY)) {
+    throw new Error(`${pageKey}：找不到 ${LANG_MEMORY}，語言記憶可能改了寫法——請確認後更新這裡`);
+  }
+  /* 換成 null，讓 `if (l)` 永遠不成立。主題的 oms_theme 不動。 */
+  fragment = fragment.replace(LANG_MEMORY, 'null /* 語言由網址決定，見 StaticPageContent */');
+
+  const BTN = /<button[^>]*id="langBtn"[^>]*>[^<]*<\/button>/;
+  if (!BTN.test(fragment)) {
+    throw new Error(`${pageKey}：找不到 id="langBtn" 的按鈕，語言鈕可能改了寫法——請確認後更新這裡`);
+  }
+  const target = isEn ? localized.zhPath : localized.enPath;
+  const label = isEn ? '🌐 中' : '🌐 EN';
+  fragment = fragment.replace(
+    BTN,
+    `<a class="icon-btn" id="langBtn" href="${target}" hreflang="${isEn ? 'zh-TW' : 'en'}">${label}</a>`,
+  );
+}
 ---
 
-<Fragment set:html={fragments[path]} />
+<Fragment set:html={fragment} />

@@ -247,7 +247,10 @@ function injectArticleDates(dateByUrl) {
             if (/"datePublished"/.test(html)) continue;
 
             const url = `${SITE}/${relative(root, p).split(sep).slice(0, -1).join('/')}/`;
-            const date = dateByUrl.get(url);
+            /* i18n 頁對查同一筆日期：/en/x/ 與 /x/ 是同一篇文章的兩個語言版本，
+               發佈日當然一樣。這份對照表是用中文網址建的，英文頁要剝掉 /en 前綴再查
+               ——否則英文版會宣告自己沒有發佈日，那是 error 級的 L2-ARTICLE-NO-DATE。 */
+            const date = dateByUrl.get(url) ?? dateByUrl.get(url.replace(`${SITE}/en/`, `${SITE}/`));
             if (!date) { noDate++; continue; }
 
             /* 插在 @type 後面，維持 JSON 合法 */
