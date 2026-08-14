@@ -18,6 +18,8 @@ interface Props {
   localized?: { zhPath: string; enPath: string };
 }
 
+import { localeHref } from '../lib/i18n';
+
 const { pageKey, localized } = Astro.props;
 const isEn = Astro.currentLocale === 'en';
 
@@ -94,6 +96,26 @@ if (localized) {
   }
   /* 換成 null，讓 `if (l)` 永遠不成立。主題的 oms_theme 不動。 */
   fragment = fragment.replace(LANG_MEMORY, 'null /* 語言由網址決定，見 StaticPageContent */');
+
+  /* 英文路由：站內連結改指英文版（有的話）。
+     不做的話，英文子頁的麵包屑會把讀者送回中文樞紐——樞紐頁遷好了，
+     子頁卻連不回來，英文區等於少了一層。
+
+     判準走 localeHref()，沒有英文版的路徑會原樣通過，所以這裡不需要
+     維護任何清單，也不會產生指向不存在網址的連結。
+     刻意不動帶 # 或 ? 的連結：那些是頁內錨點與查詢參數，換前綴沒有意義。
+
+     ⚠ **順序有意義：這一段必須在下面插入語言鈕之前。**
+     反過來的話，這個改寫會把剛插入的 <a id="langBtn"> 也一起改掉——
+     它的 href 是「另一個語言」的網址，被改成英文版就等於指向自己，
+     按下去留在原地。實測踩過一次，而 verifyI18nHreflang 攔不住：
+     那個守衛驗的是 <link rel="alternate"> 標籤，不是這顆按鈕。 */
+  if (isEn) {
+    fragment = fragment.replace(
+      /href="(\/[^"#?]*)"/g,
+      (_m, p: string) => `href="${localeHref(p, 'en')}"`,
+    );
+  }
 
   const BTN = /<button[^>]*id="langBtn"[^>]*>[^<]*<\/button>/;
   if (!BTN.test(fragment)) {
