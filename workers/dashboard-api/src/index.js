@@ -11,8 +11,13 @@ const json = (obj, status = 200) =>
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   });
 
-// 自動偵測 users 表（與 scripts/fetch-analytics.mjs 的邏輯一致），
-// 快取在 isolate 生命週期內
+// 自動偵測 users 表（與 scripts/fetch-analytics.mjs 的 pickUsersTable 邏輯一致），
+// 快取在 isolate 生命週期內。
+//
+// 精確的 users/user 優先——捕夢網之後可能新增 print_users / printful_orders
+// 這類表（Printful 整合），精確優先可確保不受影響。沒有精確表時只在「模糊
+// 候選恰好一張」時才採用；多張就不猜，回錯誤讓人判斷。靜默挑錯的代價是
+// 卡片顯示一個看起來正常但其實是別張表的數字。
 let usersTable = null;
 async function resolveUsersTable(db) {
   if (usersTable) return usersTable;
@@ -20,8 +25,16 @@ async function resolveUsersTable(db) {
   const names = (results ?? [])
     .map((r) => r.name)
     .filter((t) => !t.startsWith('sqlite_') && !t.startsWith('_cf_') && !t.startsWith('d1_'));
-  usersTable = names.find((t) => /^users?$/i.test(t)) ?? names.find((t) => /user/i.test(t)) ?? null;
-  return usersTable;
+
+  const exact = names.find((t) => /^users?$/i.test(t));
+  if (exact) return (usersTable = exact);
+
+  const fuzzy = names.filter((t) => /user/i.test(t));
+  if (fuzzy.length === 1) return (usersTable = fuzzy[0]);
+  if (fuzzy.length > 1) {
+    throw new Error(`多張近似 users 的表無法判斷：${fuzzy.join(', ')}`);
+  }
+  return null;
 }
 
 export default {

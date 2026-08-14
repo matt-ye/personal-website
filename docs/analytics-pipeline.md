@@ -167,6 +167,23 @@ owner 2026-08-14 的決定是**先不接**——真要做的話得處理 until �
 真的是零的話，往「網站端 tag 有沒有在送」查（`G-KGQQ7E4JLG` 是否還在
 telaaurealab.com 上），而不是回頭改 pipeline。
 
+#### 捕夢網 repo 那邊回報的三件事（2026-08-14 交叉確認）
+
+換 tag 是捕夢網 SEO/GA4 線做的（他們的 PR #127）。對過程式碼後確認：
+
+- **舊 tag 已完全移除**（全站唯一 `G-` 字串就是 `G-KGQQ7E4JLG`，無 GTM／其他分析工具），
+  所以「舊資源已凍結」成立。但**2026-08-09～08-14 的資料在舊資源**，那段不是空窗
+- **`*.pages.dev` 上有帶同一組 tag 的站台副本**（兩個 Cloudflare Pages 專案 build 同一個
+  repo）。那些流量會被我方 hostName 過濾掉——行為正確，但代表**GA4 資源總量會大於
+  dashboard 顯示的數字**，兩者對不起來時這是原因之一
+- **自訂事件 49 個，與我方雜訊過濾清單零衝突**。`print_interest_click` /
+  `print_interest_email` 已存在，會直接出現在熱門事件卡
+
+> ⚠️ **owner 待辦（GA4 後台，非程式碼）**：新資料串流 `15435291446` 的「不需要的參照
+> 連結」是空的。捕夢網付款會導向 `ecpay.com.tw` / `polar.sh` 再回到 success 頁，
+> 不排除的話回導會被算成新 session、來源記為付款商，**購買轉換的歸因會錯**。
+> 這個設定是**串流層級**的，不會從舊串流繼承。
+
 ### 10. dashboard-api worker（真一鍵更新 + 註冊用戶數，~15 分鐘）
 
 `workers/dashboard-api/` 是獨立的小 worker（與金流/AI worker 隔離），由
