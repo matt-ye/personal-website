@@ -457,14 +457,44 @@ async function d1Query(sql) {
   return data.result?.[0]?.results ?? [];
 }
 
+/*
+ * 從 D1 的表清單挑出「註冊用戶」那張。與 workers/dashboard-api 的
+ * resolveUsersTable 邏輯必須一致。
+ *
+ * 為什麼不寫死 'users'：首跑就撞上 no such table: user——實際 schema 的表名
+ * 與口頭認知常有出入，寫死會壞在改名的那天（#192 修的就是這個）。
+ *
+ * 為什麼模糊比對要「吵」：先前只要有任何含 user 的表就靜默採用。捕夢網那邊
+ * 之後可能新增 print_users / printful_orders 這類表（Printful 整合），萬一
+ * 哪天 users 被改名，靜默 fallback 會挑到別張表，卡片照樣顯示一個數字——
+ * 錯得看不出來。所以分三種情況：
+ *   1. 有精確的 users/user     → 直接用（新增其他 *user* 表不影響，精確優先）
+ *   2. 沒有精確、模糊只有一張   → 用它，但印警告，讓 log 留下痕跡
+ *   3. 沒有精確、模糊有多張     → 不猜，直接錯，把候選列出來給人判斷
+ */
+export function pickUsersTable(tables) {
+  const exact = tables.find((t) => /^users?$/i.test(t));
+  if (exact) return exact;
+
+  const fuzzy = tables.filter((t) => /user/i.test(t));
+  if (fuzzy.length === 1) {
+    console.warn(`  ⚠ 找不到精確的 users 表，改用近似的「${fuzzy[0]}」——schema 若已改名，請更新此處判斷`);
+    return fuzzy[0];
+  }
+  if (fuzzy.length > 1) {
+    throw new Error(
+      `找不到精確的 users 表，且有多張近似表無法判斷：${fuzzy.join(', ')}；` +
+      `現有全部：${tables.join(', ')}`
+    );
+  }
+  throw new Error(`找不到 users 相關資料表；現有：${tables.join(', ') || '(無)'}`);
+}
+
 async function fetchRegUsers() {
-  // 自動偵測 users 表：實際 schema 的表名與口頭認知常有出入（首跑就撞上
-  // no such table: user），改成查 sqlite_master 自選，schema 改名也不會壞。
   const tables = (await d1Query("SELECT name FROM sqlite_master WHERE type='table'"))
     .map((r) => r.name)
     .filter((t) => !t.startsWith('sqlite_') && !t.startsWith('_cf_') && !t.startsWith('d1_'));
-  const table = tables.find((t) => /^users?$/i.test(t)) ?? tables.find((t) => /user/i.test(t));
-  if (!table) throw new Error(`找不到 users 相關資料表；現有：${tables.join(', ') || '(無)'}`);
+  const table = pickUsersTable(tables);
   console.log(`  D1 tables: ${tables.join(', ')} → 使用「${table}」`);
   const count = num((await d1Query(`SELECT COUNT(*) AS n FROM "${table}"`))[0]?.n);
   // siteKey：dashboard 把這張卡掛在哪個網站區塊
