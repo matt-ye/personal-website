@@ -28,13 +28,18 @@ export const agentSkills: AgentSkill[] = [
     slug: 'yaeo',
     title: 'YAEO',
     titleEn: 'YAEO',
-    description: '檢核網站對搜尋引擎與 AI 引擎可見度的 skill：四層 57 條規則，每條都附出處，中文網站用中文門檻。',
+    /* ⚠ 這裡刻意不寫規則條數。那個數字每加一條規則就會變，而它同時活在
+       程式碼、SKILL.md 的索引與這張卡片上——三個住處就是三個會漂移的地方，
+       而且網站這一份最不容易被想起來要更新。
+       卡片的工作是講清楚它做什麼；真正的差異點是「每條規則都附出處」與
+       「中文網站用中文門檻」，不是條數。「四層」保留——架構不常變。 */
+    description: '檢核網站對搜尋引擎與 AI 引擎可見度的 skill：四層逐條檢核，每條規則都附得出出處，中文網站用中文門檻。',
     descriptionEn:
-      'Audits how visible a site is to search and AI engines — 57 rules across four layers, every rule with a source, and CJK-aware thresholds.',
+      'Audits how visible a site is to search and AI engines — four layers of checks, every rule with a citable source, and CJK-aware thresholds.',
     descriptionLong:
-      '通用格式（SKILL.md）的 agent skill，把「網站對搜尋引擎與 AI 引擎的可見度」拆成四層 57 條規則逐條檢核（技術基礎／內容結構／AI 可見度／YMYL 與 E-E-A-T）。兩個刻意的立場：每條規則都查得到依據——出自 Google 官方文件或同行評審論文，證據弱就標弱，不補沒有出處的百分比；中文網站不套英文門檻，偵測中日韓字元比例後切換長度標準。檢核器是零相依的 Node 腳本，讀的是建置產物而不是原始碼，兩者可以完全不同。另有每月排程回查出處是否失效或改版，只開 issue 報告、不自動改規則。MIT 授權。',
+      '通用格式（SKILL.md）的 agent skill，把「網站對搜尋引擎與 AI 引擎的可見度」拆成四層逐條檢核（技術基礎／內容結構／AI 可見度／YMYL 與 E-E-A-T）。兩個刻意的立場：每條規則都查得到依據——出自 Google 官方文件或同行評審論文，證據弱就標弱，不補沒有出處的百分比；中文網站不套英文門檻，偵測中日韓字元比例後切換長度標準，連「宣告的語言與正文實際語言不符」這條的判準也刻意單向。檢核器是零相依的 Node 腳本，讀的是建置產物而不是原始碼，兩者可以完全不同。另有每月排程回查出處是否失效或改版，只開 issue 報告、不自動改規則。MIT 授權。',
     descriptionLongEn:
-      'An agent skill in the universal SKILL.md format that audits how visible a site is to search engines and AI engines — 57 rules across four layers: technical basics, content structure, AI visibility, and YMYL/E-E-A-T. Two deliberate positions: every rule carries a traceable source (Google documentation or peer-reviewed research; weak evidence is labelled weak rather than dressed up as a sourceless percentage), and Chinese sites are not judged by English thresholds — it detects the CJK ratio and switches the length limits. The checker is a zero-dependency Node script that reads the built output, not the source, because the two can differ completely. A monthly job re-checks whether the cited sources still hold — reporting only, never rewriting rules. MIT.',
+      'An agent skill in the universal SKILL.md format that audits how visible a site is to search engines and AI engines across four layers: technical basics, content structure, AI visibility, and YMYL/E-E-A-T. Two deliberate positions: every rule carries a traceable source (Google documentation or peer-reviewed research; weak evidence is labelled weak rather than dressed up as a sourceless percentage), and Chinese sites are not judged by English thresholds — it detects the CJK ratio and switches the limits, right down to keeping the declared-versus-actual language check deliberately one-directional. The checker is a zero-dependency Node script that reads the built output, not the source, because the two can differ completely. A monthly job re-checks whether the cited sources still hold — reporting only, never rewriting rules. MIT.',
     repoUrl: 'https://github.com/matt-ye/yaeo',
     tags: ['SEO 檢核', 'AI 可見度'],
     tagsEn: ['SEO Audit', 'AI Visibility'],
