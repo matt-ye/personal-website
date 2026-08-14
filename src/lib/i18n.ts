@@ -25,6 +25,7 @@ export const MIGRATED_PATHS = [
   '/speeches/',
   '/projects/agent-skills/',
   '/projects/diet-calculator/',
+  '/writing/',
   /* marketing 專欄的手刻頁。這四頁的判準另有一層：staticPageMeta 要有填英文欄位
      （titleEn/descriptionEn），StaticPageLayout 與 [slug].astro 都讀那個判準。
      marketing-foundations 刻意不列——它有 13 處純中文尚未補譯。 */
