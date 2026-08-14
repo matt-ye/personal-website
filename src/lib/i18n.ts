@@ -23,6 +23,8 @@ export const MIGRATED_PATHS = [
   '/projects/',
   '/coaching/',
   '/speeches/',
+  '/projects/agent-skills/',
+  '/projects/diet-calculator/',
 ] as const;
 
 /**
