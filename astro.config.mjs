@@ -382,6 +382,63 @@ function verifyI18nHreflang() {
  *
  * 修法：node scripts/prerender-i18n.mjs
  */
+/*
+ * 頁面用了 ligature 圖示字型，就必須真的載入那個字型。
+ *
+ * 為什麼需要這個守衛：手刻頁遷移時，<head> 被 staticPageMeta 產生的版本取代，
+ * 原本寫在那裡的字型連結整批消失。**畫面沒有壞掉**——ligature 圖示退化成
+ * 它的名字（arrow_back、translate、dark_mode 直接顯示成文字），字體退回系統字。
+ * 「看起來只是有點怪」，所以沒有人回報，SEO 檢核器也不驗這件事
+ * （它檢查的是結構與內容，不是「頁面需要的外部資源在不在」）。
+ *
+ * 只驗 ligature 圖示字型，不驗一般字體：一般 font-family 是有 fallback 的堆疊，
+ * 少了 webfont 只是換一個字體；ligature 圖示少了字型會直接變成英文單字，
+ * 那是功能性損壞，不是外觀差異。**判準要對應後果的嚴重度。**
+ */
+function verifyIconFonts() {
+  const FONTS = [
+    { cls: /class="[^"]*\bmaterial-symbols[^"]*"/, need: /fonts\.googleapis\.com[^"]*Material\+Symbols/, name: 'Material Symbols' },
+    { cls: /class="[^"]*\bmaterial-icons\b[^"]*"/, need: /fonts\.googleapis\.com[^"]*Material\+Icons/, name: 'Material Icons' },
+  ];
+  return {
+    name: 'verify-icon-fonts',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        const problems = [];
+        let checked = 0;
+
+        const walk = (d) => {
+          let entries;
+          try { entries = readdirSync(d); } catch { return; }
+          for (const e of entries) {
+            const full = join(d, e);
+            if (statSync(full).isDirectory()) { walk(full); continue; }
+            if (e !== 'index.html') continue;
+            const html = readFileSync(full, 'utf8');
+            for (const f of FONTS) {
+              if (!f.cls.test(html)) continue;
+              checked++;
+              if (!f.need.test(html)) {
+                problems.push(`${relative(root, full).replace(/\\/g, '/')} 用了 ${f.name} 的圖示，但沒有載入該字型`);
+              }
+            }
+          }
+        };
+        walk(root);
+
+        if (problems.length) {
+          throw new Error(
+            `圖示字型缺失（${problems.length} 頁）：\n  ${problems.join('\n  ')}\n` +
+            '  → 在 src/data/staticPageMeta.ts 該頁的 headLinks 補上字型連結',
+          );
+        }
+        logger.info(`icon fonts verified: ${checked} page(s) using icon fonts, all loaded`);
+      },
+    },
+  };
+}
+
 function verifyI18nPrerendered() {
   return {
     name: 'verify-i18n-prerendered',
@@ -562,6 +619,7 @@ export default defineConfig({
     injectBreadcrumbs(),
     verifyRssFeed(),
     verifyI18nHreflang(),
+    verifyIconFonts(),
     verifyI18nPrerendered(),
   ],
 });

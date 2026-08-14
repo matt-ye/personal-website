@@ -122,6 +122,11 @@ const alternates = hasEn
     <meta name="author" content="Ching-Wei Ye" />
     <link rel="canonical" href={canonical} />
     {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+    {/* 這頁自己需要的外部資源（字型等）。遷移時 <head> 被 meta 取代，
+        原本寫在手刻 <head> 裡的連結整批掉了——見 headLinks 的欄位註解。 */}
+    {meta.headLinks?.map((l) => (
+      <link rel={l.rel} href={l.href} {...(l.crossorigin ? { crossorigin: true } : {})} />
+    ))}
 
     <meta property="og:type" content={meta.ogType} />
     <meta property="og:title" content={ogTitle} />
