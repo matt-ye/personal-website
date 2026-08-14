@@ -1,0 +1,54 @@
+---
+/*
+ * 站台連結條：給「自帶完整視覺、沒有站台外殼」的頁面用。
+ *
+ * 這批頁（手刻頁遷移進來的 StaticPageLayout，以及課程週次的 CourseWeekLayout）
+ * 刻意不走 BaseLayout——每一頁都是自包含的教材／筆記，有自己的導覽與版面。
+ * 代價是讀者走到那裡之後，只能靠頁面自己提供的少數連結離開。
+ *
+ * ⚠ 實測（2026-08-14）：這些頁**沒有一頁是孤島**，從首頁全部走得到、
+ *   回首頁最多 2 步。所以這條的定位是「少走一步」與「補上缺的出口」，
+ *   不是救援孤島——不要拿它當導覽列來設計。
+ *
+ * 樣式刻意低調：不假設任何既有 class，只用系統字與中性灰，含深色模式。
+ * 兩個版面都用同一個元件，而不是各自複製一份 CSS——複製的那份遲早會走岔。
+ */
+import { localeHref } from '../lib/i18n';
+
+const isEn = Astro.currentLocale === 'en';
+const locale = isEn ? 'en' : 'zh';
+
+const LINKS = [
+  { path: '/', zh: '首頁', en: 'Home' },
+  { path: '/projects/', zh: '其他作品', en: 'Projects' },
+  { path: '/writing/', zh: '寫作', en: 'Writing' },
+];
+---
+<nav class="site-strip" aria-label={isEn ? 'Site navigation' : '網站導覽'}>
+  {LINKS.map((l) => (
+    <a href={localeHref(l.path, locale)}>{isEn ? l.en : l.zh}</a>
+  ))}
+</nav>
+
+{/* 刻意用 scoped 而非 is:global：這批手刻頁各自帶完整 CSS，
+    全域規則會漏進去，萬一哪頁自己也有 .site-strip 就會互相蓋。
+    scoped 之後這些規則只作用在本元件的節點上。 */}
+<style>
+  .site-strip {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 1.5rem 1rem 2.5rem;
+    font: 500 0.82rem/1.6 system-ui, -apple-system, "Noto Sans TC", sans-serif;
+  }
+  .site-strip a {
+    color: #6b7280;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .site-strip a:hover { color: #111827; border-bottom-color: currentColor; }
+  @media (prefers-color-scheme: dark) {
+    .site-strip a { color: #9ca3af; }
+    .site-strip a:hover { color: #f3f4f6; }
+  }
+</style>

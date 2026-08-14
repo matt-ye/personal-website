@@ -15,7 +15,7 @@
  *   選配 meta  有才輸出，不補預設值——補了就是替作者決定他沒決定的事
  */
 import type { StaticPageMeta } from '../data/staticPageMeta';
-import { localeHref } from '../lib/i18n';
+import SiteStrip from '../components/SiteStrip.astro';
 
 interface Props {
   meta: StaticPageMeta;
@@ -164,34 +164,7 @@ const alternates = hasEn
   </head>
   <body>
     <slot />
-    {siteLinks && (
-      <nav class="site-strip" aria-label={isEn ? 'Site navigation' : '網站導覽'}>
-        <a href={localeHref('/', locale)}>{isEn ? 'Home' : '首頁'}</a>
-        <a href={localeHref('/projects/', locale)}>{isEn ? 'Projects' : '其他作品'}</a>
-        <a href={localeHref('/writing/', locale)}>{isEn ? 'Writing' : '寫作'}</a>
-      </nav>
-    )}
+        {siteLinks && <SiteStrip />}
   </body>
 </html>
 
-<style is:global>
-  /* 這批頁面各有各的視覺，所以這一條做得刻意低調：不搶版面、不假設任何
-     既有 class，只用系統字與中性灰。它的作用是「走得出去」，不是導覽列。 */
-  .site-strip {
-    display: flex;
-    justify-content: center;
-    gap: 1.25rem;
-    padding: 1.5rem 1rem 2.5rem;
-    font: 500 0.82rem/1.6 system-ui, -apple-system, "Noto Sans TC", sans-serif;
-  }
-  .site-strip a {
-    color: #6b7280;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-  }
-  .site-strip a:hover { color: #111827; border-bottom-color: currentColor; }
-  @media (prefers-color-scheme: dark) {
-    .site-strip a { color: #9ca3af; }
-    .site-strip a:hover { color: #f3f4f6; }
-  }
-</style>

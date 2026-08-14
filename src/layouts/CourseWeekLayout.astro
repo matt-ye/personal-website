@@ -19,6 +19,8 @@ interface Props {
   meta: CourseWeekMeta;
 }
 
+import SiteStrip from '../components/SiteStrip.astro';
+
 const { meta } = Astro.props;
 
 const SITE = 'https://mattye.dev';
@@ -103,5 +105,8 @@ const articleLd = {
   </head>
   <body>
     <slot />
+    {/* 週次頁彼此交叉連結，也連到 /writing/，但沒有首頁與 /projects/ 的出口。
+        這裡無條件加——26 頁的結構一致，不需要像 StaticPageLayout 那樣逐頁判斷。 */}
+    <SiteStrip />
   </body>
 </html>
