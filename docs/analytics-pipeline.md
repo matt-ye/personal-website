@@ -145,6 +145,28 @@ previous: { propertyId: '539989003', streamId: '15024877509', until: '2026-08-14
 owner 2026-08-14 的決定是**先不接**——真要做的話得處理 until 邊界不重複
 計算、以及讓圖表吃得下「兩段來源接起來」的 daily 陣列。
 
+#### ⚠ 捕夢網數字偏低 ≠ pipeline 壞掉（先讀這段再除錯）
+
+新資源 2026-08-14 才開始收資料。切換當天實測（run #46）近 28 天只有
+**users 1 / views 3 / sessions 1**——那是測試流量。之後幾天才會長回來，
+**7 天視窗最先變得有意義，90 天／半年／一年要更久才「填滿」**。
+
+所以看到卡片數字很小，**先確認資料端是不是好的**，判斷方法是看 Actions
+的 analytics log，只要這三行都在就代表 pipeline 正常，低只是因為資源年輕：
+
+```
+- GA4:dreamcatcher: property 549920338（獨立資源） / stream 15435291446
+- GA4:dreamcatcher: ok
+  dreamcatcher 近 28 天：users N / views N / sessions N
+```
+
+第一行證明查對資源與串流、第二行證明授權有效、第三行是實際數字。
+**`ok` 不等於有資料**——查錯資源時 GA4 回零筆而不是報錯，兩者在 log 上
+長得一樣，所以第三行才是關鍵（這行就是為了這件事加的）。
+
+真的是零的話，往「網站端 tag 有沒有在送」查（`G-KGQQ7E4JLG` 是否還在
+telaaurealab.com 上），而不是回頭改 pipeline。
+
 ### 10. dashboard-api worker（真一鍵更新 + 註冊用戶數，~15 分鐘）
 
 `workers/dashboard-api/` 是獨立的小 worker（與金流/AI worker 隔離），由
