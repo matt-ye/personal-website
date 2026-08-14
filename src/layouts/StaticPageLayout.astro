@@ -15,6 +15,7 @@
  *   選配 meta  有才輸出，不補預設值——補了就是替作者決定他沒決定的事
  */
 import type { StaticPageMeta } from '../data/staticPageMeta';
+import { localeHref } from '../lib/i18n';
 
 interface Props {
   meta: StaticPageMeta;
@@ -22,6 +23,38 @@ interface Props {
 
 const { meta } = Astro.props;
 const isEn = Astro.currentLocale === 'en';
+const locale = isEn ? 'en' : 'zh';
+
+/*
+ * 這批頁面是手刻 HTML 遷移進來的，各自帶完整視覺、沒有站台外殼。
+ * 實測（2026-08-14）：沒有一頁是孤島——從首頁全部走得到，回首頁最多 2 步。
+ * 所以問題不是「走不出去」，是**有幾頁只有一個出口**：
+ * one-more-step 那批只連 /projects/one-more-step/，別無他路，
+ * 檢核器的 L2-FEW-INTERNAL-LINKS 點名的就是它們。
+ *
+ * 補一條低調的站台連結，但**只補給真的需要的頁**。判準用頁面自己的內容算，
+ * 不維護清單：片段裡不足 3 個不重複站內連結才補。
+ * 3 是檢核器 L2-FEW-INTERNAL-LINKS 的門檻，兩邊用同一個數字。
+ *
+ * 實際補到 16 頁：one-more-step 全部（片段只有 1 個出口）與 marketing 全部
+ * （片段只有樞紐 ＋ 一個 mattye.dev，共 2 個）。Miguel 頁片段已有 3 個，不補。
+ * 注意判準看的是**片段**，不是建置後的頁面——語言鈕與這條 strip 本身
+ * 都是版面加上去的，拿建置後的數字當判準會變成自己餵自己。
+ */
+const fragments = import.meta.glob('../data/static-pages/*.html', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+}) as Record<string, string>;
+const fragPath = Object.keys(fragments).find((p) => p.endsWith(`/${meta.key}.html`));
+/* 找不到就讓建置失敗——這裡靜靜當成 0 個連結會讓每一頁都多一條，
+   而多出來的那條看起來很正常，沒有人會發現判斷其實壞了。 */
+if (!fragPath) throw new Error(`StaticPageLayout：找不到內容片段 ${meta.key}.html，無法判斷是否需要補站台連結`);
+
+const ownLinks = new Set(
+  [...fragments[fragPath].matchAll(/<a\b[^>]*href="(\/[^"#?]*|https:\/\/mattye\.dev[^"]*)"/g)].map((m) => m[1]),
+);
+const siteLinks = ownLinks.size < 3;
 
 /* 英文路由的 <html>：語言宣告與 data-lang 都要跟著換。
    data-lang 尤其重要——各頁的 CSS 用它決定顯示哪一半，meta 裡寫死的是 "zh"。 */
@@ -131,5 +164,34 @@ const alternates = hasEn
   </head>
   <body>
     <slot />
+    {siteLinks && (
+      <nav class="site-strip" aria-label={isEn ? 'Site navigation' : '網站導覽'}>
+        <a href={localeHref('/', locale)}>{isEn ? 'Home' : '首頁'}</a>
+        <a href={localeHref('/projects/', locale)}>{isEn ? 'Projects' : '其他作品'}</a>
+        <a href={localeHref('/writing/', locale)}>{isEn ? 'Writing' : '寫作'}</a>
+      </nav>
+    )}
   </body>
 </html>
+
+<style is:global>
+  /* 這批頁面各有各的視覺，所以這一條做得刻意低調：不搶版面、不假設任何
+     既有 class，只用系統字與中性灰。它的作用是「走得出去」，不是導覽列。 */
+  .site-strip {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 1.5rem 1rem 2.5rem;
+    font: 500 0.82rem/1.6 system-ui, -apple-system, "Noto Sans TC", sans-serif;
+  }
+  .site-strip a {
+    color: #6b7280;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .site-strip a:hover { color: #111827; border-bottom-color: currentColor; }
+  @media (prefers-color-scheme: dark) {
+    .site-strip a { color: #9ca3af; }
+    .site-strip a:hover { color: #f3f4f6; }
+  }
+</style>
