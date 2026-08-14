@@ -69,5 +69,20 @@ export const GA4_EXTRA_SITES = [
        那個 ID 在新資源裡不存在——沿用會過濾成零筆且不會報錯。 */
     streamId: '15435291446',
     hosts: ['telaaurealab.com', 'www.telaaurealab.com'],
+
+    /* 拆分前的資料座標。**目前沒有任何程式讀這個欄位**——保留是為了「之後
+       若要把拆分前的歷史接回 dashboard」時不必考古。
+
+       這份舊資料是凍結的：網站 tag 已改為新資源的 G-KGQQ7E4JLG，舊串流
+       不會再有新流量，所以 until 之後不必再看它。
+
+       真要接的話要處理的是：兩邊指標定義一致（同為 GA4，基本一致）、
+       以 until 為界不要重複計算、以及 dashboard 的圖表要能吃「兩段來源
+       接起來」的 daily 陣列。owner 2026-08-14 的決定是先不做。 */
+    previous: {
+      propertyId: '539989003',   // 個人網站流量（與主站同一個資源）
+      streamId: '15024877509',   // 串流「Tela Aurea Lab - Dreamcatcher Generator」
+      until: '2026-08-14',       // 拆分日
+    },
   },
 ];

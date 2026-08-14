@@ -128,6 +128,23 @@ pipeline 兩種型態都支援，差別只在 `GA4_EXTRA_SITES` 有沒有給 `pr
 加一項（key / label / site / hosts＋`propertyId` 或 `streamId`）→ 若是獨立
 property，記得授權 service account。
 
+#### 拆分前的歷史資料（保留但未接上）
+
+dashboard 的網站區塊讀的是 **GA4 即時資料**（`summary.ga4Sites`），不是 gist
+累積的 history。所以捕夢網拆資源後，卡片上只會有**拆分日之後**的資料——
+2026-08 之前的流量（例如 06/14 的 378 views 高峰）不會再出現在圖上。
+
+**舊資料沒有消失**，它還在舊資源裡，而且是凍結的（網站 tag 已換，舊串流
+不會再進新流量）。座標記在 `GA4_EXTRA_SITES` 的 `previous` 欄位：
+
+```js
+previous: { propertyId: '539989003', streamId: '15024877509', until: '2026-08-14' }
+```
+
+這個欄位**目前沒有任何程式讀它**，純粹是為了日後要接歷史時不必考古。
+owner 2026-08-14 的決定是**先不接**——真要做的話得處理 until 邊界不重複
+計算、以及讓圖表吃得下「兩段來源接起來」的 daily 陣列。
+
 ### 10. dashboard-api worker（真一鍵更新 + 註冊用戶數，~15 分鐘）
 
 `workers/dashboard-api/` 是獨立的小 worker（與金流/AI worker 隔離），由

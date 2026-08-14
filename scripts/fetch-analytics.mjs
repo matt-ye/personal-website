@@ -763,6 +763,11 @@ for (const site of GA4_EXTRA_SITES) {
   const result = await runSource(
     `GA4:${site.key}`, GA4_SA_KEY && sitePropertyId(site), () => fetchGa4Site(site)
   );
+  /* 印出實際數字。「ok」只代表 API 沒報錯——查錯資源時 GA4 回零筆而不是
+     錯誤，兩者在 log 上長得一模一樣。有了這行，光看 log 就能判斷資料是不是
+     真的進來了，不必去翻 summary.json 或開 dashboard。 */
+  const t28 = result.totals?.d28;
+  if (t28) console.log(`  ${site.key} 近 28 天：users ${t28.users} / views ${t28.views} / sessions ${t28.sessions}`);
   ga4Sites.push({ key: site.key, label: site.label, site: site.site, ...result });
 }
 
