@@ -98,7 +98,7 @@ draft: false
 <div class="formula">
   實質報酬率 = 名目利率 − 通膨率<br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.5% − 2.5%<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong style="color: #dc2626">−1%</strong>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong class="num-danger">−1%</strong>
 </div>
 
 你賺了 1.5%，但購買力縮水了 2.5%。帳面數字在長大，但能買到的東西在變少。這就是為什麼「只存定存」長期而言是一種慢動作的損失。
@@ -232,7 +232,7 @@ Suppose the bank's time-deposit rate is 1.5% and inflation is 2.5%:
 <div class="formula">
   real return = nominal rate − inflation rate<br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.5% − 2.5%<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong style="color: #dc2626">−1%</strong>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong class="num-danger">−1%</strong>
 </div>
 
 You earned 1.5%, but your purchasing power fell by 2.5%. The number on the statement grows while what it can buy shrinks. That is why "keep everything in time deposits" is, over the long run, a loss in slow motion.

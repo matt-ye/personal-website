@@ -170,12 +170,12 @@ Nokia 倒了，但台灣 50 強整體沒倒——這就是分散的力量。你�
   <div class="chart-row">
     <span class="chart-label" style="min-width:6rem;font-size:0.75rem">費用 1.50%</span>
     <div class="chart-track"><div class="chart-fill" style="width:68%;opacity:0.5"></div></div>
-    <span class="chart-value" style="color:#d97706">約 498 萬</span>
+    <span class="chart-value num-warn">約 498 萬</span>
   </div>
   <div class="chart-row">
     <span class="chart-label" style="min-width:6rem;font-size:0.75rem">費用 2.00%</span>
     <div class="chart-track"><div class="chart-fill" style="width:59%;opacity:0.4"></div></div>
-    <span class="chart-value" style="color:#dc2626">約 432 萬</span>
+    <span class="chart-value num-danger">約 432 萬</span>
   </div>
 </div>
 
@@ -502,12 +502,12 @@ Say you invest NT$1,000,000, the market returns 7% a year, and you hold for 30 y
   <div class="chart-row">
     <span class="chart-label" style="min-width:6rem;font-size:0.75rem">Fee 1.50%</span>
     <div class="chart-track"><div class="chart-fill" style="width:68%;opacity:0.5"></div></div>
-    <span class="chart-value" style="color:#d97706">≈ NT$4.98M</span>
+    <span class="chart-value num-warn">≈ NT$4.98M</span>
   </div>
   <div class="chart-row">
     <span class="chart-label" style="min-width:6rem;font-size:0.75rem">Fee 2.00%</span>
     <div class="chart-track"><div class="chart-fill" style="width:59%;opacity:0.4"></div></div>
-    <span class="chart-value" style="color:#dc2626">≈ NT$4.32M</span>
+    <span class="chart-value num-danger">≈ NT$4.32M</span>
   </div>
 </div>
 

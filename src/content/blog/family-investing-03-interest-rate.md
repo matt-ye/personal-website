@@ -79,7 +79,7 @@ draft: false
 <div class="formula">
   折現率 2%（低利率）：100 萬 ÷ 1.02⁵ ≈ <strong>90.6 萬</strong><br>
   折現率 5%（中等利率）：100 萬 ÷ 1.05⁵ ≈ <strong>78.4 萬</strong><br>
-  折現率 10%（高利率）：100 萬 ÷ 1.10⁵ ≈ <strong style="color:#dc2626">62.1 萬</strong>
+  折現率 10%（高利率）：100 萬 ÷ 1.10⁵ ≈ <strong class="num-danger">62.1 萬</strong>
 </div>
 
 同樣是「5 年後的 100 萬」，利率從 2% 升到 10%，今天的價值少了將近三成。
@@ -98,7 +98,7 @@ draft: false
   房貸 1,000 萬，30 年期<br>
   利率 2%：月繳約 <strong>36,965 元</strong><br>
   利率 3%：月繳約 <strong>42,160 元</strong>（多 5,000 元 / 月）<br>
-  利率 4%：月繳約 <strong style="color:#dc2626">47,742 元</strong>（多 10,777 元 / 月）
+  利率 4%：月繳約 <strong class="num-danger">47,742 元</strong>（多 10,777 元 / 月）
 </div>
 
 同樣一筆貸款，利率差 2%，每個月多繳超過一萬。這會直接壓縮潛在買家的負擔能力，讓市場買氣降溫，進而對房價形成壓力。
@@ -248,7 +248,7 @@ This is **discounting** — converting future money into present value. The high
 <div class="formula">
   Discount rate 2% (low): NT$1M ÷ 1.02⁵ ≈ <strong>NT$906,000</strong><br>
   Discount rate 5% (moderate): NT$1M ÷ 1.05⁵ ≈ <strong>NT$784,000</strong><br>
-  Discount rate 10% (high): NT$1M ÷ 1.10⁵ ≈ <strong style="color:#dc2626">NT$621,000</strong>
+  Discount rate 10% (high): NT$1M ÷ 1.10⁵ ≈ <strong class="num-danger">NT$621,000</strong>
 </div>
 
 Same "NT$1,000,000 in five years" — but moving the rate from 2% to 10% wipes out nearly a third of today's value.
@@ -267,7 +267,7 @@ This one is more direct. If you've ever borrowed to buy a home or commercial pro
   NT$10M mortgage, 30-year term<br>
   At 2%: about <strong>NT$36,965</strong> a month<br>
   At 3%: about <strong>NT$42,160</strong> a month (NT$5,000 more)<br>
-  At 4%: about <strong style="color:#dc2626">NT$47,742</strong> a month (NT$10,777 more)
+  At 4%: about <strong class="num-danger">NT$47,742</strong> a month (NT$10,777 more)
 </div>
 
 The same loan, two percentage points apart, costs over ten thousand more every month. That squeezes what buyers can afford, cools demand, and in turn puts pressure on prices.
