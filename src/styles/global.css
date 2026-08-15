@@ -14,6 +14,14 @@
   --color-accent-grad2: #0891b2;   /* 漸層第二色（排行榜長條） */
   --color-tag-bg: #f0f4f8;
 
+  /* 語意色。這四個原本散落在 .protect-* 與內容的 style="color:#…" 裡，
+     兩處都寫死淺色版——深色主題下對比只剩 3.x，淺色主題下綠與橙也不足 4.5。
+     收成 token 之後，兩個主題各給一組達標值，內容端只寫語意不寫顏色。 */
+  --color-good:   #047857;   /* 白底 5.48:1 */
+  --color-warn:   #b45309;   /* 白底 5.02:1 */
+  --color-danger: #b91c1c;   /* 白底 6.47:1 */
+  --color-neutral:#4b5563;   /* 白底 7.56:1 */
+
   --card-bg: #ffffff;
   --card-border: #e8e8e8;
   --card-shadow: 0 1px 4px rgba(0,0,0,.06);
@@ -50,6 +58,11 @@
   --color-accent-fg: #0b1220;
   --color-accent-grad2: #22d3ee;
   --color-tag-bg: rgba(255,255,255,.06);
+
+  --color-good:   #6ee7b7;   /* #0b0d18 上 12.70:1 */
+  --color-warn:   #fcd34d;   /* 13.42:1 */
+  --color-danger: #fca5a5;   /* 10.20:1 */
+  --color-neutral:#9aa3c4;   /* 7.75:1 */
 
   --card-bg: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
   --card-border: rgba(255,255,255,.08);
@@ -651,10 +664,10 @@ footer .container {
   font-size: 0.82rem;
   text-align: right;
 }
-.protect-good  { color: #059669; font-weight: 600; }
-.protect-mid   { color: #d97706; font-weight: 600; }
-.protect-bad   { color: #dc2626; font-weight: 600; }
-.protect-mixed { color: #6b7280; font-weight: 600; }
+.protect-good  { color: var(--color-good);    font-weight: 600; }
+.protect-mid   { color: var(--color-warn);    font-weight: 600; }
+.protect-bad   { color: var(--color-danger);  font-weight: 600; }
+.protect-mixed { color: var(--color-neutral); font-weight: 600; }
 
 /* Funding comparison grid (3-col) */
 .funding-grid {
@@ -2981,3 +2994,83 @@ footer .container {
   font-size: inherit;
   font-weight: inherit;
 }
+/* ===== 文章圖解元件的夜間配色 =====
+ *
+ * 這些圖解（三表卡片、三表關聯圖、杜邦樹、護城河徽章）原本只寫了淺色版：
+ * 背景寫死成 #eff6ff 這類淺色，前景卻用 var(--color-text)。
+ * 主題一翻，前景變成近白色、背景不動——白字印在淺藍底上，等於看不見。
+ *
+ * 寫死的背景配 token 的前景，是這類 bug 的固定成因。
+ * 正確的組合只有兩種：兩邊都用 token，或兩邊都寫死（並補上夜間覆寫）。
+ * 混著用一定會在某個主題下爆掉。
+ *
+ * 這裡的做法：保留原本的語意配色（藍＝損益表、橙＝資產負債表、
+ * 綠＝現金流量表、紫＝ROE 跨表、玫瑰＝市場價格），但改成深底上的
+ * 半透明色調——色相不變，明度反轉。
+ */
+
+/* --- 三張表的總覽卡（07） --- */
+[data-theme="dark"] .stmt-card.is { background: rgba(59,130,246,.12);  border-color: rgba(147,197,253,.32); }
+[data-theme="dark"] .stmt-card.bs { background: rgba(245,158,11,.10);  border-color: rgba(252,211,77,.32); }
+[data-theme="dark"] .stmt-card.cf { background: rgba(16,185,129,.10);  border-color: rgba(110,231,183,.32); }
+
+/* --- 三表關聯圖（07）。標題與內文用 token，所以只需要換底與框 --- */
+[data-theme="dark"] .sflow-stmt.is { border-color: rgba(147,197,253,.34); }
+[data-theme="dark"] .sflow-stmt.bs { border-color: rgba(252,211,77,.34); }
+[data-theme="dark"] .sflow-stmt.cf { border-color: rgba(110,231,183,.34); }
+[data-theme="dark"] .sflow-stmt.is .sflow-stmt-head { background: rgba(59,130,246,.20);  border-bottom-color: rgba(147,197,253,.34); }
+[data-theme="dark"] .sflow-stmt.bs .sflow-stmt-head { background: rgba(245,158,11,.18);  border-bottom-color: rgba(252,211,77,.34); }
+[data-theme="dark"] .sflow-stmt.cf .sflow-stmt-head { background: rgba(16,185,129,.18);  border-bottom-color: rgba(110,231,183,.34); }
+[data-theme="dark"] .sflow-stmt.is .sflow-stmt-body { background: rgba(59,130,246,.07); }
+[data-theme="dark"] .sflow-stmt.bs .sflow-stmt-body { background: rgba(245,158,11,.06); }
+[data-theme="dark"] .sflow-stmt.cf .sflow-stmt-body { background: rgba(16,185,129,.06); }
+
+/* --- 關聯圖的來源／去向徽章與衍生指標籤（07）。這些前景也是寫死的，要一起換 --- */
+[data-theme="dark"] .sflow-chip.is,
+[data-theme="dark"] .sflow-conn-badge.is    { background: rgba(59,130,246,.14);  border-color: rgba(147,197,253,.34); color: #bfdbfe; }
+[data-theme="dark"] .sflow-chip.bs,
+[data-theme="dark"] .sflow-conn-badge.bs    { background: rgba(245,158,11,.14);  border-color: rgba(252,211,77,.34);  color: #fde68a; }
+[data-theme="dark"] .sflow-chip.cf,
+[data-theme="dark"] .sflow-conn-badge.cf    { background: rgba(16,185,129,.14);  border-color: rgba(110,231,183,.34); color: #a7f3d0; }
+[data-theme="dark"] .sflow-chip.cross       { background: rgba(139,92,246,.16);  border-color: rgba(196,181,253,.36); color: #ddd6fe; }
+[data-theme="dark"] .sflow-chip.mkt         { background: rgba(244,63,94,.14);   border-color: rgba(253,164,175,.34); color: #fecdd3; }
+
+/* --- 杜邦樹（07）。整棵樹的前景全部寫死，所以每一層都要對應 --- */
+[data-theme="dark"] .dpt-node          { background: rgba(255,255,255,.045); border-color: rgba(255,255,255,.14); }
+[data-theme="dark"] .dpt-name          { color: var(--color-text); }
+[data-theme="dark"] .dpt-role          { color: var(--color-text-muted); }
+[data-theme="dark"] .dpt-formula       { color: #c3cae8; }
+[data-theme="dark"] .dpt-break         { color: #b6bee0; border-top-color: rgba(255,255,255,.18); }
+[data-theme="dark"] .dpt-node.root     { background: rgba(139,92,246,.16); border-color: rgba(167,139,250,.42); }
+[data-theme="dark"] .dpt-node.root .dpt-name    { color: #ddd6fe; }
+[data-theme="dark"] .dpt-node.root .dpt-formula { color: #c4b5fd; }
+[data-theme="dark"] .dpt-node.mkt      { background: rgba(244,63,94,.14);  border-color: rgba(253,164,175,.40); }
+[data-theme="dark"] .dpt-node.mkt .dpt-name     { color: #fecdd3; }
+[data-theme="dark"] .dpt-node.mkt .dpt-formula  { color: #fda4af; }
+[data-theme="dark"] .dpt-node.is       { background: rgba(59,130,246,.14);  border-color: rgba(147,197,253,.40); }
+[data-theme="dark"] .dpt-node.is .dpt-name      { color: #bfdbfe; }
+[data-theme="dark"] .dpt-node.is .dpt-break     { color: #bfdbfe; border-top-color: rgba(147,197,253,.34); }
+[data-theme="dark"] .dpt-node.bs       { background: rgba(245,158,11,.14);  border-color: rgba(252,211,77,.40); }
+[data-theme="dark"] .dpt-node.bs .dpt-name      { color: #fde68a; }
+[data-theme="dark"] .dpt-node.bs .dpt-break     { color: #fde68a; border-top-color: rgba(252,211,77,.34); }
+
+/* --- 護城河強度徽章（06） --- */
+[data-theme="dark"] .moat-strength.wide   { background: rgba(34,197,94,.16);  color: #86efac; }
+[data-theme="dark"] .moat-strength.narrow { background: rgba(234,179,8,.16);  color: #fde047; }
+[data-theme="dark"] .moat-strength.none   { background: rgba(239,68,68,.16);  color: #fca5a5; }
+
+/* 內容端的語意色。文章裡原本寫 style="color:#dc2626"——行內樣式的優先權
+   高過任何主題規則，所以夜間模式修不掉，只能改成 class。 */
+.num-good   { color: var(--color-good); }
+.num-warn   { color: var(--color-warn); }
+.num-danger { color: var(--color-danger); }
+
+/* PEOP 文氏圖的三個字母。原本寫成行內 style="fill:#6d28d9"——
+   行內樣式的優先權高過主題規則，深色底上 #6d28d9 只有 2.72:1（門檻 3.0）。
+   改成 class 才能給夜間版。E 與 O 原本勉強及格，一併收進來保持一致。 */
+.peop-venn .v-p { fill: #6d28d9; }   /* 白底 7.10:1 */
+.peop-venn .v-e { fill: #0d9488; }   /* 3.74:1 */
+.peop-venn .v-o { fill: #b45309; }   /* 5.02:1 */
+[data-theme="dark"] .peop-venn .v-p { fill: #c4b5fd; }   /* 深底 10.48:1 */
+[data-theme="dark"] .peop-venn .v-e { fill: #5eead4; }   /* 13.08:1 */
+[data-theme="dark"] .peop-venn .v-o { fill: #fcd34d; }   /* 13.42:1 */
