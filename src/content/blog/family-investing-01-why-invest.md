@@ -1,5 +1,6 @@
 ---
 title: 為什麼要投資？讓時間成為你的資產
+titleEn: "Why Invest? Making Time Work as Your Asset"
 description: 從零開始認識投資的本質：它不是賭博，不是快速致富，而是讓資產替你工作，對抗通膨的侵蝕。
 pubDate: 2026-06-08
 lang: zh

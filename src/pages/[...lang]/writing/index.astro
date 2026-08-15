@@ -85,7 +85,9 @@ const badgeLabel = (b: string) => (isEn ? BADGE_EN[b] ?? b : b);
           <span class="post-card-date"><time datetime={it.date.toISOString()}>{fmt(it.date)}</time></span>
           <span class={`lang-badge${it.kind === 'feature' ? ' feature-badge' : ''}`}>{badgeLabel(it.badge)}</span>
         </div>
-        {it.titleEn && <p class="post-card-en">{it.titleEn}</p>}
+        {/* 這行小字是中文頁的「英文副標」。英文頁的主標題本身就是英文了，
+            再印一次會變成同一句話連著出現兩次。 */}
+        {!isEn && it.titleEn && <p class="post-card-en">{it.titleEn}</p>}
         <p class="post-card-desc">
           {it.descAlt
             ? <T zh={it.desc} en={it.descAlt} />

@@ -1,5 +1,6 @@
 ---
 title: 把簡報當成一種「職能」：硬核簡報專欄的起點
+titleEn: "Presentation as a Competency: Where the Hardcore Presentation Column Begins"
 description: 用職能治療的 PEOP 模型拆解「簡報表達」這件事——人、環境、職能、表現四個面向，構成這個專欄的地圖。這是發刊詞，也是接下來所有文章的索引。
 pubDate: 2026-06-25
 lang: zh

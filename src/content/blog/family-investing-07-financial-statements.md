@@ -1,5 +1,6 @@
 ---
 title: 財務報表三表——所有投資數字的源頭
+titleEn: "The Three Financial Statements: Where Every Investment Number Comes From"
 description: 損益表、資產負債表、現金流量表的結構與關聯；從第一線的營收、成本，一路計算到 EPS、ROIC、本益比，並用杜邦分析拆解 ROE，附完整詞彙查對表。
 pubDate: 2026-06-20
 lang: zh
