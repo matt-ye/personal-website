@@ -42,9 +42,12 @@ const EMAIL = 'chingweiye@mattye.dev';
 
     <div class="nf-block" lang="en">
       <h1>This page isn’t here</h1>
+      {/* ⚠ {' '} 是必要的，不是多餘：JSX 會把「行尾空白＋換行＋元素」整段移除，
+          所以 `email me at` 換行後直接接 <a> 會渲染成 "atchingweiye@…"。
+          中文那段沒事是因為 <a> 在同一行——同一個寫法只在其中一個語言版本現形。 */}
       <p>
         It may still be under construction, or the link may be out of date.
-        If you were looking for something specific, email me at
+        If you were looking for something specific, email me at{' '}
         <a href={`mailto:${EMAIL}`}>{EMAIL}</a> and I’ll point you to it.
       </p>
       <nav class="nf-links" aria-label="Site navigation">
