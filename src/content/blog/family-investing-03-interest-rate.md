@@ -2,6 +2,7 @@
 title: 利率：央行的調控工具，也是所有投資的底層邏輯
 titleEn: "Interest Rates: The Central Bank's Lever, and the Logic Under Every Investment"
 description: 為什麼央行升息，股市就跌？利率怎麼從中央銀行一路傳到你的房貸、你的股票、你的存款？
+descriptionEn: "Why do stocks fall when the central bank raises rates? How a policy rate travels all the way down to your mortgage, your shares and your savings."
 pubDate: 2026-06-12
 lang: zh
 series: family-investing

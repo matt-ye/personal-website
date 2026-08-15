@@ -2,6 +2,7 @@
 title: 分配資金之前，你需要做四個決定
 titleEn: "Four Decisions Before You Allocate a Dollar"
 description: 選股之前有四個更根本的問題要先想清楚：資產配置、入場策略、倉位管理、再平衡。這四個決定構成投資的基礎架構，是「如何分配手中資金」系列的入口。
+descriptionEn: "Four questions that come before stock picking: asset allocation, entry strategy, position sizing and rebalancing. Together they form the structure of a portfolio — and the entry point to this series on allocating capital."
 pubDate: 2026-06-22
 lang: zh
 series: family-investing

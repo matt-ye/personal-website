@@ -11,6 +11,7 @@
  */
 import { getCollection } from 'astro:content';
 import { oneMoreStep } from '../data/oneMoreStep';
+import { staticPageMeta } from '../data/staticPageMeta';
 import { marketingUnits } from '../data/marketing';
 import { essays } from '../data/essays';
 
@@ -92,6 +93,11 @@ export async function getWritingItems(): Promise<WritingItem[]> {
        兩個欄位長得像但用途不同——沒接上的話，資料裡明明有英文標題，
        英文頁卻仍顯示中文。 */
     titleEn: d.titleEn,
+    descAlt:
+      staticPageMeta.find((m) => m.key === `projects__marketing__${d.slug}`)?.descriptionEn ?? '',
+    /* marketing 的英文描述寫在 staticPageMeta（隨頁面英文版一起核准的那批），
+       不在 marketingUnits 裡。在這裡接起來，而不是把文案複製一份過去——
+       複製的那份遲早會和頁面上的說法走岔。 */
     desc: d.description,
     href: d.url ?? `/projects/marketing/${d.slug}/`,
     date: new Date(d.date),
@@ -108,6 +114,7 @@ export async function getWritingItems(): Promise<WritingItem[]> {
        兩個欄位長得像但用途不同——沒接上的話，資料裡明明有英文標題，
        英文頁卻仍顯示中文。 */
     titleEn: d.titleEn,
+    descAlt: d.descriptionEn ?? '',
     desc: d.description,
     href: d.url,
     date: new Date(d.date),

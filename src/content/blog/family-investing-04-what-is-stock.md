@@ -2,6 +2,7 @@
 title: 股票是什麼？你買的不是符號，是公司的一部分
 titleEn: "What Is a Stock? You're Not Buying a Ticker — You're Buying Part of a Company"
 description: 從「為什麼要成立公司」出發，理解股票的本質：有限責任、三種融資方式、初級市場與次級市場，以及 EPS 和本益比的基礎語言。
+descriptionEn: "Starting from why companies exist at all: limited liability, the three ways to raise capital, primary versus secondary markets, and the basic vocabulary of EPS and P/E."
 pubDate: 2026-06-14
 lang: zh
 series: family-investing

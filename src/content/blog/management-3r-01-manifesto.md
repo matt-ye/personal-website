@@ -2,6 +2,7 @@
 title: 天時、地利、人和：現代管理者的 3R 實踐指南（發刊詞）
 titleEn: "Right Time, Right Place, Right People: A 3R Field Guide for Modern Managers (Introduction)"
 description: 用「天時、地利、人和 / Right Time, Right Place, Right People」對接現代管理學的策略、營運、組織三大面向，作為本專欄的學習地圖與檢索框架。
+descriptionEn: "Mapping the classical triad of Right Time, Right Place and Right People onto the three faces of modern management — strategy, operations and organization — as the learning map for this column."
 pubDate: 2026-06-25
 lang: zh
 series: management-3r
