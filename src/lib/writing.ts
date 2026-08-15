@@ -94,6 +94,7 @@ export async function getWritingItems(): Promise<WritingItem[]> {
        英文頁卻仍顯示中文。 */
     titleEn: d.titleEn,
     descAlt:
+      d.descriptionEn ??
       staticPageMeta.find((m) => m.key === `projects__marketing__${d.slug}`)?.descriptionEn ?? '',
     /* marketing 的英文描述寫在 staticPageMeta（隨頁面英文版一起核准的那批），
        不在 marketingUnits 裡。在這裡接起來，而不是把文案複製一份過去——

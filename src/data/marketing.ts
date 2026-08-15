@@ -10,6 +10,18 @@ export const marketingUnits: OmsDoc[] = [
     title: '行銷基礎與 2026 趨勢',
     titleEn: 'Marketing Foundations & Trends',
     description: '漏斗演進三部曲（AIDA→AARRR→Flywheel）、AEO/GEO 與 zero-click 時代的對策，加上 JTBD、StoryBrand、Hook Model 三個必學框架。行銷學習地圖 W1-2。',
+    /*
+     * ⚠ 這段英文**不能**寫進 staticPageMeta 的 descriptionEn。
+     *
+     * 那個欄位同時是「這頁要不要產生英文版」的判準（StaticPageLayout 的 hasEn
+     * 與 [slug].astro 的 getStaticPaths 都讀它）。這頁刻意沒有英文版——內文還有
+     * 13 處純中文未補譯——所以往那裡填會連帶生出一個翻譯不完整的英文頁。
+     *
+     * 卡片描述與頁面有沒有英文版是兩件事：卡片就在 /en/writing/ 上，
+     * 標題已經是英文了，描述沒有理由留中文。
+     */
+    descriptionEn:
+      'The three-stage evolution of the funnel (AIDA to AARRR to Flywheel), what AEO/GEO and the zero-click era demand, plus three frameworks worth knowing: JTBD, StoryBrand and the Hook Model. Marketing Roadmap W1-2.',
     tags: ['行銷', '框架', 'AEO/GEO'],
     date: '2026-06-07',
     url: '/projects/marketing/marketing-foundations/',
