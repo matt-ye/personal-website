@@ -2,6 +2,7 @@
 title: 護城河——什麼樣的公司值得長期持有？
 titleEn: "Economic Moats: Which Companies Are Worth Holding for the Long Run?"
 description: 巴菲特的護城河概念：無形資產、轉換成本、網路效應、成本優勢、有效規模五大來源，搭配台積電案例，教你用「結構性競爭優勢」篩出值得長期持有的公司。
+descriptionEn: "Buffett's idea of the economic moat: intangible assets, switching costs, network effects, cost advantages and efficient scale — with TSMC as the worked example — and how to use structural competitive advantage to screen for companies worth holding."
 pubDate: 2026-06-18
 lang: zh
 series: family-investing

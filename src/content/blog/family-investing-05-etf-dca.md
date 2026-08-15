@@ -2,6 +2,7 @@
 title: ETF 與定期定額：讓市場幫你工作，讓紀律保護你的心智
 titleEn: "ETFs and Dollar-Cost Averaging: Let the Market Work, Let Discipline Protect You"
 description: 什麼是 ETF？為什麼 80% 的主動基金長期跑輸大盤？定期定額為何打敗「等最低點再買」？文獻數據與 0050 回測一次說清楚。
+descriptionEn: "What an ETF is, why 80% of active funds lag the index over the long run, and why dollar-cost averaging beats waiting for the bottom — with the research and a backtest on Taiwan's 0050."
 pubDate: 2026-06-16
 lang: zh
 series: family-investing
