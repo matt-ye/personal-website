@@ -17,48 +17,31 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { extractObjectLiteral, escapeHtml } from '../src/lib/objectLiteral.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 
+/*
+ * 站上路徑 → 內容片段的檔案路徑。
+ *
+ * 這批頁面原本是 public/<path>/index.html，後來搬進 src/data/static-pages/
+ * 並改成把 / 換成 __ 的鍵名。這支腳本的路徑當時沒跟著改，於是它一跑就
+ * ENOENT——而 astro.config 的 verifyI18nPrerendered 失敗時，正是叫人跑這支。
+ * 修法的工具本身壞掉，比沒有工具更糟：訊息看起來是可行動的，實際上不是。
+ */
+const fragmentOf = (sitePath) =>
+  `src/data/static-pages/${sitePath.split('/').filter(Boolean).join('__')}.html`;
+
+
 /** 要處理的頁面。新增同類頁面時加進來。 */
 const PAGES = [
-  'public/projects/one-more-step/aw32/index.html',
-  'public/projects/one-more-step/daniels-talk/index.html',
+  fragmentOf('projects/one-more-step/aw32'),
+  fragmentOf('projects/one-more-step/daniels-talk'),
 ];
 
 /** 預設語言——與 applyI18n() 的初始 state.lang 一致 */
 const DEFAULT_LANG = 'zh';
-
-/**
- * 從 JS 原始碼裡取出 `var I = { ... }` 的物件字面值。
- *
- * 用大括號計數而不是正則：字典值裡有巢狀物件與帶括號的 HTML，
- * 正則沒辦法可靠地找到對應的結尾括號。
- */
-function extractObjectLiteral(src, declRe) {
-  const m = src.match(declRe);
-  if (!m) return null;
-  const start = src.indexOf('{', m.index);
-  if (start < 0) return null;
-
-  let depth = 0;
-  let inStr = null;   // 目前在哪種引號裡（避免把字串裡的括號算進去）
-  let escaped = false;
-  for (let i = start; i < src.length; i++) {
-    const ch = src[i];
-    if (escaped) { escaped = false; continue; }
-    if (ch === '\\') { escaped = true; continue; }
-    if (inStr) { if (ch === inStr) inStr = null; continue; }
-    if (ch === '"' || ch === "'" || ch === '`') { inStr = ch; continue; }
-    if (ch === '{') depth++;
-    else if (ch === '}') { depth--; if (depth === 0) return src.slice(start, i + 1); }
-  }
-  return null;
-}
-
-const escapeHtml = (s) =>
-  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 let totalFilled = 0;
 
@@ -128,7 +111,7 @@ for (const rel of PAGES) {
  * 已隨檔案提交多次，渲染它們不會新增任何個資。
  * ──────────────────────────────────────────────────────────────── */
 
-const MEMORIAL = 'public/writing/In-Memory-of-Miguel-Li/index.html';
+const MEMORIAL = fragmentOf('writing/In-Memory-of-Miguel-Li');
 
 /** 把內容塞進 <tag id="x">…</tag>；已有內容就不動（冪等） */
 function fillById(html, id, inner) {
@@ -249,7 +232,7 @@ function fillById(html, id, inner) {
 
 const RELATED = [
   {
-    file: 'public/projects/one-more-step/ga4-guide/index.html',
+    file: fragmentOf('projects/one-more-step/ga4-guide'),
     bilingual: true,
     links: [
       { href: '/projects/one-more-step/', zh: '← One More Step 全部筆記', en: '← All One More Step notes' },
@@ -258,7 +241,7 @@ const RELATED = [
     ],
   },
   {
-    file: 'public/projects/one-more-step/investment-notes/index.html',
+    file: fragmentOf('projects/one-more-step/investment-notes'),
     bilingual: false,
     links: [
       { href: '/projects/one-more-step/', zh: '← One More Step 全部筆記' },
@@ -267,7 +250,7 @@ const RELATED = [
     ],
   },
   {
-    file: 'public/writing/In-Memory-of-Miguel-Li/index.html',
+    file: fragmentOf('writing/In-Memory-of-Miguel-Li'),
     bilingual: false,
     links: [
       { href: '/writing/', zh: '← 所有文章' },
