@@ -64,10 +64,55 @@ function assertNoSameTagNesting(html: string, cls: string) {
   }
 }
 
+/*
+ * 屬性裡的中文，剝 zh-only 剝不掉。
+ *
+ * 上面那套剝除處理的是「成對的語言 span」，但 placeholder、aria-label、alt、
+ * title 是**純文字語境**，塞不進 span——所以這些頁的雙語是直接寫成
+ * placeholder="搜尋… / Search…"。中文頁看起來合理，英文頁就是殘留的中文。
+ *
+ * 規則：值裡有中文時，取最後一個 " / " 之後的部分。
+ * 沒有分隔符就讓建置失敗——這種情況推導不出英文，安靜放行等於把中文送上英文頁。
+ * 目前 5 頁 marketing 全部都有分隔符，所以這個 throw 現在不會觸發；
+ * 等 one-more-step 那批遷移時，它們的純中文屬性會直接讓 build 停下來。
+ *
+ * ⚠ 只改 script／style 以外的部分。片段裡的 <script> 有自己的字串，
+ *   長得跟 HTML 屬性一模一樣，改到就是改壞用戶端程式碼。
+ */
+const ATTR = /\s(placeholder|aria-label|alt|title)="([^"]*)"/g;
+const CJK = /[一-鿿]/;
+
+function stripCjkAttrs(html: string) {
+  /* 用 script/style 當分界切片，只在片段之間改寫 */
+  const guarded = /<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi;
+  let out = '';
+  let last = 0;
+  for (const m of html.matchAll(guarded)) {
+    out += rewrite(html.slice(last, m.index)) + m[0];
+    last = m.index! + m[0].length;
+  }
+  return out + rewrite(html.slice(last));
+
+  function rewrite(chunk: string) {
+    return chunk.replace(ATTR, (whole, attr: string, val: string) => {
+      if (!CJK.test(val)) return whole;
+      const i = val.lastIndexOf(' / ');
+      if (i < 0) {
+        throw new Error(
+          `${pageKey}：英文路由的 ${attr}="${val}" 是純中文，沒有 " / " 可以取英文半邊。` +
+            `請在片段裡改成「中文 / English」，或直接改用英文。`,
+        );
+      }
+      return ` ${attr}="${val.slice(i + 3)}"`;
+    });
+  }
+}
+
 let fragment = fragments[path];
 if (isEn) {
   assertNoSameTagNesting(fragment, 'zh-only');
   fragment = fragment.replace(LANG_EL('zh-only'), '');
+  fragment = stripCjkAttrs(fragment);
 }
 
 /*

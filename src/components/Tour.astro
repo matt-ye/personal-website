@@ -11,9 +11,10 @@
  * - 雙語沿用 <html data-lang> 與 langchange 事件，導覽中途切語言會即時重寫文案。
  * - DOM 由 JS 動態建立，Astro 的 scoped style 不會加上 hash 屬性，故用 is:global。
  */
+const isEn = Astro.currentLocale === 'en';
 ---
 
-<button type="button" id="tour-open" class="tt-help" aria-label="網站導覽 / Site tour">
+<button type="button" id="tour-open" class="tt-help" aria-label={isEn ? "Site tour" : "網站導覽 / Site tour"}>
   <span aria-hidden="true">?</span>
 </button>
 

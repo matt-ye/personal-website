@@ -192,7 +192,7 @@ const yearSpan = (() => {
         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input type="text" id="search-input" placeholder="搜尋主題、主辦單位…" autocomplete="off" />
+        <input type="text" id="search-input" placeholder={isEn ? 'Search topics, organisers…' : '搜尋主題、主辦單位…'} autocomplete="off" />
       </div>
       <div class="filter-row">
         <span class="filter-label"><T zh="類型" en="Type" /></span>
@@ -234,11 +234,18 @@ const yearSpan = (() => {
     <div class="results-meta">
       <span><T zh="顯示" en="Showing" /> <b id="results-count">—</b> <T zh="場活動" en="events" /></span>
       <div class="results-meta-right">
+        {/* <option> 與 placeholder 不能用 <T>：它們是純文字語境，
+            塞不進 <T> 輸出的兩個 <span>——這正是排序選單在 /en/ 一直是中文的原因，
+            不是漏改，是那個位置本來就沒有雙語機制。
+
+            這裡改用建置期依 locale 選字串。之所以成立，是因為 /speeches/ 的
+            語言鈕是 <a href="/en/speeches/">（換頁），不是就地切——
+            所以每一份 HTML 的語言在建置期就定了。就地切的頁面不能這樣做。 */}
         <select id="sort-select" class="sort-select">
-          <option value="date-desc">日期（最新）</option>
-          <option value="date-asc">日期（最早）</option>
-          <option value="audience-desc">人次（最多）</option>
-          <option value="hours-desc">時數（最多）</option>
+          <option value="date-desc">{isEn ? 'Date (newest)' : '日期（最新）'}</option>
+          <option value="date-asc">{isEn ? 'Date (oldest)' : '日期（最早）'}</option>
+          <option value="audience-desc">{isEn ? 'Audience (largest)' : '人次（最多）'}</option>
+          <option value="hours-desc">{isEn ? 'Hours (most)' : '時數（最多）'}</option>
         </select>
         <button class="clear-btn" id="clear-btn" style="display:none"><T zh="清除篩選" en="Clear filters" /></button>
       </div>
