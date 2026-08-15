@@ -3064,3 +3064,13 @@ footer .container {
 .num-good   { color: var(--color-good); }
 .num-warn   { color: var(--color-warn); }
 .num-danger { color: var(--color-danger); }
+
+/* PEOP 文氏圖的三個字母。原本寫成行內 style="fill:#6d28d9"——
+   行內樣式的優先權高過主題規則，深色底上 #6d28d9 只有 2.72:1（門檻 3.0）。
+   改成 class 才能給夜間版。E 與 O 原本勉強及格，一併收進來保持一致。 */
+.peop-venn .v-p { fill: #6d28d9; }   /* 白底 7.10:1 */
+.peop-venn .v-e { fill: #0d9488; }   /* 3.74:1 */
+.peop-venn .v-o { fill: #b45309; }   /* 5.02:1 */
+[data-theme="dark"] .peop-venn .v-p { fill: #c4b5fd; }   /* 深底 10.48:1 */
+[data-theme="dark"] .peop-venn .v-e { fill: #5eead4; }   /* 13.08:1 */
+[data-theme="dark"] .peop-venn .v-o { fill: #fcd34d; }   /* 13.42:1 */
