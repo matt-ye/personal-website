@@ -146,18 +146,18 @@ const awards = getPersonalAwards();
             widths 上限 1200 是因為這個位置在版面上最多就這麼寬，再大也看不出差別。 */}
         <div class="hero-carousel" id="hero-carousel">
           <div class="carousel-slide active">
-            <Image src={photoPointing} alt="葉淨維 Matt Ye — 演講姿態"
+            <Image src={photoPointing} alt={isEn ? "Matt Ye speaking on stage" : "葉淨維 Matt Ye — 演講姿態"}
                    widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
                    format="webp" quality={80} loading="eager" fetchpriority="high" />
           </div>
           <div class="carousel-slide">
             {/* 後兩張延後載入：它們要到第 4 秒才會出現，不該和首屏搶頻寬 */}
-            <Image src={photoStanding} alt="葉淨維 Matt Ye — 站姿"
+            <Image src={photoStanding} alt={isEn ? "Matt Ye, standing portrait" : "葉淨維 Matt Ye — 站姿"}
                    widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
                    format="webp" quality={80} loading="lazy" />
           </div>
           <div class="carousel-slide">
-            <Image src={photo5} alt="葉淨維 Matt Ye — 笑容"
+            <Image src={photo5} alt={isEn ? "Matt Ye, smiling" : "葉淨維 Matt Ye — 笑容"}
                    widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
                    format="webp" quality={80} loading="lazy" />
           </div>

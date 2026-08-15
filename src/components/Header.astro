@@ -48,9 +48,9 @@ const LangInner = `<span class="lang-zh">EN</span><span class="lang-en">中</spa
       {hasAlt ? (
         <a class="lang-toggle" id="lang-toggle" href={altHref}
            hreflang={isEn ? 'zh-TW' : 'en'}
-           aria-label="切換語言 / Switch language" set:html={LangInner} />
+           aria-label={isEn ? "Switch language" : "切換語言 / Switch language"} set:html={LangInner} />
       ) : (
-        <button class="lang-toggle" id="lang-toggle" aria-label="切換語言 / Switch language" set:html={LangInner} />
+        <button class="lang-toggle" id="lang-toggle" aria-label={isEn ? "Switch language" : "切換語言 / Switch language"} set:html={LangInner} />
       )}
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode">
         <!-- Sun icon (shown in dark mode) -->
