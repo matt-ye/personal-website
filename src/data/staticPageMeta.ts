@@ -253,6 +253,8 @@ export const staticPageMeta: StaticPageMeta[] = [
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/one-more-step/ga4-guide/",
+    "titleEn": "GA4 Complete Guide",
+    "descriptionEn": "A complete GA4 walkthrough: funnel analysis, user behaviour, marketing applications, bot detection and advanced features.",
     "twitterSite": "@MattChingWeiYe",
     "twitterCreator": "@MattChingWeiYe",
     "htmlAttrs": {

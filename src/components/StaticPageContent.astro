@@ -277,11 +277,17 @@ if (localized) {
     );
   } else {
     /* ── 機制 A：zh-only ＋ id="langBtn" ── */
-    const LANG_MEMORY = "localStorage.getItem('oms_lang')";
-    if (!fragment.includes(LANG_MEMORY)) {
-      throw new Error(`${pageKey}：找不到 ${LANG_MEMORY}，語言記憶可能改了寫法——請確認後更新這裡`);
+
+    /* 語言記憶的鍵名各頁不同（marketing 是 oms_lang、ga4-guide 是 ga4_lang），
+       所以比對形狀而不是字面值——原本寫死 'oms_lang'，ga4-guide 一遷進來
+       就被自己的守衛擋在建置期。機制 B 的 state.lang 也是同樣的處理。
+
+       鍵名必須含 lang：主題記憶（oms_theme／ga4_theme）不能被一起關掉。 */
+    const LANG_MEMORY = /localStorage\.getItem\('([A-Za-z0-9_-]*lang[A-Za-z0-9_-]*)'\)/;
+    if (!LANG_MEMORY.test(fragment)) {
+      throw new Error(`${pageKey}：找不到語言記憶的 localStorage 讀取，寫法可能改了——請確認後更新這裡`);
     }
-    /* 換成 null，讓 `if (l)` 永遠不成立。主題的 oms_theme 不動。 */
+    /* 換成 null，讓 `if (lang)` 永遠不成立。主題的 *_theme 不動。 */
     fragment = fragment.replace(LANG_MEMORY, 'null /* 語言由網址決定，見 StaticPageContent */');
 
     const BTN = /<button[^>]*id="langBtn"[^>]*>[^<]*<\/button>/;
