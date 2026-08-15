@@ -1,0 +1,103 @@
+---
+/*
+ * 404 頁。
+ *
+ * ── 為什麼這個檔案的存在本身就是修復 ───────────────────────────────
+ * Cloudflare Pages 用「有沒有頂層 404.html」判斷這是靜態站還是 SPA。官方文件：
+ *   "If your project does not include a top-level 404.html file, Pages assumes
+ *    that you are deploying a single-page application"
+ * 而那個模式會「matches all incoming paths to the root (/)」。
+ *
+ * 在此之前這個站沒有 404 頁，所以**任何不存在的網址都回 200 ＋ 首頁內容**
+ * （實測 /en/this-page-does-not-exist-xyz/ 也是）。後果有三層：
+ *   ① Google 的 soft 404——官方說法是「can lead to error pages being indexed
+ *      and possibly shown in search results」
+ *   ② 「這個網址還在嗎」變成無法回答的問題：連結健檢與部署驗證都被 200 騙過
+ *   ③ 使用者點到失效連結不會看到說明，而是莫名其妙回到首頁
+ *
+ * astro.config.mjs 的 verifyNotFoundPage 會在建置期確認 dist/404.html 真的產出，
+ * 免得日後有人刪掉這個檔案、整站又安靜地變回 SPA 模式。
+ *
+ * ── 文案的分寸 ─────────────────────────────────────────────────────
+ * Matt 要的是「建置／維護中」的說法。但不是每個 404 都是施工中——也可能是
+ * 網址過期或打錯。所以寫成**兩種可能都涵蓋**，而不是斷言頁面正在施工；
+ * 斷言錯了會讓等待的人一直等。
+ *
+ * 中英並列、英文在上：這頁的讀者可能來自任一語言，一次全給比讓他先切語言好。
+ * 所以刻意不用 <T>（那是一次只顯示一種）。
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const EMAIL = 'chingweiye@mattye.dev';
+---
+<BaseLayout
+  title="Page Not Found 找不到頁面"
+  description="This page is not available. It may be under construction, or the link may be out of date."
+>
+  {/* 錯誤頁不該進索引——Google 對 soft 404 的建議之一就是 noindex */}
+  <meta slot="head" name="robots" content="noindex, nofollow" />
+
+  <section class="nf">
+    <p class="nf-code">404</p>
+
+    <div class="nf-block" lang="en">
+      <h1>This page isn’t here</h1>
+      <p>
+        It may still be under construction, or the link may be out of date.
+        If you were looking for something specific, email me at
+        <a href={`mailto:${EMAIL}`}>{EMAIL}</a> and I’ll point you to it.
+      </p>
+      <nav class="nf-links" aria-label="Site navigation">
+        <a href="/en/">Home</a>
+        <a href="/en/writing/">Writing</a>
+        <a href="/en/projects/">Projects</a>
+      </nav>
+    </div>
+
+    <hr class="nf-rule" />
+
+    <div class="nf-block" lang="zh-TW">
+      <h2>這個頁面目前不在這裡</h2>
+      <p>
+        它可能還在建置中，也可能是網址已經失效。如果你是為了找特定的內容而來，
+        寫信到 <a href={`mailto:${EMAIL}`}>{EMAIL}</a>，我再告訴你它在哪裡。
+      </p>
+      <nav class="nf-links" aria-label="網站導覽">
+        <a href="/">首頁</a>
+        <a href="/writing/">寫作</a>
+        <a href="/projects/">其他作品</a>
+      </nav>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf { max-width: 42rem; margin: 0 auto; padding: 4rem 0 6rem; }
+  .nf-code {
+    font-size: clamp(3rem, 12vw, 5rem);
+    font-weight: 700;
+    line-height: 1;
+    margin: 0 0 2rem;
+    color: var(--color-border);
+    letter-spacing: 0.04em;
+  }
+  .nf-block h1, .nf-block h2 {
+    font-size: clamp(1.35rem, 4vw, 1.7rem);
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+  }
+  .nf-block p {
+    color: var(--color-text-muted);
+    line-height: 1.8;
+    margin: 0 0 1.25rem;
+  }
+  .nf-block a { color: var(--color-accent); }
+  .nf-rule {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    margin: 2.5rem 0;
+  }
+  .nf-links { display: flex; gap: 1.25rem; flex-wrap: wrap; font-size: 0.9rem; }
+  .nf-links a { text-decoration: none; border-bottom: 1px solid transparent; }
+  .nf-links a:hover { border-bottom-color: currentColor; }
+</style>

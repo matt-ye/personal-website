@@ -395,6 +395,41 @@ function verifyI18nHreflang() {
  * 少了 webfont 只是換一個字體；ligature 圖示少了字型會直接變成英文單字，
  * 那是功能性損壞，不是外觀差異。**判準要對應後果的嚴重度。**
  */
+/*
+ * dist/404.html 必須存在——它的有無決定整站的路由行為。
+ *
+ * Cloudflare Pages 官方文件：「If your project does not include a top-level
+ * 404.html file, Pages assumes that you are deploying a single-page application」，
+ * 而該模式「matches all incoming paths to the root (/)」。
+ *
+ * 也就是說**刪掉 src/pages/404.astro 不會讓任何東西壞掉**——建置照過、
+ * 頁面照出，只是全站悄悄變回「任何網址都回 200 ＋ 首頁」的狀態，
+ * 而那正是 Google 說的 soft 404。這種退化沒有症狀，所以在這裡擋。
+ */
+function verifyNotFoundPage() {
+  return {
+    name: 'verify-404-page',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const file = join(fileURLToPath(dir), '404.html');
+        let html;
+        try { html = readFileSync(file, 'utf8'); } catch {
+          throw new Error(
+            'dist/404.html 不存在。沒有它，Cloudflare Pages 會把整站當成 SPA，' +
+            '任何不存在的網址都會回 200 ＋ 首頁內容（Google 的 soft 404）。\n' +
+            '  → 請確認 src/pages/404.astro 還在',
+          );
+        }
+        /* 錯誤頁進索引就失去意義了——Google 對 soft 404 的建議之一就是 noindex */
+        if (!/<meta[^>]+name="robots"[^>]+noindex/i.test(html)) {
+          throw new Error('dist/404.html 缺少 noindex——錯誤頁不該進索引');
+        }
+        logger.info('404 page verified: exists and is noindex');
+      },
+    },
+  };
+}
+
 function verifyIconFonts() {
   const FONTS = [
     { cls: /class="[^"]*\bmaterial-symbols[^"]*"/, need: /fonts\.googleapis\.com[^"]*Material\+Symbols/, name: 'Material Symbols' },
@@ -619,6 +654,7 @@ export default defineConfig({
     injectBreadcrumbs(),
     verifyRssFeed(),
     verifyI18nHreflang(),
+    verifyNotFoundPage(),
     verifyIconFonts(),
     verifyI18nPrerendered(),
   ],
