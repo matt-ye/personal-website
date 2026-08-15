@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import T from '../components/T.astro';
+import { tagLabel } from '../lib/tagLabels';
 
 interface Props {
   title: string;
@@ -82,12 +83,14 @@ const articleLd = {
             : `Updated ${updatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`}
         </time>
       )}
+      {/* 徽章與標籤都走 <T>：這篇文章在中文網址上，顯示語言是使用者按切換鈕
+          即時決定的，建置期並不知道——所以兩種都輸出，交給 CSS 切。 */}
       {bilingual
-        ? <span class="lang-badge">中 · EN</span>
-        : <span class="lang-badge">{lang === 'zh' ? '中' : 'EN'}</span>}
+        ? <span class="lang-badge"><T zh="中 · EN" en="ZH · EN" /></span>
+        : <span class="lang-badge">{lang === 'zh' ? <T zh="中" en="ZH" /> : 'EN'}</span>}
       {tags && tags.length > 0 && (
         <div class="tags">
-          {tags.map(tag => <span class="tag">{tag}</span>)}
+          {tags.map(tag => <span class="tag"><T zh={tag} en={tagLabel(tag, true)} /></span>)}
         </div>
       )}
     </div>
