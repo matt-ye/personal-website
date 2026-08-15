@@ -151,6 +151,24 @@ if (isEn) {
  */
 const dict = readI18nDict(fragment);
 
+/*
+ * 由 JS 從資料陣列生成的區塊，英文版從 <key>.en.json 注入。
+ *
+ * 這些容器的內容不是字典查表，是 render 函式跑資料陣列的結果，
+ * 所以上面那套 data-i18n 的英文替換管不到它們。
+ * 中文版已由 scripts/prerender-containers.mjs 寫進片段（爬蟲在中文網址讀到的
+ * 就是那份），英文版另存 JSON 在這裡注入——這樣每個網址只帶一種語言，
+ * 中文頁不會因為要塞英文而變兩倍重。
+ *
+ * 沒有對應 JSON 的頁面（多數頁）拿到 undefined，整段跳過，行為一字不變。
+ */
+const enContainers = import.meta.glob('../data/static-pages/*.en.json', {
+  eager: true,
+  import: 'default',
+}) as Record<string, Record<string, string>>;
+
+const enPath = Object.keys(enContainers).find((p) => p.endsWith(`/${pageKey}.en.json`));
+
 if (localized) {
   /* 英文路由：站內連結改指英文版（有的話）。
      不做的話，英文子頁的麵包屑會把讀者送回中文樞紐——樞紐頁遷好了，
@@ -236,6 +254,35 @@ if (localized) {
         throw new Error(`${pageKey}：字典的 en 缺 ${missing.length} 個鍵：${[...new Set(missing)].join(', ')}`);
       }
       if (!filled) throw new Error(`${pageKey}：一個 data-i18n 元素都沒換到英文，選擇器可能失效了`);
+
+      /* ②-b 由資料陣列生成的區塊，換成 <key>.en.json 裡的英文版。
+             同樣用深度計數找配對的結尾標籤——容器裡是整段 HTML，必然有同名巢狀。 */
+      if (enPath) {
+        const containers = enContainers[enPath];
+        for (const [id, innerHtml] of Object.entries(containers)) {
+          const open = new RegExp(`<(\\w+)\\b[^>]*\\bid="${id}"[^>]*>`);
+          const m2 = fragment.match(open);
+          if (!m2) {
+            throw new Error(
+              `${pageKey}：${pageKey}.en.json 有 #${id}，片段裡卻找不到這個容器——` +
+                `容器可能改了 id，請重跑 node scripts/prerender-containers.mjs`,
+            );
+          }
+          const tag = m2[1];
+          const bodyStart = m2.index! + m2[0].length;
+          const scan = new RegExp(`<(/?)${tag}\\b[^>]*>`, 'gi');
+          scan.lastIndex = bodyStart;
+          let depth = 1;
+          let end = -1;
+          let hit2;
+          while ((hit2 = scan.exec(fragment))) {
+            depth += hit2[1] ? -1 : 1;
+            if (depth === 0) { end = hit2.index; break; }
+          }
+          if (end < 0) throw new Error(`${pageKey}：#${id} 找不到配對的結尾標籤`);
+          fragment = fragment.slice(0, bodyStart) + innerHtml + fragment.slice(end);
+        }
+      }
     }
 
     /* ③ 頁內那顆「切語言」的 click 監聽要拆掉。
