@@ -38,6 +38,7 @@ export const MIGRATED_PATHS = [
   '/projects/marketing/short-video/',
   '/projects/one-more-step/aw32/',
   '/projects/one-more-step/daniels-talk/',
+  '/projects/one-more-step/ga4-guide/',
 ] as const;
 
 /**
