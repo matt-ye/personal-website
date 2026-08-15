@@ -125,7 +125,7 @@ const presentationPosts = await seriesPosts('hardcore-presentation');
     </div>
 
     <!-- Hardcore Presentation Series Card -->
-    <div class="project-card" data-href="/writing/?series=硬核簡報">
+    <div class="project-card" data-href={`${localeHref('/writing/', Astro.currentLocale)}?series=硬核簡報`}>
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="人、環境、職能：硬核簡報的科學" en="Hardcore Presentation" /></h2>
@@ -153,12 +153,12 @@ const presentationPosts = await seriesPosts('hardcore-presentation');
           <span class="project-tag"><T zh="認知科學" en="Cognitive Science" /></span>
           <span class="project-tag"><T zh="表達" en="Communication" /></span>
         </div>
-        <a href="/writing/?series=硬核簡報" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
+        <a href={`${localeHref('/writing/', Astro.currentLocale)}?series=硬核簡報`} class="project-link"><T zh="查看全部 →" en="View all →" /></a>
       </div>
     </div>
 
     <!-- Investing Series Card -->
-    <div class="project-card" data-href="/writing/?series=投資專欄">
+    <div class="project-card" data-href={`${localeHref('/writing/', Astro.currentLocale)}?series=投資專欄`}>
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="寫給家人：投資心態" en="Letters to Family: An Investing Mindset" /></h2>
@@ -188,12 +188,12 @@ const presentationPosts = await seriesPosts('hardcore-presentation');
         </div>
         <!-- ?series= 的值必須與 /writing 卡片的 data-category 完全相同（中文），
              篩選是直接字串比對；llms.txt 也是用中文值當正式網址。 -->
-        <a href="/writing/?series=投資專欄" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
+        <a href={`${localeHref('/writing/', Astro.currentLocale)}?series=投資專欄`} class="project-link"><T zh="查看全部 →" en="View all →" /></a>
       </div>
     </div>
 
     <!-- Management 3R Series Card -->
-    <div class="project-card" data-href="/writing/?series=管理專欄">
+    <div class="project-card" data-href={`${localeHref('/writing/', Astro.currentLocale)}?series=管理專欄`}>
       <div class="project-card-header">
         <div>
           <h2 class="project-title"><T zh="天時、地利、人和：現代管理者的 3R 實踐指南" en="Right Time, Right Place, Right People" /></h2>
@@ -221,7 +221,7 @@ const presentationPosts = await seriesPosts('hardcore-presentation');
           <span class="project-tag"><T zh="策略" en="Strategy" /></span>
           <span class="project-tag"><T zh="組織" en="Organization" /></span>
         </div>
-        <a href="/writing/?series=管理專欄" class="project-link"><T zh="查看全部 →" en="View all →" /></a>
+        <a href={`${localeHref('/writing/', Astro.currentLocale)}?series=管理專欄`} class="project-link"><T zh="查看全部 →" en="View all →" /></a>
       </div>
     </div>
   </div>
