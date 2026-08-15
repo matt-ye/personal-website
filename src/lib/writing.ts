@@ -70,7 +70,12 @@ export async function getWritingItems(): Promise<WritingItem[]> {
   // One More Step features → unified items
   const features: WritingItem[] = oneMoreStep.map(d => ({
     title: d.title,
+    titleAlt: d.titleEn,
+    /* titleAlt 決定主標題會不會跟著語言切換；titleEn 只是中文頁下方那行小字。
+       兩個欄位長得像但用途不同——沒接上的話，資料裡明明有英文標題，
+       英文頁卻仍顯示中文。 */
     titleEn: d.titleEn,
+    descAlt: d.descriptionEn ?? '',
     desc: d.description,
     href: d.url ?? `/projects/one-more-step/${d.slug}/`,
     date: new Date(d.date),
@@ -82,6 +87,10 @@ export async function getWritingItems(): Promise<WritingItem[]> {
   // Marketing Column units → unified items
   const marketingItems: WritingItem[] = marketingUnits.map(d => ({
     title: d.title,
+    titleAlt: d.titleEn,
+    /* titleAlt 決定主標題會不會跟著語言切換；titleEn 只是中文頁下方那行小字。
+       兩個欄位長得像但用途不同——沒接上的話，資料裡明明有英文標題，
+       英文頁卻仍顯示中文。 */
     titleEn: d.titleEn,
     desc: d.description,
     href: d.url ?? `/projects/marketing/${d.slug}/`,
@@ -94,6 +103,10 @@ export async function getWritingItems(): Promise<WritingItem[]> {
   // Standalone essays / 隨筆 (static HTML under public/writing/) → unified items
   const essayItems: WritingItem[] = essays.map(d => ({
     title: d.title,
+    titleAlt: d.titleEn,
+    /* titleAlt 決定主標題會不會跟著語言切換；titleEn 只是中文頁下方那行小字。
+       兩個欄位長得像但用途不同——沒接上的話，資料裡明明有英文標題，
+       英文頁卻仍顯示中文。 */
     titleEn: d.titleEn,
     desc: d.description,
     href: d.url,

@@ -1,5 +1,6 @@
 ---
 title: 通貨膨脹：讓你的錢悄悄縮水的那股力量
+titleEn: "Inflation: The Quiet Force Shrinking Your Money"
 description: 為什麼存錢反而會讓你變窮？理解通膨的本質，是所有投資決策的起點。
 pubDate: 2026-06-10
 lang: zh
