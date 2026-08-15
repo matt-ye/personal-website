@@ -36,6 +36,8 @@ export const MIGRATED_PATHS = [
   '/projects/marketing/social-platforms-2026/',
   '/projects/marketing/tech-publishing/',
   '/projects/marketing/short-video/',
+  '/projects/one-more-step/aw32/',
+  '/projects/one-more-step/daniels-talk/',
 ] as const;
 
 /**

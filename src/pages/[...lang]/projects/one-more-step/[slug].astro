@@ -1,0 +1,61 @@
+---
+/*
+ * One More Step 底下手刻頁的動態路由。
+ *
+ * 遷移前：public/projects/one-more-step/<slug>/index.html，每頁自帶完整的 head。
+ * 遷移後：meta 在 src/data/staticPageMeta.ts、內容在 src/data/static-pages/。
+ *
+ * ⚠ 這一批的頁面彼此毫無共用模板（aw32 與 daniels-talk 各自內建 data-i18n
+ *   雙語機制、investment-notes 有獨立的 modal 筆記架構）。共用的只有 head
+ *   的形狀，內容一律原樣搬。
+ *
+ * ⚠ 這裡有兩個已經預渲染過的頁面（aw32、daniels-talk）：內容片段裡的
+ *   data-i18n 元素已經填好中文，astro.config 的 verifyI18nPrerendered
+ *   會在建置期確認它們沒有變回空的。
+ *
+ * ── 為什麼從 pages/projects/ 搬到 pages/[...lang]/projects/ ──────────
+ * 原本這個檔案不在 [...lang] 底下，所以整批頁面只產得出中文網址。
+ * aw32 與 daniels-talk 其實早就有完整的英文字典（各 50／61 鍵、與中文對稱），
+ * 讀者按 🌐 會就地換字——但**網址不變**，等於一個網址供兩種語言，
+ * 對搜尋引擎與 LLM 只存在中文版，也沒有 hreflang 可宣告。
+ *
+ * 搬進 [...lang] 之後，語言由網址決定，與站上其他頁一致。
+ */
+import StaticPageLayout from '../../../../layouts/StaticPageLayout.astro';
+import StaticPageContent from '../../../../components/StaticPageContent.astro';
+import { staticPageMeta } from '../../../../data/staticPageMeta';
+
+/* ⚠ 前綴字串寫在函式內、不抽成模組層常數：Astro 會把 getStaticPaths
+     抽出來獨立執行，看不到 frontmatter 的模組作用域。 */
+export function getStaticPaths() {
+  const prefix = 'projects__one-more-step__';
+  return staticPageMeta
+    .filter((m) => m.key.startsWith(prefix))
+    .flatMap((m) => {
+      const slug = m.key.slice(prefix.length);
+      /* 中文版一律產生；英文版只產「有填英文 meta」的頁——判準與
+         [...lang]/projects/marketing/[slug].astro 完全一致，理由見該檔：
+         能從 meta 推導的就不該另外維護一份清單，忘了同步的症狀
+         （少一個網址）在頁面上看不出來。
+
+         目前只有 aw32 與 daniels-talk 填了英文欄位。其餘 6 頁沒有英文內容，
+         所以單純沒有 /en/ 網址，也不會輸出 hreflang。 */
+      const paths = [{ params: { lang: undefined, slug }, props: { meta: m } }];
+      if (m.titleEn && m.descriptionEn) {
+        paths.push({ params: { lang: 'en', slug }, props: { meta: m } });
+      }
+      return paths;
+    });
+}
+
+const { meta } = Astro.props;
+
+/* 有英文 meta 才傳 localized——傳了 StaticPageContent 才會把頁內的語言鈕
+   換成換網址、並停用語言記憶。判準與 getStaticPaths 一致。 */
+const zhPath = new URL(meta.canonical).pathname;
+const localized = meta.titleEn && meta.descriptionEn ? { zhPath, enPath: `/en${zhPath}` } : undefined;
+---
+
+<StaticPageLayout meta={meta}>
+  <StaticPageContent pageKey={meta.key} localized={localized} />
+</StaticPageLayout>
