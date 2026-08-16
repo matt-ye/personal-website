@@ -498,7 +498,7 @@ function verifyI18nPrerendered() {
             const empty = [...html.matchAll(/<(\w+)\b([^>]*\bdata-i18n(?:-html)?\s*=\s*"[^"]+"[^>]*)>\s*<\/\1>/g)];
             if (empty.length) {
               const rel = full.slice(root.length).replace(/\\/g, '/');
-              problems.push(`${rel}：${empty.length} 個空的 data-i18n 元素`);
+              problems.push(`${rel}：${empty.length} 個空的 data-i18n 元素 — 跑 node scripts/prerender-i18n.mjs`);
             }
           }
         };
@@ -511,6 +511,34 @@ function verifyI18nPrerendered() {
            #boardWall 刻意不在清單裡：留言從 Sheet 即時抓，含學生姓名，
            不寫進版控（見 scripts/prerender-i18n.mjs 的說明）。 */
         const MEMORIAL = 'writing/In-Memory-of-Miguel-Li/index.html';
+        /* one-more-step 兩頁由資料陣列生成的區塊。
+           上面那個掃描只抓 data-i18n，這些是帶 id 的容器，抓不到。
+
+           中英兩條路由都要驗：中文版由 scripts/prerender-containers.mjs 寫進片段，
+           英文版由 StaticPageContent 從 <key>.en.json 注入——兩條路徑不同，
+           只驗一邊的話另一邊壞掉不會有訊號。 */
+        const OMS = {
+          'projects/one-more-step/aw32/index.html': [
+            'timelineList', 'statsGrid', 'filterControls', 'startupGrid', 'tierGrid',
+            'moatStrongList', 'moatWeakList', 'opinionGrid', 'lensGrid',
+          ],
+          'projects/one-more-step/daniels-talk/index.html': ['readingsGrid', 'summaryTable', 'quizQuestions'],
+        };
+        for (const [rel, ids] of Object.entries(OMS)) {
+          for (const prefix of ['', 'en/']) {
+            const full = join(root, ...`${prefix}${rel}`.split('/'));
+            let html;
+            try { html = readFileSync(full, 'utf8'); } catch { continue; }
+            const empty = ids.filter((id) =>
+              new RegExp(`<(\\w+)[^>]*\\bid="${id}"[^>]*>\\s*</\\1>`).test(html),
+            );
+            if (empty.length) {
+              problems.push(`${prefix}${rel}：${empty.length} 個空容器（${empty.join(', ')}）— 跑 node scripts/prerender-containers.mjs`);
+            }
+            checked++;
+          }
+        }
+
         const MEMORIAL_IDS = ['nameZh', 'bioParas', 'facts', 'stats', 'courseList', 'tributeList', 'qtext', 'footer'];
         try {
           const html = readFileSync(join(root, ...MEMORIAL.split('/')), 'utf8')
@@ -519,14 +547,16 @@ function verifyI18nPrerendered() {
             new RegExp(`<(\\w+)[^>]*\\bid="${id}"[^>]*>\\s*</\\1>`).test(html),
           );
           if (empty.length) problems.push(`${MEMORIAL}：${empty.length} 個空容器（${empty.join(', ')}）`);
-          if (!/data-related-links/.test(html)) problems.push(`${MEMORIAL}：缺站內相關連結區塊`);
+          if (!/data-related-links/.test(html)) problems.push(`${MEMORIAL}：缺站內相關連結區塊 — 跑 node scripts/prerender-i18n.mjs`);
           checked++;
         } catch { /* 檔案不在就跳過，不擋建置 */ }
 
         if (problems.length) {
           throw new Error(
-            '預渲染的內容不見了，爬蟲會看到空殼。修法：node scripts/prerender-i18n.mjs\n  ' +
-              problems.join('\n  '),
+            /* 修法寫在每一條問題後面，不寫在標題——現在有兩支腳本
+               （data-i18n 佔位用 prerender-i18n、資料陣列容器用 prerender-containers），
+               標題只寫一支會把人指去跑不對的那支。 */
+            '預渲染的內容不見了，爬蟲會看到空殼：\n  ' + problems.join('\n  '),
           );
         }
         if (checked) logger.info(`i18n prerender verified: ${checked} page(s), no empty placeholders`);
