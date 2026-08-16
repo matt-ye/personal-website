@@ -34,7 +34,10 @@ for (const file of readdirSync(DIR).filter((f) => f.endsWith('.mjs'))) {
   /* KEEP 是「英文值裡允許留下的中文」，各檔自己宣告（多半是人名）。
      不放寬規則、只把例外寫死成清單——清單外的中文照樣報錯，
      所以真正的漏譯還是擋得住。 */
-  const { MAP, KEEP = [] } = await import(`file://${join(DIR, file)}`);
+  /* INCOMPLETE 宣告「這份還在翻」。漏譯會列出來但不算失敗——
+     「還沒做完」和「做錯了」是兩件事，報成同一種的話，真正的錯誤
+     會被埋在一長串未完成清單裡看不見。stale／untranslated 仍然算失敗。 */
+  const { MAP, KEEP = [], INCOMPLETE = false } = await import(`file://${join(DIR, file)}`);
   const found = extractStrings(page);
   const all = new Set([...found.text, ...found.attr, ...found.data]);
   const keys = new Set(Object.keys(MAP));
@@ -47,14 +50,21 @@ for (const file of readdirSync(DIR).filter((f) => f.endsWith('.mjs'))) {
     ([, v]) => v !== '' && CJK.test(KEEP.reduce((s, w) => s.split(w).join(''), v)),
   );
 
-  const ok = !missing.length && !stale.length && !untranslated.length;
-  if (!ok) bad++;
-  const zhChars = [...all].reduce((n, s) => n + (s.match(/[一-鿿]/g) || []).length, 0);
+  /* 錯誤（一定要修）與未完成（進行中）分開算 */
+  const broken = stale.length || untranslated.length;
+  const ok = !broken && (!missing.length || INCOMPLETE);
+  if (broken || (missing.length && !INCOMPLETE)) bad++;
+
+  const cjk = (s) => (s.match(/[一-鿿]/g) || []).length;
+  const zhChars = [...all].reduce((n, s) => n + cjk(s), 0);
+  const doneChars = [...all].filter((s) => keys.has(s)).reduce((n, s) => n + cjk(s), 0);
+  const mark = broken ? '✘' : missing.length ? '…' : '✔';
   console.log(
-    `  ${ok ? '✔' : '✘'} ${key.replace(/^(projects__one-more-step__|writing__)/, '').padEnd(30)}` +
-      `${all.size} 條 / ${zhChars} 字　對照表 ${keys.size} 條`,
+    `  ${mark} ${key.replace(/^(projects__one-more-step__|writing__)/, '').padEnd(30)}` +
+      `${all.size - missing.length}/${all.size} 條　${doneChars}/${zhChars} 字` +
+      (missing.length ? `　（進行中，剩 ${missing.length} 條 / ${zhChars - doneChars} 字）` : ''),
   );
-  if (missing.length) {
+  if (missing.length && !INCOMPLETE) {
     console.log(`      ⚠ 漏譯 ${missing.length} 條：`);
     missing.slice(0, 8).forEach((s) => console.log(`          ${s.slice(0, 60)}`));
   }
