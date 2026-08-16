@@ -1,0 +1,60 @@
+# 每日把 Google Sheet 的內容同步成 repo 內的 JSON 快照。
+#
+# 為什麼要同步進 repo 而不是 build 時直接抓：
+#   build 不再依賴 Google 的可用性，資料有版本歷史可回溯，
+#   而且三頁的內容從此進得了 HTML（爬蟲與 LLM 看得到）。
+#
+# 資料有變動才會 commit；push 後 Cloudflare Pages 依既有的 main 綁定自動部署。
+# 手動觸發：Actions → sync-sheets → Run workflow
+name: sync-sheets
+
+on:
+  schedule:
+    # 每日 21:00 UTC = 台北 05:00（清晨更新，白天看到的就是當天的資料）
+    - cron: '0 21 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-sheets
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Fetch sheets into src/data/sheets
+        id: fetch
+        # 抓取失敗時腳本會保留既有快照並以非零碼結束。
+        # 這裡先不讓 step 直接中斷——已經抓到的來源仍應該 commit 進去，
+        # 失敗與否留到最後一步才反映到 workflow 狀態，這樣既不會漏資料，
+        # 也不會把失敗藏起來。
+        run: |
+          set +e
+          node scripts/fetch-sheets.mjs
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Commit if changed
+        run: |
+          if [ -z "$(git status --porcelain src/data/sheets)" ]; then
+            echo "資料無變動，不產生 commit"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/sheets
+          git commit -m "chore: sync sheet snapshots ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+          git push
+
+      - name: Surface fetch failures
+        if: steps.fetch.outputs.exit_code != '0'
+        run: |
+          echo "::error::有 Sheet 來源抓取失敗，網站沿用既有快照（內容不會消失，但這次的資料是舊的）。看上面的 Fetch 步驟找出是哪一個來源。"
+          exit 1

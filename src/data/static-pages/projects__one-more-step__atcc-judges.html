@@ -1,0 +1,632 @@
+<!-- 由 scripts/extract-static-pages.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #f7f8fa;
+      --color-text: #111111;
+      --color-text-muted: #666666;
+      --color-border: #e8e8e8;
+      --color-accent: #5b4fff;
+      --color-accent-hover: #3d31e0;
+      --color-tag-bg: #f0f4f8;
+
+      --card-bg: #ffffff;
+      --card-border: #e8e8e8;
+      --card-shadow: 0 1px 4px rgba(0,0,0,.06);
+
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+
+      --A1: #5b4fff;
+      --A2: #0d9488;
+      --A3: #d97706;
+      --A4: #db2777;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      line-height: 1.9;
+      min-height: 100vh;
+    }
+
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { color: var(--color-accent-hover); text-decoration: underline; }
+
+    .wrapper { max-width: 720px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 1.5rem); }
+
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0.75rem 0;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .back-link:hover { color: var(--color-accent); text-decoration: none; }
+
+    .hero { padding: 3.5rem 0 2rem; }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(91,79,255,0.08);
+      border: 1px solid rgba(91,79,255,0.2);
+      color: var(--color-accent);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border-radius: 99px;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      font-size: clamp(1.6rem, 5vw, 2.3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+    }
+    .hero .subtitle {
+      font-size: 1.05rem;
+      color: var(--color-text-muted);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+    .hero-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .hero-tag {
+      background: var(--color-tag-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 99px;
+    }
+
+    article { padding-bottom: 2rem; }
+    article section { padding: 2rem 0; }
+    article section + section { border-top: 1px solid var(--color-border); }
+
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+      margin-bottom: 1.25rem;
+    }
+    article p { margin-bottom: 1.1rem; font-size: 0.98rem; }
+    article p:last-child { margin-bottom: 0; }
+    article strong { font-weight: 700; }
+
+    .judge-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      box-shadow: var(--card-shadow);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.1rem;
+    }
+    .judge-card.j1 { border-left-color: var(--A1); }
+    .judge-card.j2 { border-left-color: var(--A2); }
+    .judge-card.j3 { border-left-color: var(--A3); }
+    .judge-card.j4 { border-left-color: var(--A4); }
+    .judge-head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+    .judge-name { font-weight: 700; font-size: 1.02rem; }
+    .judge-title { font-size: 0.8rem; color: var(--color-text-muted); }
+    .judge-theme {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.6rem;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+    .j1 .judge-theme { background: rgba(91,79,255,0.08); color: var(--A1); }
+    .j2 .judge-theme { background: rgba(13,148,136,0.08); color: var(--A2); }
+    .j3 .judge-theme { background: rgba(217,119,6,0.08); color: var(--A3); }
+    .j4 .judge-theme { background: rgba(219,39,119,0.08); color: var(--A4); }
+    .judge-card p { font-size: 0.92rem; color: var(--color-text); margin-bottom: 0.8rem; }
+    .judge-card p:last-child { margin-bottom: 0; }
+
+    .tool-grid { display: grid; gap: 0.9rem; margin: 1.25rem 0 1.5rem; }
+    @media (min-width: 640px) { .tool-grid { grid-template-columns: 1fr 1fr; } }
+    .tool-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--card-shadow);
+      padding: 1.1rem 1.3rem;
+    }
+    .tool-card h3 { font-size: 0.92rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      
+      display: flex;
+      align-items: center;
+      gap: 0.5rem; margin:0 0 4px; }
+    .dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; flex-shrink: 0; }
+    .dot-1 { background: var(--A1); }
+    .dot-2 { background: var(--A2); }
+    .dot-3 { background: var(--A3); }
+    .dot-4 { background: var(--A4); }
+    .tool-card .tool-sub { font-size: 0.78rem; color: var(--color-text-muted); margin-bottom: 0.5rem; }
+    .tool-card p { font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.65; margin-bottom: 0; }
+
+    .death-list {
+      counter-reset: q;
+      list-style: none;
+      margin: 1.25rem 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .death-list li {
+      counter-increment: q;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1.1rem 0.85rem 3.1rem;
+      position: relative;
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+    .death-list li::before {
+      content: counter(q);
+      position: absolute;
+      left: 1rem;
+      top: 0.95rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      background: var(--color-accent);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .death-list li strong { display: block; margin-bottom: 0.1rem; }
+    .death-list li span { color: var(--color-text-muted); font-size: 0.85rem; }
+
+    .callout {
+      background: rgba(91,79,255,0.05);
+      border: 1px solid rgba(91,79,255,0.18);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+      line-height: 1.8;
+      margin: 1.25rem 0;
+    }
+    .callout strong { color: var(--color-accent); }
+
+    h3.tool-heading {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 2rem 0 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .update-chip {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 0.12rem 0.55rem;
+      border-radius: 99px;
+    }
+
+    .type-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      box-shadow: var(--card-shadow);
+      padding: 1rem 1.3rem;
+      margin-bottom: 0.9rem;
+    }
+    .type-card.t1 { border-left-color: var(--A3); }
+    .type-card.t2 { border-left-color: var(--A2); }
+    .type-card.t3 { border-left-color: var(--A1); }
+    .type-card.t4 { border-left-color: var(--A4); }
+    .type-card.t5 { border-left-color: #64748b; }
+    .type-head { display: flex; align-items: baseline; gap: 0.55rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
+    .type-name { font-weight: 700; font-size: 0.98rem; }
+    .type-team {
+      font-size: 0.72rem;
+      color: var(--color-text-muted);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+    }
+    .type-card .type-money { font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.65; margin-bottom: 0.55rem; }
+    .type-card .type-money strong { color: var(--color-text); font-weight: 600; }
+    .death-chips { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .death-chip {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--color-accent);
+      background: rgba(91,79,255,0.07);
+      border: 1px solid rgba(91,79,255,0.25);
+      padding: 0.15rem 0.6rem;
+      border-radius: 99px;
+    }
+
+    .flow-steps {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+      margin: 1.25rem 0 1.5rem;
+    }
+    @media (min-width: 640px) { .flow-steps { grid-template-columns: repeat(4, 1fr); gap: 0.7rem; } }
+    .flow-step {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--card-shadow);
+      padding: 0.9rem 1rem;
+      position: relative;
+    }
+    .flow-step .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      background: var(--color-accent);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+    }
+    .flow-step h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .flow-step p { font-size: 0.78rem; color: var(--color-text-muted); line-height: 1.6; margin: 0; }
+    .flow-step::after {
+      content: "↓";
+      position: absolute;
+      left: 50%;
+      bottom: -0.9rem;
+      transform: translateX(-50%);
+      color: var(--color-text-muted);
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+    @media (min-width: 640px) {
+      .flow-step::after {
+        content: "→";
+        left: auto;
+        right: -0.85rem;
+        top: 50%;
+        bottom: auto;
+        transform: translateY(-50%);
+      }
+    }
+    .flow-step:last-child::after { content: none; }
+
+    .quote-grid { display: grid; gap: 0.9rem; margin: 1.25rem 0 1.5rem; }
+    @media (min-width: 640px) { .quote-grid { grid-template-columns: 1fr 1fr; } }
+    blockquote.judge-quote {
+      border-left: 3px solid var(--color-border);
+      padding: 0.6rem 0 0.6rem 1.1rem;
+      font-size: 0.95rem;
+      line-height: 1.75;
+    }
+    blockquote.judge-quote.q1 { border-left-color: var(--A1); }
+    blockquote.judge-quote.q2 { border-left-color: var(--A2); }
+    blockquote.judge-quote.q3 { border-left-color: var(--A3); }
+    blockquote.judge-quote.q4 { border-left-color: var(--A4); }
+    blockquote.judge-quote footer { font-size: 0.78rem; color: var(--color-text-muted); margin-top: 0.35rem; }
+
+    .author-note {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--color-border);
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+
+    footer.site-footer { padding: 3rem 0 4rem; text-align: center; color: var(--color-text-muted); font-size: 0.82rem; border-top: 1px solid var(--color-border); }
+</style>
+
+<nav class="site-nav">
+    <div class="wrapper">
+      <a class="back-link" href="/projects/one-more-step/">← One More Step</a>
+    </div>
+  </nav>
+
+  <div class="wrapper">
+    <header class="hero">
+      <span class="hero-badge">One More Step · 2026/7/5</span>
+      <h1>四位評審教我的事</h1>
+      <p class="subtitle">一個職能治療師在商業競賽決賽現場的筆記</p>
+      <div class="hero-tags">
+        <span class="hero-tag">ATCC</span>
+        <span class="hero-tag">簡報教練</span>
+        <span class="hero-tag">商業競賽</span>
+        <span class="hero-tag">職能治療</span>
+      </div>
+    </header>
+
+    <article>
+      <section>
+        <p>今天 (7/5) 下午，福華文教會館卓越堂。23rd ATCC 全國大專院校商業個案大賽決賽，五支隊伍、每隊十五分鐘提報加二十分鐘 Q&amp;A。</p>
+        <p>我曾協助的 HP 代表隊伍「愛P才會贏」以 SenseEase——一個解決長時間用電腦引發暈眩與視覺疲勞的 AI 輔助方案——拿下全國冠軍。</p>
+        <p>我為他們高興也感到與有榮焉，聽到他們得獎的瞬間莫名熱血，讓我想起過去自己參加競賽得獎時的經驗。</p>
+        <p>坐在台下的那個下午，觀察各組的提案讓我更了解商業競賽的模式還有 ATCC 的偏好。此外，四位評審的提問，也讓我能提升思維，從更高的視角看提案。</p>
+      </section>
+
+      <section>
+        <h2>一個職能治療師，為什麼會出現在商業競賽？</h2>
+        <p>我是職能治療師，出現在這個場合，似乎有點怪對吧？</p>
+        <p>過去我在三個全國簡報競賽獲獎後，開始持續分享競賽取向的簡報表達技巧。</p>
+        <p>而這一組的成員之一，剛好跟我一起修林益全教授在台大開設的【創業家思維與創業實務管理】。因為這個緣分，他邀請我進行專家訪談，並對他們簡報給予回饋。</p>
+        <p>第一次是六月初的專家訪談。他們的產品要處理「視覺誘發暈動症」（VIMS）——這正跟我的專業有關。那次我們做的事情，說起來不太像一般想像中的「顧問」：依照他們提供的訪綱，我進行一輪深度文獻搜尋，把「漸進式暴露」「習慣化」「視野遮罩」「靜止錨點」這些產品想強調的機制，逐一對回臨床與神經科學的證據。更重要的是，我們誠實劃出了一條紅線——<strong>哪些效果是 Demo 可以支持的（即時的舒適改善），哪些主張需要更嚴謹的驗證才能宣稱（長期的神經適應）</strong>。</p>
+        <p>除此之外，團隊進行了非常充足的使用者體驗訪談和專家訪問（除了我之外，還訪談一位醫師和視覺誘發暈動症專家）。這些充足的準備或許成為了他們的護身符。決賽 Q&amp;A 裡，沒有評審質疑「這是不是真痛點」或「這是不是真的能用的解決方法」。</p>
+        <p>因為團隊有足夠資料說明痛點，也把能證明的和還不能證明的分清楚、不過度推論，評審的提問火力反而都針對商業化層面。我想，<strong>當評審開始跟你認真討論怎麼把生意做大，代表你的產品已經過了生死關</strong>。</p>
+        <p>第二次是準決賽前，他們再找我看一次簡報，一起調整了用詞準確度、敘事的順序和投影片的呈現。我覺得那次我的貢獻遠小於第一次——<strong>他們把內容的地基打對了，簡報只是讓它被看見。</strong></p>
+      </section>
+
+      <section>
+        <h2>四面鏡子：評審的提問不是隨機的</h2>
+        <p>決賽二十分鐘的 Q&amp;A，是資訊密度極高的商業個案教學現場。</p>
+        <p>四位評審，完全不同的職業出身，像四面鏡子，各自照出一個提案的不同缺口。看完五組，這樣的覺察從腦中浮現：<strong>每位評審的問題都不是隨機的，而是從他的職業本能長出來的。</strong></p>
+
+        <div class="judge-card j1">
+          <div class="judge-head">
+            <span class="judge-name">白崇亮博士</span>
+            <span class="judge-title">前奧美行銷傳播集團董事長</span>
+            <span class="judge-theme">問的是「說服」</span>
+          </div>
+          <p>他反覆問各隊同一個問題：「這到底是公部門服務、非營利組織、還是社會企業？」一開始我以為只是確認團隊是否知道自己的定位，後來才發現他在強調——<strong>定位一旦模糊，後面整套商業邏輯都會跟著鬆動</strong>，因為這三種定位的獲利方式完全不同。</p>
+          <p>他在講評時的一句話讓我印象深刻：「有技術做出產品不難，最難的是說服消費者改變、掏錢、並且重複購買。」這是做了一輩子品牌的人才有的洞察。</p>
+        </div>
+
+        <div class="judge-card j2">
+          <div class="judge-head">
+            <span class="judge-name">劉奕成副董事長</span>
+            <span class="judge-title">和鼎創投</span>
+            <span class="judge-theme">問的是「護城河」</span>
+          </div>
+          <p>創投的第一反射：「為什麼是你？為什麼是現在？為什麼別人還沒做？」有一隊提出建置媒合平台，他的回應直截了當：如果這個需求真的存在，現成的大平台開一個專區不就解決了？自己從零建置，經濟效益在哪裡？</p>
+          <p>他也提醒另一隊：想要做循環經濟，但當你的資產被拿在使用者手上，歸還率和回收成本要算得比想像中保守。</p>
+        </div>
+
+        <div class="judge-card j3">
+          <div class="judge-head">
+            <span class="judge-name">馮博堅董事總經理</span>
+            <span class="judge-title">BCG 全球合夥人</span>
+            <span class="judge-theme">問的是「數字撐不撐得住」</span>
+          </div>
+          <p>他針對各組提出的市場大小、成本估算、預期獲利等進行提問，不斷確認這些數字的計算邏輯和真實性，這是他身在管理顧問業的專業職能，希望提出的每一個數字能有扎實證據支持。</p>
+          <p>此外，他的專業背景對參賽者來說很有挑戰性：馮博堅曾在 HTC 負責 Vive 的策略規劃與全球生態系——也就是說，SenseEase 要解的「螢幕暈眩」，正是他親手做過 VR 裝置市場中的常見問題。他對產品的提問不是泛泛而問，而是檢驗你的知識儲備和對產品的理解。這給我一個深刻的提醒：<strong>永遠假設評審團裡和投資人中，有一位是你這個題目的業內老手。</strong></p>
+          <p>另外，他在聽到其他團隊說想要做生態系時，他說「現在聽到『生態系』都會害怕」——很多團隊愛畫多方共贏的生態圈，但每一條連結的背後，都是要燒錢、要說服人的工作，這些事常常被提案者忽略。</p>
+        </div>
+
+        <div class="judge-card j4">
+          <div class="judge-head">
+            <span class="judge-name">孫宗德創辦人</span>
+            <span class="judge-title">牧羊人集團／汪喵星球</span>
+            <span class="judge-theme">問的是「真實」</span>
+          </div>
+          <p>從零徒手創業、把一盆貓草做成年營收破十億集團的人。他的問題最不像「評審題」，他每一次都問：「給你一分鐘，你會怎麼跟你的朋友介紹這個產品？」他要聽的不是摘要、不是產品比競品好在哪，而是真誠感。</p>
+          <p>他還說「行銷上，認知才是事實」，如果使用者沒有認知到痛點存在，那麼產品和服務形同虛設。</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>帶走的工具：四原型、五道生死題與五型死穴</h2>
+        <p>把四位評審的提問系統化之後，我整理成三個可以直接使用的工具。</p>
+
+        <p><strong>工具一：評審提問四原型。</strong>大多數商業簡報比賽、投資 Demo Day、企業提案的評審，都能歸入四型或其組合。賽前研究評審背景、歸類原型，就能反推問題會從哪裡來，預先埋好答案。未來帶隊時，或許我能從這些觀察延伸進行 Mock QA，隨機扮演其中一型，用該型的問題連續往下追問三層。</p>
+
+        <div class="tool-grid">
+          <div class="tool-card">
+            <h3><span class="dot dot-1"></span>BRAND</h3>
+            <div class="tool-sub">品牌說服型</div>
+            <p>你要說服誰改變行為？定位是什麼？消費者為什麼掏錢、還重複購買？</p>
+          </div>
+          <div class="tool-card">
+            <h3><span class="dot dot-2"></span>CAPITAL</h3>
+            <div class="tool-sub">創投資本型</div>
+            <p>為什麼是你？為什麼是現在？錢從哪來？護城河在哪裡？</p>
+          </div>
+          <div class="tool-card">
+            <h3><span class="dot dot-3"></span>STRATEGY</h3>
+            <div class="tool-sub">策略數字型</div>
+            <p>數字撐得住嗎？計算邏輯是什麼？運營難度是不是被低估了？</p>
+          </div>
+          <div class="tool-card">
+            <h3><span class="dot dot-4"></span>FOUNDER</h3>
+            <div class="tool-sub">實戰創業型</div>
+            <p>痛點夠痛嗎？成本查過嗎？你會怎麼跟朋友介紹這個產品？</p>
+          </div>
+        </div>
+
+        <p><strong>工具二：五道生死題。</strong>把五組提案收到的提問交叉比對，同樣幾個問題在不同隊伍身上反覆出現——這才是評審心中真正的隱形評分表：</p>
+
+        <ol class="death-list">
+          <li><strong>買家是誰？他為什麼掏錢？</strong><span>付費者和受益者是同一人嗎？</span></li>
+          <li><strong>你解決的是真問題，還是想像中的問題？</strong><span>是否有訪談或問卷調查？是否有走訪現場？</span></li>
+          <li><strong>為什麼是你？在位的大廠為什麼還沒做？</strong><span>你是否真的看到別人沒看到的盲點？或是大廠無暇分身處理的問題？</span></li>
+          <li><strong>成本與運營難度，是不是被低估了？</strong><span>避免過度樂觀，沒有完整檢視可能的成本和費用。</span></li>
+          <li><strong>這到底是什麼定位？</strong><span>商業模式跟著定位走，公共服務／NPO／NGO／企業，團隊要很清楚自己的「錢」從哪來。</span></li>
+        </ol>
+
+        <div class="callout">
+          上台前，五題自答。<strong>答不出來的那題，就是競賽講台上的 Q&amp;A 刑場。</strong>
+        </div>
+
+        <h3 class="tool-heading">工具三：五型專屬死穴（第二層檢核）<span class="update-chip">7/6 更新 · 與 Judy Wang 王意婷的現場筆記綜合提煉</span></h3>
+        <p>賽後，在現場偶遇的朋友 Judy Wang 王意婷分享了她的筆記。交叉比對她的紀錄和我的觀察後，浮現第二層規律：<strong>評審對每一隊的「補刀題」也有特定模式</strong>——循環經濟被追問歸還率、平台被追問自建必要性、科技產品被追問技術授權金、社會企業被追問退路敘事、公部門案被追問議會預算檢驗。這些不是前五道共通生死題的變形，而是<strong>不同創業類型本身自帶的風險因素</strong>。</p>
+        <p>所以，提案前最好要跑<strong>雙層自我檢核</strong>：第一層答五道生死題（不分類型必問）；第二層依照創業類型，回答特定清單。通用層過了、專屬層沒過，還是陣亡在 Q&amp;A。回答通用問題清單後，不要忘記檢視特定創業類型的潛在風險盲區。</p>
+
+        <div class="callout">
+          <strong>類型判斷只有一句話：你的錢和你的阻力從哪裡來？</strong>混合型很常見（例如社企做平台），以「主要收入來源」定主型，次型清單當補充。
+        </div>
+
+        <div class="type-card t1">
+          <div class="type-head">
+            <span class="type-name">① 實體循環資產型</span>
+            <span class="type-team">決賽對應：配客嘉「衣級方程式」</span>
+          </div>
+          <p class="type-money"><strong>錢</strong>靠實體資產循環回本；<strong>阻力</strong>＝資產在別人手上。</p>
+          <div class="death-chips">
+            <span class="death-chip">實體資產成本實查</span>
+            <span class="death-chip">實體資產歸還率</span>
+            <span class="death-chip">用戶習慣改變成本</span>
+          </div>
+        </div>
+
+        <div class="type-card t2">
+          <div class="type-head">
+            <span class="type-name">② 平台媒合型</span>
+            <span class="type-team">決賽對應：Sound of Taipei</span>
+          </div>
+          <p class="type-money"><strong>錢</strong>靠撮合抽成；<strong>阻力</strong>＝雙邊冷啟動。</p>
+          <div class="death-chips">
+            <span class="death-chip">自建平台必要性</span>
+            <span class="death-chip">維護成本／使用人數比</span>
+            <span class="death-chip">額度分配機制</span>
+          </div>
+        </div>
+
+        <div class="type-card t3">
+          <div class="type-head">
+            <span class="type-name">③ 科技產品商業化型</span>
+            <span class="type-team">決賽對應：HP「SenseEase」／系統電「SysBlade」</span>
+          </div>
+          <p class="type-money"><strong>錢</strong>靠產品毛利；<strong>阻力</strong>＝技術到市場的最後一哩。</p>
+          <div class="death-chips">
+            <span class="death-chip">2B／2C 路線銷售方式差異</span>
+            <span class="death-chip">技術／專利授權金結構</span>
+            <span class="death-chip">軟體的原創邊界確認</span>
+          </div>
+        </div>
+
+        <div class="type-card t4">
+          <div class="type-head">
+            <span class="type-name">④ 社會企業型</span>
+            <span class="type-team">決賽對應：張老師「心室逃脫」</span>
+          </div>
+          <p class="type-money"><strong>錢</strong>靠使命＋營收混合；<strong>阻力</strong>＝兩頭不到岸。</p>
+          <div class="death-chips">
+            <span class="death-chip">公部門／NPO／社企的定位三選一</span>
+            <span class="death-chip">市場不因公益而降低商品標準</span>
+            <span class="death-chip">營利失敗時的退場和轉型敘事</span>
+          </div>
+        </div>
+
+        <div class="type-card t5">
+          <div class="type-head">
+            <span class="type-name">⑤ 公部門專案型</span>
+            <span class="type-team">決賽對應：青年局提案</span>
+          </div>
+          <p class="type-money"><strong>錢</strong>靠公務預算；<strong>阻力</strong>＝政治與預算週期。</p>
+          <div class="death-chips">
+            <span class="death-chip">議會執行效益檢驗</span>
+            <span class="death-chip">預算轉換率</span>
+            <span class="death-chip">國家／縣市格局界定</span>
+          </div>
+        </div>
+
+        <p>三個工具怎麼一起用？賽前自查照這四步跑一遍：</p>
+
+        <div class="flow-steps">
+          <div class="flow-step">
+            <span class="step-num">1</span>
+            <h4>先判斷類型</h4>
+            <p>你的錢和阻力從哪裡來？混合型以主要收入來源定主型。</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-num">2</span>
+            <h4>答五道生死題</h4>
+            <p>通用層，不分類型必問，答不出來Q&amp;A就是刑場。</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-num">3</span>
+            <h4>答本型專屬死穴</h4>
+            <p>類型層，通用層過了、這層沒過一樣死在 Q&amp;A。</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-num">4</span>
+            <h4>對照四原型演練</h4>
+            <p>依評審背景預測誰會問哪題，Mock QA 預先埋答案。</p>
+          </div>
+        </div>
+
+        <p class="type-note" style="font-size:0.8rem; color:var(--color-text-muted);">註：五型不是商業模式的完備分類——它分的不是「模式機制」，而是「可能被檢驗的風險」。此清單會隨我的觀賽與帶隊經驗增加，並在未來持續擴增。</p>
+      </section>
+
+      <section>
+        <h2>治療師與教練，其實是同一份工作</h2>
+        <p>常有人問我，職能治療師跑去做簡報教練、當商業競賽的顧問，跨度會不會太大？其實一點都不會，因為底層是同一份能力。</p>
+        <p>怎麼說呢？還是得先從定義談起：職能（occupation）常被翻譯為「職業能力」，但其實意義遠遠不只如此。</p>
+        <p>Occupation 源自 occupy 字根，意指佔據人生活有意義的所有事務（食／衣／住／行／育／樂／工作／休憩）。</p>
+        <p>當人因為某種原因，無法去從事他原本的職能時，便需要職能治療師的協助。</p>
+        <p>而職能治療的核心專業，就是先以人為中心了解真正的需求，用活動分析拆解問題，並找到合適解方。</p>
+        <p>這讓我能用人本角度分析使用者的痛點，幫助團隊找到好的解決方法和論述方式。</p>
+        <p>我也能用同樣的模式分析商業競賽，幫助團隊找到提高勝率的方法。</p>
+        <p>職能治療的視角讓我能站在不同角度思考，先對使用者「確認痛點、找對解方」，再協助團隊「調整敘事、優化表達」。</p>
+      </section>
+
+      <section>
+        <h2>評審總評與反思</h2>
+
+        <div class="quote-grid">
+          <blockquote class="judge-quote q4">
+            「粗糙的開始，就是最好的開始。」
+            <footer>— 孫宗德</footer>
+          </blockquote>
+          <blockquote class="judge-quote q3">
+            Insight、Impact、Trust。
+            <footer>— 馮博堅的三個詞方法論</footer>
+          </blockquote>
+          <blockquote class="judge-quote q2">
+            想做「能容忍失敗的創投」。
+            <footer>— 劉奕成</footer>
+          </blockquote>
+          <blockquote class="judge-quote q1">
+            最重要的是堅持與韌性。
+            <footer>— 白崇亮</footer>
+          </blockquote>
+        </div>
+
+        <p>四個人，四個角度，說的是同一件事——世界不會照你的假設運作。</p>
+        <p>能快速迭代、找對痛點、真誠說服的人，遠比一份完美的提案重要。</p>
+        <p>恭喜「愛P才會贏」得到冠軍。也謝謝這場比賽，讓我重新上了一課，提升我的思維。</p>
+        <p>寫到這裡，回想起 William 老師曾在課堂中提到的「創業或許也是一種治療。」</p>
+        <p>這讓我想問：若把「創業（Entrepreneurship）」視為一種職能，我會怎麼拆解？必要的知能是什麼？必須準備好才能實行嗎？持續行動、挫折、適應是否才是創業本質呢？還是說，創業過程中，人持續看見自己能克服困難、能適應、勝任更難的任務而長出的自我效能感，正是療效的來源？</p>
+        <p>我還沒有答案，期待我在未來能分享更多洞察。</p>
+
+        <p class="author-note">作者為職能治療師、簡報與教學表達教練，2026 年以專家顧問身分協助 ATCC 冠軍隊伍 SenseEase。</p>
+      </section>
+    </article>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrapper">
+      <p>One More Step · 葉淨維 Matt Ye — 把複雜的東西搞懂，然後寫下來。</p>
+    </div>
+  </footer>

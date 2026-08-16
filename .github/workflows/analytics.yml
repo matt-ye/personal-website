@@ -1,0 +1,48 @@
+# 每日 analytics 快照：GA4 + Cloudflare + GitHub → secret gist
+# 手動觸發：Actions → analytics → Run workflow
+# 設定步驟見 docs/analytics-pipeline.md
+name: analytics
+
+on:
+  schedule:
+    # 每 6 小時：09:30 / 15:30 / 21:30 / 03:30 台北（public repo 的 Actions 免費不限量）
+    - cron: '30 1,7,13,19 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: analytics
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      # v5 系列跑在 Node 24 runner 上，消除 Node 20 deprecation 警告
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Fetch analytics and publish to gist
+        env:
+          GA4_SA_KEY: ${{ secrets.GA4_SA_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+          GH_TRAFFIC_TOKEN: ${{ secrets.GH_TRAFFIC_TOKEN }}
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+          GIST_ID: ${{ secrets.GIST_ID }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_D1_DB_ID: ${{ secrets.CF_D1_DB_ID }}
+          CF_D1_TOKEN: ${{ secrets.CF_DEPLOY_TOKEN }} # 同一把自動化 token,見 runbook 第 10 步
+        run: node scripts/fetch-analytics.mjs
+      - name: Upload snapshot artifact (debug)
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: analytics-snapshot
+          path: out/
+          retention-days: 7
+          if-no-files-found: ignore

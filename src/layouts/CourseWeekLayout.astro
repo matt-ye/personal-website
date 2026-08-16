@@ -1,0 +1,112 @@
+---
+/*
+ * 給家人的投資課——26 個週次頁的共用版型。
+ *
+ * 這些頁刻意不走 BaseLayout：它們是自包含的教材頁，有自己的單元導航、
+ * 進度條與主題切換，不需要站台的 header／footer。所以這個版型只負責 <head>。
+ *
+ * 遷移前每一頁都自己帶一份完整的 head（title／description／og ×8／
+ * twitter ×4／canonical／JSON-LD），改一個 meta 標籤要動 26 個檔案。
+ * 現在 meta 從 src/data/courseWeekMeta.ts 來，這裡是唯一的產生點。
+ *
+ * ⚠ title / ogTitle 與 description / ogDescription 是四個不同的欄位，
+ *   不是同一份文案的兩種長度：前者給 SERP（帶站名後綴、開頭有脈絡），
+ *   後者給社群卡片（不帶站名、直接講重點）。互相推導會損失資訊。
+ */
+import type { CourseWeekMeta } from '../data/courseWeekMeta';
+
+interface Props {
+  meta: CourseWeekMeta;
+}
+
+import SiteStrip from '../components/SiteStrip.astro';
+
+const { meta } = Astro.props;
+
+const SITE = 'https://mattye.dev';
+const canonical = `${SITE}/projects/family-investing-course/${meta.slug}/`;
+const ogImage = `${SITE}/og-logo.png`;
+
+/* JSON-LD 預設沿用 og:*；只有極少數頁面另外寫過不同的文案，那時才會有
+   ldHeadline / ldDescription（萃取時自動偵測並記錄）。 */
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: meta.ldHeadline ?? meta.ogTitle,
+  description: meta.ldDescription ?? meta.ogDescription,
+  url: canonical,
+  inLanguage: 'zh-TW',
+  image: ogImage,
+  author: { '@id': `${SITE}/#person` },
+  publisher: { '@id': `${SITE}/#person` },
+  mainEntityOfPage: canonical,
+  isPartOf: {
+    '@type': 'Course',
+    name: '給家人的投資課 Family Investing Course',
+    url: `${SITE}/projects/family-investing-course/`,
+  },
+};
+---
+
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{meta.title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="description" content={meta.description} />
+    <meta name="author" content="Ching-Wei Ye" />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={meta.ogTitle} />
+    <meta property="og:description" content={meta.ogDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="葉淨維 Matt Ye" />
+    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.ogTitle} />
+    <meta name="twitter:description" content={meta.ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {/* 與主站同步主題（同一個 localStorage key），避免閃色。
+        is:inline 是必要的：這段必須在渲染前同步執行，不能被 Astro 打包成
+        模組後才載入——那會晚一拍，使用者會看到一次閃白。 */}
+    <script is:inline>
+      (function () {
+        var saved = null;
+        try {
+          saved = localStorage.getItem('theme');
+        } catch (e) {}
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+      })();
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+
+    {/* Google Analytics 4——與 BaseLayout 同一組設定。
+        遷移前這些頁沒有 GA，靠 astro.config 的 inject-ga-static-html 在建置後
+        用字串手術補上。現在頁面由 Astro 產生，直接放在這裡。 */}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1RKL72DPPW"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-1RKL72DPPW');
+    </script>
+  </head>
+  <body>
+    <slot />
+    {/* 週次頁彼此交叉連結，也連到 /writing/，但沒有首頁與 /projects/ 的出口。
+        這裡無條件加——26 頁的結構一致，不需要像 StaticPageLayout 那樣逐頁判斷。 */}
+    <SiteStrip />
+  </body>
+</html>

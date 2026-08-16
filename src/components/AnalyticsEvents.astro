@@ -1,0 +1,68 @@
+---
+// 轉換事件追蹤：以單一事件委派 listener 自動送 GA4 自訂事件。
+// 事件定義（與 scripts/analytics-config.mjs 的 GA4_EVENTS 對齊）：
+//   click_github  — 點擊任何 github.com 外連
+//   click_project — 點擊專案展示站連結（PROJECT_HOSTS 對照表，優先於 github.com 規則）
+//   click_contact — 點擊 mailto / linkedin / instagram
+//   read_complete — /writing/[slug] 捲動達 90%，每次瀏覽只送一次
+---
+<script>
+  const track = (name: string, params: Record<string, unknown>) => {
+    try { (window as any).gtag?.('event', name, params); } catch (e) {}
+  };
+
+  const PROJECT_HOSTS: Array<{ host: string; path?: string; project: string }> = [
+    { host: 'telaaurealab.com', project: 'dreamcatcher' },
+    { host: 'brain-exposome.mattye.dev', project: 'brain-exposome' },
+  ];
+
+  // capture phase：其他 script 的 stopPropagation 不會吃掉點擊
+  document.addEventListener('click', (e) => {
+    const a = (e.target as Element | null)?.closest?.('a[href]');
+    if (!(a instanceof HTMLAnchorElement)) return;
+    let url: URL;
+    try { url = new URL(a.href, location.href); } catch { return; }
+    const page = location.pathname;
+
+    if (url.protocol === 'mailto:') {
+      track('click_contact', { method: 'email', page });
+      return;
+    }
+    if (!url.hostname || url.hostname === location.hostname) return;
+
+    const proj = PROJECT_HOSTS.find(
+      (p) => url.hostname === p.host && (!p.path || url.pathname.startsWith(p.path))
+    );
+    if (proj) {
+      track('click_project', { project: proj.project, link_url: url.href, page });
+    } else if (url.hostname === 'github.com' || url.hostname.endsWith('.github.com')) {
+      track('click_github', { link_url: url.href, page });
+    } else if (url.hostname.endsWith('linkedin.com')) {
+      track('click_contact', { method: 'linkedin', page });
+    } else if (url.hostname.endsWith('instagram.com')) {
+      track('click_contact', { method: 'instagram', page });
+    }
+  }, true);
+
+  if (/^\/writing\/[^/]+\/?$/.test(location.pathname)) {
+    let sent = false;
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(check); }
+    };
+    const check = () => {
+      ticking = false;
+      if (sent) return;
+      const h = document.documentElement.scrollHeight;
+      if (h > 0 && (window.scrollY + window.innerHeight) / h >= 0.9) {
+        sent = true;
+        window.removeEventListener('scroll', onScroll);
+        track('read_complete', { page: location.pathname });
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    // 短文可能一載入就超過 90% 可視
+    window.addEventListener('load', check);
+    check();
+  }
+</script>

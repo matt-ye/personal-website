@@ -1,0 +1,188 @@
+---
+/*
+ * One More Step 樞紐頁。同時產出 /projects/one-more-step/ 與 /en/ 版。
+ *
+ * ── 為什麼遷這頁，即使 10 篇子頁一篇英文版都沒有 ──────────────────
+ * 在此之前 /en/projects/ 的「One More Step」連回中文樞紐，等於把英文讀者
+ * 送出英文區。這與 /writing/ 是同一個理由：**列表頁先接上，內容逐篇翻是另一件事。**
+ *
+ * ── 為什麼不套用「未遷移項目在英文頁隱藏」 ────────────────────────
+ * 那條規則在 marketing 樞紐成立（5 個裡 4 個有英文版，隱藏 1 個仍有 4 張卡），
+ * 這裡會產生**空列表**——10 個子頁全部沒有英文版。空列表是薄內容，Google 不收。
+ * 所以沿用 [...lang]/projects/index.astro 與 [...lang]/writing/ 的處理：
+ * 保留項目，沒有英文的欄位退回中文並標 lang="zh-TW"。
+ *
+ * 標題有 titleEn（10 篇全有），描述沒有——descriptionEn 一個都沒填。
+ * 那是文案，要 Matt 核准後才寫入，不在這次遷移裡代填。
+ */
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import T from '../../../../components/T.astro';
+import { oneMoreStep as docs } from '../../../../data/oneMoreStep';
+import { localeHref } from '../../../../lib/i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+const locale = isEn ? 'en' : 'zh';
+
+/* 標籤原本全是中文字串，英文頁直接印會變成一排中文小標。
+   已經是英文或專有名詞的（ATCC／PQC／GA4／BOPPPS／ISW／AI／Soft Skills）
+   不在表裡，會原樣通過。 */
+const TAG_EN: Record<string, string> = {
+  簡報教練: 'Presentation Coaching', 商業競賽: 'Case Competition', 職能治療: 'Occupational Therapy',
+  矽光子: 'Silicon Photonics', 量子電腦: 'Quantum Computing', 投資: 'Investing',
+  創投: 'Venture Capital', 深科技: 'Deep Tech', 趨勢: 'Trends', 美股: 'US Equities',
+  台股: 'Taiwan Equities', 財報: 'Financial Statements', 教學設計: 'Instructional Design',
+  工作坊: 'Workshops', 數據分析: 'Analytics', 行銷: 'Marketing', 電商: 'E-commerce',
+  數位產品: 'Digital Products', 創業: 'Entrepreneurship', 'IP 治理': 'IP Governance',
+  法律: 'Law', 職涯: 'Career', 領導力: 'Leadership',
+};
+const tagLabel = (t: string) => (isEn ? TAG_EN[t] ?? t : t);
+---
+{/* lang 一定要傳：BaseLayout 靠它決定站名後綴與 JSON-LD 的 inLanguage。 */}
+<BaseLayout
+  lang={isEn ? 'en' : 'zh-TW'}
+  title="One More Step"
+  description={isEn
+    ? 'One More Step — Matt Ye’s collection of learning documents: understand complex things, then write them down.'
+    : 'One More Step：葉淨維 Matt Ye 的學習文件集，把複雜的東西搞懂，然後寫下來。'}
+>
+  <section class="oms-hero">
+    <a href={localeHref('/projects/', locale)} class="back-link"><T zh="← 其他作品" en="← Side Projects" /></a>
+    <h1>One More <span class="accent-text">Step</span></h1>
+    <p class="oms-subtitle"><T zh="把複雜的東西搞懂，然後寫下來。" en="Understand complex things, then write them down." /></p>
+  </section>
+
+  <div class="docs-grid">
+    {docs.map(doc => (
+      <a href={localeHref(doc.url ?? `/projects/one-more-step/${doc.slug}/`, locale)} class="doc-card">
+        <div class="doc-card-body">
+          <h2 class="doc-title"><T zh={doc.title} en={doc.titleEn} /></h2>
+          {/* 有 descriptionEn 就用；沒有的才退回中文並標 lang。
+              保留 fallback 不是多餘——之後新增的項目一定會有一段時間只有中文，
+              那時要壞得安靜（顯示中文）而不是壞得難看（顯示 undefined）。 */}
+          <p class="doc-desc">
+            {isEn
+              ? (doc.descriptionEn ?? <span lang="zh-TW">{doc.description}</span>)
+              : doc.description}
+          </p>
+        </div>
+        <div class="doc-footer">
+          <div class="doc-tags">
+            {doc.tags.map(tag => <span class="doc-tag">{tagLabel(tag)}</span>)}
+          </div>
+          <span class="doc-link"><T zh="閱讀 →" en="Read →" /></span>
+        </div>
+      </a>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .oms-hero {
+    padding: 3rem 0 2rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    margin-bottom: 1rem;
+  }
+
+  .back-link:hover {
+    color: var(--color-text);
+  }
+
+  .oms-hero h1 {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+  }
+
+  .oms-subtitle {
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding-bottom: 4rem;
+  }
+
+  .doc-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+
+  .doc-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    border-color: var(--color-accent);
+  }
+
+  .doc-card-body {
+    flex: 1;
+  }
+
+  .doc-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.15rem;
+  }
+
+  .doc-title-en {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin: 0 0 0.75rem;
+  }
+
+  .doc-desc {
+    font-size: 0.92rem;
+    color: var(--color-text-muted);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .doc-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .doc-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .doc-tag {
+    font-size: 0.72rem;
+    background: var(--color-border);
+    color: var(--color-text-muted);
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+  }
+
+  .doc-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+</style>

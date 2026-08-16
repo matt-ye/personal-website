@@ -1,0 +1,190 @@
+# 已人工確認正常、但這支健檢程式驗不到的網址
+#
+# 這裡的每一條都「是好的」——不要拿掉、不要改網址。列在這裡只是要讓報告說實話：
+# 健檢跑出來的非 2xx 是「對方不讓機器看」，不是「頁面不存在」。
+#
+# 為什麼需要這個清單：2026-07-26 追查時發現 support.google.com 對 GitHub Actions
+# 的機房 IP 一律回 **404**（不是 403）。決定性證據是 support.google.com/analytics/?hl=en
+# ——GA 說明中心的首頁——也回 404。首頁不可能不存在，所以這個 404 是擋機器人，
+# 光看狀態碼分不出「頁面不在」和「你不是真人」。
+#
+# 驗證方式：用搜尋索引比對，確認網址原封不動出現在結果裡、而且標題與頁面上的
+# 連結文字相符（例：answer/9327974 →「[GA4] Funnel exploration」，站上寫「漏斗探索官方說明」）。
+#
+# 2026-08-08：owner 用真人瀏覽器把 CI 標成「需人工確認」的 58 條全部點過一輪，
+# 結論與這份清單一致——這裡的每一條都打得開。所以底下寫的「已人工確認正常」
+# 不是推論，是真的有人點過。唯一被點出打不開的是 investopedia 的 cookthebooks.asp，
+# 那條不在這份清單裡，是 W8 一個換錯的網址，已改回原本的 financial-statement-manipulation。
+#
+# 語法：一行一個網址，# 開頭是註解。
+
+# --- one-more-step / ga4-guide：Google 說明中心，機房 IP 一律 404 ---
+# 五個 answer id 都逐條比對過標題，與連結文字相符：
+#   7029846  → [GA4] BigQuery Export schema
+#   7579450  → [GA4] Get started with Explorations
+#   9327974  → [GA4] Funnel exploration
+#   10104470 → [GA4] Filter out internal traffic
+#   14240153 → [GA4] About custom dimensions and metrics
+https://support.google.com/analytics/?hl=en
+https://support.google.com/analytics/?hl=en#topic=14090456
+https://support.google.com/analytics/answer/10104470?hl=en
+https://support.google.com/analytics/answer/14240153?hl=en
+https://support.google.com/analytics/answer/7029846
+https://support.google.com/analytics/answer/7029846?hl=en
+https://support.google.com/analytics/answer/7579450
+https://support.google.com/analytics/answer/7579450?hl=en
+https://support.google.com/analytics/answer/9327974?hl=en
+
+# GA4 官方 Demo 帳號：要登入 Google 才進得去，任何沒帶登入狀態的請求都不會是 2xx。
+# 這條永遠驗不到，但對有登入的讀者是好的。
+https://analytics.google.com/analytics/web/demoAccount
+
+# --- marketing / faceless-pipeline ---
+# 標題「Disclosing use of altered or synthetic content」，與站上連結文字相符
+https://support.google.com/youtube/answer/14328491
+# 標題「New labels for disclosing AI-generated content」，搜尋結果第一筆就是這個網址
+https://newsroom.tiktok.com/en-us/new-labels-for-disclosing-ai-generated-content
+
+# --- one-more-step / quantum-photonics-investing ---
+# csrc.nist.gov 是「時好時壞」型的，不是穩定被擋也不是失效。決定性證據：連續兩輪 CI
+# 之間，下面這兩條網址的結果對調了——第 11 輪 Falcon 簡報頁回 2xx、PQC FAQ 回 404，
+# 前一輪剛好相反。同一個網域、相隔幾分鐘、兩條都是真實存在的 NIST 頁面，
+# 所以這是對方的流量管制，不是頁面不見了。兩條都留在這裡，不要因為某一輪剛好
+# 通過就把它從清單刪掉。
+# 標題「FIPS 206: FN-DSA (Falcon)」，2025 年第六屆 PQC 標準化會議的簡報頁
+https://csrc.nist.gov/presentations/2025/fips-206-fn-dsa-falcon
+# NIST 後量子密碼專案的官方 FAQ
+https://csrc.nist.gov/projects/post-quantum-cryptography/faqs
+
+# --- one-more-step / boppps ---
+# blogs.sjsu.edu 跟 Google 一樣對機房 IP 一律回 404：這篇 Part 2 在搜尋索引裡有完整
+# 標題與內文摘要（連 iClicker 那段內容都取得到），健檢卻回 404，所以是被擋不是不存在。
+# 同系列的 Part 1 則是四次不同搜尋都沒出現過網址，判定確實已被移除，連結才改指 Part 2。
+https://blogs.sjsu.edu/ecampus/2019/10/10/lesson-design-using-the-boppps-model-part-2-intended-learning-outcomes/
+
+# ── 2026-08-09：全站掃描新納入的網址（原本只掃教材頁） ──
+#
+# deming.org 整個網域走 Cloudflare 挑戰：連首頁都回 403，回應內容是
+# <title>Just a moment...</title> + cf 挑戰腳本。不是頁面不存在。
+https://deming.org/explore/pdsa/
+
+# ScienceDirect（Elsevier）對機房 IP 一律出 captcha 牆，回 403 但 body 有
+# 1.2MB 的挑戰頁；連 sciencedirect.com 首頁都回 400。文章本身存在：
+# Crossref 查 PII S0024630123000110 = "The origins of SWOT analysis"，
+# Long Range Planning 2023，DOI 10.1016/j.lrp.2023.102304——標題與站上的
+# 連結文字「The origins of SWOT analysis」完全相符。
+https://www.sciencedirect.com/science/article/pii/S0024630123000110
+
+# LinkedIn 對未登入請求回 999（自訂碼，非標準 HTTP）。owner 已確認正常。
+https://www.linkedin.com/in/ching-wei-ye
+
+# TSMC 投資人關係站整站走 Cloudflare 挑戰（回 403 + "Just a moment..."）。
+# 年報清單頁確實存在、列出 1994–2025 各年度（含站上引用的 2023）；
+# 同站的 2023 年報 PDF 也實際抓到過一次（200、16MB），之後才被限流。
+# 原本站上寫的是 ir.tsmc.com——那個主機是 NXDOMAIN，已改成這個。
+https://investor.tsmc.com/english/annual-reports
+
+# 亞洲大學企管系：這個網址在三輪掃描分別回 200 / 連不上 / 403，是對重複請求限流。
+# 用瀏覽器 UA 連測三次都 200，且頁面 <title> 為「管理五要：生產、行銷、人資、研發、
+# 財務」，與站上的連結文字相符。不是失效。
+https://ba.au.edu.tw/p/404-1043-63549.php
+
+# ── 2026-08-09：教材頁 40 條 ⚠️ 逐條驗證的結果 ──
+#
+# 這批原本一直停在「需人工確認」。本輪用瀏覽器 UA 重打一次，再以 Wayback 200 存檔、
+# Crossref DOI 解析、或搜尋索引（網址原封不動＋標題相符）交叉驗證。以下都確認活著，
+# 只是機器過不去。剩下的 iswnetwork.ca 沒放進來——它是源站無回應，另案追蹤。
+
+# Investopedia 對機房 IP 回 403，body 是它的擋機器人頁（<title>Simple Page</title>）。
+# owner 2026-08-08 已全部手動點過；本輪另以 Wayback 200 存檔逐條交叉驗證。
+https://www.investopedia.com/articles/fundamental-analysis/financial-statement-manipulation.asp
+https://www.investopedia.com/terms/b/behavioralfinance.asp
+https://www.investopedia.com/terms/b/bid-askspread.asp
+https://www.investopedia.com/terms/b/businesscycle.asp
+https://www.investopedia.com/terms/d/disposition.asp
+https://www.investopedia.com/terms/d/dupontanalysis.asp
+https://www.investopedia.com/terms/e/efficientfrontier.asp
+https://www.investopedia.com/terms/f/fishereffect.asp
+https://www.investopedia.com/terms/g/goodwill-impairment.asp
+https://www.investopedia.com/terms/q/qualityofearnings.asp
+https://www.investopedia.com/terms/s/sectorrotation.asp
+https://www.investopedia.com/terms/w/workingcapital.asp
+https://www.investopedia.com/terms/y/yieldcurve.asp
+
+# Bogleheads wiki 走 Cloudflare 挑戰（<title>Just a moment...</title>）。
+# 四條各有 Wayback 200 存檔。
+https://www.bogleheads.org/wiki/Asset_allocation
+https://www.bogleheads.org/wiki/Dollar_cost_averaging
+https://www.bogleheads.org/wiki/Investment_policy_statement
+https://www.bogleheads.org/wiki/Rebalancing
+
+# ACM DL 走 Cloudflare 挑戰。兩篇 DOI 經 Crossref 確認存在：
+# 10.1145/3658617.3703151 = ASP-DAC 2025 邀請論文；10.1145/3725888 = ACM TODAES 2026。
+https://dl.acm.org/doi/10.1145/3658617.3703151
+https://dl.acm.org/doi/10.1145/3725888
+
+# doi.org 本身走 Cloudflare 挑戰。Crossref 確認 10.1093/rfs/hhn046 =
+# "Just How Much Do Individual Investors Lose by Trading?"（Review of Financial Studies, 2008）。
+https://doi.org/10.1093/rfs/hhn046
+
+# 美國國防部檔案站回 Akamai 的 Access Denied。兩份 PDF 都有 2026 年的 Wayback 200 存檔。
+https://media.defense.gov/2021/Aug/04/2002821837/-1/-1/1/Quantum_FAQs_20210804.PDF
+https://media.defense.gov/2025/May/30/2003728741/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS.PDF
+
+# BusinessWire 回 Akamai Access Denied。該篇 2021-05-05 PsiQuantum×GLOBALFOUNDRIES 新聞稿
+# 網址原封不動出現在搜尋結果，標題與連結文字相符。
+https://www.businesswire.com/news/home/20210505005355/en/PsiQuantum-and-GLOBALFOUNDRIES-to-Build-the-Worlds-First-Full-scale-Quantum-Computer
+
+# Corning 回 Akamai Access Denied。該頁有 2026-04 的 Wayback 200 存檔。
+https://www.corning.com/worldwide/en/about-us/news-events/news-releases/2026/03/corning-to-launch-ai-innovations-in-fiber-cable-and-connectivity-at-ofc-2026.html
+
+# NYT 付費牆回 403。有 2026-05 的 Wayback 200 存檔。
+https://www.nytimes.com/2008/10/17/opinion/17buffett.html
+
+# Photonics Spectra 走 Cloudflare 挑戰。網址原封不動出現在搜尋結果，
+# 標題「Jabil Acquires Intel's Silicon Photonics Optical Modules Business」與連結文字相符。
+https://www.photonics.com/Articles/Jabil-Acquires-Intels-Silicon-Photonics-Optical/a69434
+
+# S&P Global 回 403 錯誤頁。SPIVA 研究頁有 2026-06 的 Wayback 200 存檔。
+https://www.spglobal.com/spdji/en/research-insights/spiva/
+
+# SparkToro 回 403 錯誤頁。該文有 2026-08 的 Wayback 200 存檔。
+https://sparktoro.com/blog/in-2026-less-than-one-third-of-google-searches-still-send-a-click/
+
+# Umbrex 回 403 Forbidden、無 Wayback 存檔。網址原封不動出現在搜尋結果，
+# 標題「Clarify Brand Message with the StoryBrand SB7 Framework」與頁面主題相符。
+https://umbrex.com/resources/frameworks/marketing-frameworks/storybrand-sb7-framework/
+
+# 註：iswnetwork.ca 已從 BOPPPS 頁換成 Internet Archive 快照（官方站源站無回應），
+# 所以這份清單裡沒有它——它不是「驗不到但正常」，是真的連不上。
+
+# ── 2026-08-09（續）：對腳本 403／逾時、對真人 200 的 9 條 ──
+#
+# 這批我用瀏覽器 UA（含 Accept-Language 與 Referer）逐條實打，全部回 200，
+# 且 <title> 與站上的連結文字相符。腳本用的是精簡 UA，被同一批站台擋下。
+# 它們在不同輪次會在 ✅ 與 ⚠️ 之間跳動，列在這裡讓報告說實話。
+#
+# title: What to know about the Sora discontinuation | OpenAI Help Center
+https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation
+# title: NDC-Business Indicators DataBase-lightscore（國發會景氣指標）
+https://index.ndc.gov.tw/
+# Medium 三篇：對腳本 403，實打皆 200（Medium 的 <title> 一律只有 "Medium"）
+https://medium.com/blog/partner-program-update-starting-february-17-were-rewarding-stories-that-bring-in-new-members-3e84d2eb6e68
+https://medium.com/creative-black-pug-studio/threads-vs-x-where-should-your-brand-be-in-2026-c635d00b7f02
+https://medium.com/free-code-camp/how-to-get-up-to-3500-github-stars-in-one-week-339102b62a8f
+# title: Portfolio Selection | JSTOR（Markowitz 1952，week-15 MPT 引用）
+https://www.jstor.org/stable/2975974
+# 實打回 254KB 的 PDF 本體（SHS Web of Conferences, ICHESS 2023）
+https://www.shs-conferences.org/articles/shsconf/pdf/2023/28/shsconf_ichess2023_04029.pdf
+# title: Press Release - UMC
+https://www.umc.com/en/News/press_release/Content/technology_related/20251208
+# title: GA4 Explore Reports: Understanding Behavioral Analysis - e-dialog
+https://e-dialog.group/en/blog/ga4-explore-reports-understanding-behavioral-analysis/
+
+# Product Hunt 對腳本 403，瀏覽器 UA 實打 200，
+# title 為「Prepare for your Product Hunt launch」，與連結文字相符。
+https://www.producthunt.com/launch/preparing-for-launch
+
+# TSMC 研究網頁對腳本時而 200 時而 403，瀏覽器 UA 實打 200，
+# title 為「Heterogeneous Integration of a Compact Universal Photonic Engine」。
+https://research.tsmc.com/page/on-chip-interconnect/14.html

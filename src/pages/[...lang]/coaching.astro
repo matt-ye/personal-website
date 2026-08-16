@@ -1,0 +1,529 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import T from '../../components/T.astro';
+import { AWARD } from '../../i18n/dict';
+import { getMenteesAwards, getTestimonials } from '../../lib/sheets';
+
+/* 資料在 build 期備好（src/data/sheets/*.json，每日由 Actions 同步）。
+   原本在瀏覽器端 fetch Google Sheet，培訓戰績與學員回饋都不在 HTML 裡。 */
+
+/* 形狀對齊下方 client script 的 data——那些 render 函式吃這組欄名。 */
+/* 同時產出 /coaching/ 與 /en/coaching/，見 [...lang]/about.astro 的說明。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+
+/* 與下方 client script 的 tr()/pick() 是同一套規則。兩邊必須一致——不一致的話
+   畫面會先顯示 build 期那版、JS 載入後再跳成另一版，使用者看到閃動。 */
+const tr = (map: Record<string, string>, v: string) => (isEn && map && map[v]) ? map[v] : v;
+const pick = (zh: string, en: string) => (isEn && en) ? en : (zh || en || '');
+
+const awardsData = getMenteesAwards()
+  .filter((a) => a.contest.zh && a.year)
+  .map((a) => ({
+    name: a.contest.zh,
+    contestName: a.contest.en,
+    abbr: a.contestAbbr,
+    year: a.year,
+    award: a.award,
+    prize: a.prize,
+    teams: Number((a.teamCount || '0').replace(/[^\d]/g, '')) || 0,
+    report: a.newsLink,
+    mentee: a.team,
+    highlightZh: a.highlight.zh,
+    highlightEn: a.highlight.en,
+    url: a.urls,
+  }));
+
+const testimonialsData = getTestimonials().map((t) => ({
+  team: t.team,
+  quote: t.quote.zh,
+  quoteEn: t.quote.en,
+  context: t.context.zh,
+  contextEn: t.context.en,
+}));
+
+/* 分組與統計：與 client 的 loadAwards 同一套規則，讓不執行 JS 時看到的數字一致 */
+const maicRows = awardsData.filter((r) => r.abbr === 'MAIC' || r.name.includes('行動應用'));
+const fwRows = awardsData.filter((r) => r.name.includes('圍牆'));
+const atccRows = awardsData.filter((r) => r.abbr === 'ATCC');
+const totalTeams = maicRows.reduce((s, r) => s + r.teams, 0);
+const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
+  const n = Number((r.prize || '').replace(/[^\d.]/g, '')) || 0;
+  return s + n * r.teams;
+}, 0);
+---
+<BaseLayout
+  title="Coaching"
+  description={isEn
+    ? 'Competition coaching results by Ching-Wei (Matt) Ye — mentoring student teams to wins at MAIC, Falling Walls Lab and ATCC, with over NT$1.47M in prize money.'
+    : '葉淨維 Matt Ye 的競賽培訓成果。協助 MAIC、Falling Walls Lab、ATCC 等學生團隊奪獎，獎金逾 147 萬。'}
+  lang={isEn ? 'en' : 'zh-TW'}
+  image="/OG.png"
+>
+  <div class="container-wide">
+
+    <!-- Hero -->
+    <section class="coaching-hero">
+      <h1><T zh="提案顧問 &" en="Mentorship &" /> <span class="accent-text"><T zh="競賽培訓" en="Coaching" /></span></h1>
+      <p class="coaching-subtitle">
+        <T zh="協助學生團隊在國內外競賽中奪獎。" en="Helping student teams win awards in domestic and international competitions." /><br>
+        <T zh="從提案結構到臨場表達，陪你走到舞台中央。" en="From proposal structure to on-stage delivery, guiding you to center stage." />
+      </p>
+    </section>
+
+    <!-- Stats -->
+    <div class="bento-grid coaching-stats-grid">
+      <div class="bento-card">
+        <div class="bento-card-label"><T zh="Teams Awarded" en="Teams Awarded" /></div>
+        <div class="bento-card-num" id="c-teams">{totalTeams}</div>
+        <div class="bento-card-sub"><T zh="MAIC 獲獎組數" en="MAIC award-winning teams" /></div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-card-label"><T zh="Prize Money" en="Prize Money" /></div>
+        <div class="bento-card-num" id="c-prize">{totalPrize.toLocaleString('en-US')}</div>
+        <div class="bento-card-sub"><T zh="學員獲獎總獎金（NTD）" en="Total prize money won (NTD)" /></div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-card-label"><T zh="Intl. Champions" en="Intl. Champions" /></div>
+        <div class="bento-card-num" id="c-fw">{fwRows.length}</div>
+        <div class="bento-card-sub"><T zh="Falling Walls 得獎人次" en="Falling Walls award placements" /></div>
+      </div>
+    </div>
+
+    <!-- MAIC Section -->
+    <section class="coaching-section">
+      <h2 class="section-heading"><T zh="行動應用創新賽" en="Mobile App Innovation Competition" /> <span class="section-heading-en">MAIC</span></h2>
+      <p class="coaching-section-desc">
+        <T zh="Straight A × Apple 授權教育夥伴競賽培訓計畫。以提案結構、投影片設計、簡報表達三位一體為核心，協助學生團隊角逐亞太賽事獎項。" en="A competition coaching program by Straight A, an Apple Authorized Education Partner. Built around proposal structure, slide design, and delivery as a unified whole, helping student teams compete for Asia-Pacific honors." />
+      </p>
+      {/* build 期渲染的版本＝不執行 JS 時（含爬蟲）看到的內容。
+          JS 載入後 renderMAIC() 會用更完整的樣式重畫這一區。 */}
+      <div id="maic-container" class="maic-container">
+        <ul class="static-award-list">
+          {maicRows.map((r) => (
+            <li>
+              <b>{r.year}</b>　{pick(r.name, r.contestName)}　{tr(AWARD, r.award)}
+              {r.mentee && <span>　—　{r.mentee}</span>}
+              {/* 連結也要進 build 期版本——只渲染文字的話，這些外連對爬蟲等於不存在 */}
+              {/* ⚠ 「報導連結」欄在 MAIC/ATCC 放網址，在 Falling Walls 卻放
+                  「年份｜人名｜主題」（client 端靠 split('｜') 取人名）。
+                  同一欄兩種語意，所以這裡必須先確認它真的是網址才做成連結。 */}
+              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　<T zh="觀賽紀錄 →" en="Match notes →" /></a>}
+              {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
+                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　<T zh="觀賽影片" en="Match video" /> {arr.length > 1 ? i + 1 : ''}▶</a>
+              ))}
+              {pick(r.highlightZh, r.highlightEn) && <div class="static-award-note">{pick(r.highlightZh, r.highlightEn)}</div>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Falling Walls Section -->
+    <section class="coaching-section">
+      <h2 class="section-heading"><T zh="圍牆倒下實驗室" en="Falling Walls Lab" /> <span class="section-heading-en">Falling Walls Lab</span></h2>
+      <p class="coaching-section-desc">
+        <T zh="協助學生以 3 分鐘英文學術簡報詮釋研究突破。台北賽事冠軍可晉級德國柏林國際決賽，與全球頂尖研究者同台競技。" en="Helping students present research breakthroughs in a 3-minute English academic pitch. Taipei winners advance to the international final in Berlin, Germany, competing alongside top researchers worldwide." />
+      </p>
+      <div id="fw-container" class="fw-container">
+        <ul class="static-award-list">
+          {fwRows.map((r) => (
+            <li>
+              <b>{r.year}</b>　{pick(r.name, r.contestName)}　{tr(AWARD, r.award)}
+              {r.mentee && <span>　—　{r.mentee}</span>}
+              {/* 連結也要進 build 期版本——只渲染文字的話，這些外連對爬蟲等於不存在 */}
+              {/* ⚠ 「報導連結」欄在 MAIC/ATCC 放網址，在 Falling Walls 卻放
+                  「年份｜人名｜主題」（client 端靠 split('｜') 取人名）。
+                  同一欄兩種語意，所以這裡必須先確認它真的是網址才做成連結。 */}
+              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　<T zh="觀賽紀錄 →" en="Match notes →" /></a>}
+              {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
+                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　<T zh="觀賽影片" en="Match video" /> {arr.length > 1 ? i + 1 : ''}▶</a>
+              ))}
+              {pick(r.highlightZh, r.highlightEn) && <div class="static-award-note">{pick(r.highlightZh, r.highlightEn)}</div>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- ATCC Section -->
+    <section class="coaching-section">
+      <h2 class="section-heading"><T zh="全國大專院校商業個案大賽" en="National Collegiate Business Case Competition" /> <span class="section-heading-en">ATCC</span></h2>
+      <p class="coaching-section-desc">
+        <T zh="ATCC 是台灣規模最大的大專商業個案賽事——企業出真實題目、學生團隊提案解方。以職能治療專業結合簡報教練經驗，協助 SenseEase 團隊把產品機制對回臨床與神經科學實證、誠實劃出「Demo 能證明」與「仍待驗證」的界線，讓痛點與解方站得住腳；再打磨用詞、敘事順序與投影片呈現。最終奪下第 23 屆全國冠軍。" en="ATCC is Taiwan's largest collegiate business-case competition — companies pose real problems and student teams pitch solutions. Combining occupational-therapy expertise with presentation coaching, I helped the SenseEase team ground their product's mechanisms in clinical and neuroscience evidence and honestly separate what the demo proves from what still needs validation — so the pain point and solution held up — then sharpened their wording, narrative, and slides. The result: 1st place at the 23rd national final." />
+      </p>
+      <div id="atcc-container" class="fw-container">
+        <ul class="static-award-list">
+          {atccRows.map((r) => (
+            <li>
+              <b>{r.year}</b>　{pick(r.name, r.contestName)}　{tr(AWARD, r.award)}
+              {r.mentee && <span>　—　{r.mentee}</span>}
+              {/* 連結也要進 build 期版本——只渲染文字的話，這些外連對爬蟲等於不存在 */}
+              {/* ⚠ 「報導連結」欄在 MAIC/ATCC 放網址，在 Falling Walls 卻放
+                  「年份｜人名｜主題」（client 端靠 split('｜') 取人名）。
+                  同一欄兩種語意，所以這裡必須先確認它真的是網址才做成連結。 */}
+              {r.report.startsWith('http') && <a class="fw-notes-link" href={r.report} target="_blank" rel="noopener">　<T zh="觀賽紀錄 →" en="Match notes →" /></a>}
+              {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
+                <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　<T zh="觀賽影片" en="Match video" /> {arr.length > 1 ? i + 1 : ''}▶</a>
+              ))}
+              {pick(r.highlightZh, r.highlightEn) && <div class="static-award-note">{pick(r.highlightZh, r.highlightEn)}</div>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Testimonials Carousel -->
+    <section class="coaching-section">
+      <h2 class="section-heading"><T zh="學生怎麼說" en="What Students Say" /></h2>
+      <div class="testi-carousel" id="testi-carousel">
+        <div class="testi-track" id="testi-track">
+          {testimonialsData.map((t) => (
+            <blockquote class="static-testi">
+              <p>{pick(t.quote, t.quoteEn)}</p>
+              <cite>{t.team}{pick(t.context, t.contextEn) && `　${pick(t.context, t.contextEn)}`}</cite>
+            </blockquote>
+          ))}
+        </div>
+        <div class="testi-nav" id="testi-nav" style="display:none">
+          <button class="testi-arrow" id="testi-prev" aria-label={isEn ? "Previous" : "上一則"}>‹</button>
+          <div class="testi-dots" id="testi-dots"></div>
+          <button class="testi-arrow" id="testi-next" aria-label={isEn ? "Next" : "下一則"}>›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="coaching-cta-section">
+      <p class="coaching-cta-text"><T zh="想為你的團隊安排競賽培訓？" en="Want to arrange competition coaching for your team?" /></p>
+      <a href="mailto:f08429008@ntu.edu.tw" class="hero-cta"><T zh="合作洽詢 →" en="Get in touch →" /></a>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<script define:vars={{ AWARDS_DATA: awardsData, TESTIMONIALS_DATA: testimonialsData, AWARD }}>
+/* ── CSV Parser ── */
+/* CSV 解析與欄位索引已移到 build 期（scripts/fetch-sheets.mjs ＋ src/lib/sheets.ts）。 */
+
+/* ── i18n helpers ── */
+const lang = () => document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
+const tr   = (map, v) => (lang() === 'en' && map && map[v]) ? map[v] : v;
+const pick = (zh, en) => (lang() === 'en' && en) ? en : (zh || en || '');
+const L    = (zh, en) => lang() === 'en' ? en : zh;
+
+/* render hooks set after data loads; re-invoked on langchange */
+let awardsRender = null;
+let testiRender  = null;
+
+/* ── Medal helper ── */
+function medalEmoji(award) {
+  if (award.includes('一等') || award.includes('1st')) return '🥇';
+  if (award.includes('二等') || award.includes('2nd')) return '🥈';
+  if (award.includes('三等') || award.includes('3rd')) return '🥉';
+  return '🏅';
+}
+
+/* ── Prize parser: pure number "229500" → 229500; legacy "約22.95萬" → 229500 ── */
+function parsePrize(str) {
+  if (str == null || str === '') return 0;
+  const s = String(str).replace(/,/g, '');
+  const m = s.match(/[\d.]+/);
+  if (!m) return 0;
+  const n = parseFloat(m[0]);
+  return s.includes('萬') ? n * 10000 : n;
+}
+
+/* ── Format money, language-aware. zh: "22.9 萬" · en: "NT$229,500" ──
+   sym=true prepends "NT$ " in zh contexts (en always carries the symbol). */
+function fmtMoney(n, sym) {
+  if (lang() === 'en') {
+    if (n >= 1000000) return `NT$${(n / 1000000).toFixed(2)}M`;
+    return `NT$${Math.round(n).toLocaleString('en-US')}`;
+  }
+  const z = n >= 1000000 ? `${(n/10000).toFixed(0)} 萬`
+          : n >= 10000   ? `${(n/10000).toFixed(1)} 萬`
+          : String(Math.round(n));
+  return sym ? `NT$ ${z}` : z;
+}
+
+/* ── Count-up ── */
+function countUp(el, finalVal, dur, formatter) {
+  if (!el || isNaN(finalVal)) return;
+  const fmt = formatter || (v => Math.round(v));
+  const start = performance.now();
+  const step = now => {
+    const t = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = fmt(finalVal * ease);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = fmt(finalVal);
+  };
+  requestAnimationFrame(step);
+}
+
+/* ── Render MAIC ── */
+function renderMAIC(rows) {
+  const byYear = {};
+  rows.forEach(r => {
+    if (!byYear[r.year]) byYear[r.year] = [];
+    byYear[r.year].push(r);
+  });
+
+  const el = document.getElementById('maic-container');
+  if (!el) return;
+  el.innerHTML = '';
+
+  Object.keys(byYear).sort().forEach(year => {
+    const entries = byYear[year];
+    const totalTeams = entries.reduce((s, r) => s + r.teams, 0);
+    const totalPrize = entries.reduce((s, r) => s + parsePrize(r.prize) * r.teams, 0);
+
+    const block = document.createElement('div');
+    block.className = 'maic-year-block';
+
+    const awardRows = entries.map(e => `
+      <div class="maic-award-row">
+        <span class="maic-medal">${medalEmoji(e.award)}</span>
+        <span class="maic-award-name">${tr(AWARD, e.award)}</span>
+        <span class="maic-teams-x">×${e.teams} ${L('組', e.teams > 1 ? 'teams' : 'team')}</span>
+        <span class="maic-prize-tag">${fmtMoney(parsePrize(e.prize), true)} / ${L('組', 'team')}</span>
+      </div>
+    `).join('');
+
+    block.innerHTML = `
+      <div class="maic-year-header">
+        <span class="maic-year-label">${year}</span>
+        <span class="maic-year-meta">${L(`${totalTeams} 組獲獎 · 獎金合計約 ${fmtMoney(totalPrize, true)}`, `${totalTeams} teams awarded · total prize ≈ ${fmtMoney(totalPrize, true)}`)}</span>
+      </div>
+      <div class="maic-award-list">${awardRows}</div>
+    `;
+    el.appendChild(block);
+  });
+}
+
+/* ── Render Falling Walls ── */
+function renderFW(rows) {
+  /* Group by year + person name (extracted from 報導連結) */
+  const byKey = {};
+  rows.forEach(r => {
+    const parts = r.report.split('｜');
+    const rawName = (parts[1] || '').trim();
+    const name = rawName.replace(/\(.*?\)/g, '').trim() || '—';
+    const topic = (parts[2] || '').trim();
+    const key = r.year + '||' + name;
+    if (!byKey[key]) byKey[key] = { year: r.year, name, topic, venues: [], videos: [] };
+    const isBerlin = r.contestName.toLowerCase().includes('berlin');
+    byKey[key].venues.push({ venue: isBerlin ? 'Berlin' : 'Taipei', award: r.award });
+    if (topic && !byKey[key].topic) byKey[key].topic = topic;
+    /* collect YouTube link(s) from the URLs column (a cell may hold several, newline-separated) */
+    (r.url || '').split(/\s+/).map(u => u.trim()).filter(Boolean).forEach(u => {
+      if (!byKey[key].videos.includes(u)) byKey[key].videos.push(u);
+    });
+  });
+
+  const el = document.getElementById('fw-container');
+  if (!el) return;
+  el.innerHTML = '';
+
+  Object.values(byKey).sort((a, b) => a.year.localeCompare(b.year)).forEach(p => {
+    const hasBerlin = p.venues.some(v => v.venue === 'Berlin');
+    const venueHTML = p.venues.map(v =>
+      `<span class="fw-venue-tag">${v.venue === 'Berlin' ? '🇩🇪' : '🇹🇼'} ${v.venue} · ${tr(AWARD, v.award)}</span>`
+    ).join('<span class="fw-venue-arrow">→</span>');
+    const videoHTML = p.videos.map((u, i) => {
+      const label = p.videos.length > 1
+        ? L(`觀賽影片 ${i + 1} ▶`, `Match video ${i + 1} ▶`)
+        : L('觀賽影片 ▶', 'Match video ▶');
+      return `<a class="fw-notes-link" href="${u}" target="_blank" rel="noopener">${label}</a>`;
+    }).join('');
+
+    const card = document.createElement('div');
+    card.className = 'fw-card' + (hasBerlin ? ' fw-card-featured' : '');
+    card.innerHTML = `
+      <div class="fw-card-left">
+        <div class="fw-year-badge">${p.year}</div>
+      </div>
+      <div class="fw-card-body">
+        <div class="fw-name-row">
+          <span class="fw-name">${p.name}</span>
+          ${hasBerlin ? '<span class="fw-intl-badge">🌍 International Champion</span>' : ''}
+        </div>
+        <div class="fw-venues">${venueHTML}</div>
+        ${p.topic ? `<div class="fw-topic">"${p.topic}"</div>` : ''}
+        ${videoHTML ? `<div class="fw-venues fw-video-row">${videoHTML}</div>` : ''}
+      </div>
+    `;
+    el.appendChild(card);
+  });
+}
+
+/* ── Render ATCC (business-case competition) — reuses the fw-card visual ── */
+const RANK = { '1st': ['冠軍', '1st Place'], '2nd': ['亞軍', '2nd Place'], '3rd': ['季軍', '3rd Place'] };
+const rankLabel = a => RANK[a] ? L(RANK[a][0], RANK[a][1]) : tr(AWARD, a);
+
+function renderATCC(rows) {
+  const el = document.getElementById('atcc-container');
+  if (!el) return;
+  el.innerHTML = '';
+
+  rows.slice().sort((a, b) => a.year.localeCompare(b.year)).forEach(r => {
+    const team = r.mentee || L('學生團隊', 'Student team');
+    const hlRaw = pick(r.highlightZh, r.highlightEn);
+    const hl = (hlRaw && !hlRaw.includes('**')) ? hlRaw : '';  // hide until finalized
+    const prizeTag = parsePrize(r.prize) > 0
+      ? `<span class="fw-venue-tag">💰 ${fmtMoney(parsePrize(r.prize), true)}</span>` : '';
+    const notes = r.report
+      ? `<a class="fw-notes-link" href="${r.report}" target="_blank" rel="noopener">${L('觀賽紀錄 →', 'Match notes →')}</a>` : '';
+    const video = r.url
+      ? `<a class="fw-notes-link" href="${r.url}" target="_blank" rel="noopener">${L('觀賽影片 ▶', 'Match video ▶')}</a>` : '';
+
+    const card = document.createElement('div');
+    card.className = 'fw-card fw-card-featured';
+    card.innerHTML = `
+      <div class="fw-card-left"><div class="fw-year-badge">${r.year}</div></div>
+      <div class="fw-card-body">
+        <div class="fw-name-row">
+          <span class="fw-name">${team}</span>
+          <span class="fw-intl-badge">${medalEmoji(r.award)} ${rankLabel(r.award)}</span>
+        </div>
+        <div class="fw-venues">${prizeTag}${notes}${video}</div>
+        ${hl ? `<div class="fw-topic">"${hl}"</div>` : ''}
+      </div>
+    `;
+    el.appendChild(card);
+  });
+}
+
+/* ── Main load ──
+   資料由 build 期經 define:vars 帶進來，不再 fetch Google Sheet。
+   下面的分組、統計、render 邏輯完全沒動。 */
+function loadAwards() {
+  try {
+    const data = AWARDS_DATA;
+
+    const maic = data.filter(r => r.abbr === 'MAIC' || r.name.includes('行動應用'));
+    const fw   = data.filter(r => r.name.includes('圍牆'));
+    const atcc = data.filter(r => r.abbr === 'ATCC');
+
+    /* Stats */
+    const totalTeams  = maic.reduce((s, r) => s + r.teams, 0);
+    const totalPrize  = [...maic, ...atcc].reduce((s, r) => s + parsePrize(r.prize) * r.teams, 0);
+    const fwCount     = fw.length; // each row = one placement
+
+    let awardsAnimated = false;
+    awardsRender = (animate) => {
+      renderMAIC(maic);
+      renderFW(fw);
+      renderATCC(atcc);
+      if (animate && !awardsAnimated) {
+        awardsAnimated = true;
+        countUp(document.getElementById('c-teams'), totalTeams, 1200);
+        countUp(document.getElementById('c-prize'), totalPrize, 1600, v => fmtMoney(v, false));
+        countUp(document.getElementById('c-fw'), fwCount, 800);
+      } else {
+        const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+        set('c-teams', String(totalTeams));
+        set('c-prize', fmtMoney(totalPrize, false));
+        set('c-fw', String(fwCount));
+      }
+    };
+    awardsRender(true);
+
+  } catch (e) {
+    console.error('Coaching data error:', e);
+    ['maic-container','fw-container','atcc-container'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '<div class="data-error">⚠️ 資料載入失敗</div>';
+    });
+  }
+}
+
+/* ── Testimonials：資料同樣由 build 期帶入，這裡只負責輪播 ── */
+function loadTestimonials() {
+  const track = document.getElementById('testi-track');
+  const dotsEl = document.getElementById('testi-dots');
+  const nav = document.getElementById('testi-nav');
+  if (!track) return;
+
+  try {
+    /* show 篩選已在 build 期做掉（src/lib/sheets.ts 的 visible()），
+       這裡保留 show 欄位只是為了不動下方既有的過濾判斷。 */
+    const data = TESTIMONIALS_DATA
+      .map(r => ({
+        quote:     r.quote,
+        context:   r.context,
+        quoteEn:   r.quoteEn,
+        contextEn: r.contextEn,
+        show:      'TRUE',
+      }))
+      .filter(r => r.quote);
+
+    if (!data.length) { track.innerHTML = ''; return; }
+
+    track.innerHTML = data.map((t, i) => `
+      <div class="testi-slide${i === 0 ? ' active' : ''}">
+        <div class="testi-quote-mark">❝</div>
+        <p class="testi-quote">${pick(t.quote, t.quoteEn)}</p>
+        <div class="testi-context">— ${pick(t.context, t.contextEn)}</div>
+      </div>
+    `).join('');
+
+    /* re-render text in place on language change (keeps carousel state) */
+    testiRender = () => {
+      const slides = track.querySelectorAll('.testi-slide');
+      slides.forEach((s, i) => {
+        const q = s.querySelector('.testi-quote');
+        const c = s.querySelector('.testi-context');
+        if (q) q.textContent = pick(data[i].quote, data[i].quoteEn);
+        if (c) c.textContent = '— ' + pick(data[i].context, data[i].contextEn);
+      });
+    };
+
+    if (dotsEl) {
+      dotsEl.innerHTML = data.map((_, i) =>
+        `<button class="testi-dot${i === 0 ? ' active' : ''}" aria-label="第 ${i+1} 則"></button>`
+      ).join('');
+    }
+
+    if (nav) nav.style.display = '';
+
+    /* Init carousel */
+    const slides = track.querySelectorAll('.testi-slide');
+    const dots   = dotsEl ? dotsEl.querySelectorAll('.testi-dot') : [];
+    let cur = 0;
+
+    function goTo(n) {
+      slides[cur].classList.remove('active');
+      if (dots[cur]) dots[cur].classList.remove('active');
+      cur = (n + slides.length) % slides.length;
+      slides[cur].classList.add('active');
+      if (dots[cur]) dots[cur].classList.add('active');
+    }
+
+    document.getElementById('testi-prev')?.addEventListener('click', () => goTo(cur - 1));
+    document.getElementById('testi-next')?.addEventListener('click', () => goTo(cur + 1));
+    dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+
+    let timer = setInterval(() => goTo(cur + 1), 5000);
+    document.getElementById('testi-carousel')?.addEventListener('mouseenter', () => clearInterval(timer));
+    document.getElementById('testi-carousel')?.addEventListener('mouseleave', () => {
+      timer = setInterval(() => goTo(cur + 1), 5000);
+    });
+
+  } catch (e) {
+    if (track) track.innerHTML = '';
+  }
+}
+
+loadAwards();
+loadTestimonials();
+
+window.addEventListener('langchange', () => {
+  if (awardsRender) awardsRender(false);
+  if (testiRender) testiRender();
+});
+</script>

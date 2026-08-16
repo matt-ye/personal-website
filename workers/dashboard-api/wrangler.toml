@@ -1,0 +1,25 @@
+# dashboard 專用 API worker。與金流 worker（dreamcatcher-worker）、AI worker 完全隔離。
+# 部署：GitHub Actions（.github/workflows/deploy-worker.yml），不需要地端 wrangler——
+#   merge 到 main 且 workers/** 有變更時自動部署。
+# Secrets（由 deploy workflow 從 repo secrets 同步）：GH_DISPATCH_TOKEN
+name = "dashboard-api"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+# 同源路由：dashboard 頁面 fetch /api/dashboard/* 不需 CORS，
+# 且此路徑由 Cloudflare Access 保護（runbook 第 10 步）。
+# 注意：routes 必須放在任何 [table] 段落之前——TOML 的頂層 key 出現在
+# 表頭之後會被吸進該表（首版就是因此 route 失效）。
+routes = [
+  { pattern = "mattye.dev/api/dashboard/*", zone_name = "mattye.dev" }
+]
+
+[observability]
+enabled = true
+
+# 註冊用戶資料庫（Tela Aurea 帳號系統）。database_id 由 deploy workflow
+# 以 repo secret CF_D1_DB_ID 置換——UUID 非機密，但沒必要進 public repo。
+[[d1_databases]]
+binding = "AUTH_DB"
+database_name = "telaaurea-auth"
+database_id = "PLACEHOLDER_D1_ID"

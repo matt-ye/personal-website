@@ -1,0 +1,776 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import T from '../../components/T.astro';
+import { EVENT_TYPE, MODE, LANG, EDU } from '../../i18n/dict';
+import { getSpeeches, speechesUnmatchedOrgs } from '../../lib/sheets';
+
+/* 資料在 build 期就備好（來源：src/data/sheets/speeches.json，每日由 Actions 同步）。
+   原本是瀏覽器端 fetch Google Sheet——那讓整份演講紀錄不在 HTML 裡，
+   搜尋引擎與 LLM 完全看不到，也要等外部請求回來才畫得出畫面。 */
+const EXCLUDED_TYPES = new Set(['彩排', '教材製作']);
+
+/* 這個形狀要與下方 client script 的 allData 完全一致：
+   script 的 500 行 render 邏輯全部吃這組欄名，改形狀等於重寫那些函式。 */
+const speechList = getSpeeches().filter(
+  (s) => s.date && s.topic.zh && !EXCLUDED_TYPES.has(s.eventType)
+);
+
+/* 單位的官網從 organizations 字典帶進來，讓卡片上的機構名變成可點的連結。
+   查不到字典的單位 orgUrl 是空字串——渲染時就只顯示文字，不會產生空連結。 */
+const speechData = speechList.map((s) => ({
+  date: s.date,
+  year: String(s.year || ''),
+  org: s.host?.name ?? '',
+  orgEn: s.host?.nameEn ?? '',
+  orgType: s.host?.type ?? '',
+  orgUrl: s.host?.url ?? '',
+  coOrg1: s.coHost1?.name ?? '',
+  coOrg1En: s.coHost1?.nameEn ?? '',
+  coOrg1Type: s.coHost1?.type ?? '',
+  coOrg1Url: s.coHost1?.url ?? '',
+  coOrg2: s.coHost2?.name ?? '',
+  coOrg2En: s.coHost2?.nameEn ?? '',
+  coOrg2Type: s.coHost2?.type ?? '',
+  coOrg2Url: s.coHost2?.url ?? '',
+  topic: s.topic.zh,
+  topicEn: s.topic.en,
+  type: s.eventType,
+  mode: s.mode,
+  lang: s.language,
+  edu: s.audienceEdu,
+  audience: s.attendees,
+  hours: s.hours,
+  youtubeUrl: s.youtubeUrl,
+  url: s.otherUrl,
+}));
+
+/* 同時產出 /speeches/ 與 /en/speeches/，見 [...lang]/about.astro 的說明。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+
+/* 與下方 client script 的 pick()/tr() 同一套規則。這一頁的 build 期版本就是
+   爬蟲看到的版本（見 .speech-cards-grid 的註解），JS 載入後 renderCards()
+   會重畫——兩邊規則不一致的話，使用者會看到內容跳動。 */
+const pick = (zh: string, en: string) => (isEn && en) ? en : (zh || en || '');
+const tr = (map: Record<string, string>, v: string) => (isEn && map && map[v]) ? map[v] : v;
+
+/* 還沒進字典的單位在 build log 列出來，逐步補完用；不影響 build 成敗 */
+const missingOrgs = speechesUnmatchedOrgs();
+if (missingOrgs.length) {
+  console.log(`  [organizations] ${missingOrgs.length} 個單位不在字典裡（顯示為純文字）：${missingOrgs.join('、')}`);
+}
+
+/* 給不執行 JS 的訪客（含爬蟲）看的靜態統計——與 script 的 renderStats 同一套算法 */
+const totalEvents = speechData.length;
+const totalHours = Math.round(speechData.reduce((s, d) => s + d.hours, 0));
+const totalAudience = speechData.reduce((s, d) => s + d.audience, 0);
+const totalOrgs = new Set(speechData.map((d) => d.org).filter(Boolean)).size;
+const yearSpan = (() => {
+  const ys = speechData.map((d) => Number(d.year)).filter(Boolean);
+  return ys.length ? `${Math.min(...ys)}–${Math.max(...ys)}` : '';
+})();
+---
+<BaseLayout
+  title="Speeches"
+  description={isEn
+    ? 'Talks, workshops and competition work by Ching-Wei (Matt) Ye since 2020 — academic presentation, communication skills and EMI teaching.'
+    : '葉淨維 Matt Ye 的演講、工作坊、競賽作品集。2020 年至今，涵蓋學術簡報、表達技巧、EMI教學等主題。'}
+  lang={isEn ? 'en' : 'zh-TW'}
+  image="/OG.png"
+>
+  <script slot="head" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <div class="container-wide">
+
+    <!-- Hero -->
+    <section class="speeches-hero">
+      <h1><T zh="演講" en="Speeches" /> &amp; <span class="accent-text"><T zh="工作坊" en="Workshops" /></span></h1>
+      <p class="subtitle">
+        <T zh="2020 年起的演講、工作坊與競賽紀錄。" en="A record of speeches, workshops, and competitions since 2020." />
+      </p>
+    </section>
+
+    <!-- Bento Stats -->
+    <div class="bento-grid" id="bento-stats">
+      {/* 數字在 build 期就填好——JS 載入後會用 countUp 動畫重寫同一個值，
+          但不執行 JS 的訪客與爬蟲看到的不再是破折號。 */}
+      <div class="bento-card">
+        <div class="bento-card-label">Total Events</div>
+        <div class="bento-card-num" id="val-total">{totalEvents}</div>
+        <div class="bento-card-sub"><T zh="場次累計" en="Total Events" /></div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-card-label">Total Hours</div>
+        <div class="bento-card-num" id="val-hours">{totalHours}</div>
+        <div class="bento-card-sub"><T zh="講台時數" en="Total Hours" /></div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-card-label">Audience</div>
+        <div class="bento-card-num" id="val-audience">{totalAudience.toLocaleString('en-US')}</div>
+        <div class="bento-card-sub"><T zh="觸及人次" en="Audience Reached" /></div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-card-label">Organizations</div>
+        <div class="bento-card-num" id="val-orgs">{totalOrgs}</div>
+        <div class="bento-card-sub"><T zh="合作單位" en="Partner organizations" /></div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-card-label">Languages</div>
+        <div class="bento-card-num" id="val-langs">2</div>
+        <div class="bento-card-sub"><T zh="中文 · 英文" en="Chinese · English" /></div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-card-label">Since</div>
+        <div class="bento-card-num" id="val-since">2020</div>
+        <div class="bento-card-sub" id="val-span">{yearSpan}</div>
+      </div>
+    </div>
+
+    <!-- Charts: 4 Donuts -->
+    <section class="charts-section">
+      <h2 class="section-heading"><T zh="類型分佈" en="Distribution breakdown" /></h2>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-card-head"><span class="chart-card-title"><T zh="類型" en="Type" /></span><span class="chart-badge" id="badge-type">—</span></div>
+          <div class="chart-biggest" id="biggest-type">—</div>
+          <div class="chart-wrap"><canvas id="chart-type"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-head"><span class="chart-card-title"><T zh="形式" en="Format" /></span><span class="chart-badge" id="badge-mode">—</span></div>
+          <div class="chart-biggest" id="biggest-mode">—</div>
+          <div class="chart-wrap"><canvas id="chart-mode"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-head"><span class="chart-card-title"><T zh="語言" en="Language" /></span><span class="chart-badge" id="badge-lang">—</span></div>
+          <div class="chart-biggest" id="biggest-lang">—</div>
+          <div class="chart-wrap"><canvas id="chart-lang"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-head"><span class="chart-card-title"><T zh="聽眾程度" en="Audience Level" /></span><span class="chart-badge" id="badge-edu">—</span></div>
+          <div class="chart-biggest" id="biggest-edu">—</div>
+          <div class="chart-wrap"><canvas id="chart-edu"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Year stacked bar -->
+      <div class="year-chart-card">
+        <div class="year-chart-head">
+          <div>
+            <div class="chart-card-title"><T zh="每年場次" en="Events per Year" /></div>
+            <div class="year-peak" id="peak-year">—</div>
+          </div>
+          <div class="chart-legend" id="year-legend"></div>
+        </div>
+        <div class="year-chart-wrap"><canvas id="chart-year"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Org Leaderboard -->
+    <section class="orgs-section">
+      <h2 class="section-heading"><T zh="主要合作單位" en="Top collaborating organizations" /></h2>
+      <div class="orgs-filter-row">
+        <button class="chip active" data-cat="all"><T zh="全部" en="All" /></button>
+        <button class="chip" data-cat="學校">🎓 <T zh="學校" en="Schools" /></button>
+        <button class="chip" data-cat="NGO">🌍 NGO</button>
+        <button class="chip" data-cat="NPO">🤝 NPO</button>
+        <button class="chip" data-cat="政府單位">🏛 <T zh="政府單位" en="Government" /></button>
+        <button class="chip" data-cat="企業">🏢 <T zh="企業" en="Companies" /></button>
+        <button class="chip" data-cat="學生社團">🎓 <T zh="學生社團" en="Student Clubs" /></button>
+        <button class="chip" data-cat="自媒體">📱 <T zh="自媒體" en="Media/Creators" /></button>
+      </div>
+      <div class="orgs-scroll-wrap">
+        <div class="orgs-grid" id="orgs-grid"></div>
+      </div>
+    </section>
+
+    <!-- Explorer: search + filters -->
+    <div class="explorer-bar">
+      <div class="search-box">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="search-input" placeholder={isEn ? 'Search topics, organisers…' : '搜尋主題、主辦單位…'} autocomplete="off" />
+      </div>
+      <div class="filter-row">
+        <span class="filter-label"><T zh="類型" en="Type" /></span>
+        <div class="chip-group" id="type-chips"></div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label"><T zh="形式" en="Format" /></span>
+        <div class="chip-group" id="mode-chips"></div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label"><T zh="語言" en="Language" /></span>
+        <div class="chip-group" id="lang-chips"></div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label"><T zh="年份" en="Year" /></span>
+        <div class="chip-group" id="year-chips"></div>
+      </div>
+    </div>
+
+    <!-- Filtered Stats Strip -->
+    <div class="filtered-stats" id="filtered-stats" style="display:none">
+      <div class="fstat-item">
+        <span class="fstat-num" id="fval-events">—</span>
+        <span class="fstat-label"><T zh="場次" en="Events" /></span>
+      </div>
+      <div class="fstat-divider"></div>
+      <div class="fstat-item">
+        <span class="fstat-num" id="fval-hours">—</span>
+        <span class="fstat-label"><T zh="小時" en="Hours" /></span>
+      </div>
+      <div class="fstat-divider"></div>
+      <div class="fstat-item">
+        <span class="fstat-num" id="fval-audience">—</span>
+        <span class="fstat-label"><T zh="人次" en="Audience" /></span>
+      </div>
+    </div>
+
+    <!-- Results meta + sort -->
+    <div class="results-meta">
+      <span><T zh="顯示" en="Showing" /> <b id="results-count">—</b> <T zh="場活動" en="events" /></span>
+      <div class="results-meta-right">
+        {/* <option> 與 placeholder 不能用 <T>：它們是純文字語境，
+            塞不進 <T> 輸出的兩個 <span>——這正是排序選單在 /en/ 一直是中文的原因，
+            不是漏改，是那個位置本來就沒有雙語機制。
+
+            這裡改用建置期依 locale 選字串。之所以成立，是因為 /speeches/ 的
+            語言鈕是 <a href="/en/speeches/">（換頁），不是就地切——
+            所以每一份 HTML 的語言在建置期就定了。就地切的頁面不能這樣做。 */}
+        <select id="sort-select" class="sort-select">
+          <option value="date-desc">{isEn ? 'Date (newest)' : '日期（最新）'}</option>
+          <option value="date-asc">{isEn ? 'Date (oldest)' : '日期（最早）'}</option>
+          <option value="audience-desc">{isEn ? 'Audience (largest)' : '人次（最多）'}</option>
+          <option value="hours-desc">{isEn ? 'Hours (most)' : '時數（最多）'}</option>
+        </select>
+        <button class="clear-btn" id="clear-btn" style="display:none"><T zh="清除篩選" en="Clear filters" /></button>
+      </div>
+    </div>
+
+    {/* Cards —— build 期就把整份紀錄渲染進 HTML。
+        JS 載入後 renderCards() 會重畫這一區以支援篩選與分頁，所以這裡是
+        「不執行 JS 時看到的版本」，也就是搜尋引擎與 LLM 看到的版本。
+        刻意不分頁：使用者可以按 Show more，爬蟲不會。 */}
+    <div class="speech-cards-grid" id="cards-grid">
+      {speechData.map((d) => {
+        const linkUrl = d.youtubeUrl || d.url;
+        return (
+          <div class="speech-card">
+            <div class="card-meta-row">
+              <span>{d.date}</span>
+              <span>{tr(EDU, d.edu)}</span>
+            </div>
+            {/* 演講主題是卡片標題 → h3（這一區的 h2 是「類型分佈」等區塊標題）。
+                ⚠ 下方 client script 的 cardHTML() 必須產生相同結構，
+                否則 JS 重畫後 heading 會消失。 */}
+            <h3 class="card-heading">
+              {linkUrl
+                ? <a class="card-topic card-topic-link" href={linkUrl} target="_blank" rel="noopener" lang={isEn && !d.topicEn ? 'zh-TW' : undefined}>{pick(d.topic, d.topicEn)}</a>
+                : <div class="card-topic" lang={isEn && !d.topicEn ? 'zh-TW' : undefined}>{pick(d.topic, d.topicEn)}</div>}
+            </h3>
+            {/* 單位有官網就做成連結——這些是指向真實機構的外連，對 E-E-A-T 有幫助；
+                字典查不到的單位沒有網址，就只顯示文字 */}
+            {d.org && (
+              <div class="card-org" lang="zh-TW">
+                {d.orgUrl
+                  ? <a href={d.orgUrl} target="_blank" rel="noopener">{d.org}</a>
+                  : d.org}
+              </div>
+            )}
+            {d.orgEn && <div class="card-org-en" lang="en">{d.orgEn}</div>}
+            {d.coOrg1 && (
+              <div class="card-org-co" lang="zh-TW"><T zh="協辦：" en="Co-host: " />{d.coOrg1Url
+                ? <a href={d.coOrg1Url} target="_blank" rel="noopener">{d.coOrg1}</a>
+                : d.coOrg1}</div>
+            )}
+            {d.coOrg2 && (
+              <div class="card-org-co" lang="zh-TW"><T zh="協辦：" en="Co-host: " />{d.coOrg2Url
+                ? <a href={d.coOrg2Url} target="_blank" rel="noopener">{d.coOrg2}</a>
+                : d.coOrg2}</div>
+            )}
+            <div class="card-stats">
+              {d.audience > 0 && <span><b>{d.audience}</b><T zh="人" en=" people" /></span>}
+              {d.hours > 0 && <span><b>{d.hours}</b>hr</span>}
+            </div>
+            <div class="card-badges">
+              {d.type && <span class={`badge badge-type-${d.type}`}>{tr(EVENT_TYPE, d.type)}</span>}
+              {d.mode && <span class={`badge badge-mode-${d.mode}`}>{tr(MODE, d.mode)}</span>}
+              {d.lang && <span class="badge badge-lang">{tr(LANG, d.lang)}</span>}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <!-- Show more -->
+    <div class="show-more-row">
+      <button class="show-more-btn" id="show-more-btn" style="display:none">
+        <T zh="顯示更多" en="Show more" />
+      </button>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script define:vars={{ SPEECH_DATA: speechData, EVENT_TYPE, MODE, LANG, EDU }}>
+/* CSV 解析已移到 build 期（scripts/fetch-sheets.mjs），這裡收到的是解析好的物件陣列。 */
+
+function fmtDate(raw) {
+  if (!raw) return '';
+  const clean = raw.replace(/[^\d/]/g, '');
+  const parts = clean.split('/');
+  if (parts.length < 3) return raw;
+  const [y, m, d] = parts;
+  if (!y || y.length !== 4) return raw;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[parseInt(m)-1] ?? m} ${parseInt(d)}, ${y}`;
+}
+
+function fmtNum(n) {
+  if (n >= 1000) return `${(n/1000).toFixed(1)}K`;
+  return String(n);
+}
+
+/* ── i18n helpers ── */
+const lang = () => document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
+const tr   = (map, v) => (lang() === 'en' && map && map[v]) ? map[v] : v;
+const L    = (zh, en) => lang() === 'en' ? en : zh;
+const pick = (zh, en) => (lang() === 'en' && en) ? en : zh;
+let chartInstances = [];
+function destroyCharts() { chartInstances.forEach(c => { try { c.destroy(); } catch (e) {} }); chartInstances = []; }
+
+/* ── Count-up animation ── */
+function countUp(el, finalVal, dur) {
+  if (!el || isNaN(finalVal)) return;
+  const fmt = finalVal >= 1000
+    ? v => `${(v / 1000).toFixed(1)}K`
+    : v => String(Math.round(v));
+  const start = performance.now();
+  const step = now => {
+    const t = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = fmt(finalVal * ease);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = fmt(finalVal);
+  };
+  requestAnimationFrame(step);
+}
+
+/* ── State ── */
+const PAGE_SIZE = 24;
+/* 「彩排」「教材製作」的排除已在 build 期做掉（見 frontmatter 的 EXCLUDED_TYPES）。 */
+const PALETTE = ['#3b82f6','#22d3ee','#ff5dd9','#ffd166','#4ade80','#ff7a59','#c8b0ff','#8ee0ff','#ffb3ee'];
+let allData = [];
+let state = { search: '', types: new Set(), modes: new Set(), langs: new Set(), years: new Set(), sort: 'date-desc', page: 1 };
+
+/* ── Init ──
+   資料由 build 期經 define:vars 帶進來（來源 src/data/sheets/speeches.json），
+   不再在瀏覽器端 fetch Google Sheet。差別：整份紀錄已經在 HTML 裡，
+   爬蟲與 LLM 看得到，畫面也不必等外部請求。
+   篩選、圖表、排行榜的邏輯完全沒動——它們吃的 allData 形狀與原本一致。 */
+function init() {
+  allData = SPEECH_DATA;
+
+  renderStats();
+  renderChips();
+  renderCharts();
+  initOrgFilters();
+  renderOrgLeaderboard();
+  renderCards();
+}
+
+/* ── Stats ── */
+function renderStats() {
+  const total = allData.length;
+  const hours = allData.reduce((s, d) => s + d.hours, 0);
+  const audience = allData.reduce((s, d) => s + d.audience, 0);
+  const orgs = new Set(
+    allData.flatMap(d => [d.org, d.coOrg1, d.coOrg2]).map(s => s.trim()).filter(Boolean)
+  ).size;
+
+  countUp(document.getElementById('val-total'),    total,              1400);
+  countUp(document.getElementById('val-hours'),    Math.round(hours),  1400);
+  countUp(document.getElementById('val-audience'), audience,           1600);
+  countUp(document.getElementById('val-orgs'),     orgs,               1200);
+  countUp(document.getElementById('val-langs'),    2,                   600);
+  updateSpan();
+}
+
+function updateSpan() {
+  const el = document.getElementById('val-span');
+  if (el) el.textContent = L(`6 年 ${allData.length} 場`, `${allData.length} events over 6 yrs`);
+}
+
+function renderFilteredStats(filtered) {
+  const strip = document.getElementById('filtered-stats');
+  if (!strip) return;
+  const active = hasActiveFilters();
+  strip.style.display = active ? 'flex' : 'none';
+  if (!active) return;
+  document.getElementById('fval-events').textContent = filtered.length;
+  document.getElementById('fval-hours').textContent = Math.round(filtered.reduce((s, d) => s + d.hours, 0));
+  document.getElementById('fval-audience').textContent = fmtNum(filtered.reduce((s, d) => s + d.audience, 0));
+}
+
+/* ── Charts ── */
+function countBy(arr, key) {
+  const m = {};
+  arr.forEach(r => { const k = r[key] || '未知'; m[k] = (m[k] || 0) + 1; });
+  return m;
+}
+
+function makeDonut(canvasId, counts, biggestId, badgeId, labelMap) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  const keys = Object.keys(counts);
+  const labels = keys.map(k => tr(labelMap, k));
+  const values = keys.map(k => counts[k]);
+  const total = values.reduce((a, b) => a + b, 0);
+  const sorted = labels.map((l, i) => ({ l, v: values[i] })).sort((a, b) => b.v - a.v);
+  const biggestEl = document.getElementById(biggestId);
+  const badgeEl = document.getElementById(badgeId);
+  if (biggestEl) biggestEl.textContent = sorted[0].l + ' · ' + Math.round(sorted[0].v / total * 100) + '%';
+  if (badgeEl) badgeEl.textContent = labels.length + L(' 類', labels.length === 1 ? ' type' : ' types');
+
+  chartInstances.push(new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: labels.map((_, i) => PALETTE[i % PALETTE.length]), borderWidth: 0, borderRadius: 3, spacing: 1, hoverOffset: 8 }]
+    },
+    options: {
+      cutout: '68%',
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 1200, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 8, boxHeight: 8, padding: 8, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' } },
+        tooltip: {
+          callbacks: { label: (c) => ' ' + c.label + ' · ' + c.parsed + L(' 場 (', ' (') + (c.parsed / total * 100).toFixed(1) + '%)' }
+        }
+      }
+    }
+  }));
+}
+
+function renderCharts() {
+  destroyCharts();
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  Chart.defaults.color = isDark ? '#8b93bf' : '#666666';
+  Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+  Chart.defaults.font.size = 11;
+  Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.06)';
+
+  makeDonut('chart-type', countBy(allData, 'type'), 'biggest-type', 'badge-type', EVENT_TYPE);
+  makeDonut('chart-mode', countBy(allData, 'mode'), 'biggest-mode', 'badge-mode', MODE);
+  makeDonut('chart-lang', countBy(allData, 'lang'), 'biggest-lang', 'badge-lang', LANG);
+  makeDonut('chart-edu',  countBy(allData, 'edu'),  'biggest-edu',  'badge-edu',  EDU);
+
+  /* Stacked bar by year */
+  const years = [...new Set(allData.map(d => d.year).filter(Boolean))].sort();
+  const types = [...new Set(allData.map(d => d.type))];
+  const peak = years.map(y => ({ y, n: allData.filter(d => d.year === y).length })).sort((a, b) => b.n - a.n)[0];
+  const peakEl = document.getElementById('peak-year');
+  if (peakEl && peak) peakEl.textContent = `Peak: ${peak.y} · ${peak.n}${L(' 場', '')}`;
+
+  const legendEl = document.getElementById('year-legend');
+  if (legendEl) {
+    legendEl.innerHTML = '';
+    types.forEach((t, i) => {
+      const item = document.createElement('span');
+      item.className = 'legend-item';
+      item.innerHTML = `<span class="legend-swatch" style="background:${PALETTE[i % PALETTE.length]}"></span>${tr(EVENT_TYPE, t)}`;
+      legendEl.appendChild(item);
+    });
+  }
+
+  const yearCtx = document.getElementById('chart-year');
+  if (yearCtx) {
+    chartInstances.push(new Chart(yearCtx, {
+      type: 'bar',
+      data: {
+        labels: years,
+        datasets: types.map((t, i) => ({
+          label: tr(EVENT_TYPE, t),
+          data: years.map(y => allData.filter(d => d.year === y && d.type === t).length),
+          backgroundColor: PALETTE[i % PALETTE.length],
+          borderRadius: 4, borderSkipped: false, maxBarThickness: 52,
+        }))
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        animation: { duration: 1200, easing: 'easeOutQuart' },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: { footer: (items) => L('合計 ', 'Total ') + items.reduce((a, b) => a + b.parsed.y, 0) + L(' 場', '') }
+          }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { font: { size: 12, weight: '600' } } },
+          y: { stacked: true, grid: { color: isDark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.06)' }, ticks: { precision: 0, padding: 6 } }
+        }
+      }
+    }));
+  }
+}
+
+/* ── Org Leaderboard ── */
+let orgCatFilter = 'all';
+
+function buildOrgMap() {
+  // zh → { count, eng, type }
+  const map = {};
+  allData.forEach(d => {
+    [
+      { zh: d.org,    eng: d.orgEn,    type: d.orgType    },
+      { zh: d.coOrg1, eng: d.coOrg1En, type: d.coOrg1Type },
+      { zh: d.coOrg2, eng: d.coOrg2En, type: d.coOrg2Type },
+    ].forEach(({ zh, eng, type }) => {
+      const name = (zh || '').trim();
+      if (!name) return;
+      if (!map[name]) map[name] = { count: 0, eng: '', type: '' };
+      map[name].count++;
+      if (!map[name].eng  && eng)  map[name].eng  = eng.trim();
+      if (!map[name].type && type) map[name].type = type.trim();
+    });
+  });
+  return map;
+}
+
+function renderOrgLeaderboard(catFilter) {
+  if (catFilter !== undefined) orgCatFilter = catFilter;
+
+  const orgMap = buildOrgMap();
+  let entries = Object.entries(orgMap).sort((a, b) => b[1].count - a[1].count);
+
+  if (orgCatFilter !== 'all') {
+    entries = entries.filter(([, info]) => info.type === orgCatFilter);
+  }
+
+  const ranked = entries; /* show all — scrollable container handles overflow */
+  const max = ranked[0]?.[1].count || 1;
+
+  const grid = document.getElementById('orgs-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  /* Reset scroll position on each filter change */
+  const wrap = grid.closest('.orgs-scroll-wrap');
+  if (wrap) wrap.scrollTop = 0;
+
+  if (ranked.length === 0) {
+    grid.innerHTML = `<div class="data-error" style="font-size:1.1rem">${L('此分類尚無資料', 'No data in this category')}</div>`;
+    return;
+  }
+
+  ranked.forEach(([name, info], i) => {
+    const pct = (info.count / max) * 100;
+    const row = document.createElement('div');
+    row.className = 'org-row';
+    row.innerHTML = `
+      <span class="org-rank${i < 3 ? ' org-rank-top' : ''}">${String(i + 1).padStart(2, '0')}</span>
+      <span class="org-name">
+        <span class="org-name-zh">${name}</span>
+        ${info.eng ? `<span class="org-name-en">${info.eng}</span>` : ''}
+      </span>
+      <span class="org-bar-bg"><span class="org-bar" data-width="${pct}"></span></span>
+      <span class="org-count">${info.count}</span>
+    `;
+    grid.appendChild(row);
+  });
+
+  /* Double-rAF: first frame paints width:0%, second frame triggers CSS transition */
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      grid.querySelectorAll('.org-bar').forEach(b => {
+        b.style.width = b.dataset.width + '%';
+      });
+    });
+  });
+}
+
+/* ── Org Filter Chip Listeners ── */
+function initOrgFilters() {
+  document.querySelectorAll('[data-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderOrgLeaderboard(btn.dataset.cat);
+    });
+  });
+}
+
+/* ── Filter Chips ── */
+function makeChips(containerId, values, stateSet, onChange, labelMap) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  [...values].sort().forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'chip' + (stateSet.has(val) ? ' active' : '');
+    btn.textContent = tr(labelMap, val);
+    btn.addEventListener('click', () => {
+      stateSet.has(val) ? stateSet.delete(val) : stateSet.add(val);
+      btn.classList.toggle('active');
+      state.page = 1;
+      onChange();
+    });
+    container.appendChild(btn);
+  });
+}
+
+function renderChips() {
+  const types = new Set(allData.map(d => d.type).filter(Boolean));
+  const modes = new Set(allData.map(d => d.mode).filter(Boolean));
+  const langs = new Set(allData.map(d => d.lang).filter(Boolean));
+  const years = new Set(allData.map(d => d.year).filter(Boolean));
+
+  makeChips('type-chips', types, state.types, renderCards, EVENT_TYPE);
+  makeChips('mode-chips', modes, state.modes, renderCards, MODE);
+  makeChips('lang-chips', langs, state.langs, renderCards, LANG);
+  makeChips('year-chips', [...years].sort(), state.years, renderCards, null);
+}
+
+/* ── Filter + Sort Logic ── */
+function applyFilters() {
+  const q = state.search.toLowerCase();
+  let result = allData.filter(d => {
+    if (q && !d.topic.toLowerCase().includes(q) && !(d.topicEn || '').toLowerCase().includes(q) && !d.org.toLowerCase().includes(q) && !d.orgEn.toLowerCase().includes(q)) return false;
+    if (state.types.size && !state.types.has(d.type)) return false;
+    if (state.modes.size && !state.modes.has(d.mode)) return false;
+    if (state.langs.size && !state.langs.has(d.lang)) return false;
+    if (state.years.size && !state.years.has(d.year)) return false;
+    return true;
+  });
+
+  switch (state.sort) {
+    case 'date-asc':      result = result.sort((a, b) => a.date.localeCompare(b.date)); break;
+    case 'audience-desc': result = result.sort((a, b) => b.audience - a.audience); break;
+    case 'hours-desc':    result = result.sort((a, b) => b.hours - a.hours); break;
+    default:              result = result.sort((a, b) => b.date.localeCompare(a.date));
+  }
+  return result;
+}
+
+function hasActiveFilters() {
+  return state.search || state.types.size || state.modes.size || state.langs.size || state.years.size;
+}
+
+/* ── Card Renderer ── */
+function cardHTML(d) {
+  const typeCls = `badge badge-type-${d.type}`;
+  const modeCls = `badge badge-mode-${d.mode}`;
+  const linkUrl = d.youtubeUrl || d.url;
+  const topic = pick(d.topic, d.topicEn);
+  /* 結構要與 build 期渲染的版本一致（見上方 .speech-cards-grid 那段），
+     否則 JS 重畫後 h3 會不見，爬蟲看到的與使用者看到的就對不上。 */
+  const topicHTML = linkUrl
+    ? `<h3 class="card-heading"><a class="card-topic card-topic-link" href="${linkUrl}" target="_blank" rel="noopener">${topic}</a></h3>`
+    : `<h3 class="card-heading"><div class="card-topic">${topic}</div></h3>`;
+  const coOrgHTML = [
+    { zh: d.coOrg1, en: d.coOrg1En },
+    { zh: d.coOrg2, en: d.coOrg2En },
+  ].filter(o => o.zh).map(o =>
+    `<div class="card-org-co">${L('協辦：', 'Co-host: ')}${o.zh}${o.en ? ` <span class="card-org-co-en">· ${o.en}</span>` : ''}</div>`
+  ).join('');
+  return `
+    <div class="speech-card">
+      <div class="card-meta-row">
+        <span>${fmtDate(d.date)}</span>
+        <span>${tr(EDU, d.edu)}</span>
+      </div>
+      ${topicHTML}
+      ${d.org ? `<div class="card-org" lang="zh-TW">${d.org}</div>` : ''}
+      ${d.orgEn ? `<div class="card-org-en">${d.orgEn}</div>` : ''}
+      ${coOrgHTML}
+      <div class="card-stats">
+        ${d.audience ? `<span><b>${d.audience}</b>${L('人', ' ppl')}</span>` : ''}
+        ${d.hours ? `<span><b>${d.hours}</b>hr</span>` : ''}
+      </div>
+      <div class="card-badges">
+        ${d.type ? `<span class="${typeCls}">${tr(EVENT_TYPE, d.type)}</span>` : ''}
+        ${d.mode ? `<span class="${modeCls}">${tr(MODE, d.mode)}</span>` : ''}
+        ${d.lang ? `<span class="badge badge-lang">${tr(LANG, d.lang)}</span>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderCards() {
+  const filtered = applyFilters();
+  const visible = filtered.slice(0, state.page * PAGE_SIZE);
+
+  document.getElementById('results-count').textContent = filtered.length;
+  document.getElementById('clear-btn').style.display = hasActiveFilters() ? 'block' : 'none';
+  renderFilteredStats(filtered);
+
+  const grid = document.getElementById('cards-grid');
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="data-error" style="font-size:2rem">😶<br><br>No results found.</div>';
+  } else {
+    grid.innerHTML = visible.map(cardHTML).join('');
+  }
+
+  const moreBtn = document.getElementById('show-more-btn');
+  if (filtered.length > state.page * PAGE_SIZE) {
+    moreBtn.style.display = 'block';
+    moreBtn.disabled = false;
+    moreBtn.textContent = `Show more (${filtered.length - visible.length} remaining)`;
+  } else {
+    moreBtn.style.display = 'none';
+  }
+}
+
+/* ── Bilingual search placeholder ── */
+function updateSearchPlaceholder() {
+  const inp = document.getElementById('search-input');
+  if (!inp) return;
+  const lang = document.documentElement.getAttribute('data-lang');
+  inp.placeholder = lang === 'en' ? 'Search topics, organizers…' : '搜尋主題、主辦單位…';
+}
+updateSearchPlaceholder();
+window.addEventListener('langchange', () => {
+  updateSearchPlaceholder();
+  if (!allData.length) return;
+  updateSpan();
+  renderChips();
+  renderCharts();
+  renderOrgLeaderboard();
+  renderCards();
+});
+
+/* ── Event Listeners ── */
+document.getElementById('search-input')?.addEventListener('input', e => {
+  state.search = e.target.value;
+  state.page = 1;
+  renderCards();
+});
+
+document.getElementById('sort-select')?.addEventListener('change', e => {
+  state.sort = e.target.value;
+  state.page = 1;
+  renderCards();
+});
+
+document.getElementById('show-more-btn')?.addEventListener('click', () => {
+  state.page++;
+  renderCards();
+});
+
+document.getElementById('clear-btn')?.addEventListener('click', () => {
+  state.search = '';
+  state.types.clear(); state.modes.clear(); state.langs.clear(); state.years.clear();
+  state.page = 1;
+  const inp = document.getElementById('search-input');
+  if (inp) inp.value = '';
+  document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+  document.getElementById('clear-btn').style.display = 'none';
+  renderCards();
+});
+
+/* ── Run ── */
+init();
+</script>

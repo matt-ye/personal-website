@@ -1,0 +1,731 @@
+<!-- 由 scripts/extract-static-pages.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#f8f9fa; --card:#fff; --border:#e5e7eb; --text:#111827; --muted:#6b7280;
+      --light-text:#9ca3af; --accent:#db2777; --accent-bg:#fdf2f8; --accent-hover:#be185d;
+      --green:#059669; --green-bg:#d1fae5; --blue:#1d4ed8; --blue-bg:#dbeafe;
+      --orange:#d97706; --orange-bg:#fef3c7; --sidebar-w:260px; --header-h:58px;
+      --radius:12px; --radius-sm:8px;
+      --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+      --shadow-md:0 4px 12px rgba(0,0,0,.08); --transition:.2s ease;
+      --font:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;
+    }
+    [data-theme="dark"] {
+      --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#f1f5f9; --muted:#94a3b8;
+      --light-text:#64748b; --accent:#f472b6; --accent-bg:#500724; --accent-hover:#f9a8d4;
+      --green:#34d399; --green-bg:#064e3b; --blue:#60a5fa; --blue-bg:#1e3a5f;
+      --orange:#fbbf24; --orange-bg:#451a03;
+      --shadow:0 1px 3px rgba(0,0,0,.3); --shadow-md:0 4px 12px rgba(0,0,0,.4);
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:var(--font); background:var(--bg); color:var(--text); font-size:15px; line-height:1.6; }
+    #header { position:fixed; top:0; left:0; right:0; height:var(--header-h); background:var(--card);
+      border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; padding:0 20px;
+      z-index:100; box-shadow:var(--shadow); }
+    #hamburger { display:none; background:none; border:none; cursor:pointer; color:var(--text); padding:6px; border-radius:6px; }
+    #hamburger:hover { background:var(--accent-bg); }
+    .header-title { font-weight:700; font-size:1rem; color:var(--accent); white-space:nowrap; flex-shrink:0; }
+    .header-title .week { color:var(--muted); font-weight:400; font-size:.8rem; margin-left:6px; }
+    #searchWrap { flex:1; max-width:360px; position:relative; }
+    #searchBox { width:100%; padding:7px 12px 7px 34px; border:1px solid var(--border); border-radius:20px;
+      background:var(--bg); color:var(--text); font-size:.875rem; outline:none; }
+    #searchBox:focus { border-color:var(--accent); }
+    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.9rem; pointer-events:none; }
+    .header-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
+    .icon-btn { background:none; border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer;
+      color:var(--text); padding:6px 10px; font-size:.8rem; display:flex; align-items:center; gap:4px; white-space:nowrap; }
+    .icon-btn:hover { background:var(--accent-bg); border-color:var(--accent); color:var(--accent); }
+    .glossary-btn { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .glossary-btn:hover { background:var(--accent-hover); border-color:var(--accent-hover); color:#fff; }
+    #layout { display:flex; padding-top:var(--header-h); min-height:100vh; }
+    #sidebar { width:var(--sidebar-w); flex-shrink:0; position:sticky; top:var(--header-h);
+      height:calc(100vh - var(--header-h)); overflow-y:auto; border-right:1px solid var(--border);
+      padding:16px 0; background:var(--card); }
+    .sidebar-section { padding:0 12px; margin-bottom:8px; }
+    .sidebar-label { font-size:.7rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding:8px 4px 4px; }
+    .nav-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:var(--radius-sm);
+      text-decoration:none; color:var(--text); font-size:.875rem; cursor:pointer; border:none; background:none; width:100%; text-align:left; }
+    .nav-item:hover, .nav-item.active { background:var(--accent-bg); color:var(--accent); }
+    .nav-item.active { font-weight:600; }
+    .nav-item .icon { font-size:1rem; flex-shrink:0; width:20px; text-align:center; }
+    .sidebar-divider { height:1px; background:var(--border); margin:8px 12px; }
+    #main { flex:1; padding:32px 24px 64px; max-width:900px; min-width:0; }
+    .hero { background:linear-gradient(135deg,var(--accent) 0%,#9333ea 100%); border-radius:var(--radius);
+      padding:32px; margin-bottom:28px; color:#fff; }
+    .hero .crumb { font-size:.8rem; opacity:.85; margin-bottom:8px; }
+    .hero .crumb a { color:#fff; }
+    .hero h1 { font-size:1.6rem; font-weight:800; margin-bottom:6px; }
+    .hero p { opacity:.92; font-size:.95rem; margin-bottom:16px; }
+    .hero-goals { background:rgba(255,255,255,.15); border-radius:8px; padding:14px 16px; font-size:.875rem; }
+    .hero-goals strong { display:block; margin-bottom:6px; }
+    .topic-section { margin-bottom:28px; scroll-margin-top:76px; }
+    .topic-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      overflow:hidden; box-shadow:var(--shadow); }
+    .topic-header { display:flex; align-items:center; gap:12px; padding:18px 20px; cursor:pointer; user-select:none; }
+    .topic-header:hover { background:var(--accent-bg); }
+    .topic-icon { font-size:1.5rem; flex-shrink:0; }
+    .topic-title-wrap { flex:1; }
+    .topic-title { font-size:1.05rem; font-weight:700; }
+    .topic-subtitle { font-size:.8rem; color:var(--muted); margin-top:1px; }
+    .topic-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .tag { font-size:.68rem; padding:2px 8px; border-radius:10px; font-weight:600; }
+    .tag-green { background:var(--green-bg); color:var(--green); }
+    .tag-blue { background:var(--blue-bg); color:var(--blue); }
+    .tag-orange { background:var(--orange-bg); color:var(--orange); }
+    .tag-pink { background:var(--accent-bg); color:var(--accent); }
+    .topic-chevron { color:var(--muted); transition:transform var(--transition); font-size:1.1rem; }
+    .topic-card.open .topic-chevron { transform:rotate(180deg); }
+    .topic-body { display:none; border-top:1px solid var(--border); }
+    .topic-card.open .topic-body { display:block; }
+    .sub-section { border-bottom:1px solid var(--border); }
+    .sub-section:last-child { border-bottom:none; }
+    .sub-section summary { list-style:none; padding:12px 20px; cursor:pointer; font-weight:600; font-size:.875rem;
+      color:var(--muted); display:flex; align-items:center; gap:8px; user-select:none; }
+    .sub-section summary::-webkit-details-marker { display:none; }
+    .sub-section summary:hover, .sub-section[open] summary { color:var(--accent); }
+    .sub-section summary::after { content:'›'; margin-left:auto; transition:transform var(--transition); font-size:1.1rem; }
+    .sub-section[open] summary::after { transform:rotate(90deg); }
+    .sub-content { padding:4px 20px 16px; }
+    .sub-content p { margin-bottom:10px; font-size:.9rem; }
+    .bullet-list { list-style:none; display:flex; flex-direction:column; gap:7px; }
+    .bullet-list li { display:flex; align-items:flex-start; gap:8px; font-size:.875rem; }
+    .bullet-list li::before { content:'▸'; color:var(--accent); flex-shrink:0; margin-top:1px; font-size:.8rem; }
+    .warning-box { background:var(--orange-bg); border:1px solid var(--orange); border-radius:var(--radius-sm);
+      padding:12px 14px; display:flex; gap:10px; font-size:.875rem; margin-bottom:8px; }
+    .warning-box::before { content:'⚠️'; flex-shrink:0; }
+    .practice-box { background:var(--green-bg); border:1px solid var(--green); border-radius:var(--radius-sm);
+      padding:14px 16px; font-size:.875rem; margin-bottom:8px; }
+    .practice-box strong { color:var(--green); display:block; margin-bottom:6px; }
+    .stat-row { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0; }
+    .stat-chip { background:var(--accent-bg); color:var(--accent); border-radius:8px; padding:8px 14px;
+      font-size:.8rem; font-weight:600; }
+    .table-wrap { overflow-x:auto; margin:8px 0; }
+    .data-table { width:100%; border-collapse:collapse; font-size:.84rem; }
+    .data-table th { background:var(--accent-bg); color:var(--accent); font-weight:600; padding:9px 12px;
+      text-align:left; border-bottom:2px solid var(--accent); white-space:nowrap; }
+    .data-table td { padding:8px 12px; border-bottom:1px solid var(--border); }
+    .data-table tr:last-child td { border-bottom:none; }
+    .data-table tr:hover td { background:var(--accent-bg); }
+    .links-grid { display:flex; flex-direction:column; gap:6px; }
+    .link-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:var(--radius-sm);
+      border:1px solid var(--border); text-decoration:none; color:var(--text); font-size:.85rem; }
+    .link-item:hover { border-color:var(--accent); background:var(--accent-bg); color:var(--accent); }
+    .link-tag { font-size:.65rem; padding:1px 6px; border-radius:8px; font-weight:700; flex-shrink:0; }
+    .link-official { background:var(--green-bg); color:var(--green); }
+    .link-community { background:var(--blue-bg); color:var(--blue); }
+    .link-title { flex:1; }
+    .link-arrow { color:var(--muted); flex-shrink:0; }
+    #glossaryOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; cursor:pointer; }
+    #glossaryOverlay.open { display:block; }
+    #glossaryPanel { position:fixed; top:0; right:-380px; width:380px; max-width:94vw; height:100vh;
+      background:var(--card); border-left:1px solid var(--border); z-index:201; display:flex; flex-direction:column;
+      transition:right .3s cubic-bezier(.4,0,.2,1); box-shadow:var(--shadow-md); }
+    #glossaryPanel.open { right:0; }
+    .gp-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .gp-header h2 { font-size:1rem; font-weight:700; flex:1; }
+    .gp-close { background:none; border:none; cursor:pointer; color:var(--muted); font-size:1.2rem; padding:4px; border-radius:4px; }
+    .gp-close:hover { color:var(--text); background:var(--border); }
+    #gpSearch { padding:8px 12px; margin:12px 16px; width:calc(100% - 32px); border:1px solid var(--border);
+      border-radius:8px; background:var(--bg); color:var(--text); font-size:.875rem; outline:none; }
+    #gpSearch:focus { border-color:var(--accent); }
+    #gpList { flex:1; overflow-y:auto; padding:0 16px 16px; }
+    .gp-item { border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:8px; overflow:hidden; }
+    .gp-term { padding:10px 12px; font-weight:600; font-size:.875rem; cursor:pointer; display:flex;
+      align-items:center; justify-content:space-between; }
+    .gp-term:hover { background:var(--accent-bg); color:var(--accent); }
+    .gp-def { display:none; padding:0 12px 10px; font-size:.82rem; color:var(--muted); line-height:1.5;
+      border-top:1px solid var(--border); background:var(--bg); }
+    .gp-item.open .gp-def { display:block; }
+    .gp-def .zh { margin-bottom:4px; padding-top:8px; }
+    .gp-def .en { color:var(--light-text); font-style:italic; }
+    .hidden-by-search { display:none !important; }
+    footer { text-align:center; padding:20px; color:var(--muted); font-size:.78rem; border-top:1px solid var(--border); margin-top:20px; }
+    footer a { color:var(--accent); }
+    [data-lang="zh"] .en-only { display:none; }
+    [data-lang="en"] .zh-only { display:none; }
+    @media (max-width:768px) {
+      #hamburger { display:flex; }
+      #sidebar { position:fixed; left:-100%; top:var(--header-h); height:calc(100vh - var(--header-h));
+        z-index:50; transition:left var(--transition); box-shadow:var(--shadow-md); }
+      #sidebar.open { left:0; }
+      #main { padding:20px 16px 48px; }
+      #glossaryPanel { width:100%; }
+      .header-title .week { display:none; }
+      #searchWrap { max-width:170px; }
+    }
+  
+    /* 這兩個標題原本是 div，改成 heading 是為了讓爬蟲讀得到文件結構；
+       margin 歸零讓視覺與改動前一致（font-size/font-weight 原本就有明確設定）。 */
+    .topic-title { margin:0; }
+    .hook-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
+</style>
+
+<header id="header">
+  <button id="hamburger" aria-label="Menu" onclick="toggleSidebar()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div class="header-title">
+    <span class="zh-only">📱 社交平台 2026</span>
+    <span class="en-only">📱 Social Platforms 2026</span>
+    <span class="week">W3-5</span>
+  </div>
+  <div id="searchWrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchBox" placeholder="搜尋平台… / Search…" oninput="handleSearch(this.value)">
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn glossary-btn" onclick="openGlossary()">📖 <span class="zh-only">術語</span><span class="en-only">Glossary</span></button>
+    <button class="icon-btn" onclick="toggleLang()" id="langBtn">🌐 EN</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</header>
+
+<div id="layout">
+  <nav id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 3 · <span class="zh-only">短影音三強</span><span class="en-only">Video Big 3</span></div>
+      <a class="nav-item" href="#overview" onclick="closeSidebar()"><span class="icon">🏠</span><span class="zh-only">單元總覽</span><span class="en-only">Overview</span></a>
+      <a class="nav-item" href="#topic-tiktok" onclick="closeSidebar()"><span class="icon">🎵</span>TikTok</a>
+      <a class="nav-item" href="#topic-instagram" onclick="closeSidebar()"><span class="icon">📷</span>Instagram</a>
+      <a class="nav-item" href="#topic-youtube" onclick="closeSidebar()"><span class="icon">▶️</span>YouTube</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 4 · <span class="zh-only">文字社群</span><span class="en-only">Text Social</span></div>
+      <a class="nav-item" href="#topic-threads-x" onclick="closeSidebar()"><span class="icon">💬</span>Threads / X</a>
+      <a class="nav-item" href="#topic-linkedin" onclick="closeSidebar()"><span class="icon">💼</span>LinkedIn</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 5 · <span class="zh-only">華語與利基</span><span class="en-only">Niche</span></div>
+      <a class="nav-item" href="#topic-red" onclick="closeSidebar()"><span class="icon">📕</span><span class="zh-only">小紅書</span><span class="en-only">RED</span></a>
+      <a class="nav-item" href="#topic-pinterest" onclick="closeSidebar()"><span class="icon">📌</span>Pinterest</a>
+      <a class="nav-item" href="#topic-facebook" onclick="closeSidebar()"><span class="icon">👥</span>Facebook</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <a class="nav-item" href="#practice" onclick="closeSidebar()"><span class="icon">✏️</span><span class="zh-only">實作練習</span><span class="en-only">Practice</span></a>
+      <button class="nav-item" onclick="openGlossary()"><span class="icon">📖</span><span class="zh-only">術語速查</span><span class="en-only">Glossary</span></button>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section id="overview">
+      <div class="hero">
+        <div class="crumb"><a href="/projects/marketing/"><span class="zh-only">← 行銷專欄 Marketing</span><span class="en-only">← Marketing Column</span></a> <span class="zh-only">· 行銷學習地圖 W3-5</span><span class="en-only">· Marketing Roadmap W3-5</span></div>
+        <h1><span class="zh-only">社交平台 2026 生態</span><span class="en-only">Social Platform Ecosystems 2026</span></h1>
+        <p class="zh-only">八大平台的演算法邏輯、受眾輪廓、內容偏好——以及「平台選擇 = 受眾在哪 × 內容擅長 × 能持續多久」的決策框架。</p>
+        <p class="en-only">Eight platforms' algorithms, audiences, and content preferences — plus the decision framework: audience × content strength × sustainability.</p>
+        <div class="hero-goals">
+          <strong class="zh-only">🎯 學完你能做到</strong>
+          <strong class="en-only">🎯 Learning Goals</strong>
+          <span class="zh-only">① 說明三大短影音平台演算法的關鍵差異 ② 為一支影片規劃三平台差異化發布 ③ 評估「搜尋型 vs 社交型」平台的經營差異 ④ 為自己的產品選出 1-2 個深耕平台</span>
+          <span class="en-only">① Explain key algorithm differences across the video Big 3 ② Plan differentiated cross-platform publishing ③ Distinguish search-type vs social-type platforms ④ Pick 1-2 platforms to go deep on</span>
+        </div>
+        <p style="margin-top:12px;font-size:.78rem;opacity:.8" class="zh-only">⚠️ 演算法資訊時效敏感（研究於 2026-07）。「權重百分比」多為業界逆向分析估計；官方確認的訊號會特別標註。</p>
+        <p style="margin-top:12px;font-size:.78rem;opacity:.8" class="en-only">⚠️ Algorithm info is time-sensitive (researched 2026-07). Percentage weights are industry estimates unless marked official.</p>
+      </div>
+    </section>
+
+    <!-- TikTok -->
+    <section class="topic-section" id="topic-tiktok">
+      <div class="topic-card open" id="card-tiktok">
+        <div class="topic-header" onclick="toggleCard('card-tiktok')">
+          <div class="topic-icon">🎵</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">TikTok</div>
+            <div class="topic-subtitle zh-only">每支影片都是新的抽獎 · FYP 分階段派發</div>
+            <div class="topic-subtitle en-only">Every video is a fresh lottery · Staged FYP distribution</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 3</span><span class="tag tag-pink"><span class="zh-only">短影音 Video</span><span class="en-only">Video</span></span><span class="tag tag-blue"><span class="zh-only">SEO 化 Search</span><span class="en-only">Search</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>⚙️ <span class="zh-only">演算法邏輯</span><span class="en-only">Algorithm</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>分階段派發（staged distribution）</strong>：先投給 200-500 人測試群，表現達標才擴大</li>
+                <li class="en-only"><strong>Staged distribution</strong>: shown to a 200-500 person test group first; scales only if it performs</li>
+                <li class="zh-only"><strong>官方確認：粉絲數不是排名因子</strong>——每支影片獨立計分，新帳號也可能爆紅</li>
+                <li class="en-only"><strong>Official: follower count is NOT a ranking factor</strong> — each video scored independently</li>
+                <li class="zh-only">完播率 + watch time 權重約 40-50%（業界估計）；爆紅門檻完播率已升至 ~70%（2024 年約 50%）</li>
+                <li class="en-only">Completion + watch time ≈ 40-50% weight (industry estimate); viral threshold now ~70% completion</li>
+                <li class="zh-only">Shares 與 saves &gt; likes；追蹤 3/15/30/60 秒留存節點；rewatch/loop 率是 2026 新重點</li>
+                <li class="en-only">Shares & saves &gt; likes; tracks 3/15/30/60s retention; rewatch/loop rate is the 2026 focus</li>
+              </ul>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>🔍 TikTok SEO + <span class="zh-only">受眾與商業</span><span class="en-only">Audience & Commerce</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>Caption 關鍵字權重已超過 hashtag</strong>；口說語音被轉錄索引、螢幕字卡也計入</li>
+                <li class="en-only"><strong>Caption keywords now outweigh hashtags</strong>; spoken audio is transcribed and indexed, on-screen text counts</li>
+                <li class="zh-only">搜尋語言偏口語問題式：「運動時不會掉的耳機」而非「無線藍牙耳機」</li>
+                <li class="en-only">Search language is conversational: "earbuds that don't fall out" not "wireless earbuds"</li>
+                <li class="zh-only">TikTok Shop：2026 美國銷售額預估破 $20B；商品標題前段放主關鍵字</li>
+                <li class="en-only">TikTok Shop: projected $20B+ US sales in 2026</li>
+              </ul>
+              <div class="stat-row">
+                <div class="stat-chip"><span class="zh-only">25-34 歲 35.3%</span><span class="en-only">Ages 25–34: 35.3%</span></div>
+                <div class="stat-chip zh-only">35+ 成長速度是 IG 的 3 倍</div>
+                <div class="stat-chip en-only">35+ growing 3x faster than IG</div>
+                <div class="stat-chip zh-only">頻率：每週 3-5 支</div>
+                <div class="stat-chip en-only">Cadence: 3-5/week</div>
+              </div>
+              <div class="warning-box"><span class="zh-only">誤區：以為要先養粉絲才有觸及（每支都是新抽獎）；把長片直接剪短不重做 hook；hashtag 塞滿卻不管口說關鍵字。</span><span class="en-only">Pitfalls: waiting to build followers first; re-cutting long videos without a new hook; stuffing hashtags while ignoring spoken keywords.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://blog.hootsuite.com/tiktok-algorithm/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">TikTok algorithm 2026 — Hootsuite</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://sproutsocial.com/insights/tiktok-seo/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">TikTok SEO guide — Sprout Social</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Instagram -->
+    <section class="topic-section" id="topic-instagram">
+      <div class="topic-card" id="card-ig">
+        <div class="topic-header" onclick="toggleCard('card-ig')">
+          <div class="topic-icon">📷</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">Instagram</div>
+            <div class="topic-subtitle zh-only">DM 分享是最強訊號 · 版位各有邏輯</div>
+            <div class="topic-subtitle en-only">DM shares are the strongest signal · Each surface has its own logic</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 3</span><span class="tag tag-pink"><span class="zh-only">短影音 Video</span><span class="en-only">Video</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>⚙️ <span class="zh-only">演算法（Adam Mosseri 官方確認）</span><span class="en-only">Algorithm (Mosseri-confirmed)</span></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th class="zh-only">訊號</th><th class="en-only">Signal</th><th class="zh-only">說明</th><th class="en-only">Note</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>1. Watch time</strong></td><td class="zh-only">第一排名因子（2025-01 官方確認）；前 3 秒留存是門檻</td><td class="en-only">#1 factor (official, 2025-01); 3-second retention is the gate</td></tr>
+                    <tr><td><strong>2. Sends per reach</strong></td><td class="zh-only">DM 分享權重約讚的 3-5 倍（業界估計）——觸及新受眾最強訊號</td><td class="en-only">DM shares ≈ 3-5x a like (estimate) — strongest signal for new reach</td></tr>
+                    <tr><td><strong>3. Likes per reach</strong></td><td class="zh-only">仍計分但權重最低</td><td class="en-only">Counts, but lowest weight</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only">版位權重不同：Reels 重 watch time+sends；Feed 重關係強度；Stories 重近期性；Explore 重興趣</li>
+                <li class="en-only">Per-surface logic: Reels = watch time + sends; Feed = relationship; Stories = recency; Explore = interest</li>
+                <li class="zh-only">格式排序：Reels（觸及新受眾）&gt; Carousel（互動與儲存）&gt; 單圖；Stories 養既有粉絲</li>
+                <li class="en-only">Format hierarchy: Reels (new reach) &gt; Carousels (engagement & saves) &gt; single image; Stories nurture existing fans</li>
+              </ul>
+              <div class="stat-row">
+                <div class="stat-chip"><span class="zh-only">18-34 歲佔 63%</span><span class="en-only">Ages 18–34: 63%</span></div>
+                <div class="stat-chip">Gen Z 86%</div>
+                <div class="stat-chip zh-only">頻率：feed 週 3-5、Stories 可每日</div>
+                <div class="stat-chip en-only">Cadence: 3-5 feed/wk, daily Stories</div>
+              </div>
+              <div class="warning-box"><span class="zh-only">誤區：追讚不追 DM 分享；caption 放外連（不可點擊）；忽略前 3 秒 hook。</span><span class="en-only">Pitfalls: chasing likes over DM shares; links in captions (not clickable); ignoring the 3-second hook.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://blog.hootsuite.com/instagram-algorithm/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Instagram algorithm 2026 — Hootsuite</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://buffer.com/resources/instagram-algorithms/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">IG Algorithm Guide — Buffer</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- YouTube -->
+    <section class="topic-section" id="topic-youtube">
+      <div class="topic-card" id="card-yt">
+        <div class="topic-header" onclick="toggleCard('card-yt')">
+          <div class="topic-icon">▶️</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">YouTube <span style="font-weight:400;font-size:.85rem">(+ Shorts)</span></div>
+            <div class="topic-subtitle zh-only">滿意度已超越觀看時長 · Shorts 與長片演算法分離</div>
+            <div class="topic-subtitle en-only">Satisfaction now beats watch time · Shorts algorithm is separate</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 3</span><span class="tag tag-pink"><span class="zh-only">短影音 Video</span><span class="en-only">Video</span></span><span class="tag tag-blue"><span class="zh-only">全年齡 All ages</span><span class="en-only">All ages</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>⚙️ <span class="zh-only">演算法重點</span><span class="en-only">Algorithm</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>2026 官方確認：viewer satisfaction surveys 權重已超過 raw watch time</strong>——8 分鐘看完 100%+讚，勝過 25 分鐘看 40%</li>
+                <li class="en-only"><strong>Official 2026: satisfaction surveys outweigh raw watch time</strong> — 8 min at 100% + like beats 25 min at 40%</li>
+                <li class="zh-only"><strong>Shorts 與長片演算法已正式分離</strong>：Shorts 表現差不拖累長片推薦</li>
+                <li class="en-only"><strong>Shorts and long-form algorithms are now separate</strong>: weak Shorts don't hurt long-form</li>
+                <li class="zh-only">Shorts 留存門檻：&lt;30 秒約需 65% 完播、30-60 秒約需 50%（業界估計）；已進搜尋結果、支援自訂縮圖</li>
+                <li class="en-only">Shorts thresholds: &lt;30s needs ~65% completion, 30-60s ~50% (estimates); now in search results with custom thumbnails</li>
+                <li class="zh-only">SEO 改用語意主題聚類（semantic topic clusters），非單純關鍵字匹配</li>
+                <li class="en-only">SEO uses semantic topic clusters, not simple keyword matching</li>
+              </ul>
+              <div class="stat-row">
+                <div class="stat-chip zh-only">全年齡覆蓋最廣</div>
+                <div class="stat-chip en-only">Broadest age coverage</div>
+                <div class="stat-chip">Gen Z 91% · Gen X 83%</div>
+                <div class="stat-chip zh-only">長片週 1-2、Shorts 可高頻</div>
+                <div class="stat-chip en-only">1-2 long/wk, Shorts more</div>
+              </div>
+              <div class="warning-box"><span class="zh-only">誤區：硬拉長影片衝 watch time（滿意度低反扣分）；把 Shorts 當獨立 app 經營、不導流長片與訂閱。</span><span class="en-only">Pitfalls: padding video length (low satisfaction backfires); treating Shorts as an island instead of funneling to long-form.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://vidiq.com/blog/post/understanding-youtube-algorithm/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">YouTube Algorithm 2026 — vidIQ</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.shopify.com/blog/youtube-algorithm" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">YouTube Algorithm — Shopify</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Threads / X -->
+    <section class="topic-section" id="topic-threads-x">
+      <div class="topic-card" id="card-tx">
+        <div class="topic-header" onclick="toggleCard('card-tx')">
+          <div class="topic-icon">💬</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">Threads vs X (Twitter)</div>
+            <div class="topic-subtitle zh-only">互補而非替代 · 語氣差異大</div>
+            <div class="topic-subtitle en-only">Complementary, not substitutes · Very different tones</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 4</span><span class="tag tag-blue"><span class="zh-only">文字社群 Text</span><span class="en-only">Text</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>⚔️ <span class="zh-only">正面對比</span><span class="en-only">Head to Head</span></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th></th><th>X (Twitter)</th><th>Threads</th></tr></thead>
+                  <tbody>
+                    <tr><td class="zh-only"><strong>規模</strong></td><td class="en-only"><strong>Scale</strong></td><td class="zh-only">月活 ~6 億</td><td class="en-only">~600M MAU</td><td class="zh-only">~4 億；行動端日活已超車（1.415 億 vs 1.25 億，2026-01）</td><td class="en-only">~400M; mobile DAU now ahead (141.5M vs 125M)</td></tr>
+                    <tr><td class="zh-only"><strong>受眾</strong></td><td class="en-only"><strong>Audience</strong></td><td class="zh-only">偏男性；政治/財經/加密/體育/新聞</td><td class="en-only">Male-skewed; politics/finance/crypto/sports</td><td class="zh-only">偏年輕；創作者/小型企業/lifestyle</td><td class="en-only">Younger; creators/SMB/lifestyle</td></tr>
+                    <tr><td class="zh-only"><strong>演算法性格</strong></td><td class="en-only"><strong>Algorithm</strong></td><td class="zh-only">獎勵即時性與高聲量</td><td class="en-only">Rewards immediacy & volume</td><td class="zh-only">壓制 outrage、偏好真誠對話</td><td class="en-only">Suppresses outrage, favors genuine dialogue</td></tr>
+                    <tr><td class="zh-only"><strong>變現</strong></td><td class="en-only"><strong>Monetization</strong></td><td class="zh-only">廣告分潤+訂閱+Articles（2026「creator 之年」）</td><td class="en-only">Ad share + subs + Articles</td><td class="zh-only">建置中（背靠 Meta Creator Marketplace）</td><td class="en-only">In progress (Meta Creator Marketplace)</td></tr>
+                    <tr><td class="zh-only"><strong>頻率</strong></td><td class="en-only"><strong>Cadence</strong></td><td class="zh-only">每日 2-5 則</td><td class="en-only">2-5/day</td><td class="zh-only">每日 1-2 則</td><td class="en-only">1-2/day</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="warning-box"><span class="zh-only">誤區：同一內容原封不動雙發（X 犀利即時、Threads 對話溫和）；在 Threads 用 X 式爭議釣魚法會被降權。</span><span class="en-only">Pitfalls: posting identical content to both (X is sharp/immediate, Threads conversational); X-style outrage bait gets demoted on Threads.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://medium.com/creative-black-pug-studio/threads-vs-x-where-should-your-brand-be-in-2026-c635d00b7f02" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Threads vs X 2026 — Black Pug Studio</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.conbersa.ai/learn/threads-vs-twitter" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Platform comparison — Conbersa</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- LinkedIn -->
+    <section class="topic-section" id="topic-linkedin">
+      <div class="topic-card" id="card-li">
+        <div class="topic-header" onclick="toggleCard('card-li')">
+          <div class="topic-icon">💼</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">LinkedIn</div>
+            <div class="topic-subtitle zh-only">Dwell time 為王 · 外連重罰 · 個人帳號才是主力</div>
+            <div class="topic-subtitle en-only">Dwell time is king · Links punished · Personal profiles rule</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 4</span><span class="tag tag-blue"><span class="zh-only">B2B 主場</span><span class="en-only">B2B stronghold</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>⚙️ <span class="zh-only">三個關鍵機制</span><span class="en-only">Three Key Mechanics</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>Dwell time 是首要品質指標</strong>：停留 61 秒+ 的貼文互動率 15.6% vs 0-3 秒的 1.2%（13 倍）——carousel/document 貼文 dwell time 是純文字的 2-3 倍</li>
+                <li class="en-only"><strong>Dwell time is the top quality signal</strong>: 61s+ posts get 15.6% engagement vs 1.2% for 0-3s (13x) — carousels get 2-3x the dwell time of text</li>
+                <li class="zh-only"><strong>外連重罰</strong>：帶外部連結觸及約 -60%；2026 起「連結放留言」繞法也被降權</li>
+                <li class="en-only"><strong>External links punished</strong>: ~-60% reach; the "link in comments" workaround is also demoted since 2026</li>
+                <li class="zh-only"><strong>個人 profile 佔 feed ~65%，company page 僅 ~5%</strong>——B2B 有機成長主力是員工個人帳號與高管思想領導</li>
+                <li class="en-only"><strong>Personal profiles = ~65% of feed, company pages ~5%</strong> — B2B organic growth runs on personal accounts and executive thought leadership</li>
+                <li class="zh-only">黃金 60 分鐘：發文後第一小時互動決定派發；頻率每週 3-5 則</li>
+                <li class="en-only">Golden hour: first-hour engagement determines distribution; 3-5 posts/week</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：用公司頁當主力發文管道；貼文塞外連；engagement bait（「同意 +1」已被明確降權）。</span><span class="en-only">Pitfalls: company page as main channel; links in posts; engagement bait ("comment +1 if you agree" is explicitly demoted).</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://blog.hootsuite.com/linkedin-algorithm/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">LinkedIn algorithm 2026 — Hootsuite</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.digitalapplied.com/blog/linkedin-algorithm-2026-engagement-strategy-guide" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">LinkedIn 2026 strategy — Digital Applied</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- RED -->
+    <section class="topic-section" id="topic-red">
+      <div class="topic-card" id="card-red">
+        <div class="topic-header" onclick="toggleCard('card-red')">
+          <div class="topic-icon">📕</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">小紅書 RED（RedNote）</span><span class="en-only">Xiaohongshu / RED (RedNote)</span></h2>
+            <div class="topic-subtitle zh-only">生活方式搜尋引擎 · 種草文化</div>
+            <div class="topic-subtitle en-only">Lifestyle search engine · Zhongcao (seeding) culture</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 5</span><span class="tag tag-orange"><span class="zh-only">⚠️ 台灣禁令 TW ban</span><span class="en-only">⚠️ TW ban</span></span><span class="tag tag-pink"><span class="zh-only">華語 Chinese</span><span class="en-only">Chinese</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>⚙️ <span class="zh-only">生態邏輯</span><span class="en-only">Ecosystem Logic</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>70%+ 用戶行為從搜尋出發</strong>——內容要當 Google 結果寫，不當社群貼文寫（標題關鍵字、封面圖、清單式乾貨）</li>
+                <li class="en-only"><strong>70%+ of user behavior starts from search</strong> — write content like Google results, not social posts</li>
+                <li class="zh-only"><strong>種草文化</strong>：真實使用心得取代硬銷；~80% 購買決策受種草筆記影響</li>
+                <li class="en-only"><strong>Zhongcao culture</strong>: authentic reviews over hard selling; ~80% of purchase decisions influenced by seeding notes</li>
+                <li class="zh-only">演算法偏好：真實性（廣告感重會限流）、利基垂直、互動速度</li>
+                <li class="en-only">Algorithm favors: authenticity (ad-feel gets throttled), niche verticals, engagement velocity</li>
+                <li class="zh-only">商業功能：品牌號、薯條（加熱）、蒲公英平台（KOL/KOC 撮合）</li>
+                <li class="en-only">Commerce: brand accounts, paid boosting, Pugongying KOL/KOC marketplace</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only"><strong>台灣法規：2025-12-04 起內政部對小紅書實施一年禁令</strong>（當時台灣用戶約 300 萬）。策略定位應為「華語市場（中國大陸、馬來西亞、港澳）渠道」而非台灣本地主力。使用前查證禁令現況。</span><span class="en-only"><strong>Taiwan ban: a one-year government ban started 2025-12-04</strong> (~3M TW users at the time). Position RED as a Chinese-market channel (mainland China, Malaysia, HK/Macau), not a Taiwan-local one. Verify ban status before planning.</span></div>
+              <div class="warning-box"><span class="zh-only">誤區：用 IG 思維經營（重人設輕搜尋）；筆記太像廣告被限流；只找頭部 KOL 忽略 KOC 素人矩陣（種草的信任基礎是「像我一樣的普通人」）。</span><span class="en-only">Pitfalls: IG-style persona-first operation; ad-like notes get throttled; chasing top KOLs while ignoring KOC networks (trust comes from "people like me").</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://anymindgroup.com/blog/xhs-guide-marketing26/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Xiaohongshu Marketing 2026 — AnyMind</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.wsdsocial.com/en-us/article/2026-xiaohongshu-algorithm-explained" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">2026 XHS Algorithm — WSD Social</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://en.wikipedia.org/wiki/Xiaohongshu" target="_blank" rel="noopener"><span class="link-tag link-community">Reference</span><span class="link-title"><span class="zh-only">Xiaohongshu — Wikipedia（含台灣禁令條目）</span><span class="en-only">Xiaohongshu — Wikipedia (incl. the Taiwan ban)</span></span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pinterest -->
+    <section class="topic-section" id="topic-pinterest">
+      <div class="topic-card" id="card-pin">
+        <div class="topic-header" onclick="toggleCard('card-pin')">
+          <div class="topic-icon">📌</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">Pinterest</div>
+            <div class="topic-subtitle zh-only">視覺搜尋引擎，不是社群 · 手作類長尾之王</div>
+            <div class="topic-subtitle en-only">A visual search engine, not social · Handmade long-tail king</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 5</span><span class="tag tag-pink"><span class="zh-only">電商導流 E-commerce</span><span class="en-only">E-commerce</span></span><span class="tag tag-orange"><span class="zh-only">Matt 主場</span><span class="en-only">Home turf</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>⚙️ <span class="zh-only">為什麼手作賣家不能忽略它</span><span class="en-only">Why Makers Can't Ignore It</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>97% 熱門搜尋是無品牌詞</strong>——最適合被「還不知道要買什麼牌子」的人發現</li>
+                <li class="en-only"><strong>97% of top searches are unbranded</strong> — ideal for discovery before brand choice</li>
+                <li class="zh-only">購買意圖指數是社群平均 <strong>5.6 倍</strong>；平均 CPC $0.83 社群類最低；對購物網站 referral 比 Facebook 多 33%</li>
+                <li class="en-only">Purchase intent <strong>5.6x</strong> social average; $0.83 avg CPC (lowest); 33% more shopping referrals than Facebook</li>
+                <li class="zh-only"><strong>Pin 壽命以月/年計</strong>（IG 以小時計）——長尾流量資產，對 Etsy 賣家尤其被低估</li>
+                <li class="en-only"><strong>Pins live for months/years</strong> (IG posts: hours) — an undervalued long-tail asset, especially for Etsy sellers</li>
+                <li class="zh-only">受眾：女性 70.3%；核心類目＝家居、手作、食譜、穿搭、婚禮</li>
+                <li class="en-only">Audience: 70.3% female; core = home, crafts, recipes, fashion, weddings</li>
+                <li class="zh-only">頻率：每週 5-10 Pin 起步；高成效者每日 15-25，但 &gt;50/日傷派發</li>
+                <li class="en-only">Cadence: start 5-10 pins/week; top performers 15-25/day, but &gt;50/day hurts</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：當社群追互動（該追搜尋曝光與外連點擊）；不做直式 2:3 + 文字覆蓋；board 命名不關鍵字化。工具：Pinterest Trends（免費關鍵字研究）。</span><span class="en-only">Pitfalls: chasing engagement like a social network (chase search impressions & outbound clicks); skipping 2:3 vertical + text overlay; non-keyworded board names. Tool: Pinterest Trends (free).</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://sproutsocial.com/insights/pinterest-statistics/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Pinterest statistics 2026 — Sprout Social</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://craftybase.com/blog/pinterest-for-etsy-seller-handmade" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Pinterest for Etsy Sellers 2026 — Craftybase</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Facebook -->
+    <section class="topic-section" id="topic-facebook">
+      <div class="topic-card" id="card-fb">
+        <div class="topic-header" onclick="toggleCard('card-fb')">
+          <div class="topic-icon">👥</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">Facebook</div>
+            <div class="topic-subtitle zh-only">35+ 的第一平台 · 社團 = 平台內 owned audience</div>
+            <div class="topic-subtitle en-only">The #1 platform for 35+ · Groups = on-platform owned audience</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 5</span><span class="tag tag-blue"><span class="zh-only">熟齡受眾 Mature</span><span class="en-only">Mature</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>⚙️ <span class="zh-only">現況與廣告生態</span><span class="en-only">Reality & Ads</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only">品牌粉專有機觸及持續探底；演算法偏好 meaningful engagement 與朋友/社團內容</li>
+                <li class="en-only">Page organic reach keeps falling; algorithm favors meaningful engagement and friends/Groups content</li>
+                <li class="zh-only"><strong>社團（Groups）是最強有機工具</strong>：成員收到新貼文通知（粉絲沒有）＝平台內 owned audience</li>
+                <li class="en-only"><strong>Groups are the strongest organic tool</strong>: members get notifications (page fans don't) = on-platform owned audience</li>
+                <li class="zh-only">受眾：Gen X 與 Boomers 使用率皆 88%——<strong>觸及 35+ 的第一平台</strong>；FB Reels 受眾比 TikTok 老，適合 35-55</li>
+                <li class="en-only">Gen X & Boomers both at 88% usage — <strong>the #1 platform for 35+</strong>; FB Reels skews older, good for 35-55</li>
+                <li class="zh-only">廣告 2026：Advantage+（AI 自動投放）成預設；<strong>broad targeting + 強素材勝過細分受眾（素材即定向）</strong>；first-party data 是最可靠輸入</li>
+                <li class="en-only">Ads 2026: Advantage+ is the default; <strong>broad targeting + strong creative beats micro-targeting (creative IS targeting)</strong>; first-party data is the most reliable input</li>
+                <li class="zh-only">熟齡投放注意：Meta 會把預算集中到 65+（便宜高轉換），要控年齡需手動設限</li>
+                <li class="en-only">Note: Meta concentrates budget on 65+ (cheap conversions); set manual age caps if needed</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：宣稱「FB 已死」放棄 35+ 市場；只經營粉專不建社團；在 Advantage+ 時代仍花大量時間手動細分受眾而不迭代素材。</span><span class="en-only">Pitfalls: declaring "FB is dead" and abandoning 35+; running only a page without a Group; micro-managing audiences instead of iterating creative in the Advantage+ era.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://socialbee.com/blog/facebook-algorithm/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Facebook algorithm 2026 — SocialBee</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.jonloomer.com/meta-ads-targeting-2026/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Meta Ads Targeting 2026 — Jon Loomer</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Practice -->
+    <section class="topic-section" id="practice">
+      <div class="topic-card open" id="card-practice">
+        <div class="topic-header" onclick="toggleCard('card-practice')">
+          <div class="topic-icon">✏️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">實作練習 + 平台選擇框架</span><span class="en-only">Practice + Platform Selection Framework</span></h2>
+            <div class="topic-subtitle zh-only">深耕 1-2 平台勝過全平台淺嚐</div>
+            <div class="topic-subtitle en-only">Going deep on 1-2 beats spreading thin</div>
+            <div class="topic-tags"><span class="tag tag-green"><span class="zh-only">動手做 Hands-on</span><span class="en-only">Hands-on</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <p class="zh-only" style="font-weight:600">平台選擇公式：<span style="color:var(--accent)">受眾在哪 × 內容形式擅長什麼 × 能持續多久</span>——三者交集才做。</p>
+            <p class="en-only" style="font-weight:600">Platform selection: <span style="color:var(--accent)">where your audience is × what content you're good at × what you can sustain</span> — only act on the intersection.</p>
+            <div class="practice-box">
+              <strong class="zh-only">練習 1（W3）：三平台差異化發布</strong>
+              <strong class="en-only">Exercise 1 (W3): Differentiated Publishing</strong>
+              <span class="zh-only">做一支捕夢網生成過程 30 秒影片，寫出三平台各自的 caption（TikTok 口語關鍵字長 caption、Reels 100-300 字、Shorts 標題），實際發布並記錄一週數據。</span>
+              <span class="en-only">Make one 30s process video; write platform-specific captions (TikTok conversational keywords, Reels 100-300 chars, Shorts title); publish and track for a week.</span>
+            </div>
+            <div class="practice-box">
+              <strong class="zh-only">練習 2（W4）：同主題三種語氣</strong>
+              <strong class="en-only">Exercise 2 (W4): One Topic, Three Voices</strong>
+              <span class="zh-only">用同一主題寫三版：X 版（犀利短句）、Threads 版（對話式）、LinkedIn 版（carousel 大綱、正文無外連），體會平台語氣差異。</span>
+              <span class="en-only">Write the same topic three ways: X (sharp), Threads (conversational), LinkedIn (carousel outline, no links in body).</span>
+            </div>
+            <div class="practice-box">
+              <strong class="zh-only">練習 3（W5）：Pinterest 起步 + 平台備忘錄</strong>
+              <strong class="en-only">Exercise 3 (W5): Pinterest Setup + Platform Memo</strong>
+              <span class="zh-only">①用 Pinterest Trends 查捕夢網相關關鍵字，設計 5 個關鍵字化 board 名稱 + 10 個 Pin 標題。②寫一頁備忘錄：你的產品客群在哪三個平台交集最大？選出深耕的 1-2 個。</span>
+              <span class="en-only">① Use Pinterest Trends for dreamcatcher keywords; design 5 keyworded boards + 10 pin titles. ② Write a one-page memo: which 1-2 platforms will you go deep on, and why?</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="glossaryOverlay" onclick="closeGlossary()"></div>
+<div id="glossaryPanel">
+  <div class="gp-header"><span>📖</span>
+    <h2><span class="zh-only">術語速查</span><span class="en-only">Glossary</span></h2>
+    <button class="gp-close" onclick="closeGlossary()">✕</button>
+  </div>
+  <input type="text" id="gpSearch" placeholder="搜尋術語… / Search…" oninput="filterGlossary(this.value)">
+  <div id="gpList"></div>
+</div>
+
+<footer>
+  <span class="zh-only">行銷專欄 · <a href="/projects/marketing/">回到列表</a> · Matt Ye — <a href="https://mattye.dev">mattye.dev</a></span>
+  <span class="en-only">Marketing Column · <a href="/projects/marketing/">Back to list</a> · Matt Ye — <a href="https://mattye.dev">mattye.dev</a></span>
+</footer>
+
+<script>
+const GLOSSARY = [
+  { term:"FYP — For You Page", zh:"TikTok 的個人化推薦頁。分階段派發：先投 200-500 人測試群，達標才擴大。粉絲數不是排名因子（官方確認）。", en:"TikTok's personalized feed. Staged distribution: 200-500 person test group first. Follower count is not a ranking factor (official)." },
+  { term:"Staged Distribution 分階段派發", zh:"演算法先小規模測試內容表現再決定是否擴大派發的機制，TikTok 為代表。", en:"Algorithm tests content on a small group before scaling distribution." },
+  { term:"Completion Rate 完播率", zh:"看完整支影片的觀眾比例。TikTok 爆紅門檻已升至約 70%（2024 年約 50%）。", en:"Share of viewers who finish the video. TikTok's viral threshold is now ~70%." },
+  { term:"Watch Time 觀看時長", zh:"IG 2025 官方確認的第一排名因子；YouTube 2026 起權重已被滿意度調查超越。", en:"IG's #1 ranking factor (official 2025); overtaken by satisfaction surveys on YouTube in 2026." },
+  { term:"Sends per Reach", zh:"IG 指標：DM 分享數÷觸及。分享權重約讚的 3-5 倍（業界估計），是觸及新受眾最強訊號。", en:"IG metric: DM shares ÷ reach. Worth ~3-5x a like; the strongest new-reach signal." },
+  { term:"Dwell Time 停留時間", zh:"LinkedIn 首要品質指標：使用者在貼文上停留的秒數。61 秒+ 貼文互動率是 0-3 秒的 13 倍。", en:"LinkedIn's top quality signal: seconds spent on a post. 61s+ posts get 13x the engagement of 0-3s." },
+  { term:"Social SEO 社群搜尋優化", zh:"為平台內搜尋優化：caption 自然語句關鍵字、口說語音（會被轉錄索引）、螢幕文字。已取代 hashtag 成為觸及主力。", en:"Optimizing for in-platform search: caption keywords, spoken audio (transcribed & indexed), on-screen text. Has replaced hashtags as the main reach lever." },
+  { term:"種草 Zhongcao / Seeding", zh:"小紅書核心文化：以真實使用心得引發購買慾望。~80% 平台購買決策受種草筆記影響。", en:"RED's core culture: authentic usage reviews that 'plant grass' (desire). Influences ~80% of purchase decisions on-platform." },
+  { term:"KOL / KOC", zh:"Key Opinion Leader（頭部網紅）vs Key Opinion Consumer（素人消費者）。種草文化的信任基礎是 KOC——「像我一樣的普通人」。", en:"Key Opinion Leader vs Key Opinion Consumer. Zhongcao trust is built on KOCs — 'people like me.'" },
+  { term:"Unbranded Search 無品牌搜尋", zh:"不含品牌名的搜尋（如「手作禮物」）。Pinterest 97% 熱門搜尋是無品牌詞——發現期流量的金礦。", en:"Searches without brand names. 97% of Pinterest's top searches are unbranded — a goldmine of discovery traffic." },
+  { term:"Advantage+", zh:"Meta 的 AI 自動投放系列，2026 已成預設。detailed targeting 從硬限制變成演算法可擴張的建議——「素材即定向」。", en:"Meta's AI-automated ad suite, now the default. Creative IS targeting." },
+  { term:"Broad Targeting 寬泛定向", zh:"不細分受眾、交給演算法找人。2025 後配合強素材成為 Meta 廣告主流。", en:"Letting the algorithm find audiences instead of micro-segmenting. The Meta mainstream since 2025 when paired with strong creative." },
+  { term:"First-party Data 第一方數據", zh:"自有客戶名單、email、CRM 數據——隱私時代最可靠的廣告定向輸入。", en:"Your own customer lists, email, CRM — the most reliable ad targeting input in the privacy era." },
+  { term:"Owned Audience 自有受眾", zh:"不受演算法控制的受眾：email 名單、FB 社團成員（有通知）、會員制。", en:"Audience you control: email lists, FB Group members (with notifications), memberships." },
+  { term:"Engagement Bait 互動誘餌", zh:"「同意請 +1」式的討互動話術。LinkedIn 已明確降權。", en:"'Comment +1 if you agree' tactics. Explicitly demoted on LinkedIn." },
+  { term:"Golden Hour 黃金一小時", zh:"LinkedIn 發文後第一小時——這段互動表現決定後續派發規模。", en:"The first hour after posting on LinkedIn — engagement here determines distribution." },
+  { term:"Meaningful Engagement", zh:"Facebook 演算法偏好的深互動：留言與分享，權重遠高於按讚。", en:"Deep interactions Facebook favors: comments and shares, weighted far above likes." },
+  { term:"Pin Lifespan Pin 壽命", zh:"Pinterest 內容的有效期以月/年計（IG 以小時計）——內容是長尾資產而非動態。", en:"Pinterest content stays effective for months/years (vs hours on IG) — pins are long-tail assets, not posts." },
+];
+function renderGlossary(filter) {
+  const list = document.getElementById('gpList');
+  const q = (filter || '').toLowerCase();
+  list.innerHTML = '';
+  GLOSSARY.forEach(item => {
+    if (q && !item.term.toLowerCase().includes(q) && !item.zh.toLowerCase().includes(q) && !item.en.toLowerCase().includes(q)) return;
+    const div = document.createElement('div');
+    div.className = 'gp-item';
+    div.innerHTML = '<div class="gp-term" onclick="this.parentElement.classList.toggle(\'open\')">' + escapeHtml(item.term) +
+      ' <span style="color:var(--muted);font-size:.8rem">›</span></div><div class="gp-def"><div class="zh">' +
+      escapeHtml(item.zh) + '</div><div class="en">' + escapeHtml(item.en) + '</div></div>';
+    list.appendChild(div);
+  });
+  if (!list.children.length) list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:.875rem">找不到術語 / No match</div>';
+}
+function filterGlossary(v){ renderGlossary(v); }
+function openGlossary(){ document.getElementById('glossaryOverlay').classList.add('open'); document.getElementById('glossaryPanel').classList.add('open'); renderGlossary(''); }
+function closeGlossary(){ document.getElementById('glossaryOverlay').classList.remove('open'); document.getElementById('glossaryPanel').classList.remove('open'); }
+function toggleCard(id){ document.getElementById(id).classList.toggle('open'); }
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar(){ if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open'); }
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  try { localStorage.setItem('oms_theme', html.dataset.theme); } catch(e) {}
+}
+function toggleLang(){
+  const html = document.documentElement;
+  const isZh = html.dataset.lang === 'zh';
+  html.dataset.lang = isZh ? 'en' : 'zh';
+  document.getElementById('langBtn').textContent = isZh ? '🌐 中' : '🌐 EN';
+  document.title = isZh ? 'Social Platform Ecosystems 2026 | Marketing Column · Matt Ye' : '社交平台 2026 生態 — Social Platforms | Marketing Column · Matt Ye';
+  document.getElementById('searchBox').placeholder = isZh ? 'Search…' : '搜尋平台… / Search…';
+  try { localStorage.setItem('oms_lang', html.dataset.lang); } catch(e) {}
+}
+let searchTimer;
+function handleSearch(val){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const q = val.trim().toLowerCase();
+    document.querySelectorAll('.topic-section').forEach(sec => {
+      sec.classList.toggle('hidden-by-search', q && !sec.textContent.toLowerCase().includes(q));
+    });
+  }, 200);
+}
+const navItems = document.querySelectorAll('.nav-item[href]');
+function updateActiveNav(){
+  const y = window.scrollY + 90;
+  let active = '';
+  ['overview','topic-tiktok','topic-instagram','topic-youtube','topic-threads-x','topic-linkedin','topic-red','topic-pinterest','topic-facebook','practice'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= y) active = '#' + id;
+  });
+  navItems.forEach(a => a.classList.toggle('active', a.getAttribute('href') === active));
+}
+window.addEventListener('scroll', updateActiveNav, { passive:true });
+updateActiveNav();
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGlossary(); });
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+(function init(){
+  try {
+    const t = localStorage.getItem('oms_theme'), l = localStorage.getItem('oms_lang');
+    if (t) { document.documentElement.dataset.theme = t; document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙'; }
+    if (l) { document.documentElement.dataset.lang = l; document.getElementById('langBtn').textContent = l === 'en' ? '🌐 中' : '🌐 EN'; }
+  } catch(e) {}
+})();
+</script>

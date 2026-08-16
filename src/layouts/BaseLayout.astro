@@ -1,6 +1,8 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import AnalyticsEvents from '../components/AnalyticsEvents.astro';
+import { hasEnglishRoute } from '../lib/i18n';
 import '../styles/global.css';
 
 interface Props {
@@ -16,14 +18,43 @@ const {
   description = '葉淨維 Ching-Wei (Matt) Ye 的個人網站',
   lang = 'zh-TW',
   ogType = 'website',
-  image = '/OG.png',
+  /* 預設分享圖用捕夢網 LOGO，不用本人照片——只有首頁需要把臉放在分享卡上，
+     子頁面全部是自己的臉會很奇怪。首頁自行傳 image="/OG.png" 覆寫。 */
+  image = '/og-logo.png',
 } = Astro.props;
 
 const siteURL = Astro.site ?? 'https://mattye.dev';
 const canonicalURL = new URL(Astro.url.pathname, siteURL);
+
+/* hreflang：只有真的有英文網址的頁面才輸出。指向不存在的網址比不輸出更糟——
+   Google 會把互指不成立的 hreflang 整組忽略，還會在 Search Console 報錯。
+
+   判斷依據是 lib/i18n.ts 的 MIGRATED_PATHS，不是每頁傳進來的旗標：
+   能從單一事實來源推導出來的，就不該讓人記得傳——會忘的遲早會忘，
+   而忘記的症狀（少了 hreflang）在頁面上完全看不出來。
+
+   x-default 指中文版：這是網站的主要語言，也是網址沒有前綴的那一版。 */
+const zhPath = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+const localeAlternates = hasEnglishRoute(Astro.url.pathname)
+  ? [
+      { hreflang: 'zh-TW', href: new URL(zhPath, siteURL).href },
+      { hreflang: 'en', href: new URL(`/en${zhPath}`.replace(/\/$/, '') + '/', siteURL).href },
+      { hreflang: 'x-default', href: new URL(zhPath, siteURL).href },
+    ]
+  : [];
 const imageURL = new URL(image, siteURL);
-const siteName = '葉淨維 Matt Ye';
-const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
+/* 英文頁用英文站名。「About Ching-Wei (Matt) Ye · 葉淨維 Matt Ye」在英文
+   搜尋結果裡，後綴的中文對英語使用者是雜訊，也會佔掉 SERP 的字元額度。 */
+const siteName = lang === 'en' ? 'Matt Ye' : '葉淨維 Matt Ye';
+/* 首頁傳 title === siteName 時不加後綴（避免「葉淨維 Matt Ye · 葉淨維 Matt Ye」），
+   但光是人名對搜尋結果的資訊量太低——補一句身分描述。
+   長度控制：中文標題約 40 字元內不會被 SERP 截斷，這裡是 28 字元。 */
+const fullTitle =
+  title === siteName
+    ? lang === 'en'
+      ? `${siteName}｜OT · Presentation Coach · AI Researcher`
+      : `${siteName}｜職能治療師 · 簡報教練 · AI 認知科學研究`
+    : `${title} · ${siteName}`;
 
 const personLd = {
   '@type': 'Person',
@@ -33,14 +64,25 @@ const personLd = {
   url: 'https://mattye.dev',
   jobTitle: 'PhD Candidate · Presentation Coach',
   alumniOf: { '@type': 'CollegeOrUniversity', name: 'National Taiwan University' },
-  sameAs: ['https://www.linkedin.com/in/ching-wei-ye'],
+  /* sameAs 是把散在各平台的身分串成同一個實體，搜尋引擎與 AI 引擎靠它確認
+     「這些帳號是同一個人」。清單越完整，實體識別越穩——但每一條都必須是
+     本人實際擁有且公開的帳號，填錯會把別人的身分綁到你頭上。 */
+  sameAs: [
+    'https://www.linkedin.com/in/ching-wei-ye',
+    'https://x.com/MattChingWeiYe',
+    'https://orcid.org/0009-0001-6085-8303',
+    'https://www.instagram.com/brown.yeh',
+  ],
 };
 const websiteLd = {
   '@type': 'WebSite',
   '@id': 'https://mattye.dev/#website',
   name: siteName,
   url: 'https://mattye.dev',
-  inLanguage: 'zh-TW',
+  /* 跟著頁面語言走，不要寫死。寫死的話 /en/ 頁面會在 JSON-LD 裡宣稱自己是
+     中文——那比翻譯不完整嚴重，等於直接告訴 Google 語言判斷錯了。
+     ⚠ 這行影響全部 9 個 /en/ 頁面（不只本次遷移的那一頁）；中文頁輸出不變。 */
+  inLanguage: lang === 'en' ? 'en' : 'zh-TW',
   datePublished: '2026-05-31',
   copyrightYear: 2026,
   publisher: { '@id': 'https://mattye.dev/#person' },
@@ -67,7 +109,14 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
     <!-- Language preference (runs before render; default zh) -->
     <script is:inline>
       (function () {
-        const lang = localStorage.getItem('lang') === 'en' ? 'en' : 'zh';
+        /* 網址永遠優先於 localStorage。使用者上次選英文、這次點進中文網址，
+           該看到的是中文——網址是分享出去、被搜尋引擎索引的那個真實身分，
+           偏好設定不該蓋過它。localStorage 只在網址沒有指定語言時決定。
+
+           不這樣做的話，/en/ 的頁面會被上次存的 'zh' 覆寫成 data-lang="zh"，
+           但那頁的 HTML 只有英文——變成宣告與內容不符。 */
+        const routed = location.pathname === '/en' || location.pathname.startsWith('/en/');
+        const lang = routed ? 'en' : localStorage.getItem('lang') === 'en' ? 'en' : 'zh';
         document.documentElement.setAttribute('data-lang', lang);
         document.documentElement.lang = lang === 'en' ? 'en' : 'zh-TW';
       })();
@@ -77,6 +126,14 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
     <meta name="description" content={description} />
 
     <link rel="canonical" href={canonicalURL} />
+
+    {localeAlternates.map((a) => (
+      <link rel="alternate" hreflang={a.hreflang} href={a.href} />
+    ))}
+
+    {/* RSS 閱讀器與瀏覽器靠這行自動發現 feed：使用者只要貼 mattye.dev
+        就能訂閱，不必知道 /rss.xml 這個路徑。 */}
+    <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml" />
 
     <meta name="author" content="Ching-Wei (Matt) Ye" />
 
@@ -94,7 +151,12 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageURL} />
-    <meta name="twitter:creator" content="@mattye_dev" />
+    {/* creator 標作者、site 標網站帳號——X 的卡片歸屬兩者都會讀，只有 creator 會少一半。
+      個人網站兩者同帳號是正常的。
+      ⚠ 這個值必須是真實存在的 handle：先前填的 @mattye_dev 查證為 404（不存在），
+      推測是從網域名 mattye.dev 推想出來的。錯的 handle 會讓卡片歸屬失效。 */}
+  <meta name="twitter:site" content="@MattChingWeiYe" />
+  <meta name="twitter:creator" content="@MattChingWeiYe" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
@@ -119,5 +181,6 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
       </div>
     </main>
     <Footer />
+    <AnalyticsEvents />
   </body>
 </html>

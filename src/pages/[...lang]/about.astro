@@ -1,0 +1,192 @@
+---
+/*
+ * 作者頁。同時產出 /about/（中文，雙 DOM）與 /en/about/（純英文）。
+ *
+ * 為什麼需要這一頁：在此之前，資歷散在首頁的段落裡，而 JSON-LD 的 Person
+ * （含 ORCID、LinkedIn）沒有任何對應的可讀頁面。Search Quality Rater
+ * Guidelines 3.3/3.4 節要求評估者去找「網站/內容創作者自述」與「可查證的
+ * 第三方佐證」——結構化資料給機器看，這一頁給人看，兩者要能對上。
+ *
+ * 內容全部來自 Sheet（每日由 Actions 同步），沒有任何寫死的資歷宣稱。
+ * 好處是這頁不會過期：Sheet 改了，這頁跟著改。
+ *
+ * ── 為什麼是 [...lang] 而不是兩個檔案 ────────────────────────────
+ * 一個 .astro 檔產不出兩個網址。複製成 about.astro 與 en/about.astro 會讓
+ * 維護點翻倍——那正是這次 i18n 遷移要消滅的問題。rest 參數傳 undefined 時
+ * 該層路徑會消失，所以同一個檔案能同時產出 /about/ 與 /en/about/。
+ *
+ * 這頁是全站 i18n 遷移的試點（163 行、零 client script、資料全雙語，
+ * 風險最低）。其餘頁面照同一個模式逐頁搬，見 docs/i18n-architecture-plan.md。
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import T from '../../components/T.astro';
+import { getSiteContent, getCoreStrengths, getExperienceRoles, getPersonalAwards } from '../../lib/sheets';
+
+export function getStaticPaths() {
+  return [
+    /* lang: undefined → /about/（預設語言不加前綴，既有網址不變） */
+    { params: { lang: undefined } },
+    { params: { lang: 'en' } },
+  ];
+}
+
+const isEn = Astro.currentLocale === 'en';
+
+const content = getSiteContent();
+const roles = getExperienceRoles();
+const strengths = getCoreStrengths();
+const awards = getPersonalAwards();
+
+const taglineKeys = ['hero_tagline_line1', 'hero_tagline_line2', 'hero_tagline_line3', 'hero_tagline_line4'].filter(
+  (k) => content[k],
+);
+
+/* 這些連結與 BaseLayout 的 personLd.sameAs 是同一組身分。差別在於那邊給機器讀，
+   這邊給人點——Rater Guidelines 要的「可查證」是指人能查到，不只是機器能解析。
+   ⚠ 兩處要一起改，否則會出現「結構化資料說有 ORCID、頁面上找不到」的落差。 */
+const profiles = [
+  { icon: '🎓', label: 'ORCID', value: '0009-0001-6085-8303', url: 'https://orcid.org/0009-0001-6085-8303' },
+  { icon: '💼', label: 'LinkedIn', value: 'ching-wei-ye', url: 'https://www.linkedin.com/in/ching-wei-ye' },
+  { icon: '𝕏', label: 'X', value: '@MattChingWeiYe', url: 'https://x.com/MattChingWeiYe' },
+  { icon: '📷', label: 'Instagram', value: '@brown.yeh', url: 'https://www.instagram.com/brown.yeh' },
+];
+
+/* ProfilePage 是 schema.org 給「關於某個人的頁面」的型別。mainEntity 指回
+   BaseLayout 已經宣告的 #person，而不是重新宣告一次 Person——同一個實體在
+   同一站出現兩份定義，會讓實體識別分裂成兩個人。 */
+const profileLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  mainEntity: { '@id': 'https://mattye.dev/#person' },
+  url: new URL(Astro.url.pathname, Astro.site).href,
+  inLanguage: isEn ? 'en' : 'zh-TW',
+};
+
+/* 不要在這裡再寫一次人名——BaseLayout 會補上「· 葉淨維 Matt Ye」的站名後綴，
+   寫了會變成「關於 葉淨維 Matt Ye · 葉淨維 Matt Ye」。SERP 的字元額度有限，
+   重複的字等於少一句能說服人點進來的話。 */
+const title = isEn ? 'About the Author' : '關於作者';
+const description = isEn
+  ? 'Ching-Wei (Matt) Ye — PhD candidate in Occupational Therapy at NTU, researching AI-assisted cognitive screening. Presentation coach and science communicator.'
+  : '葉淨維（Matt Ye）的完整經歷、核心能力與獲獎紀錄。臺大職能治療學系博士候選人，研究 AI 輔助認知障礙診斷，並從事簡報教學與科學溝通。';
+---
+
+<BaseLayout title={title} description={description} lang={isEn ? 'en' : 'zh-TW'} hasEnglishVersion>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(profileLd)} />
+
+  <header class="about-header">
+    <h1><T zh="葉淨維 Matt Ye" en="Ching-Wei (Matt) Ye" /></h1>
+    <p class="about-role">
+      <T
+        zh="職能治療師 · 簡報教練 · AI 認知科學研究"
+        en="Occupational Therapist · Presentation Coach · AI & Cognitive Science Researcher"
+      />
+    </p>
+    <div class="about-tagline">
+      {taglineKeys.map((k) => (
+        <p><T zh={content[k].zh} en={content[k].en} /></p>
+      ))}
+    </div>
+  </header>
+
+  <section class="about-section">
+    <h2><T zh="經歷與角色" en="Experience & Roles" /></h2>
+    <ul class="about-roles">
+      {roles.map((r) => (
+        <li class="about-role-item">
+          <span class="about-role-icon" aria-hidden="true">{r.icon}</span>
+          <div>
+            {/* 用 h3 而不是 div：一筆經歷是「機構＋職稱＋描述段落」，本身就是
+                一個段落單位，爬蟲靠 heading 切分內容區塊。
+                下面的獎項則維持 div——那是「年份＋名稱」一行的記錄，不是段落，
+                做成 heading 只會稀釋標題結構。 */}
+            <h3 class="about-role-title"><T zh={r.title.zh} en={r.title.en} /></h3>
+            <div class="about-role-org">
+              <T zh={r.org.zh} en={r.org.en} />{r.period && <span class="about-period">　{r.period}</span>}
+            </div>
+            {/* description 有 5 筆含 <a> 連結。用 <T> 會被轉義成字面文字，
+                所以這裡改用 set:html——資料來源是自己維護的 Sheet，不是使用者輸入。
+                英文路由只輸出一份，中文路由維持雙 DOM（規則同 T.astro）。 */}
+            {(r.description.zh || r.description.en) && (
+              <p class="about-role-desc">
+                {isEn ? (
+                  <Fragment set:html={r.description.en || r.description.zh} />
+                ) : (
+                  <Fragment
+                    ><span class="lang-zh" lang="zh-TW" set:html={r.description.zh} /><span
+                      class="lang-en"
+                      lang="en"
+                      hidden
+                      set:html={r.description.en || r.description.zh}
+                    /></Fragment
+                  >
+                )}
+              </p>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="about-section">
+    <h2><T zh="核心能力" en="Core Strengths" /></h2>
+    <ul class="about-strengths">
+      {strengths.map((s) => (
+        <li class="about-strength">
+          <span class="about-strength-icon" aria-hidden="true">{s.icon}</span>
+          <h3 class="about-strength-title"><T zh={s.title.zh} en={s.title.en} /></h3>
+          <p><T zh={s.description.zh} en={s.description.en} /></p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="about-section">
+    <h2><T zh="獲獎紀錄" en="Awards" /></h2>
+    <ul class="about-awards">
+      {awards.map((a) => (
+        <li class="about-award">
+          <span class="about-award-year">{a.year}</span>
+          <div>
+            <div class="about-award-name">
+              {/* 有連結就做成連結——這些外連是第三方佐證，只渲染文字等於對爬蟲不存在 */}
+              {a.link ? (
+                <a href={a.link} target="_blank" rel="noopener">
+                  <T zh={a.contest.zh} en={a.contest.en} />
+                </a>
+              ) : (
+                <T zh={a.contest.zh} en={a.contest.en} />
+              )}
+            </div>
+            <div class="about-award-meta">
+              <T zh={a.award.zh} en={a.award.en} />
+              {a.host.zh && <span class="about-award-host">　<T zh={a.host.zh} en={a.host.en} /></span>}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="about-section">
+    <h2><T zh="學術與社群身分" en="Academic & Social Profiles" /></h2>
+    <p class="about-profiles-note">
+      <T
+        zh="以下帳號皆為本人所有，可供查證。"
+        en="All accounts below belong to me and can be independently verified."
+      />
+    </p>
+    <ul class="about-profiles">
+      {profiles.map((p) => (
+        <li>
+          <a href={p.url} target="_blank" rel="noopener me">
+            <span aria-hidden="true">{p.icon}</span>
+            <b>{p.label}</b>
+            <span class="about-profile-value">{p.value}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

@@ -1,0 +1,677 @@
+<!-- 由 scripts/extract-static-pages.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#f8f9fa; --card:#fff; --border:#e5e7eb; --text:#111827; --muted:#6b7280;
+      --light-text:#9ca3af; --accent:#7c3aed; --accent-bg:#f5f3ff; --accent-hover:#6d28d9;
+      --green:#059669; --green-bg:#d1fae5; --blue:#1d4ed8; --blue-bg:#dbeafe;
+      --orange:#d97706; --orange-bg:#fef3c7; --red:#dc2626; --red-bg:#fee2e2;
+      --sidebar-w:260px; --header-h:58px; --radius:12px; --radius-sm:8px;
+      --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+      --shadow-md:0 4px 12px rgba(0,0,0,.08); --transition:.2s ease;
+      --font:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;
+    }
+    [data-theme="dark"] {
+      --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#f1f5f9; --muted:#94a3b8;
+      --light-text:#64748b; --accent:#a78bfa; --accent-bg:#2e1065; --accent-hover:#c4b5fd;
+      --green:#34d399; --green-bg:#064e3b; --blue:#60a5fa; --blue-bg:#1e3a5f;
+      --orange:#fbbf24; --orange-bg:#451a03; --red:#f87171; --red-bg:#450a0a;
+      --shadow:0 1px 3px rgba(0,0,0,.3); --shadow-md:0 4px 12px rgba(0,0,0,.4);
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:var(--font); background:var(--bg); color:var(--text); font-size:15px; line-height:1.6; }
+    #header { position:fixed; top:0; left:0; right:0; height:var(--header-h); background:var(--card);
+      border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; padding:0 20px;
+      z-index:100; box-shadow:var(--shadow); }
+    #hamburger { display:none; background:none; border:none; cursor:pointer; color:var(--text); padding:6px; border-radius:6px; }
+    #hamburger:hover { background:var(--accent-bg); }
+    .header-title { font-weight:700; font-size:1rem; color:var(--accent); white-space:nowrap; flex-shrink:0; }
+    .header-title .week { color:var(--muted); font-weight:400; font-size:.8rem; margin-left:6px; }
+    #searchWrap { flex:1; max-width:360px; position:relative; }
+    #searchBox { width:100%; padding:7px 12px 7px 34px; border:1px solid var(--border); border-radius:20px;
+      background:var(--bg); color:var(--text); font-size:.875rem; outline:none; }
+    #searchBox:focus { border-color:var(--accent); }
+    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.9rem; pointer-events:none; }
+    .header-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
+    .icon-btn { background:none; border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer;
+      color:var(--text); padding:6px 10px; font-size:.8rem; display:flex; align-items:center; gap:4px; white-space:nowrap; }
+    .icon-btn:hover { background:var(--accent-bg); border-color:var(--accent); color:var(--accent); }
+    .glossary-btn { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .glossary-btn:hover { background:var(--accent-hover); border-color:var(--accent-hover); color:#fff; }
+    #layout { display:flex; padding-top:var(--header-h); min-height:100vh; }
+    #sidebar { width:var(--sidebar-w); flex-shrink:0; position:sticky; top:var(--header-h);
+      height:calc(100vh - var(--header-h)); overflow-y:auto; border-right:1px solid var(--border);
+      padding:16px 0; background:var(--card); }
+    .sidebar-section { padding:0 12px; margin-bottom:8px; }
+    .sidebar-label { font-size:.7rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding:8px 4px 4px; }
+    .nav-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:var(--radius-sm);
+      text-decoration:none; color:var(--text); font-size:.875rem; cursor:pointer; border:none; background:none; width:100%; text-align:left; }
+    .nav-item:hover, .nav-item.active { background:var(--accent-bg); color:var(--accent); }
+    .nav-item.active { font-weight:600; }
+    .nav-item .icon { font-size:1rem; flex-shrink:0; width:20px; text-align:center; }
+    .sidebar-divider { height:1px; background:var(--border); margin:8px 12px; }
+    #main { flex:1; padding:32px 24px 64px; max-width:900px; min-width:0; }
+    .hero { background:linear-gradient(135deg,var(--accent) 0%,#db2777 100%); border-radius:var(--radius);
+      padding:32px; margin-bottom:28px; color:#fff; }
+    .hero .crumb { font-size:.8rem; opacity:.85; margin-bottom:8px; }
+    .hero .crumb a { color:#fff; }
+    .hero h1 { font-size:1.6rem; font-weight:800; margin-bottom:6px; }
+    .hero p { opacity:.92; font-size:.95rem; margin-bottom:16px; }
+    .hero-goals { background:rgba(255,255,255,.15); border-radius:8px; padding:14px 16px; font-size:.875rem; }
+    .hero-goals strong { display:block; margin-bottom:6px; }
+    .topic-section { margin-bottom:28px; scroll-margin-top:76px; }
+    .topic-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      overflow:hidden; box-shadow:var(--shadow); }
+    .topic-header { display:flex; align-items:center; gap:12px; padding:18px 20px; cursor:pointer; user-select:none; }
+    .topic-header:hover { background:var(--accent-bg); }
+    .topic-icon { font-size:1.5rem; flex-shrink:0; }
+    .topic-title-wrap { flex:1; }
+    .topic-title { font-size:1.05rem; font-weight:700; }
+    .topic-subtitle { font-size:.8rem; color:var(--muted); margin-top:1px; }
+    .topic-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .tag { font-size:.68rem; padding:2px 8px; border-radius:10px; font-weight:600; }
+    .tag-green { background:var(--green-bg); color:var(--green); }
+    .tag-blue { background:var(--blue-bg); color:var(--blue); }
+    .tag-orange { background:var(--orange-bg); color:var(--orange); }
+    .tag-violet { background:var(--accent-bg); color:var(--accent); }
+    .topic-chevron { color:var(--muted); transition:transform var(--transition); font-size:1.1rem; }
+    .topic-card.open .topic-chevron { transform:rotate(180deg); }
+    .topic-body { display:none; border-top:1px solid var(--border); }
+    .topic-card.open .topic-body { display:block; }
+    .sub-section { border-bottom:1px solid var(--border); }
+    .sub-section:last-child { border-bottom:none; }
+    .sub-section summary { list-style:none; padding:12px 20px; cursor:pointer; font-weight:600; font-size:.875rem;
+      color:var(--muted); display:flex; align-items:center; gap:8px; user-select:none; }
+    .sub-section summary::-webkit-details-marker { display:none; }
+    .sub-section summary:hover, .sub-section[open] summary { color:var(--accent); }
+    .sub-section summary::after { content:'›'; margin-left:auto; transition:transform var(--transition); font-size:1.1rem; }
+    .sub-section[open] summary::after { transform:rotate(90deg); }
+    .sub-content { padding:4px 20px 16px; }
+    .sub-content p { margin-bottom:10px; font-size:.9rem; }
+    .bullet-list { list-style:none; display:flex; flex-direction:column; gap:7px; }
+    .bullet-list li { display:flex; align-items:flex-start; gap:8px; font-size:.875rem; }
+    .bullet-list li::before { content:'▸'; color:var(--accent); flex-shrink:0; margin-top:1px; font-size:.8rem; }
+    .warning-box { background:var(--orange-bg); border:1px solid var(--orange); border-radius:var(--radius-sm);
+      padding:12px 14px; display:flex; gap:10px; font-size:.875rem; margin-bottom:8px; }
+    .warning-box::before { content:'⚠️'; flex-shrink:0; }
+    .practice-box { background:var(--green-bg); border:1px solid var(--green); border-radius:var(--radius-sm);
+      padding:14px 16px; font-size:.875rem; margin-bottom:8px; }
+    .practice-box strong { color:var(--green); display:block; margin-bottom:6px; }
+    .hook-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; margin:10px 0; }
+    .hook-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; }
+    
+    .hook-card p { font-size:.78rem; color:var(--muted); margin:0; }
+    .table-wrap { overflow-x:auto; margin:8px 0; }
+    .data-table { width:100%; border-collapse:collapse; font-size:.84rem; }
+    .data-table th { background:var(--accent-bg); color:var(--accent); font-weight:600; padding:9px 12px;
+      text-align:left; border-bottom:2px solid var(--accent); white-space:nowrap; }
+    .data-table td { padding:8px 12px; border-bottom:1px solid var(--border); }
+    .data-table tr:last-child td { border-bottom:none; }
+    .data-table tr:hover td { background:var(--accent-bg); }
+    .links-grid { display:flex; flex-direction:column; gap:6px; }
+    .link-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:var(--radius-sm);
+      border:1px solid var(--border); text-decoration:none; color:var(--text); font-size:.85rem; }
+    .link-item:hover { border-color:var(--accent); background:var(--accent-bg); color:var(--accent); }
+    .link-tag { font-size:.65rem; padding:1px 6px; border-radius:8px; font-weight:700; flex-shrink:0; }
+    .link-official { background:var(--green-bg); color:var(--green); }
+    .link-community { background:var(--blue-bg); color:var(--blue); }
+    .link-title { flex:1; }
+    .link-arrow { color:var(--muted); flex-shrink:0; }
+    .pipeline { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:12px 0; padding:12px;
+      background:var(--bg); border-radius:var(--radius-sm); }
+    .pipeline-step { background:var(--accent-bg); color:var(--accent); border-radius:6px; padding:6px 12px;
+      font-size:.8rem; font-weight:600; }
+    .pipeline-arrow { color:var(--muted); font-size:1.1rem; }
+    #glossaryOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; cursor:pointer; }
+    #glossaryOverlay.open { display:block; }
+    #glossaryPanel { position:fixed; top:0; right:-380px; width:380px; max-width:94vw; height:100vh;
+      background:var(--card); border-left:1px solid var(--border); z-index:201; display:flex; flex-direction:column;
+      transition:right .3s cubic-bezier(.4,0,.2,1); box-shadow:var(--shadow-md); }
+    #glossaryPanel.open { right:0; }
+    .gp-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .gp-header h2 { font-size:1rem; font-weight:700; flex:1; }
+    .gp-close { background:none; border:none; cursor:pointer; color:var(--muted); font-size:1.2rem; padding:4px; border-radius:4px; }
+    .gp-close:hover { color:var(--text); background:var(--border); }
+    #gpSearch { padding:8px 12px; margin:12px 16px; width:calc(100% - 32px); border:1px solid var(--border);
+      border-radius:8px; background:var(--bg); color:var(--text); font-size:.875rem; outline:none; }
+    #gpSearch:focus { border-color:var(--accent); }
+    #gpList { flex:1; overflow-y:auto; padding:0 16px 16px; }
+    .gp-item { border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:8px; overflow:hidden; }
+    .gp-term { padding:10px 12px; font-weight:600; font-size:.875rem; cursor:pointer; display:flex;
+      align-items:center; justify-content:space-between; }
+    .gp-term:hover { background:var(--accent-bg); color:var(--accent); }
+    .gp-def { display:none; padding:0 12px 10px; font-size:.82rem; color:var(--muted); line-height:1.5;
+      border-top:1px solid var(--border); background:var(--bg); }
+    .gp-item.open .gp-def { display:block; }
+    .gp-def .zh { margin-bottom:4px; padding-top:8px; }
+    .gp-def .en { color:var(--light-text); font-style:italic; }
+    .hidden-by-search { display:none !important; }
+    footer { text-align:center; padding:20px; color:var(--muted); font-size:.78rem; border-top:1px solid var(--border); margin-top:20px; }
+    footer a { color:var(--accent); }
+    [data-lang="zh"] .en-only { display:none; }
+    [data-lang="en"] .zh-only { display:none; }
+    @media (max-width:768px) {
+      #hamburger { display:flex; }
+      #sidebar { position:fixed; left:-100%; top:var(--header-h); height:calc(100vh - var(--header-h));
+        z-index:50; transition:left var(--transition); box-shadow:var(--shadow-md); }
+      #sidebar.open { left:0; }
+      #main { padding:20px 16px 48px; }
+      #glossaryPanel { width:100%; }
+      .header-title .week { display:none; }
+      #searchWrap { max-width:170px; }
+    }
+  
+    /* 這兩個標題原本是 div，改成 heading 是為了讓爬蟲讀得到文件結構；
+       margin 歸零讓視覺與改動前一致（font-size/font-weight 原本就有明確設定）。 */
+    .topic-title { margin:0; }
+    .hook-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
+</style>
+
+<header id="header">
+  <button id="hamburger" aria-label="Menu" onclick="toggleSidebar()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div class="header-title">
+    <span class="zh-only">🎬 短影音製作</span>
+    <span class="en-only">🎬 Short-Form Video</span>
+    <span class="week">W8-10</span>
+  </div>
+  <div id="searchWrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchBox" placeholder="搜尋… / Search…" oninput="handleSearch(this.value)">
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn glossary-btn" onclick="openGlossary()">📖 <span class="zh-only">術語</span><span class="en-only">Glossary</span></button>
+    <button class="icon-btn" onclick="toggleLang()" id="langBtn">🌐 EN</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</header>
+
+<div id="layout">
+  <nav id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 8 · <span class="zh-only">腳本</span><span class="en-only">Script</span></div>
+      <a class="nav-item" href="#overview" onclick="closeSidebar()"><span class="icon">🏠</span><span class="zh-only">單元總覽</span><span class="en-only">Overview</span></a>
+      <a class="nav-item" href="#topic-structure" onclick="closeSidebar()"><span class="icon">🏗️</span><span class="zh-only">四段式框架</span><span class="en-only">4-Part Framework</span></a>
+      <a class="nav-item" href="#topic-hooks" onclick="closeSidebar()"><span class="icon">🪝</span><span class="zh-only">Hook 公式庫</span><span class="en-only">Hook Formulas</span></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 9 · <span class="zh-only">剪輯</span><span class="en-only">Editing</span></div>
+      <a class="nav-item" href="#topic-specs" onclick="closeSidebar()"><span class="icon">📐</span><span class="zh-only">規格與 Safe Zone</span><span class="en-only">Specs & Safe Zones</span></a>
+      <a class="nav-item" href="#topic-tools" onclick="closeSidebar()"><span class="icon">✂️</span><span class="zh-only">剪輯工具選型</span><span class="en-only">Tool Selection</span></a>
+      <a class="nav-item" href="#topic-captions" onclick="closeSidebar()"><span class="icon">💬</span><span class="zh-only">字幕與封面</span><span class="en-only">Captions & Covers</span></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 10 · <span class="zh-only">系統</span><span class="en-only">System</span></div>
+      <a class="nav-item" href="#topic-repurpose" onclick="closeSidebar()"><span class="icon">♻️</span><span class="zh-only">一源多用</span><span class="en-only">Repurposing</span></a>
+      <a class="nav-item" href="#topic-publish" onclick="closeSidebar()"><span class="icon">📅</span><span class="zh-only">發布策略</span><span class="en-only">Publishing</span></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <a class="nav-item" href="#practice" onclick="closeSidebar()"><span class="icon">✏️</span><span class="zh-only">實作練習</span><span class="en-only">Practice</span></a>
+      <button class="nav-item" onclick="openGlossary()"><span class="icon">📖</span><span class="zh-only">術語速查</span><span class="en-only">Glossary</span></button>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section id="overview">
+      <div class="hero">
+        <div class="crumb"><a href="/projects/marketing/"><span class="zh-only">← 行銷專欄 Marketing</span><span class="en-only">← Marketing Column</span></a> <span class="zh-only">· 行銷學習地圖 W8-10</span><span class="en-only">· Marketing Roadmap W8-10</span></div>
+        <h1><span class="zh-only">短影音製作方法</span><span class="en-only">Short-Form Video Production</span></h1>
+        <p class="zh-only">從前 3 秒的 hook 到一源多用的內容系統——短影音先求量與迭代速度，再求精。</p>
+        <p class="en-only">From the 3-second hook to a repurposing system — in short-form video, volume and iteration speed come before polish.</p>
+        <div class="hero-goals">
+          <strong class="zh-only">🎯 學完你能做到</strong>
+          <strong class="en-only">🎯 Learning Goals</strong>
+          <span class="zh-only">① 用四段式框架寫出三種不同 hook 的 30 秒腳本 ② 建立自己的剪輯工具鏈並產出符合三平台 safe zone 的成品 ③ 設計「一次錄製、四種產出」的內容系統與每週節奏表</span>
+          <span class="en-only">① Write 30s scripts with three different hooks using the 4-part framework ② Build your editing toolchain and produce safe-zone-compliant output ③ Design a "record once, publish four ways" system with a weekly cadence</span>
+        </div>
+        <p style="margin-top:12px;font-size:.78rem;opacity:.8" class="zh-only">⚠️ 工具價格與平台規格變化快（研究於 2026-07）；CapCut 2025 已改制，數據為當時現況。</p>
+        <p style="margin-top:12px;font-size:.78rem;opacity:.8" class="en-only">⚠️ Tool pricing and platform specs change fast (researched 2026-07); CapCut restructured in 2025.</p>
+      </div>
+    </section>
+
+    <!-- W8: Structure -->
+    <section class="topic-section" id="topic-structure">
+      <div class="topic-card open" id="card-structure">
+        <div class="topic-header" onclick="toggleCard('card-structure')">
+          <div class="topic-icon">🏗️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">四段式腳本框架</span><span class="en-only">The 4-Part Script Framework</span></h2>
+            <div class="topic-subtitle">Hook → Value Drop → Story/Payoff → CTA</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 8</span><span class="tag tag-violet"><span class="zh-only">必讀 Core</span><span class="en-only">Core</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>⏱️ <span class="zh-only">時間軸結構</span><span class="en-only">The Timeline</span></summary>
+            <div class="sub-content">
+              <div class="pipeline">
+                <div class="pipeline-step">Hook<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">0-3 秒</span><span class="en-only">0–3 s</span></span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Value Drop<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">4-15 秒</span><span class="en-only">4–15 s</span></span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Story / Payoff<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">16-45 秒</span><span class="en-only">16–45 s</span></span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">CTA<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">最後 5 秒</span><span class="en-only">Final 5 s</span></span></div>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>~71% 觀眾在前 3 秒決定留下或滑走</strong>——hook 是整支影片最重要的 3 秒</li>
+                <li class="en-only"><strong>~71% of viewers decide in the first 3 seconds</strong> — the hook is the most important part of the video</li>
+                <li class="zh-only"><strong>Retention 技巧</strong>：不留 dead air——每 3-5 秒一個視覺變化（jump cut、B-roll、zoom、字卡）；中段埋「等一下有反轉」的預告</li>
+                <li class="en-only"><strong>Retention tactics</strong>: no dead air — a visual change every 3-5 seconds (jump cuts, B-roll, zooms, text cards); tease a twist mid-video</li>
+                <li class="zh-only"><strong>先兌現再要求</strong>：payoff 先兌現 hook 的承諾，再給<strong>單一</strong>明確 CTA</li>
+                <li class="en-only"><strong>Deliver before asking</strong>: pay off the hook's promise first, then give <strong>one</strong> clear CTA</li>
+                <li class="zh-only">平台節奏差異：Reels 重 3 秒留存、7-15 秒表現好；TikTok 適合 13-60 秒</li>
+                <li class="en-only">Platform rhythm: Reels favors 7-15s with heavy 3s retention; TikTok suits 13-60s</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：開頭放 logo 動畫或自我介紹（前 3 秒被浪費）；hook 過度承諾但兌現不了（完播率崩、被降權）；一支影片塞多個 CTA（觀眾一個都不做）。</span><span class="en-only">Pitfalls: opening with a logo or self-intro (wasting the first 3s); over-promising hooks that don't pay off (completion crashes); stacking multiple CTAs (viewers do none).</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://www.opus.pro/blog/youtube-shorts-hook-formulas" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Shorts Hook Formulas — OpusClip</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://scriptstorm.ai/blog/youtube-shorts-script-formula-hook-value-cta" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Hook, Value, CTA Formula — ScriptStorm</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- W8: Hooks -->
+    <section class="topic-section" id="topic-hooks">
+      <div class="topic-card" id="card-hooks">
+        <div class="topic-header" onclick="toggleCard('card-hooks')">
+          <div class="topic-icon">🪝</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">六種 Hook 公式</span><span class="en-only">Six Hook Formulas</span></h2>
+            <div class="topic-subtitle zh-only">前 3 秒的武器庫</div>
+            <div class="topic-subtitle en-only">Your 3-second arsenal</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 8</span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <div class="hook-grid">
+              <div class="hook-card"><h3>1. <span class="zh-only">反直覺陳述</span><span class="en-only">Contrarian Statement</span></h3><p class="zh-only">「大家都教你 X，但 X 正是你失敗的原因」</p><p class="en-only">"Everyone teaches X — and X is exactly why you're failing"</p></div>
+              <div class="hook-card"><h3>2. <span class="zh-only">驚人數據</span><span class="en-only">Shocking Statistic</span></h3><p class="zh-only">「97% 的 Pinterest 搜尋不含品牌名」</p><p class="en-only">"97% of Pinterest searches contain no brand name"</p></div>
+              <div class="hook-card"><h3>3. <span class="zh-only">大膽提問</span><span class="en-only">Bold Question</span></h3><p class="zh-only">「你知道你的影片為什麼沒人看完嗎？」</p><p class="en-only">"Do you know why nobody finishes your videos?"</p></div>
+              <div class="hook-card"><h3>4. <span class="zh-only">視覺 Pattern Interrupt</span><span class="en-only">Visual Pattern Interrupt</span></h3><p class="zh-only">開頭放最戲劇性的畫面（成品 reveal、意外瞬間）再倒敘</p><p class="en-only">Open with the most dramatic frame (the reveal, the surprise), then rewind</p></div>
+              <div class="hook-card"><h3>5. <span class="zh-only">「別做 X，改做 Y」</span><span class="en-only">"Stop X, Do Y Instead"</span></h3><p class="zh-only">「別再買現成的捕夢網了」</p><p class="en-only">"Stop buying mass-produced dreamcatchers"</p></div>
+              <div class="hook-card"><h3>6. <span class="zh-only">開放式懸念</span><span class="en-only">Curiosity Gap</span></h3><p class="zh-only">「這個圖案是一條數學公式畫出來的」</p><p class="en-only">"This pattern was drawn by a single math formula"</p></div>
+            </div>
+            <p style="font-size:.82rem;color:var(--muted)" class="zh-only">💡 同一支影片可以剪三個版本、各用不同 hook 發布測試——hook 是最值得 A/B 的變數。</p>
+            <p style="font-size:.82rem;color:var(--muted)" class="en-only">💡 Cut three versions of the same video with different hooks — the hook is the single most testable variable.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- W9: Specs -->
+    <section class="topic-section" id="topic-specs">
+      <div class="topic-card" id="card-specs">
+        <div class="topic-header" onclick="toggleCard('card-specs')">
+          <div class="topic-icon">📐</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">三平台規格與 Safe Zone</span><span class="en-only">Specs & Safe Zones</span></h2>
+            <div class="topic-subtitle zh-only">一支母檔通投三平台</div>
+            <div class="topic-subtitle en-only">One master file, three platforms</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 9</span><span class="tag tag-blue"><span class="zh-only">規格 Specs</span><span class="en-only">Specs</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>📏 <span class="zh-only">通用規格與長度限制</span><span class="en-only">Common Specs & Length Limits</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>通用母檔規格：9:16、1080×1920、MP4（H.264+AAC）、30fps</strong>（高動態內容可 60fps）</li>
+                <li class="en-only"><strong>Universal master: 9:16, 1080×1920, MP4 (H.264+AAC), 30fps</strong> (60fps for high-motion)</li>
+              </ul>
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th></th><th>TikTok</th><th>Reels</th><th>Shorts</th></tr></thead>
+                  <tbody>
+                    <tr><td class="zh-only"><strong>長度</strong></td><td class="en-only"><strong>Length</strong></td><td class="zh-only">錄 10 分／傳 60 分</td><td class="en-only">10 min rec / 60 min upload</td><td class="zh-only">上限 20 分，<strong>超過 3 分鐘不推薦給新觀眾；90 秒內是甜蜜點</strong></td><td class="en-only">20 min max; <strong>&gt;3 min not recommended to new viewers; 90s is the sweet spot</strong></td><td class="zh-only">上限 3 分</td><td class="en-only">3 min max</td></tr>
+                    <tr><td class="zh-only"><strong>Safe zone</strong></td><td class="en-only"><strong>Safe zone</strong></td><td class="zh-only">右側互動鈕＋底部 caption 區最易被蓋</td><td class="en-only">Right-side buttons + bottom caption zone</td><td class="zh-only">注意 cover 的 1:1 grid 裁切</td><td class="en-only">Watch the 1:1 grid crop for covers</td><td class="zh-only">主要靠首幀</td><td class="en-only">First frame matters most</td></tr>
+                    <tr><td class="zh-only"><strong>封面</strong></td><td class="en-only"><strong>Cover</strong></td><td class="zh-only">可傳封面＋封面文字（3-5 字大字）</td><td class="en-only">Custom cover + 3-5 word title</td><td class="zh-only">需另設 cover</td><td class="en-only">Set a separate cover</td><td class="zh-only">支援自訂縮圖（近期）</td><td class="en-only">Custom thumbnails (recent)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only">重要文字<strong>靠中偏左、避開上下 250-300px</strong>——輸出前用 safe zone 模板檢查</li>
+                <li class="en-only">Keep key text <strong>center-left, away from top/bottom 250-300px</strong> — check against safe-zone templates before export</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：16:9 橫式加黑邊直傳（觸及明顯變差）；字幕落在 TikTok 右下互動鈕區；為求完整把 Reels 做到 5 分鐘（不被推薦給非粉絲）。</span><span class="en-only">Pitfalls: uploading letterboxed 16:9 (reach suffers); captions under TikTok's right-side buttons; 5-minute Reels "for completeness" (won't reach non-followers).</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://sproutsocial.com/insights/social-media-video-specs-guide/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">影片規格總表 — Sprout Social</span><span class="en-only">Video specs cheat sheet — Sprout Social</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.somake.ai/blog/instagram-reel-size-guide" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Reels 尺寸/封面/safe zone — Somake</span><span class="en-only">Reels dimensions, covers and safe zones — Somake</span></span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- W9: Tools -->
+    <section class="topic-section" id="topic-tools">
+      <div class="topic-card" id="card-tools">
+        <div class="topic-header" onclick="toggleCard('card-tools')">
+          <div class="topic-icon">✂️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">剪輯工具選型</span><span class="en-only">Editing Tool Selection</span></h2>
+            <div class="topic-subtitle zh-only">先求量與迭代速度，再求專業</div>
+            <div class="topic-subtitle en-only">Volume and iteration before polish</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 9</span><span class="tag tag-orange"><span class="zh-only">CapCut 2025 改制</span><span class="en-only">CapCut 2025 change</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🧰 <span class="zh-only">四大工具對照</span><span class="en-only">Four Tools Compared</span></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th class="zh-only">工具</th><th class="en-only">Tool</th><th class="zh-only">定位</th><th class="en-only">Position</th><th class="zh-only">注意</th><th class="en-only">Caveat</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>CapCut</strong></td><td class="zh-only">短影音最快路徑：30 秒片約 10 分鐘完工；手機/桌面/網頁一致</td><td class="en-only">Fastest path: a 30s video in ~10 min; consistent across devices</td><td class="zh-only"><strong>2025 改制</strong>：Free / Standard ~$9.99（去浮水印）/ Pro ~$19.99；大量原免費模板移入 Pro；商用素材授權需另確認</td><td class="en-only"><strong>2025 restructure</strong>: many free templates moved to Pro; verify commercial licensing</td></tr>
+                    <tr><td><strong>DaVinci Resolve</strong></td><td class="zh-only">免費版功能驚人（調色/音訊）；Studio $295 買斷</td><td class="en-only">Astonishing free tier; Studio $295 one-time</td><td class="zh-only">橫式長片導向、學習曲線陡——純短影音非首選</td><td class="en-only">Long-form oriented, steep curve — not first choice for shorts</td></tr>
+                    <tr><td><strong>Descript</strong></td><td class="zh-only">逐字稿剪片（text-based），說話型內容極快</td><td class="en-only">Text-based editing; extremely fast for talking content</td><td class="zh-only">敘事型、音樂驅動型不適合；~$24/月起</td><td class="en-only">Not for narrative/music-driven content</td></tr>
+                    <tr><td><strong>Premiere Pro</strong></td><td class="zh-only">專業團隊與 Adobe 生態（AE 動態模板）</td><td class="en-only">Pro teams + Adobe ecosystem</td><td class="zh-only">個人短影音性價比低</td><td class="en-only">Poor value for solo short-form creators</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>混合工作流</strong>：桌面剪母片（批量、模板化、品牌一致）→ 手機端加平台原生貼紙與文字（抓趨勢）</li>
+                <li class="en-only"><strong>Hybrid workflow</strong>: desktop for master edits (batch, templated) → mobile for native stickers and trend-riding</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：把生產線押在 CapCut 免費模板上（改制後隨時被鎖 Pro）；新手先學 DaVinci/Premiere 導致產量歸零——短影音先求量與迭代速度。</span><span class="en-only">Pitfalls: betting your pipeline on CapCut free templates (can be paywalled anytime); learning DaVinci/Premiere first and shipping nothing — volume and iteration come first.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://www.capcut.com/help/pricing-change" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">CapCut 改制官方說明</span><span class="en-only">CapCut policy change — official notice</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://bigvu.tv/blog/capcut-free-vs-pro-what-2026s-restructure-actually-gives-you/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">CapCut Free vs Pro — BIGVU</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.descript.com/blog/article/best-video-editor-tools" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Best Video Editor Tools — Descript</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- W9: Captions -->
+    <section class="topic-section" id="topic-captions">
+      <div class="topic-card" id="card-captions">
+        <div class="topic-header" onclick="toggleCard('card-captions')">
+          <div class="topic-icon">💬</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">字幕、標題與封面</span><span class="en-only">Captions, Headlines & Covers</span></h2>
+            <div class="topic-subtitle zh-only">大量觀眾靜音觀看——字幕不是選配</div>
+            <div class="topic-subtitle en-only">Many watch on mute — captions aren't optional</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 9</span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <ul class="bullet-list">
+              <li class="zh-only"><strong>一律上字幕</strong>；auto-caption 準確率 90-95%，<strong>中文務必人工校對</strong>（同音字錯誤傷專業感）</li>
+              <li class="en-only"><strong>Always caption</strong>; auto-captions hit 90-95% accuracy — <strong>Chinese must be proofread</strong> (homophones)</li>
+              <li class="zh-only">字幕設計：粗體 sans-serif、高對比、描邊/陰影、一次 1-2 行、<strong>karaoke 式逐字高亮</strong>是主流</li>
+              <li class="en-only">Design: bold sans-serif, high contrast, stroke/shadow, 1-2 lines max, <strong>karaoke word-by-word highlight</strong> is the norm</li>
+              <li class="zh-only"><strong>On-screen headline</strong>：前 3 秒畫面中上放一句話重述 hook——同時是「靜音版 hook」與搜尋關鍵字訊號（social SEO）</li>
+              <li class="en-only"><strong>On-screen headline</strong>: restate the hook top-center in the first 3s — it's both a "mute-mode hook" and a search keyword signal</li>
+              <li class="zh-only">工具：CapCut Auto Caption（免費、中文可用）、Submagic、Descript；輸出前套 safe zone 模板</li>
+              <li class="en-only">Tools: CapCut Auto Caption (free, Chinese-capable), Submagic, Descript; check safe zones before export</li>
+            </ul>
+            <div class="warning-box"><span class="zh-only">誤區：auto-caption 不校對直發；字幕蓋住畫面主體或落在 UI 遮擋區；花俏字型＋彩虹色＋過多動畫（可讀性下降）。</span><span class="en-only">Pitfalls: publishing unproofed auto-captions; captions covering the subject or UI zones; fancy fonts + rainbow colors + excessive animation.</span></div>
+            <div class="links-grid">
+              <a class="link-item" href="https://www.capcut.com/tools/auto-caption-generator" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">CapCut Auto Caption 工具</span><span class="en-only">CapCut Auto Caption tool</span></span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://www.capcut.com/resource/caption-style" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Caption Style Guide — CapCut</span><span class="link-arrow">↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- W10: Repurposing -->
+    <section class="topic-section" id="topic-repurpose">
+      <div class="topic-card" id="card-repurpose">
+        <div class="topic-header" onclick="toggleCard('card-repurpose')">
+          <div class="topic-icon">♻️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">一源多用 Repurposing 系統</span><span class="en-only">The Repurposing System</span></h2>
+            <div class="topic-subtitle zh-only">一次錄製、四種產出</div>
+            <div class="topic-subtitle en-only">Record once, publish four ways</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 10</span><span class="tag tag-violet"><span class="zh-only">系統 System</span><span class="en-only">System</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🔄 <span class="zh-only">流程與工具</span><span class="en-only">Flow & Tools</span></summary>
+            <div class="sub-content">
+              <div class="pipeline">
+                <div class="pipeline-step zh-only">長片<br><span style="font-weight:400;font-size:.7rem">YouTube / 直播 / podcast</span></div>
+                <div class="pipeline-step en-only">Long-form<br><span style="font-weight:400;font-size:.7rem">YouTube / live / podcast</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">AI 切片短片<br><span style="font-weight:400;font-size:.7rem">OpusClip / Magic Clips</span></div>
+                <div class="pipeline-step en-only">AI clips<br><span style="font-weight:400;font-size:.7rem">OpusClip / Magic Clips</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">金句 carousel<br><span style="font-weight:400;font-size:.7rem">IG / LinkedIn</span></div>
+                <div class="pipeline-step en-only">Quote carousels<br><span style="font-weight:400;font-size:.7rem">IG / LinkedIn</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">逐字稿→文章<br><span style="font-weight:400;font-size:.7rem">blog / 電子報</span></div>
+                <div class="pipeline-step en-only">Transcript→article<br><span style="font-weight:400;font-size:.7rem">blog / newsletter</span></div>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>OpusClip</strong>：長片自動抓 viral 片段（每小時素材→25+ 短片）、virality score、auto-reframe</li>
+                <li class="en-only"><strong>OpusClip</strong>: auto-extracts viral moments (1 hour → 25+ clips), virality scores, auto-reframe</li>
+                <li class="zh-only"><strong>Riverside Magic Clips</strong>：錄製→切片→字幕→品牌模板一站完成，適合 podcast/訪談工作流</li>
+                <li class="en-only"><strong>Riverside Magic Clips</strong>: record→clip→caption→brand template in one flow; ideal for podcasts</li>
+                <li class="zh-only"><strong>切片獨立成立原則</strong>：短片不是長片壓縮版——每支要有自己的 hook 與 payoff，必要時重寫開頭</li>
+                <li class="en-only"><strong>Standalone principle</strong>: clips aren't compressed long-form — each needs its own hook and payoff</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only"><strong>AI 切片要人工篩選</strong>：10 支通常只有 2-3 支可用（AI 抓的片段常缺 context）。全自動發布＝量產平庸。</span><span class="en-only"><strong>Human-filter AI clips</strong>: typically only 2-3 of 10 are usable (AI clips often lack context). Full-auto publishing = mass-produced mediocrity.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://www.opus.pro/" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">OpusClip</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://riverside.com/video-editor/video-editing-glossary/magic-clips" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Riverside Magic Clips</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.opus.pro/blog/best-video-repurposing-tools" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Best Repurposing Tools — OpusClip Blog</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- W10: Publishing -->
+    <section class="topic-section" id="topic-publish">
+      <div class="topic-card" id="card-publish">
+        <div class="topic-header" onclick="toggleCard('card-publish')">
+          <div class="topic-icon">📅</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">發布策略：頻率、時段、Hashtag 現況</span><span class="en-only">Publishing: Cadence, Timing, Hashtags</span></h2>
+            <div class="topic-subtitle zh-only">穩定 &gt; 爆量 · Social SEO 已取代 hashtag</div>
+            <div class="topic-subtitle en-only">Consistency beats bursts · Social SEO has replaced hashtags</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 10</span><span class="tag tag-orange"><span class="zh-only">2025-26 轉變</span><span class="en-only">2025–26 shift</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <ul class="bullet-list">
+              <li class="zh-only"><strong>頻率共識：每週 3-5 支；穩定 &gt; 爆量</strong>——「爆發連發後消失兩週」是最傷演算法的行為；每週 3 支好片勝過 7 支平庸片</li>
+              <li class="en-only"><strong>Cadence consensus: 3-5/week; consistency beats bursts</strong> — "binge-post then vanish" is the worst pattern; 3 good videos beat 7 mediocre ones</li>
+              <li class="zh-only">時段（起點參考，以自己後台為準）：TikTok 週二至五下午 1-6 點；Reels 週三、五；Shorts 週五傍晚——高峰前 1-2 小時發</li>
+              <li class="en-only">Timing (starting points only): TikTok Tue-Fri 1-6pm; Reels Wed/Fri; Shorts Fri evening — post 1-2 hours before peak</li>
+              <li class="zh-only"><strong>Hashtag 2025-26：還有用但已非觸及主力</strong>——平台轉向 social SEO（caption 關鍵字、口說內容、螢幕文字才是索引主力）</li>
+              <li class="en-only"><strong>Hashtags 2025-26: still useful, no longer the reach lever</strong> — platforms shifted to social SEO (caption keywords, spoken words, on-screen text)</li>
+              <li class="zh-only">做法：<strong>3-5 個高相關 niche tag</strong>（利基＋地區），放棄 30 個泛用 tag（#fyp 類幾乎無效）</li>
+              <li class="en-only">Practice: <strong>3-5 relevant niche tags</strong> (niche + region); drop the 30 generic ones (#fyp is nearly useless)</li>
+              <li class="zh-only">Caption：TikTok 支援 4000 字，塞自然語句關鍵字利搜尋；Reels 傾向 100-300 字</li>
+              <li class="en-only">Captions: TikTok allows 4000 chars — use natural-language keywords; Reels prefers 100-300 chars</li>
+            </ul>
+            <div class="warning-box"><span class="zh-only">誤區：迷信「完美發文時間」犧牲一致性；三平台發相同檔案不改 caption/關鍵字；caption 只寫一句 emoji（浪費 social SEO 版位）。</span><span class="en-only">Pitfalls: chasing "perfect timing" at the cost of consistency; identical files across platforms without caption changes; emoji-only captions (wasting social SEO real estate).</span></div>
+            <div class="links-grid">
+              <a class="link-item" href="https://sproutsocial.com/insights/best-times-to-post-on-tiktok/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Best Times to Post on TikTok — Sprout</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://buffer.com/resources/best-time-to-post-on-youtube/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">YouTube 發文時間（180 萬支影片數據）— Buffer</span><span class="en-only">Best time to post on YouTube (1.8M videos) — Buffer</span></span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://seosherpa.com/tiktok-seo/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">TikTok SEO — SEO Sherpa</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://meetedgar.com/blog/are-hashtags-still-relevant" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Are Hashtags Still Relevant? — MeetEdgar</span><span class="link-arrow">↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Practice -->
+    <section class="topic-section" id="practice">
+      <div class="topic-card open" id="card-practice">
+        <div class="topic-header" onclick="toggleCard('card-practice')">
+          <div class="topic-icon">✏️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">實作練習</span><span class="en-only">Practice Exercises</span></h2>
+            <div class="topic-subtitle zh-only">三週做完，你會有一條自己的短影音生產線</div>
+            <div class="topic-subtitle en-only">Three weeks to your own short-form pipeline</div>
+            <div class="topic-tags"><span class="tag tag-green"><span class="zh-only">動手做 Hands-on</span><span class="en-only">Hands-on</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <div class="practice-box">
+              <strong class="zh-only">練習 1（W8）：三支不同 hook 的腳本</strong>
+              <strong class="en-only">Exercise 1 (W8): Three Scripts, Three Hooks</strong>
+              <span class="zh-only">為捕夢網寫 3 支 30 秒腳本，各用不同 hook 公式：①成品 reveal 倒敘（視覺 pattern interrupt）②「別再買現成的捕夢網」（別做 X 改做 Y）③「這個圖案是數學公式畫的」（懸念）。每支標注四段的秒數分配。</span>
+              <span class="en-only">Write three 30s dreamcatcher scripts with different hooks: ① reveal-first rewind (pattern interrupt) ② "stop buying mass-produced" (Stop X Do Y) ③ "drawn by a math formula" (curiosity gap). Mark the 4-part timing on each.</span>
+            </div>
+            <div class="practice-box">
+              <strong class="zh-only">練習 2（W9）：剪出一支成品</strong>
+              <strong class="en-only">Exercise 2 (W9): Cut One Finished Video</strong>
+              <span class="zh-only">用 CapCut 把練習 1 其中一支剪成成品：中文字幕（人工校對）＋前 3 秒 on-screen headline＋safe zone 檢查，輸出 1080×1920 母檔。</span>
+              <span class="en-only">Edit one script into a finished video in CapCut: proofread Chinese captions + 3s on-screen headline + safe-zone check, exported at 1080×1920.</span>
+            </div>
+            <div class="practice-box">
+              <strong class="zh-only">練習 3（W10）：每週內容節奏表</strong>
+              <strong class="en-only">Exercise 3 (W10): Weekly Content Cadence</strong>
+              <span class="zh-only">設計捕夢網的每週節奏：1 支主片 → 切 2 支變體（不同 hook）→ 1 組金句 carousel → caption 關鍵字清單（中英各版）。排進行事曆，執行兩週後回顧數據。</span>
+              <span class="en-only">Design the weekly cadence: 1 main video → 2 hook variants → 1 quote carousel → caption keyword lists (zh/EN). Schedule it, run for two weeks, review the data.</span>
+            </div>
+            <p style="font-size:.82rem;color:var(--muted)" class="zh-only">📎 產業備註：手作類 process video 一次拍攝可切多支不同 hook（脫模瞬間/上色/成品轉盤）；教育類用 Descript 逐字稿工作流最順；SaaS 用 screen recording 每個 feature 一支 30 秒。</p>
+            <p style="font-size:.82rem;color:var(--muted)" class="en-only">📎 Industry notes: handmade process videos yield multiple hooks per shoot; education flows best through Descript transcripts; SaaS — one 30s screen recording per feature.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="glossaryOverlay" onclick="closeGlossary()"></div>
+<div id="glossaryPanel">
+  <div class="gp-header"><span>📖</span>
+    <h2><span class="zh-only">術語速查</span><span class="en-only">Glossary</span></h2>
+    <button class="gp-close" onclick="closeGlossary()">✕</button>
+  </div>
+  <input type="text" id="gpSearch" placeholder="搜尋術語… / Search…" oninput="filterGlossary(this.value)">
+  <div id="gpList"></div>
+</div>
+
+<footer>
+  <span class="zh-only">行銷專欄 · <a href="/projects/marketing/">回到列表</a> · Matt Ye — <a href="https://mattye.dev">mattye.dev</a></span>
+  <span class="en-only">Marketing Column · <a href="/projects/marketing/">Back to list</a> · Matt Ye — <a href="https://mattye.dev">mattye.dev</a></span>
+</footer>
+
+<script>
+const GLOSSARY = [
+  { term:"Hook", zh:"影片前 0-3 秒抓住注意力的開場。~71% 觀眾在此決定去留——是最值得 A/B 測試的變數。", en:"The 0-3 second opener. ~71% of viewers decide here — the single most testable variable." },
+  { term:"Value Drop", zh:"四段式框架第二段（4-15 秒）：快速給出第一個有用資訊，證明 hook 不是空頭支票。", en:"Part 2 (4-15s): deliver the first useful piece fast, proving the hook wasn't a bluff." },
+  { term:"Payoff", zh:"兌現 hook 承諾的高潮段。先兌現、再給 CTA——順序顛倒會摧毀信任與完播率。", en:"The moment the hook's promise is fulfilled. Deliver before asking — reversing the order kills trust and completion." },
+  { term:"CTA — Call to Action", zh:"行動指令（follow/留言/看下一支）。一支影片只給一個——多重 CTA 觀眾一個都不做。", en:"The action ask. One per video — stacked CTAs get zero action." },
+  { term:"Dead Air", zh:"沒有視覺或聽覺變化的空檔。Retention 殺手——每 3-5 秒要有 jump cut、B-roll、zoom 或字卡。", en:"Stretches with no visual/audio change. A retention killer — change something every 3-5 seconds." },
+  { term:"Pattern Interrupt", zh:"打破觀眾預期的視覺開場（成品 reveal、意外瞬間），六種 hook 公式之一。", en:"A visual opener that breaks expectations (the reveal, the surprise); one of six hook formulas." },
+  { term:"Curiosity Gap 懸念缺口", zh:"開頭拋出「知道一半」的資訊讓觀眾非看完不可。過度使用＝clickbait，兌現不了會被降權。", en:"Opening with half-revealed information. Overuse = clickbait; unfulfilled gaps get demoted." },
+  { term:"Retention 留存曲線", zh:"觀眾隨時間流失的曲線。平台追蹤 3/15/30/60 秒節點；中段埋反轉預告是護留存手法。", en:"The viewer drop-off curve. Platforms track 3/15/30/60s checkpoints; mid-video teases protect it." },
+  { term:"Completion Rate 完播率", zh:"看完整支影片的比例。TikTok 爆紅門檻已升至 ~70%；影片越短越容易達標。", en:"Share who finish the video. TikTok's viral threshold is now ~70%; shorter videos clear it easier." },
+  { term:"Safe Zone 安全區", zh:"不被平台 UI（互動鈕、caption 區）遮擋的畫面範圍。重要文字靠中偏左、避開上下 250-300px。", en:"Screen area free of platform UI overlays. Keep key text center-left, away from top/bottom 250-300px." },
+  { term:"On-screen Headline 畫面標題", zh:"前 3 秒畫面中上的一句話 hook 重述——同時是靜音版 hook 與 social SEO 關鍵字訊號。", en:"A hook restatement top-center in the first 3s — both a mute-mode hook and a search keyword signal." },
+  { term:"Karaoke Captions 逐字高亮字幕", zh:"隨語音逐字高亮的字幕樣式，2025-26 主流；提升靜音觀看的跟讀性。", en:"Word-by-word highlighted captions, the 2025-26 norm; improves mute-mode readability." },
+  { term:"Auto-caption 自動字幕", zh:"AI 語音轉字幕，準確率 90-95%。中文必須人工校對（同音字），錯字直接傷專業感。", en:"AI speech-to-caption at 90-95% accuracy. Chinese requires proofreading (homophones)." },
+  { term:"Repurposing 一源多用", zh:"一次創作、多種產出：長片→AI 切片→金句 carousel→逐字稿文章。內容系統的核心槓桿。", en:"One creation, many outputs: long-form → AI clips → carousels → transcript articles." },
+  { term:"Virality Score", zh:"OpusClip 等工具為切片估算的爆紅潛力分數。參考用——最終仍需人工篩選（10 支只有 2-3 支可用）。", en:"A clip's estimated viral potential (OpusClip etc.). A reference only — humans still filter (2-3 usable in 10)." },
+  { term:"Auto-reframe 自動取景", zh:"AI 把 16:9 素材自動裁成 9:16 並追蹤主體。省時但需檢查關鍵畫面沒被裁掉。", en:"AI-crops 16:9 into 9:16 while tracking the subject. Fast, but verify nothing key gets cut." },
+  { term:"Social SEO", zh:"為平台內搜尋優化：caption 自然語句關鍵字、口說內容（被轉錄索引）、螢幕文字。已取代 hashtag 成為觸及主力。", en:"Optimizing for in-platform search: caption keywords, spoken words (transcribed), on-screen text. Has replaced hashtags as the reach lever." },
+  { term:"Niche Hashtag 利基標籤", zh:"高相關的小眾標籤（#dreamcatcher #雷雕）。3-5 個利基 tag 勝過 30 個泛用 tag（#fyp 幾乎無效）。", en:"Highly relevant small tags. 3-5 niche tags beat 30 generic ones (#fyp is nearly useless)." },
+  { term:"Content Cadence 內容節奏", zh:"固定的產出頻率。共識：每週 3-5 支、穩定 > 爆量——爆發連發後消失是最傷演算法的模式。", en:"A fixed publishing rhythm. Consensus: 3-5/week, consistency over bursts." },
+  { term:"B-roll", zh:"主鏡頭以外的補充畫面（特寫、環境、過程）。消滅 dead air 的基本材料。", en:"Supplementary footage beyond the main shot. The basic ingredient for killing dead air." },
+];
+function renderGlossary(filter) {
+  const list = document.getElementById('gpList');
+  const q = (filter || '').toLowerCase();
+  list.innerHTML = '';
+  GLOSSARY.forEach(item => {
+    if (q && !item.term.toLowerCase().includes(q) && !item.zh.toLowerCase().includes(q) && !item.en.toLowerCase().includes(q)) return;
+    const div = document.createElement('div');
+    div.className = 'gp-item';
+    div.innerHTML = '<div class="gp-term" onclick="this.parentElement.classList.toggle(\'open\')">' + escapeHtml(item.term) +
+      ' <span style="color:var(--muted);font-size:.8rem">›</span></div><div class="gp-def"><div class="zh">' +
+      escapeHtml(item.zh) + '</div><div class="en">' + escapeHtml(item.en) + '</div></div>';
+    list.appendChild(div);
+  });
+  if (!list.children.length) list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:.875rem">找不到術語 / No match</div>';
+}
+function filterGlossary(v){ renderGlossary(v); }
+function openGlossary(){ document.getElementById('glossaryOverlay').classList.add('open'); document.getElementById('glossaryPanel').classList.add('open'); renderGlossary(''); }
+function closeGlossary(){ document.getElementById('glossaryOverlay').classList.remove('open'); document.getElementById('glossaryPanel').classList.remove('open'); }
+function toggleCard(id){ document.getElementById(id).classList.toggle('open'); }
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar(){ if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open'); }
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  try { localStorage.setItem('oms_theme', html.dataset.theme); } catch(e) {}
+}
+function toggleLang(){
+  const html = document.documentElement;
+  const isZh = html.dataset.lang === 'zh';
+  html.dataset.lang = isZh ? 'en' : 'zh';
+  document.getElementById('langBtn').textContent = isZh ? '🌐 中' : '🌐 EN';
+  document.title = isZh ? 'Short-Form Video Production | Marketing Column · Matt Ye' : '短影音製作方法 — Short-Form Video | Marketing Column · Matt Ye';
+  document.getElementById('searchBox').placeholder = isZh ? 'Search…' : '搜尋… / Search…';
+  try { localStorage.setItem('oms_lang', html.dataset.lang); } catch(e) {}
+}
+let searchTimer;
+function handleSearch(val){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const q = val.trim().toLowerCase();
+    document.querySelectorAll('.topic-section').forEach(sec => {
+      sec.classList.toggle('hidden-by-search', q && !sec.textContent.toLowerCase().includes(q));
+    });
+  }, 200);
+}
+const navItems = document.querySelectorAll('.nav-item[href]');
+function updateActiveNav(){
+  const y = window.scrollY + 90;
+  let active = '';
+  ['overview','topic-structure','topic-hooks','topic-specs','topic-tools','topic-captions','topic-repurpose','topic-publish','practice'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= y) active = '#' + id;
+  });
+  navItems.forEach(a => a.classList.toggle('active', a.getAttribute('href') === active));
+}
+window.addEventListener('scroll', updateActiveNav, { passive:true });
+updateActiveNav();
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGlossary(); });
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+(function init(){
+  try {
+    const t = localStorage.getItem('oms_theme'), l = localStorage.getItem('oms_lang');
+    if (t) { document.documentElement.dataset.theme = t; document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙'; }
+    if (l) { document.documentElement.dataset.lang = l; document.getElementById('langBtn').textContent = l === 'en' ? '🌐 中' : '🌐 EN'; }
+  } catch(e) {}
+})();
+</script>

@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import T from '../../../components/T.astro';
+import { agentSkills } from '../../../data/agentSkills';
+import { localeHref } from '../../../lib/i18n';
+
+/* AI Agent Skills 的完整說明頁。/projects 卡片只列標題，點卡進到這裡；
+   每個 skill 一段 150–200 字的長描述（agentSkills.ts 的 descriptionLong），
+   各段落有 id=slug 供卡片內標題深連結。
+
+   同時產出 /projects/agent-skills/ 與 /en/projects/agent-skills/，
+   見 [...lang]/about.astro 的說明。
+
+   這頁是「葉節點優先」遷移順序的第一頁：它不列出任何子頁面，
+   所以不受「未遷移的項目在英文頁隱藏」政策影響——列表頁要等它的項目
+   先有英文版，否則 /en/ 會產出空列表（薄內容頁 Google 不收）。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+const loc = Astro.currentLocale;
+
+/* ⚠ 兩種語言的 description 門檻不同，而且新增條目時**兩邊都要重數**。
+   檢核器偵測中日韓字元比例後切換標準：**中文 90 字元、英文 160 字元**。
+
+   上架 YAEO 時兩邊都撞過上限，實測值：
+     中文 88 → 101（超過 90），砍掉「產生器」「工具」與結尾的「附 GitHub 連結」後 84
+     英文 直譯後 163（超過 160），砍掉結尾的「with GitHub links.」後 145
+
+   別憑印象假設「中文比較短所以安全」——中文的門檻也跟著低，這裡原本只剩
+   2 個字元的餘裕。兩個數字都要實際量。
+
+   ⚠ 這兩句是**列舉式**的，逐一點名三個 skill。第四個上架時中文很可能再次超標
+   （目前 84，餘裕 6 個字元）。屆時要改成描述整批的性質，不再逐一點名。 */
+const descriptionZh =
+  '開源的 AI agent skills：YAEO 引擎可見度檢核、Toutour 聚光燈導覽、EndNote → Zotero 文獻搬家。通用 SKILL.md 格式。';
+const descriptionEn =
+  'Open-source AI agent skills: YAEO engine-visibility auditor, Toutour spotlight tours, and EndNote-to-Zotero migration. Universal SKILL.md format.';
+---
+<BaseLayout
+  title="AI Agent Skills"
+  description={isEn ? descriptionEn : descriptionZh}
+  lang={isEn ? 'en' : 'zh-TW'}
+>
+  <h1 class="ask-title">AI <span class="accent-text">Agent Skills</span></h1>
+
+  <p class="ask-lead">
+    <T
+      zh="把重複的工作流程包成 AI agent 能直接執行的 skill，開源發布。採通用 SKILL.md 格式——不綁定單一平台，Claude Code、Cursor、Gemini CLI、Codex CLI 都能用。"
+      en="Repeatable workflows packaged as skills AI agents can run directly, published as open source. Written in the universal SKILL.md format — not tied to one platform; they work in Claude Code, Cursor, Gemini CLI and Codex CLI."
+    />
+  </p>
+
+  {agentSkills.map(s => (
+    <section class="ask-skill" id={s.slug}>
+      <div class="ask-head">
+        <h2 class="ask-name"><T zh={s.title} en={s.titleEn} /></h2>
+        <div class="ask-tags">
+          {s.tags.map((tag, i) => <span class="ask-tag"><T zh={tag} en={s.tagsEn[i]} /></span>)}
+        </div>
+      </div>
+
+      <p class="ask-desc"><T zh={s.descriptionLong} en={s.descriptionLongEn} /></p>
+
+      <div class="ask-actions">
+        <a href={s.repoUrl} target="_blank" rel="noopener noreferrer" class="ask-repo">
+          GitHub <span aria-hidden="true">↗</span>
+        </a>
+        {s.links.map(l => (
+          <a href={l.url} target="_blank" rel="noopener noreferrer" class="ask-link">
+            <T zh={l.label} en={l.labelEn} /> <span aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <p class="ask-back"><a href={localeHref('/projects/', loc)} class="section-cta"><T zh="← 回所有專案" en="← All projects" /></a></p>
+</BaseLayout>
+
+<style>
+  .ask-title { font-size: clamp(1.8rem, 4.5vw, 2.4rem); font-weight: 700; margin: 2.5rem 0 0.6rem; }
+  .ask-lead { color: var(--color-text-muted); line-height: 1.8; max-width: 46ch; margin-bottom: var(--spacing-xl); }
+
+  .ask-skill {
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface);
+    padding: 1.5rem;
+    margin-bottom: var(--spacing-lg);
+    /* 錨點跳轉時別被固定 header 蓋住 */
+    scroll-margin-top: 5rem;
+  }
+  .ask-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+  .ask-name { font-size: 1.25rem; font-weight: 650; margin: 0; }
+  .ask-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+  .ask-tag {
+    font-size: 0.72rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+    background: var(--color-border);
+    color: var(--color-text-muted);
+  }
+  .ask-desc { line-height: 1.9; margin: 0.9rem 0 1.1rem; }
+
+  .ask-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .ask-repo, .ask-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: filter 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .ask-repo { background: var(--color-accent); color: var(--color-accent-fg, #fff); }
+  .ask-repo:hover { filter: brightness(1.1); text-decoration: none; }
+  .ask-link { border: 1px solid var(--color-border); color: var(--color-text-muted); }
+  .ask-link:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+
+  .ask-back { margin-top: var(--spacing-lg); }
+</style>

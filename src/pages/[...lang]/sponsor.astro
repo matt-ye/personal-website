@@ -1,0 +1,235 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import T from '../../components/T.astro';
+import AmountPicker from '../../components/AmountPicker.astro';
+import { localeHref } from '../../lib/i18n';
+
+/* 獨立的贊助頁。footer 的 modal 仍然保留（順手贊助用），這頁的存在是為了
+   有一個可以直接分享、外部連結得到的網址——例如 GitHub profile README。
+   兩邊共用 src/lib/donate.ts，付款邏輯不重複實作。
+   ID 一律用 sp- 前綴：每頁的 footer 都有 modal，避免與它的 id 撞名。
+
+   同時產出 /sponsor/ 與 /en/sponsor/，見 [...lang]/about.astro 的說明。
+   ⚠ 這頁的金額選擇器與付款按鈕文字由 client script 的 L() 產生，
+   L() 讀 <html data-lang>——而 BaseLayout 的 inline script 已讓網址決定
+   data-lang，所以 /en/sponsor/ 的動態文字會自動是英文，不需要另外處理。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+const loc = Astro.currentLocale;
+---
+<BaseLayout
+  title={isEn ? 'Sponsor' : '贊助 Sponsor'}
+  description={isEn
+    ? 'Support the tools and writing on mattye.dev. Pay in TWD via ECPay or in USD via Polar.'
+    : '支持 mattye.dev 的工具與內容持續更新。支援台幣（綠界）與美金（Polar）付款。'}
+  lang={isEn ? 'en' : 'zh-TW'}
+>
+  <h1 class="sp-title"><T zh="請我喝杯咖啡" en="Buy me a coffee" /></h1>
+
+  <p class="sp-lead">
+    <T
+      zh="這個網站上的計算機、課程與筆記都是免費的，也不放廣告。如果哪個工具幫你省下了時間，可以用一杯咖啡的金額支持它繼續更新。"
+      en="The calculators, courses and notes on this site are free and ad-free. If one of them saved you some time, a coffee-sized contribution helps keep them updated."
+    />
+  </p>
+
+  <section class="sp-card">
+    <AmountPicker prefix="sp" />
+
+    <button type="button" class="sp-pay" id="sp-pay">
+      <T zh="前往付款" en="Continue to payment" />
+    </button>
+
+    <p class="sp-note" id="sp-note"></p>
+  </section>
+
+  <section class="sp-faq">
+    <h2 class="section-heading"><T zh="幾件先說清楚的事" en="A few things worth knowing" /></h2>
+
+    <dl>
+      <dt><T zh="錢會用在哪裡？" en="Where does it go?" /></dt>
+      <dd><T
+        zh="網域、資料來源的 API 額度，以及維護這些工具的時間。純粹是支持，沒有任何回饋品或會員權益。"
+        en="Domains, API quota for the data sources, and the time it takes to maintain these tools. It is purely support — there are no rewards or membership perks."
+      /></dd>
+
+      <dt><T zh="付款方式" en="Payment methods" /></dt>
+      <dd><T
+        zh="台幣走綠界（信用卡），美金走 Polar。兩者都不會經過這個網站，卡號也不會進到我這邊。"
+        en="TWD via ECPay (credit card), USD via Polar. Neither flows through this site, and your card details never reach me."
+      /></dd>
+
+      <dt><T zh="付款完成後會跳到哪？" en="Where do I land afterwards?" /></dt>
+      <dd><T
+        zh="會落在 telaaurealab.com 的感謝頁。那也是我的網站（捕夢網產生器），兩邊共用同一套金流，所以感謝頁掛在那邊——看到它就表示付款成功了，不用擔心。"
+        en="On the thank-you page at telaaurealab.com. That is also my site (the Dreamcatcher Generator) — both share the same payment backend, so the thank-you page lives there. Seeing it means the payment went through."
+      /></dd>
+
+      <dt><T zh="可以退款嗎？" en="Refunds?" /></dt>
+      <dd><T
+        zh="贊助恕不退款。如果是誤觸或金額有誤，寄信到 chingweiye@mattye.dev 我會處理。"
+        en="Donations are non-refundable. If something went wrong, email chingweiye@mattye.dev and I will sort it out."
+      /></dd>
+    </dl>
+  </section>
+
+  <!-- 這頁原本是孤兒頁（零內部連結指向），Google 只能靠 sitemap 發現。
+       這一區同時解決兩件事：給訪客後續去處，也把這頁接回站內連結網絡。 -->
+  <section class="sp-more">
+    <h2 class="section-heading"><T zh="我在做的其他事" en="Where else to find me" /></h2>
+
+    <div class="sp-links">
+      <a href={localeHref('/about/', loc)} class="sp-link">
+        <span class="sp-link-t"><T zh="關於我" en="About" /></span>
+        <span class="sp-link-d"><T zh="職能治療師、NTU 博士候選人，做研究也做簡報教學" en="Occupational therapist and NTU PhD candidate, working on research and presentation education" /></span>
+      </a>
+      <a href={localeHref('/speeches/', loc)} class="sp-link">
+        <span class="sp-link-t"><T zh="演講紀錄" en="Speeches" /></span>
+        <span class="sp-link-d"><T zh="2020 年至今 150+ 場，可依主題與對象篩選" en="150+ talks since 2020, filterable by topic and audience" /></span>
+      </a>
+      <a href={localeHref('/coaching/', loc)} class="sp-link">
+        <span class="sp-link-t"><T zh="競賽培訓" en="Coaching" /></span>
+        <span class="sp-link-d"><T zh="ATCC 全國冠軍、Falling Walls Lab 等隊伍的培訓紀錄" en="Coaching records including the ATCC national champions and Falling Walls Lab teams" /></span>
+      </a>
+      <a href={localeHref('/projects/', loc)} class="sp-link">
+        <span class="sp-link-t"><T zh="工具與專案" en="Projects" /></span>
+        <span class="sp-link-d"><T zh="體態管理計算機、腦健康檢測等可實際操作的工具" en="Hands-on tools including the body composition calculator and brain-health check-in" /></span>
+      </a>
+      <a href={localeHref('/writing/', loc)} class="sp-link">
+        <span class="sp-link-t"><T zh="文章與筆記" en="Writing" /></span>
+        <span class="sp-link-d"><T zh="投資專欄、硬核簡報系列與 One More Step 學習筆記" en="The investing column, the presentation series, and One More Step learning notes" /></span>
+      </a>
+    </div>
+
+    <p class="sp-social-label"><T zh="社群與學術連結" en="Social & academic" /></p>
+    <div class="sp-social">
+      <a href="https://www.linkedin.com/in/ching-wei-ye" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://x.com/MattChingWeiYe" target="_blank" rel="noopener">X</a>
+      <a href="https://www.instagram.com/brown.yeh" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://github.com/matt-ye" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://orcid.org/0009-0001-6085-8303" target="_blank" rel="noopener">ORCID</a>
+      <a href="mailto:chingweiye@mattye.dev">Email</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .sp-title { font-size: clamp(1.6rem, 4vw, 2.1rem); letter-spacing: -0.02em; margin-bottom: 0.6rem; }
+  .sp-lead { color: var(--color-text-muted); max-width: 42ch; margin-bottom: var(--spacing-lg); }
+
+  .sp-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    padding: 1.4rem 1.3rem 1.1rem;
+    max-width: 420px;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  /* 金額按鈕由 JS 產生，scoped style 加不到 hash，所以用 :global */
+
+  /* 金色沿用 telaaurealab.com 的「贊助＝金色」跨站識別，刻意不跟主色走 */
+  .sp-pay {
+    display: block;
+    width: 100%;
+    padding: 0.7rem;
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    color: #451a03;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  .sp-pay:hover { filter: brightness(1.07); }
+  .sp-pay:disabled { opacity: 0.6; cursor: wait; }
+
+  
+  .sp-note { font-size: 0.72rem; color: var(--color-text-muted); margin-top: 0.7rem; text-align: center; }
+
+  .sp-faq dt { font-weight: 650; margin-top: 1.1rem; font-size: 0.92rem; }
+  .sp-faq dd { margin: 0.3rem 0 0; color: var(--color-text-muted); font-size: 0.88rem; line-height: 1.75; }
+
+  .sp-more { margin-top: var(--spacing-xl); }
+  .sp-links { display: grid; gap: 0.5rem; margin-top: var(--spacing-sm); }
+  .sp-link {
+    display: block;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--card-bg);
+    text-decoration: none;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .sp-link:hover { border-color: var(--color-accent); transform: translateX(3px); text-decoration: none; }
+  .sp-link-t { display: block; font-weight: 650; font-size: 0.92rem; color: var(--color-text); }
+  .sp-link-d { display: block; font-size: 0.82rem; color: var(--color-text-muted); margin-top: 0.15rem; line-height: 1.6; }
+
+  .sp-social-label {
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin: var(--spacing-md) 0 0.5rem;
+  }
+  .sp-social { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .sp-social a {
+    /* 上下 padding 讓觸控區達 44px（WCAG 2.5.5），視覺仍維持小 pill */
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .sp-social a:hover { color: var(--color-accent); border-color: var(--color-accent); text-decoration: none; }
+</style>
+
+<script>
+  /* 金額選擇（含自填與驗證）由 AmountPicker 負責，這裡只把它選到的金額送出。 */
+  import { L, startDonation, track } from '../../lib/donate';
+
+  const payBtn = document.getElementById('sp-pay') as HTMLButtonElement | null;
+  const noteEl = document.getElementById('sp-note');
+  /* 這頁除了自己的 picker，footer 還有一個 modal 的 picker——要抓卡片內那個 */
+  const picker = document.querySelector<HTMLElement>('.sp-card [data-amount-picker]');
+
+  if (payBtn && noteEl && picker) {
+    function syncPay() { payBtn!.disabled = picker!.dataset.valid !== 'true'; }
+    function renderText() {
+      payBtn!.textContent = L('前往付款', 'Continue to payment');
+      noteEl!.textContent = L('贊助恕不退款，感謝支持！', 'Donations are non-refundable — thank you!');
+    }
+
+    picker.addEventListener('amountchange', syncPay);
+    window.addEventListener('langchange', renderText);
+    renderText();
+    syncPay();
+
+    payBtn.addEventListener('click', async () => {
+      const amt = Number(picker!.dataset.amount);
+      const cur = (picker!.querySelector('.ap-tab.sel') as HTMLElement | null)?.dataset.cur || 'twd';
+      const custom = !picker!.querySelector('.ap-amt.sel');
+      if (!Number.isFinite(amt) || picker!.dataset.valid !== 'true') return;
+      payBtn!.disabled = true;
+      payBtn!.textContent = L('處理中…', 'Processing…');
+      try {
+        await startDonation(amt, cur, custom ? 'mattye_sponsor_custom' : 'mattye_sponsor_page');
+      } catch (err: any) {
+        alert(L('付款連結建立失敗：', 'Could not create the payment link: ') + err.message);
+      }
+      renderText();
+      syncPay();
+    });
+
+    track('sponsor_page_view', { source: 'mattye_sponsor_page' });
+  }
+</script>

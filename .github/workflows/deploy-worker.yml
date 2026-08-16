@@ -1,0 +1,50 @@
+# 自動部署 dashboard-api worker 到 Cloudflare。
+# 需要的 repo secrets（設定步驟見 docs/analytics-pipeline.md 第 10 步）：
+#   CF_DEPLOY_TOKEN（Workers Scripts:Edit + D1:Edit + Workers Routes:Edit@mattye.dev）
+#   CF_ACCOUNT_ID、CF_D1_DB_ID、GH_DISPATCH_TOKEN（fine-grained PAT，僅 Actions:RW）
+name: deploy-worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/dashboard-api/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Inject D1 database id
+        run: sed -i "s/PLACEHOLDER_D1_ID/${{ secrets.CF_D1_DB_ID }}/" workers/dashboard-api/wrangler.toml
+      # 先 deploy 再傳 secret，且鎖 wrangler 4：
+      # action 預設的 wrangler 3.x 會在「worker 尚不存在」時用舊 settings 端點
+      # 上傳 secret，炸出 400/9106（首跑就是這樣失敗的）。
+      - name: Deploy worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_DEPLOY_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          workingDirectory: workers/dashboard-api
+          wranglerVersion: '4.120.1'
+      - name: Upload worker secrets
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_DEPLOY_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          workingDirectory: workers/dashboard-api
+          wranglerVersion: '4.120.1'
+          command: whoami # secrets 由 action 先行上傳；whoami 僅作 token 驗證
+          secrets: |
+            GH_DISPATCH_TOKEN
+        env:
+          GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}

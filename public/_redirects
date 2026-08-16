@@ -1,0 +1,10 @@
+# The dementia-exposome brain-health tool moved to its own site (2026-07):
+#   https://brain-exposome.mattye.dev  (repo: matt-ye/brain-exposome)
+# 301 the old path so existing links / SEO carry over.
+/projects/dementia-exposome      https://brain-exposome.mattye.dev/   301
+/projects/dementia-exposome/*    https://brain-exposome.mattye.dev/   301
+
+# 〈為什麼建立這個網站〉原本拆成中英兩篇獨立文章，2026-07 合併成一篇可切換
+# 語言的文章（保留中文 slug）。英文版的舊網址 301 過去，既有連結與 SEO 權重
+# 才不會斷。合併前兩篇是同一篇的翻譯，等於在互相稀釋排名。
+/writing/why-i-build-in-public   /writing/hello-world                 301

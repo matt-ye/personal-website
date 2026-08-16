@@ -12,6 +12,17 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# 其他套件管理器的 lockfile。
+# 這個專案用 npm（package-lock.json 已納入版控，package.json 也宣告了
+# packageManager）。**Cloudflare Pages 依 lockfile 判斷要用哪個套件管理器**——
+# 一旦 pnpm-lock.yaml 被誰 git add -A 掃進版控，在完全沒有程式碼變更的情況下，
+# 部署就會改用 pnpm 安裝，裝出不同版本的相依。
+# 檔案留在本機無妨（有人在試 pnpm 也不會被打斷），只是不進版控。
+pnpm-lock.yaml
+pnpm-workspace.yaml
+yarn.lock
+bun.lockb
+
 
 # environment variables
 .env
@@ -28,3 +39,13 @@ pnpm-debug.log*
 .dev.vars*
 !.dev.vars.example
 !.env.example
+
+# python pipeline artifacts (scripts/build_data.py)
+__pycache__/
+scripts/_data_in/
+
+# analytics pipeline local output (scripts/fetch-analytics.mjs)
+out/
+
+# local Claude Code config (dev-server launch config, agent state)
+.claude/

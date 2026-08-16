@@ -1,0 +1,878 @@
+<!-- 由 scripts/extract-static-pages.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root {
+      --ls-navy: #2b1d8e;
+      --ls-purple: #3d2db5;
+      --ls-yellow: #ffc233;
+      --ls-pink: #e8304a;
+      --ls-teal: #00c2b8;
+      --ls-green: #3ecf8e;
+      --ls-light: #f5f4ff;
+      --ls-dark: #1a1040;
+      --text: #1f1f3a;
+      --muted: #6b6b8a;
+      --border: #e2e0f5;
+      --radius: 14px;
+      --shadow: 0 4px 24px rgba(43,29,142,0.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0eeff;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, var(--ls-navy) 0%, var(--ls-purple) 60%, #6b3fa0 100%);
+      color: #fff;
+      padding: 72px 24px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      background: var(--ls-yellow);
+      border-radius: 50%; opacity: .18;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: -80px; left: -40px;
+      width: 220px; height: 220px;
+      background: var(--ls-teal);
+      border-radius: 50%; opacity: .15;
+    }
+    .hero-back {
+      display: inline-block;
+      position: relative; z-index: 1;
+      margin-bottom: 20px;
+      font-size: .82rem; font-weight: 600;
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .hero-back:hover { color: #fff; }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,194,51,.2);
+      border: 1px solid rgba(255,194,51,.5);
+      color: var(--ls-yellow);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 99px;
+      margin-bottom: 20px;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+    .hero h1 span { color: var(--ls-yellow); }
+    .hero p { font-size: 1.1rem; opacity: .85; max-width: 560px; margin: 0 auto 32px; }
+    .hero-chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .chip {
+      background: rgba(255,255,255,.13);
+      border: 1px solid rgba(255,255,255,.22);
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 99px;
+      font-size: .84rem;
+      font-weight: 600;
+    }
+
+    /* ── Progress bar ── */
+    .progress-bar-wrap {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(43,29,142,.07);
+    }
+    .progress-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; align-items: center; gap: 0;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .progress-inner::-webkit-scrollbar { display: none; }
+    .prog-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 18px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all .2s;
+      text-decoration: none;
+    }
+    .prog-item:hover { color: var(--ls-purple); border-bottom-color: var(--ls-purple); }
+    .prog-item.active { color: var(--ls-purple); border-bottom-color: var(--ls-purple); }
+    .prog-dot {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #9896b8;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 800;
+      color: #fff;
+    }
+    .prog-item.active .prog-dot,
+    .prog-item:hover .prog-dot { background: var(--ls-purple); }
+
+    /* ── Layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Section header ── */
+    .section-header {
+      display: flex; align-items: center; gap: 16px;
+      padding: 64px 0 32px;
+    }
+    .section-num {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 900; color: #fff;
+      flex-shrink: 0;
+    }
+    .section-num.c1 { background: linear-gradient(135deg, #e8304a, #ff6b6b); }
+    .section-num.c2 { background: linear-gradient(135deg, #ffc233, #ff8c00); }
+    .section-num.c3 { background: linear-gradient(135deg, #2b1d8e, #6b3fa0); }
+    .section-num.c4 { background: linear-gradient(135deg, #00c2b8, #3ecf8e); }
+    .section-title { font-size: 1.7rem; font-weight: 800; color: var(--ls-dark); }
+    .section-sub { color: var(--muted); font-size: .95rem; margin-top: 4px; }
+
+    /* ── Cards grid ── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 24px; }
+
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(43,29,142,.15); }
+    .card-icon { font-size: 2rem; margin-bottom: 12px; }
+    .card h3 { font-size: 1rem; font-weight: 700; color: var(--ls-dark); margin-bottom: 8px; }
+    .card p { font-size: .88rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── Highlight box ── */
+    .highlight {
+      background: linear-gradient(135deg, #f0eeff, #e8f4ff);
+      border: 1.5px solid #c8bff5;
+      border-left: 5px solid var(--ls-purple);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 20px 0;
+      font-size: .93rem;
+    }
+    .highlight strong { color: var(--ls-purple); }
+
+    /* ── Quote block ── */
+    .quote {
+      background: var(--ls-navy);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin: 20px 0;
+      font-size: 1.1rem;
+      font-style: italic;
+      position: relative;
+    }
+    .quote::before { content: '"'; font-size: 5rem; opacity: .15; position: absolute; top: -10px; left: 16px; line-height: 1; }
+
+    /* ── Product types list ── */
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+    .tag {
+      background: var(--ls-light);
+      border: 1px solid var(--border);
+      color: var(--ls-purple);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: .83rem;
+      font-weight: 600;
+    }
+
+    /* ── Point list ── */
+    .point-list { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+    .point-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+    .point-icon { color: var(--ls-pink); font-weight: 900; font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+    .point-label { font-size: .9rem; color: var(--text); display: block; flex: 1; }
+
+    /* ── Step flow ── */
+    .steps { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+    .step {
+      display: flex; gap: 16px; position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px; top: 44px;
+      width: 2px; height: calc(100% - 8px);
+      background: var(--border);
+    }
+    .step-num {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--ls-purple); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: .9rem;
+      flex-shrink: 0; z-index: 1;
+    }
+    .step-body { padding: 8px 0 28px; }
+    .step-body h3 { font-size: .97rem; font-weight: 700; color: var(--ls-dark); margin-bottom: 4px; }
+    .step-body p { font-size: .87rem; color: var(--muted); }
+
+    /* ── Feature table ── */
+    .feature-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: .88rem; }
+    .feature-table th {
+      background: var(--ls-navy); color: #fff;
+      padding: 12px 16px; text-align: left; font-weight: 700;
+    }
+    .feature-table th:first-child { border-radius: 10px 0 0 0; }
+    .feature-table th:last-child { border-radius: 0 10px 0 0; }
+    .feature-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); background: #fff; }
+    .feature-table tr:last-child td { border-bottom: none; }
+    .feature-table tr:last-child td:first-child { border-radius: 0 0 0 10px; }
+    .feature-table tr:last-child td:last-child { border-radius: 0 0 10px 0; }
+    .feature-table tr:hover td { background: var(--ls-light); }
+    .badge-yes { background: #dcfce7; color: #166534; padding: 3px 10px; border-radius: 99px; font-weight: 700; font-size: .8rem; }
+    .badge-tip { background: #fef9c3; color: #854d0e; padding: 3px 10px; border-radius: 99px; font-weight: 700; font-size: .8rem; }
+
+    /* ── Checklist ── */
+    .checklist { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+    .check-item {
+      display: flex; align-items: center; gap: 12px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color .2s, background .2s;
+    }
+    .check-item:hover { border-color: var(--ls-purple); }
+    .check-item.done { background: #f0fdf4; border-color: #86efac; }
+    .check-item .cb {
+      width: 22px; height: 22px; border-radius: 6px;
+      border: 2px solid #b5b2d6;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: .85rem; color: #c8c4e0;
+      transition: all .2s;
+      background: #f5f4fc;
+    }
+    .check-item.done .cb { background: var(--ls-green); border-color: var(--ls-green); color: #fff; }
+    .check-item label { font-size: .9rem; color: var(--text); cursor: pointer; }
+    .check-item.done label { color: var(--muted); text-decoration: line-through; }
+
+    /* ── Sharing cards ── */
+    .share-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 20px 0; }
+    @media (max-width: 560px) { .share-cards { grid-template-columns: 1fr; } }
+    .share-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+    }
+    .share-card .sc-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .share-card h3 { font-size: 1rem; font-weight: 700;  color: var(--ls-dark); margin:0 0 4px; }
+    .share-card p { font-size: .85rem; color: var(--muted); }
+    .share-card .sc-badge {
+      display: inline-block;
+      background: var(--ls-light);
+      color: var(--ls-purple);
+      font-size: .75rem; font-weight: 700;
+      padding: 4px 10px; border-radius: 99px;
+      margin-top: 10px;
+    }
+
+    /* ── CTA banner ── */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--ls-yellow) 0%, #ffaa00 100%);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      text-align: center;
+      margin: 40px 0 64px;
+    }
+    .cta-banner h2 { font-size: 1.6rem; font-weight: 800; color: var(--ls-dark); margin-bottom: 10px; }
+    .cta-banner p { color: #4a3000; font-size: .95rem; margin-bottom: 22px; }
+    .cta-btn {
+      display: inline-block;
+      background: var(--ls-navy);
+      color: #fff;
+      font-weight: 700; font-size: .95rem;
+      padding: 13px 32px;
+      border-radius: 99px;
+      text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(43,29,142,.35); }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--border); margin: 8px 0 16px; }
+
+    /* ── Key stat ── */
+    .stat-row { display: flex; flex-wrap: wrap; gap: 16px; margin: 20px 0; }
+    .stat-box {
+      flex: 1; min-width: 140px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-box .stat-num { font-size: 2rem; font-weight: 900; color: var(--ls-purple); }
+    .stat-box .stat-label { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── Section anchor spacing ── */
+    .section-anchor { padding-top: 20px; }
+
+    footer {
+      background: var(--ls-dark);
+      color: rgba(255,255,255,.5);
+      text-align: center;
+      padding: 28px 24px;
+      font-size: .82rem;
+    }
+    footer a { color: var(--ls-yellow); text-decoration: none; }
+
+    /* ── Quiz ── */
+    .quiz-box {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin: 24px 0;
+    }
+    .quiz-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--ls-dark); }
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-opt {
+      display: flex; align-items: center; gap: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: .9rem;
+      transition: all .2s;
+    }
+    .quiz-opt:hover { border-color: var(--ls-purple); background: var(--ls-light); }
+    .quiz-opt.correct { border-color: var(--ls-green); background: #f0fdf4; color: #166534; }
+    .quiz-opt.wrong { border-color: var(--ls-pink); background: #fff1f2; color: #9f1239; }
+    .quiz-result {
+      margin-top: 14px; padding: 12px 16px;
+      border-radius: 10px; font-size: .9rem; font-weight: 600;
+      display: none;
+    }
+    .quiz-result.show { display: block; }
+    .quiz-result.correct { background: #dcfce7; color: #166534; }
+    .quiz-result.wrong { background: #fee2e2; color: #9f1239; }
+
+    @media (max-width: 640px) {
+      .section-header { padding: 44px 0 24px; }
+      .section-title { font-size: 1.35rem; }
+    }
+</style>
+
+<!-- Hero -->
+<div class="hero">
+  <a href="/projects/one-more-step/" class="hero-back">← One More Step</a>
+  <div class="hero-badge">📖 2024 學習指南</div>
+  <h1>用 <span>Lemon Squeezy</span><br>開始你的數位創業</h1>
+  <p>從 Creator Economy 到賺到第一筆錢，這份互動指南帶你一步步看懂平台的核心概念。</p>
+  <div class="hero-chips">
+    <span class="chip">🍋 免費開店</span>
+    <span class="chip">💳 全自動金流</span>
+    <span class="chip">🌍 全球銷售</span>
+    <span class="chip">📦 數位商品</span>
+    <span class="chip">🔄 訂閱制</span>
+  </div>
+</div>
+
+<!-- Progress nav -->
+<div class="progress-bar-wrap">
+  <div class="progress-inner">
+    <a class="prog-item active" href="#ch1">
+      <div class="prog-dot">1</div> 創作者經濟
+    </a>
+    <a class="prog-item" href="#ch2">
+      <div class="prog-dot">2</div> 數位產品大全
+    </a>
+    <a class="prog-item" href="#ch3">
+      <div class="prog-dot">3</div> 開設商店
+    </a>
+    <a class="prog-item" href="#ch4">
+      <div class="prog-dot">4</div> 開始賺錢
+    </a>
+    <a class="prog-item" href="#checklist">
+      <div class="prog-dot">✓</div> 行動清單
+    </a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ─── Chapter 1 ─── -->
+  <div id="ch1" class="section-anchor">
+    <div class="section-header">
+      <div class="section-num c1">1</div>
+      <div>
+        <h2 class="section-title">創作者經濟（Creator Economy）</h2>
+        <div class="section-sub">現在是有史以來最好的時機，把你的熱情變成產品</div>
+      </div>
+    </div>
+
+    <div class="quote">
+      There's never been a better time to dive into creative entrepreneurship and use digital products to help you get there faster.
+      <br><small style="opacity:.7; font-size:.78rem; font-style:normal;">— Lemon Squeezy 創辦人</small>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <h3>什麼是創作者經濟？</h3>
+        <p>數百萬個人把自己的創意潛能轉化為數位產品與服務，以低成本技術觸及廣大受眾，建立可持續的事業。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🙋</div>
+        <h3>你就是創作者</h3>
+        <p>你對某件事情很在行，即使自己沒意識到。設計師、開發者、行銷人、攝影師、作家——每一種知識都能被「產品化」。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💡</div>
+        <h3>你就是產品</h3>
+        <p>知識共享是數位產品的核心。你的工具、模板、應用程式都是專業知識的副產品，對他人極具價值。</p>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <strong>核心思維：</strong> 創作者不需要找到「偉大的目的」，只需找到你<strong>熱愛的事</strong>並用它來啟發和幫助他人。每天都有人第一次學習新技能，他們需要你的幫助。
+    </div>
+
+    <!-- Quiz 1 -->
+    <div class="quiz-box">
+      <h3>🧠 快速測驗：哪個說法最符合「創作者經濟」的精神？</h3>
+      <div class="quiz-options">
+        <div class="quiz-opt" onclick="checkQuiz(this, false)">A．只有名人和網紅才能靠創作賺錢</div>
+        <div class="quiz-opt" onclick="checkQuiz(this, true)">B．任何人把自己的知識與技能包裝成產品，就能進入創作者經濟</div>
+        <div class="quiz-opt" onclick="checkQuiz(this, false)">C．必須先有 10 萬粉絲才能開始銷售</div>
+      </div>
+      <div class="quiz-result" id="qr0"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ─── Chapter 2 ─── -->
+  <div id="ch2" class="section-anchor">
+    <div class="section-header">
+      <div class="section-num c2">2</div>
+      <div>
+        <h2 class="section-title">成為數位產品達人</h2>
+        <div class="section-sub">了解有哪些商品可以賣，以及為什麼數位產品這麼吸引人</div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num">$300B</div>
+        <div class="stat-label">2025 年線上教育市場規模</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">5GB</div>
+        <div class="stat-label">每個產品可上傳的檔案大小</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">10</div>
+        <div class="stat-label">每個產品可放的圖片數量</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">產品一次創建、無限銷售</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.05rem; font-weight:700; color:var(--ls-dark); margin-bottom:12px;">數位產品的 4 大優勢</h3>
+    <div class="point-list">
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label">比實體產品更容易創建與發佈——不需要庫存、物流、倉儲</span></div>
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label">製作成本極低，利潤率遠高於實體商品</span></div>
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label">只需創作一次，可以無限次銷售給全世界</span></div>
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label">同時幫助你建立受眾群體與品牌知名度</span></div>
+    </div>
+
+    <h3 style="font-size:1.05rem; font-weight:700; color:var(--ls-dark); margin: 24px 0 12px;">你可以賣什麼？</h3>
+    <div class="tag-cloud">
+      <span class="tag">📚 電子書（eBooks）</span>
+      <span class="tag">🎓 線上課程</span>
+      <span class="tag">🛠 數位工具</span>
+      <span class="tag">🔄 訂閱制產品</span>
+      <span class="tag">👥 會員社群</span>
+      <span class="tag">🔤 字體</span>
+      <span class="tag">🎙 Podcast</span>
+      <span class="tag">📱 App</span>
+      <span class="tag">🌐 網站模板</span>
+      <span class="tag">🎨 設計素材</span>
+      <span class="tag">🧩 外掛 / 擴充套件</span>
+      <span class="tag">⚙️ 產品化服務</span>
+    </div>
+
+    <h3 style="font-size:1.05rem; font-weight:700; color:var(--ls-dark); margin: 28px 0 12px;">三大熱門類型深入解析</h3>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">📖</div>
+        <h3>教育型產品</h3>
+        <p>電子書、線上課程、付費電子報。重點是<strong>針對特定受眾</strong>提供具體可執行的知識，讓讀者覺得得到了「捷徑」。訣竅：以初學者視角思考，問自己「我希望當時有人告訴我什麼？」</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <h3>會員 / 訂閱制</h3>
+        <p>定期向用戶收取費用，提供持續更新的內容、社群或工具。適合將多個產品打包為一個長期服務，建立穩定的<strong>經常性收入（MRR）</strong>。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📁</div>
+        <h3>可下載檔案 / 素材</h3>
+        <p>模板、icon、字體、UI 元件、圖片包、Figma 檔案等。關鍵：要能<strong>節省時間或金錢</strong>，或讓人完成超出自身能力範圍的事情。</p>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <strong>找題目的方法：</strong> 你正在做的每一個重複性任務，都可能是一個產品。如果你每次接新案子都要重新做同樣的事，很可能別人也有同樣的困擾——把它包裝成產品！
+    </div>
+
+    <!-- Quiz 2 -->
+    <div class="quiz-box">
+      <h3>🧠 快速測驗：以下哪個產品最適合賣「訂閱制」？</h3>
+      <div class="quiz-options">
+        <div class="quiz-opt" onclick="checkQuiz(this, false)">A．一本完整的 Figma UI Kit（一次性購買）</div>
+        <div class="quiz-opt" onclick="checkQuiz(this, false)">B．一套 Lightroom 預設值（一次性購買）</div>
+        <div class="quiz-opt" onclick="checkQuiz(this, true)">C．每週更新的行銷模板庫（持續提供新內容）</div>
+      </div>
+      <div class="quiz-result" id="qr1"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ─── Chapter 3 ─── -->
+  <div id="ch3" class="section-anchor">
+    <div class="section-header">
+      <div class="section-num c3">3</div>
+      <div>
+        <h2 class="section-title">用 Lemon Squeezy 開設你的商店</h2>
+        <div class="section-sub">無程式碼、All-in-One，專為創作者打造的平台</div>
+      </div>
+    </div>
+
+    <div class="quote">
+      It's a no-code, all-in-one creator platform. It handles all the cumbersome details like taxes, security, invoicing, and payment gateways. Easy peasy.
+    </div>
+
+    <h3 style="font-size:1.05rem; font-weight:700; color:var(--ls-dark); margin-bottom:12px;">平台功能一覽</h3>
+    <table class="feature-table">
+      <thead>
+        <tr>
+          <th>功能</th>
+          <th>說明</th>
+          <th>狀態</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>💳 安全金流</td>
+          <td>信用卡 + PayPal，自動處理收款</td>
+          <td><span class="badge-yes">✓ 內建</span></td>
+        </tr>
+        <tr>
+          <td>🧾 自動開票</td>
+          <td>每次交易自動產生發票寄給買家</td>
+          <td><span class="badge-yes">✓ 內建</span></td>
+        </tr>
+        <tr>
+          <td>🌍 稅務處理</td>
+          <td>全球 VAT / 銷售稅自動計算與繳納</td>
+          <td><span class="badge-yes">✓ 內建</span></td>
+        </tr>
+        <tr>
+          <td>🔐 授權金鑰</td>
+          <td>為軟體產品發放 License Keys，可設定到期時間與啟用次數</td>
+          <td><span class="badge-yes">✓ 內建</span></td>
+        </tr>
+        <tr>
+          <td>🔄 訂閱管理</td>
+          <td>支援月費 / 年費訂閱，自動續費</td>
+          <td><span class="badge-yes">✓ 內建</span></td>
+        </tr>
+        <tr>
+          <td>📧 購後重導向</td>
+          <td>付款完成後導向你的感謝頁或課程入口</td>
+          <td><span class="badge-tip">可選設定</span></td>
+        </tr>
+        <tr>
+          <td>🛒 嵌入結帳</td>
+          <td>一行程式碼嵌入你的網站，無需跳轉</td>
+          <td><span class="badge-tip">可選設定</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:1.05rem; font-weight:700; color:var(--ls-dark); margin: 28px 0 12px;">開店 5 步驟</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>建立商店（免費）</h3>
+          <p>前往 lemonsqueezy.com 免費註冊，設定商店名稱與基本資訊，Setup Wizard 會引導你完成。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>建立第一個產品</h3>
+          <p>在 Dashboard 點「Add Product」，填入名稱、描述（120-160 字最佳，有助 SEO）、定價與圖片。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>上傳檔案（最多 5GB）</h3>
+          <p>將你的數位商品檔案上傳到 Files 區塊，買家付款後會自動收到安全下載連結。可加入額外的 bonus 資源增加價值感。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>設定付款收款資訊</h3>
+          <p>填入銀行帳戶或 PayPal，平台確認後即可開始收款。Lemon Squeezy 會定期撥款給你。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h3>發布產品</h3>
+          <p>可先「Save as Draft」預覽，確認後點「Publish」讓產品上線。之後可隨時調整價格或內容。</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.05rem; font-weight:700; color:var(--ls-dark); margin: 28px 0 12px;">產品進階設定：Variants（版本）</h3>
+    <div class="point-list">
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label"><strong>免費試用 + 付費完整版：</strong> 同一個軟體提供免費下載試用，但需訂閱才能解鎖 Pro 功能</span></div>
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label"><strong>基本版 + 進階版：</strong> 電子書標準版 $9，附影片教學的豪華版 $29</span></div>
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label"><strong>圖片數量分級：</strong> 股票攝影包，按照包含的照片數量訂不同價格</span></div>
+    </div>
+
+    <!-- Quiz 3 -->
+    <div class="quiz-box">
+      <h3>🧠 快速測驗：Lemon Squeezy 的 License Keys 功能最適合哪種產品？</h3>
+      <div class="quiz-options">
+        <div class="quiz-opt" onclick="checkQuiz(this, false)">A．電子書（PDF 下載）</div>
+        <div class="quiz-opt" onclick="checkQuiz(this, true)">B．軟體工具（需要啟用才能使用）</div>
+        <div class="quiz-opt" onclick="checkQuiz(this, false)">C．Podcast 音頻節目</div>
+      </div>
+      <div class="quiz-result" id="qr2"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ─── Chapter 4 ─── -->
+  <div id="ch4" class="section-anchor">
+    <div class="section-header">
+      <div class="section-num c4">4</div>
+      <div>
+        <h2 class="section-title">開始賺錢</h2>
+        <div class="section-sub">兩種分享方式，把你的結帳頁帶到任何地方</div>
+      </div>
+    </div>
+
+    <div class="share-cards">
+      <div class="share-card">
+        <div class="sc-icon">🔗</div>
+        <h3>結帳連結（Checkout Link）</h3>
+        <p>每個產品都有一個獨立的結帳頁連結，直接分享給潛在買家，他們點擊後即可安全完成購買。</p>
+        <span class="sc-badge">分享到 IG / Twitter / Email</span>
+      </div>
+      <div class="share-card">
+        <div class="sc-icon">🪄</div>
+        <h3>嵌入結帳（Checkout Overlay）</h3>
+        <p>一行程式碼貼到你的網站任意頁面，結帳視窗會直接在你的網站上彈出，不需要跳轉。</p>
+        <span class="sc-badge">適合有自己網站的創作者</span>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <strong>不一定需要網站！</strong> 你可以直接把結帳連結放在 Facebook、Instagram 個人簡介、Twitter、Pinterest，或貼到 Email 電子報中——任何可以加連結的地方都能變成你的銷售漏斗。
+    </div>
+
+    <h3 style="font-size:1.05rem; font-weight:700; color:var(--ls-dark); margin: 28px 0 12px;">Share Product 面板可以做什麼？</h3>
+    <div class="point-list">
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label">即時預覽結帳頁的外觀，所見即所得</span></div>
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label">開關：是否顯示產品圖片、描述</span></div>
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label">開關：是否啟用折扣碼輸入欄位</span></div>
+      <div class="point-item"><span class="point-icon">▶</span><span class="point-label">複製分享連結或嵌入程式碼，貼到任何行銷管道</span></div>
+    </div>
+
+    <div class="cards" style="margin-top:20px;">
+      <div class="card">
+        <div class="card-icon">📧</div>
+        <h3>Email 行銷整合</h3>
+        <p>在 Email 電子報中加入結帳按鈕，訂閱者點擊後直接完成購買，把電子報訂閱者轉化為付費顧客。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🙏</div>
+        <h3>購後重導向</h3>
+        <p>設定購買完成後跳轉的 URL，可以導到「感謝頁」、課程入口或 Discord 社群，提升顧客體驗與留存率。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏷</div>
+        <h3>折扣碼策略</h3>
+        <p>建立限時優惠碼或給特定受眾的專屬折扣，刺激轉換率，也適合用於聯盟行銷（Affiliate）計畫。</p>
+      </div>
+    </div>
+
+    <!-- Quiz 4 -->
+    <div class="quiz-box">
+      <h3>🧠 快速測驗：沒有自己網站的創作者，最好用哪種方式開始銷售？</h3>
+      <div class="quiz-options">
+        <div class="quiz-opt" onclick="checkQuiz(this, false)">A．先花時間架好網站，再來賣產品</div>
+        <div class="quiz-opt" onclick="checkQuiz(this, true)">B．直接用 Lemon Squeezy 的結帳連結分享到社群媒體</div>
+        <div class="quiz-opt" onclick="checkQuiz(this, false)">C．等累積到 1000 個粉絲再行動</div>
+      </div>
+      <div class="quiz-result" id="qr3"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ─── Checklist ─── -->
+  <div id="checklist" class="section-anchor">
+    <div class="section-header">
+      <div class="section-num" style="background: linear-gradient(135deg,#6b3fa0,#3d2db5);">✓</div>
+      <div>
+        <h2 class="section-title">我的電商啟動行動清單</h2>
+        <div class="section-sub">點選已完成的項目，追蹤你的進度</div>
+      </div>
+    </div>
+
+    <div class="checklist" id="checklistItems">
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="cb">✓</div>
+        <label>想出我擅長的至少 3 個主題或技能</label>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="cb">✓</div>
+        <label>確定我的第一個數位產品類型（教育 / 會員 / 可下載素材）</label>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="cb">✓</div>
+        <label>在 lemonsqueezy.com 免費建立帳號</label>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="cb">✓</div>
+        <label>完成商店基本設定（名稱、外觀、收款資訊）</label>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="cb">✓</div>
+        <label>建立第一個產品頁面（名稱 + 描述 + 圖片）</label>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="cb">✓</div>
+        <label>上傳產品檔案（或草稿先設定價格）</label>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="cb">✓</div>
+        <label>設定好價格（考慮一次性 vs 訂閱制）</label>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="cb">✓</div>
+        <label>發布產品並複製結帳連結</label>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="cb">✓</div>
+        <label>在至少一個社群媒體平台分享結帳連結</label>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="cb">✓</div>
+        <label>設定購後重導向 URL（感謝頁 / 課程入口）</label>
+      </div>
+    </div>
+
+    <div id="progressDisplay" style="margin-top:16px; font-size:.9rem; color:var(--muted); font-weight:600;">
+      進度：<span id="doneCount">0</span> / 10 完成
+    </div>
+  </div>
+
+  <!-- ─── CTA ─── -->
+  <div class="cta-banner">
+    <h2>準備好開始了嗎？</h2>
+    <p>Lemon Squeezy 免費開店，不需要信用卡。<br>今天就建立你的第一個數位產品商店。</p>
+    <a class="cta-btn" href="https://www.lemonsqueezy.com" target="_blank" rel="noopener">前往 LemonSqueezy.com →</a>
+  </div>
+
+</div>
+
+<footer>
+  <p>本學習指南整理自《A Creator's Guide to Digital Products》by Lemon Squeezy (2024)</p>
+  <p style="margin-top:6px;">原始資料來源：<a href="https://www.lemonsqueezy.com" target="_blank">lemonsqueezy.com</a> · 學習網站版本僅供個人學習參考</p>
+</footer>
+
+<script>
+  /* ── Quiz logic ── */
+  let quizIndex = 0;
+  function checkQuiz(el, isCorrect) {
+    const parent = el.parentElement;
+    if (parent.querySelector('.correct, .wrong')) return; // already answered
+    const opts = parent.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    el.classList.add(isCorrect ? 'correct' : 'wrong');
+    // find result div (next sibling of parent)
+    const resultEl = parent.nextElementSibling;
+    resultEl.classList.add('show');
+    if (isCorrect) {
+      resultEl.classList.add('correct');
+      resultEl.textContent = '✅ 答對了！這正是 Lemon Squeezy 的核心理念。';
+    } else {
+      resultEl.classList.add('wrong');
+      // Dynamically find the correct option (has 'true' in onclick attribute)
+      let correctOpt = null;
+      opts.forEach(o => { if (o.getAttribute('onclick')?.includes('true')) correctOpt = o; });
+      const correctLabel = correctOpt ? correctOpt.textContent.trim().charAt(0) : '?';
+      resultEl.textContent = `❌ 再想想！正確答案是 ${correctLabel}，請重新閱讀上方說明再試試。`;
+      if (correctOpt) correctOpt.classList.add('correct');
+    }
+  }
+
+  /* ── Checklist logic ── */
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    updateProgress();
+  }
+  function updateProgress() {
+    const total = document.querySelectorAll('.check-item').length;
+    const done = document.querySelectorAll('.check-item.done').length;
+    document.getElementById('doneCount').textContent = done;
+  }
+
+  /* ── Sticky nav active state on scroll ── */
+  const sections = ['ch1','ch2','ch3','ch4','checklist'];
+  const navItems = document.querySelectorAll('.prog-item');
+  function onScroll() {
+    let current = sections[0];
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 120) current = id;
+    }
+    navItems.forEach(n => {
+      n.classList.toggle('active', n.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>

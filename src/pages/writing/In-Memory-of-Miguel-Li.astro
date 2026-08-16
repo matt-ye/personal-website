@@ -1,0 +1,26 @@
+---
+/*
+ * 李維晏（Miguel）老師紀念頁。
+ *
+ * 單一頁面，不走 /writing/[slug] 的部落格路由——那條路由讀的是
+ * content collection，這一頁是自包含的紀念網站（自己的導覽、生平、
+ * 課程回憶、留言板、著作與資源）。
+ *
+ * ⚠ 留言板（#boardWall）刻意維持瀏覽器端即時抓取：留言從 Google Sheet 來、
+ *   含學生姓名，而這個 repo 是公開的。寫進 HTML 等於把個資永久寫進 git 歷史
+ *   ——網頁可以下架、Sheet 可以改，git 歷史不能。
+ *   其餘區塊（生平、13 門課的回饋、紀念文章、著作）已預渲染，
+ *   由 astro.config 的 verifyI18nPrerendered 在建置期確認沒有變回空的。
+ */
+import StaticPageLayout from '../../layouts/StaticPageLayout.astro';
+import StaticPageContent from '../../components/StaticPageContent.astro';
+import { staticPageMeta } from '../../data/staticPageMeta';
+
+const KEY = 'writing__In-Memory-of-Miguel-Li';
+const meta = staticPageMeta.find((m) => m.key === KEY);
+if (!meta) throw new Error(`staticPageMeta 裡找不到 ${KEY}`);
+---
+
+<StaticPageLayout meta={meta}>
+  <StaticPageContent pageKey={KEY} />
+</StaticPageLayout>

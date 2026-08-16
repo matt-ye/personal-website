@@ -1,0 +1,352 @@
+---
+/*
+ * 渲染 src/data/static-pages/<key>.html 的內容片段。
+ *
+ * 用 set:html 原樣輸出，一個字都不改——那些片段裡有各頁自己的互動邏輯
+ * （GA4 教學的搜尋與術語面板、lemon-squeezy 的步驟導覽、紀念頁的留言板…），
+ * 每一支都不一樣。
+ *
+ * 靜態產生時 set:html 是把字串寫進輸出的 HTML，不是瀏覽器端的 innerHTML，
+ * 所以裡面的 <script> 會照常執行。
+ */
+interface Props {
+  pageKey: string;
+  /**
+   * 這頁有獨立的英文網址時傳入兩版的路徑。傳了才會做語言相關的改寫；
+   * 尚未遷移的靜態頁不傳，行為一個字都不變。
+   */
+  localized?: { zhPath: string; enPath: string };
+}
+
+import { localeHref } from '../lib/i18n';
+import { readI18nDict, escapeHtml } from '../lib/objectLiteral.mjs';
+
+const { pageKey, localized } = Astro.props;
+const isEn = Astro.currentLocale === 'en';
+
+/* eager: true 讓內容在建置時併進來——這些是靜態頁，沒有動態載入的必要 */
+const fragments = import.meta.glob('../data/static-pages/*.html', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+}) as Record<string, string>;
+
+const path = Object.keys(fragments).find((p) => p.endsWith(`/${pageKey}.html`));
+/* 找不到就讓建置失敗——安靜輸出一個空白頁比壞掉更難發現 */
+if (!path) throw new Error(`找不到內容片段：src/data/static-pages/${pageKey}.html`);
+
+/*
+ * 英文路由在建置期剝掉中文半邊。
+ *
+ * 這些頁的雙語是成對的 <span class="zh-only"> / <span class="en-only">，靠 CSS
+ * 決定顯示哪一邊。CSS 只在瀏覽器套樣式後才成立，而許多爬蟲（含 LLM）直接讀
+ * 原始 HTML——所以 /en/ 若原樣輸出，爬蟲會讀到「時間軸結構The Timeline」這種
+ * 兩種語言黏在一起的字串，正是 L2-BILINGUAL-CONCAT 報的那件事。
+ *
+ * 既然 [...lang] 在建置期就知道語言，就不該再把判斷丟給 CSS。
+ * 中文路由維持雙 DOM 不變（切換鈕仍需要），與 T.astro 的處理一致。
+ */
+const LANG_EL = (cls: string) =>
+  new RegExp(`<(\\w+)([^>]*\\bclass="[^"]*\\b${cls}\\b[^"]*")[^>]*>[\\s\\S]*?<\\/\\1>`, 'gi');
+
+/* ⚠ 上面的非貪婪 + </\1> 反向參照，只有在「語言 span 內沒有同名巢狀標籤」時才正確
+   （<span class="zh-only">…<strong>x</strong>…</span> 沒問題，套一層 <span> 就會提早閉合）。
+   今天全部檔案實測是 0 個同名巢狀，但那是資料的性質、不是程式的保證——
+   內容之後被編輯就可能不成立，所以在這裡斷言，不只寫在註解裡。 */
+function assertNoSameTagNesting(html: string, cls: string) {
+  const re = new RegExp(`<(\\w+)([^>]*\\bclass="[^"]*\\b${cls}\\b[^"]*")[^>]*>([\\s\\S]*?)<\\/\\1>`, 'gi');
+  for (const m of html.matchAll(re)) {
+    if (new RegExp(`<${m[1]}[\\s>]`, 'i').test(m[3])) {
+      throw new Error(
+        `${pageKey}：<${m[1]} class="${cls}"> 內含同名的 <${m[1]}>，語言剝除會提早閉合。` +
+          `請改用不同標籤包內層，或改寫剝除邏輯。片段：${m[3].slice(0, 80)}`,
+      );
+    }
+  }
+}
+
+/*
+ * 屬性裡的中文，剝 zh-only 剝不掉。
+ *
+ * 上面那套剝除處理的是「成對的語言 span」，但 placeholder、aria-label、alt、
+ * title 是**純文字語境**，塞不進 span——所以這些頁的雙語是直接寫成
+ * placeholder="搜尋… / Search…"。中文頁看起來合理，英文頁就是殘留的中文。
+ *
+ * 規則：值裡有中文時，取最後一個 " / " 之後的部分。
+ * 沒有分隔符就讓建置失敗——這種情況推導不出英文，安靜放行等於把中文送上英文頁。
+ * 目前 5 頁 marketing 全部都有分隔符，所以這個 throw 現在不會觸發；
+ * 等 one-more-step 那批遷移時，它們的純中文屬性會直接讓 build 停下來。
+ *
+ * ⚠ 只改 script／style 以外的部分。片段裡的 <script> 有自己的字串，
+ *   長得跟 HTML 屬性一模一樣，改到就是改壞用戶端程式碼。
+ */
+const ATTR = /\s(placeholder|aria-label|alt|title)="([^"]*)"/g;
+const CJK = /[一-鿿]/;
+
+function stripCjkAttrs(html: string) {
+  /* 用 script/style 當分界切片，只在片段之間改寫 */
+  const guarded = /<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi;
+  let out = '';
+  let last = 0;
+  for (const m of html.matchAll(guarded)) {
+    out += rewrite(html.slice(last, m.index)) + m[0];
+    last = m.index! + m[0].length;
+  }
+  return out + rewrite(html.slice(last));
+
+  function rewrite(chunk: string) {
+    return chunk.replace(ATTR, (whole, attr: string, val: string) => {
+      if (!CJK.test(val)) return whole;
+      const i = val.lastIndexOf(' / ');
+      if (i < 0) {
+        throw new Error(
+          `${pageKey}：英文路由的 ${attr}="${val}" 是純中文，沒有 " / " 可以取英文半邊。` +
+            `請在片段裡改成「中文 / English」，或直接改用英文。`,
+        );
+      }
+      return ` ${attr}="${val.slice(i + 3)}"`;
+    });
+  }
+}
+
+let fragment = fragments[path];
+if (isEn) {
+  assertNoSameTagNesting(fragment, 'zh-only');
+  fragment = fragment.replace(LANG_EL('zh-only'), '');
+  fragment = stripCjkAttrs(fragment);
+}
+
+/*
+ * 有獨立英文網址的頁：把「頁內 CSS 切換語言」換成「換網址」。
+ *
+ * 這些頁原本自帶一顆 toggleLang() 按鈕，靠 CSS 的
+ *   [data-lang="zh"] .en-only { display:none }
+ *   [data-lang="en"] .zh-only { display:none }
+ * 決定顯示哪一半，並把選擇記在 localStorage 的 oms_lang。
+ *
+ * 一旦有了 /en/ 獨立網址，這套機制會產生兩個**畫面全空**的失效路徑：
+ *   ① 英文頁的 .zh-only 已在建置期被剝掉，讀者按 🌐 切回中文 → 什麼都不剩
+ *   ② 更糟：載入時 `if (l) { dataset.lang = l }` 會讓 localStorage 覆蓋網址，
+ *      任何曾在這批頁按過切換的回訪者，一進 /en/ 就是空白頁，不必按任何東西
+ *
+ * 所以兩件事一起做：停用 localStorage 對語言的記憶（主題不受影響），
+ * 並把按鈕換成指向另一個語言網址的 <a>。
+ *
+ * 這與第九階段對 sponsor 頁的判斷一致：**語言由網址決定**。
+ * 那次的教訓是「對的抽象層改對了，下游全部跟著對」——這裡是同一個抽象層。
+ */
+/*
+ * ── 兩種雙語機制 ─────────────────────────────────────────────────
+ * 這批手刻頁彼此沒有共用模板，雙語各做各的，目前有兩套：
+ *
+ *   A. zh-only / en-only 成對 span ＋ id="langBtn"（marketing、ga4-guide）
+ *      語言記憶在 localStorage 的 oms_lang。
+ *
+ *   B. data-i18n 屬性 ＋ 頁內 `var I = { zh, en }` 字典 ＋ id="langToggle"
+ *      （aw32、daniels-talk）。文字由 applyI18n() 依 state.lang 填，
+ *      語言記憶的鍵各頁不同（aw32-lang、oms-lang）。
+ *
+ * 用「片段裡有沒有 var I 字典」分流，而不是維護一份頁面清單——
+ * 判準取自內容本身，新增同類頁面不必記得來這裡登記。
+ */
+const dict = readI18nDict(fragment);
+
+/*
+ * 由 JS 從資料陣列生成的區塊，英文版從 <key>.en.json 注入。
+ *
+ * 這些容器的內容不是字典查表，是 render 函式跑資料陣列的結果，
+ * 所以上面那套 data-i18n 的英文替換管不到它們。
+ * 中文版已由 scripts/prerender-containers.mjs 寫進片段（爬蟲在中文網址讀到的
+ * 就是那份），英文版另存 JSON 在這裡注入——這樣每個網址只帶一種語言，
+ * 中文頁不會因為要塞英文而變兩倍重。
+ *
+ * 沒有對應 JSON 的頁面（多數頁）拿到 undefined，整段跳過，行為一字不變。
+ */
+const enContainers = import.meta.glob('../data/static-pages/*.en.json', {
+  eager: true,
+  import: 'default',
+}) as Record<string, Record<string, string>>;
+
+const enPath = Object.keys(enContainers).find((p) => p.endsWith(`/${pageKey}.en.json`));
+
+if (localized) {
+  /* 英文路由：站內連結改指英文版（有的話）。
+     不做的話，英文子頁的麵包屑會把讀者送回中文樞紐——樞紐頁遷好了，
+     子頁卻連不回來，英文區等於少了一層。
+
+     判準走 localeHref()，沒有英文版的路徑會原樣通過，所以這裡不需要
+     維護任何清單，也不會產生指向不存在網址的連結。
+     刻意不動帶 # 或 ? 的連結：那些是頁內錨點與查詢參數，換前綴沒有意義。
+
+     ⚠ **順序有意義：這一段必須在下面插入語言鈕之前。**
+     反過來的話，這個改寫會把剛插入的 <a id="langBtn"> 也一起改掉——
+     它的 href 是「另一個語言」的網址，被改成英文版就等於指向自己，
+     按下去留在原地。實測踩過一次，而 verifyI18nHreflang 攔不住：
+     那個守衛驗的是 <link rel="alternate"> 標籤，不是這顆按鈕。 */
+  if (isEn) {
+    fragment = fragment.replace(
+      /href="(\/[^"#?]*)"/g,
+      (_m, p: string) => `href="${localeHref(p, 'en')}"`,
+    );
+  }
+
+  const target = isEn ? localized.zhPath : localized.enPath;
+  const hreflang = isEn ? 'zh-TW' : 'en';
+
+  if (dict) {
+    /* ── 機制 B：data-i18n ＋ 頁內字典 ── */
+
+    /* ① 語言不再由 localStorage 決定。
+       各頁的鍵不同（aw32-lang／oms-lang），所以比對形狀而不是字面值。
+       不改的話，曾在中文頁按過切換的回訪者一進 /en/ 會看到中文——
+       網址說英文、畫面說中文，比空白頁更難察覺。 */
+    const LANG_STATE = /lang:\s*store\.get\("[^"]+"\)\s*\|\|\s*"zh"/;
+    if (!LANG_STATE.test(fragment)) {
+      throw new Error(`${pageKey}：找不到 state.lang 的初始化，語言記憶可能改了寫法——請確認後更新這裡`);
+    }
+    fragment = fragment.replace(LANG_STATE, `lang: "${isEn ? 'en' : 'zh'}" /* 語言由網址決定，見 StaticPageContent */`);
+
+    /* ② 英文路由把預渲染的中文換成英文。
+       這些元素在片段裡已經填好中文（scripts/prerender-i18n.mjs 的產物）。
+       JS 載入後 applyI18n() 會重填一次，所以**畫面**本來就會對；
+       要換的是「不執行 JS 時看到的版本」——也就是爬蟲與 LLM 讀到的版本。 */
+    if (isEn) {
+      const missing: string[] = [];
+      let filled = 0;
+
+      /*
+       * 這裡不能用 zh-only 那招（非貪婪 ＋ </\1> 反向參照）。
+       * data-i18n-html 的值本來就是整段 HTML，元素內含同名巢狀是**正常的**——
+       * aw32 的 <div data-i18n="pitchBody"> 裡就有好幾層 <div>。
+       * 反向參照會停在第一個 </div>，把後面的內容留成孤兒。
+       *
+       * 所以改成往後掃、用深度計數找真正的結尾標籤：
+       * 遇到同名開標籤 +1、關標籤 −1，歸零處就是配對的那一個。
+       */
+      const OPEN = /<(\w+)\b([^>]*\bdata-i18n(-html)?\s*=\s*"([^"]+)"[^>]*)>/g;
+      let out = '';
+      let cursor = 0;
+      for (const m of [...fragment.matchAll(OPEN)]) {
+        if (m.index! < cursor) continue; // 已經被前一次的替換吞掉（巢狀 data-i18n）
+        const [, tag, attrs, isHtml, key] = m;
+        const bodyStart = m.index! + m[0].length;
+
+        const scan = new RegExp(`<(/?)${tag}\\b[^>]*>`, 'gi');
+        scan.lastIndex = bodyStart;
+        let depth = 1;
+        let end = -1;
+        let hit;
+        while ((hit = scan.exec(fragment))) {
+          depth += hit[1] ? -1 : 1;
+          if (depth === 0) { end = hit.index; break; }
+        }
+        if (end < 0) throw new Error(`${pageKey}：<${tag} data-i18n="${key}"> 找不到配對的結尾標籤`);
+
+        const value = dict.en?.[key];
+        if (value === undefined) { missing.push(key); continue; }
+        filled++;
+        out += fragment.slice(cursor, m.index!) + `<${tag}${attrs}>${isHtml ? value : escapeHtml(value)}`;
+        cursor = end;
+      }
+      fragment = out + fragment.slice(cursor);
+
+      if (missing.length) {
+        throw new Error(`${pageKey}：字典的 en 缺 ${missing.length} 個鍵：${[...new Set(missing)].join(', ')}`);
+      }
+      if (!filled) throw new Error(`${pageKey}：一個 data-i18n 元素都沒換到英文，選擇器可能失效了`);
+
+      /* ②-b 由資料陣列生成的區塊，換成 <key>.en.json 裡的英文版。
+             同樣用深度計數找配對的結尾標籤——容器裡是整段 HTML，必然有同名巢狀。 */
+      if (enPath) {
+        const containers = enContainers[enPath];
+        for (const [id, innerHtml] of Object.entries(containers)) {
+          const open = new RegExp(`<(\\w+)\\b[^>]*\\bid="${id}"[^>]*>`);
+          const m2 = fragment.match(open);
+          if (!m2) {
+            throw new Error(
+              `${pageKey}：${pageKey}.en.json 有 #${id}，片段裡卻找不到這個容器——` +
+                `容器可能改了 id，請重跑 node scripts/prerender-containers.mjs`,
+            );
+          }
+          const tag = m2[1];
+          const bodyStart = m2.index! + m2[0].length;
+          const scan = new RegExp(`<(/?)${tag}\\b[^>]*>`, 'gi');
+          scan.lastIndex = bodyStart;
+          let depth = 1;
+          let end = -1;
+          let hit2;
+          while ((hit2 = scan.exec(fragment))) {
+            depth += hit2[1] ? -1 : 1;
+            if (depth === 0) { end = hit2.index; break; }
+          }
+          if (end < 0) throw new Error(`${pageKey}：#${id} 找不到配對的結尾標籤`);
+          fragment = fragment.slice(0, bodyStart) + innerHtml + fragment.slice(end);
+        }
+      }
+    }
+
+    /* ③ 頁內那顆「切語言」的 click 監聽要拆掉。
+       留著的話，按下去會先 renderAll() 把畫面翻成另一種語言，然後才導航。
+       實測確認監聽確實會跑（畫面當場變中文），導航是否來得及蓋過它，
+       取決於瀏覽器——**把正確性押在這種競速上不行**：
+       只要導航沒發生（被擋、離線、開新分頁），使用者就停在 /en/ 卻看到中文，
+       網址與畫面互相矛盾，比空白頁更難察覺。
+
+       改法：把監聽掛到一顆用完即丟的元素上。它永遠不會被點到，所以處理器
+       永遠不觸發；而那一行仍然有東西可掛，不會丟 null 錯誤——
+       元素直接拿掉的話，後面的主題切換與所有 render 都會跟著不執行。 */
+    const HANDLER = /(?:document\.getElementById|\$)\("langToggle"\)(\.addEventListener\("click")/;
+    if (!HANDLER.test(fragment)) {
+      throw new Error(`${pageKey}：找不到 #langToggle 的 click 監聽，語言鈕可能改了寫法——請確認後更新這裡`);
+    }
+    fragment = fragment.replace(
+      HANDLER,
+      'document.createElement("button")/* 語言改由 <a> 導航，見 StaticPageContent */$1',
+    );
+
+    /* 按鈕換成 <a>。id 保留給 CSS 與 applyI18n() 的 langLabel 使用。 */
+    const TOGGLE = /<button\b([^>]*\bid="langToggle"[^>]*)>([\s\S]*?)<\/button>/;
+    const m = fragment.match(TOGGLE);
+    if (!m) {
+      throw new Error(`${pageKey}：找不到 id="langToggle" 的按鈕，語言鈕可能改了寫法——請確認後更新這裡`);
+    }
+    if (/<button[\s>]/i.test(m[2])) {
+      throw new Error(`${pageKey}：#langToggle 內含巢狀 <button>，替換會提早閉合`);
+    }
+    /* 內層的圖示與標籤原樣保留，只把標籤文字換成「切過去之後」的語言 */
+    const inner = m[2].replace(
+      /(<span[^>]*\bid="langLabel"[^>]*>)[\s\S]*?(<\/span>)/,
+      `$1${isEn ? '中文' : 'EN'}$2`,
+    );
+    fragment = fragment.replace(
+      TOGGLE,
+      `<a${m[1].replace(/\stype="button"/, '')} href="${target}" hreflang="${hreflang}">${inner}</a>`,
+    );
+  } else {
+    /* ── 機制 A：zh-only ＋ id="langBtn" ── */
+
+    /* 語言記憶的鍵名各頁不同（marketing 是 oms_lang、ga4-guide 是 ga4_lang），
+       所以比對形狀而不是字面值——原本寫死 'oms_lang'，ga4-guide 一遷進來
+       就被自己的守衛擋在建置期。機制 B 的 state.lang 也是同樣的處理。
+
+       鍵名必須含 lang：主題記憶（oms_theme／ga4_theme）不能被一起關掉。 */
+    const LANG_MEMORY = /localStorage\.getItem\('([A-Za-z0-9_-]*lang[A-Za-z0-9_-]*)'\)/;
+    if (!LANG_MEMORY.test(fragment)) {
+      throw new Error(`${pageKey}：找不到語言記憶的 localStorage 讀取，寫法可能改了——請確認後更新這裡`);
+    }
+    /* 換成 null，讓 `if (lang)` 永遠不成立。主題的 *_theme 不動。 */
+    fragment = fragment.replace(LANG_MEMORY, 'null /* 語言由網址決定，見 StaticPageContent */');
+
+    const BTN = /<button[^>]*id="langBtn"[^>]*>[^<]*<\/button>/;
+    if (!BTN.test(fragment)) {
+      throw new Error(`${pageKey}：找不到 id="langBtn" 的按鈕，語言鈕可能改了寫法——請確認後更新這裡`);
+    }
+    fragment = fragment.replace(
+      BTN,
+      `<a class="icon-btn" id="langBtn" href="${target}" hreflang="${hreflang}">${isEn ? '🌐 中' : '🌐 EN'}</a>`,
+    );
+  }
+}
+---
+
+<Fragment set:html={fragment} />

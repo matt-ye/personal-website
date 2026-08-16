@@ -1,0 +1,2622 @@
+<!-- 由 scripts/extract-static-pages.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root {
+    --bg: #0e0f14;
+    --surface: #16181f;
+    --card: #1c1e28;
+    --border: #2a2d3a;
+    --accent: #e8c84a;
+    --accent2: #5b8cf5;
+    --accent3: #e06060;
+    --text: #e8e6de;
+    --muted: #7a7d8c;
+    --tag-bg: #252836;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Serif TC', serif;
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2rem 1.5rem;
+    background: linear-gradient(180deg, #13141b 0%, var(--bg) 100%);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .subtitle {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+  .filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .chip {
+    border: 1px solid var(--border);
+    background: var(--tag-bg);
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-family: 'Space Mono', monospace;
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+  }
+  .chip:hover, .chip.active {
+    background: var(--accent);
+    color: #0e0f14;
+    border-color: var(--accent);
+  }
+  .chip.cat-market.active { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+  .chip.cat-cb.active { background: #9b6cf5; border-color: #9b6cf5; color: #fff; }
+  .chip.cat-restrict.active { background: var(--accent3); border-color: var(--accent3); color: #fff; }
+  .chip.cat-indicator.active { background: #3bbf8a; border-color: #3bbf8a; color: #fff; }
+  .chip.cat-order.active { background: #e0904a; border-color: #e0904a; color: #fff; }
+  .chip.cat-product.active { background: #2bbfbf; border-color: #2bbfbf; color: #0e0f14; }
+  .chip.cat-volume.active { background: #c9a96e; border-color: #c9a96e; color: #0e0f14; }
+  .chip.cat-app.active { background: #7dba5a; border-color: #7dba5a; color: #0e0f14; }
+
+  /* MAIN */
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    margin-top: 2.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .cards-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .cards-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* CARD */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1.2rem 1.4rem;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--card-accent, var(--border));
+    transition: width 0.15s;
+  }
+  .card:hover { border-color: var(--card-accent, var(--accent)); transform: translateY(-1px); }
+  .card:hover::before { width: 4px; }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+  .card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .card-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .card-summary {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .card-expand {
+    margin-top: 0.8rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* CATEGORIES color map */
+  .cat-market { --card-accent: var(--accent2); }
+  .cat-cb { --card-accent: #9b6cf5; }
+  .cat-restrict { --card-accent: var(--accent3); }
+  .cat-indicator { --card-accent: #3bbf8a; }
+  .cat-order { --card-accent: #e0904a; }
+  .cat-concept { --card-accent: var(--accent); }
+
+  .tag-market { background: rgba(91,140,245,0.15); color: var(--accent2); }
+  .tag-cb { background: rgba(155,108,245,0.15); color: #c49dff; }
+  .tag-restrict { background: rgba(224,96,96,0.15); color: #f08080; }
+  .tag-indicator { background: rgba(59,191,138,0.15); color: #3bbf8a; }
+  .tag-order { background: rgba(224,144,74,0.15); color: #e0904a; }
+  .tag-concept { background: rgba(232,200,74,0.15); color: var(--accent); }
+  .cat-product { --card-accent: #2bbfbf; }
+  .cat-volume { --card-accent: #c9a96e; }
+  .cat-app { --card-accent: #7dba5a; }
+  .tag-product { background: rgba(43,191,191,0.15); color: #2bbfbf; }
+  .tag-volume { background: rgba(201,169,110,0.15); color: #c9a96e; }
+  .tag-app { background: rgba(125,186,90,0.15); color: #7dba5a; }
+  .cat-us-market { --card-accent: #4fc3f7; }
+  .cat-us-valuation { --card-accent: #ff8a65; }
+  .cat-us-financial { --card-accent: #81c784; }
+  .cat-us-metrics { --card-accent: #ba68c8; }
+  .tag-us-market { background: rgba(79,195,247,0.15); color: #4fc3f7; }
+  .tag-us-valuation { background: rgba(255,138,101,0.15); color: #ff8a65; }
+  .tag-us-financial { background: rgba(129,199,132,0.15); color: #81c784; }
+  .tag-us-metrics { background: rgba(186,104,200,0.15); color: #ba68c8; }
+  .chip.cat-us-market.active { background: #4fc3f7; border-color: #4fc3f7; color: #0e0f14; }
+  .chip.cat-us-valuation.active { background: #ff8a65; border-color: #ff8a65; color: #0e0f14; }
+  .chip.cat-us-financial.active { background: #81c784; border-color: #81c784; color: #0e0f14; }
+  .chip.cat-us-metrics.active { background: #ba68c8; border-color: #ba68c8; color: #fff; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,11,16,0.85);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 2rem;
+    position: relative;
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .modal-close:hover { color: var(--text); border-color: var(--text); }
+  .modal-cat-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    display: inline-block;
+    margin-bottom: 0.8rem;
+  }
+  .modal-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .modal-body {
+    font-size: 0.86rem;
+    color: #c5c2b8;
+    line-height: 1.9;
+  }
+  .modal-body ul { padding-left: 1.2rem; margin: 0.5rem 0; }
+  .modal-body li { margin-bottom: 0.4rem; }
+  .modal-body strong { color: var(--text); }
+  .modal-body .highlight {
+    background: rgba(232,200,74,0.1);
+    border-left: 3px solid var(--accent);
+    padding: 0.6rem 0.9rem;
+    margin: 0.8rem 0;
+    border-radius: 0 2px 2px 0;
+    font-size: 0.83rem;
+  }
+  .modal-body .risk {
+    background: rgba(224,96,96,0.1);
+    border-left: 3px solid var(--accent3);
+    padding: 0.6rem 0.9rem;
+    margin: 0.8rem 0;
+    border-radius: 0 2px 2px 0;
+    font-size: 0.83rem;
+  }
+  .source-link {
+    display: inline-block;
+    margin-top: 1.2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--accent2);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .source-link:hover { border-bottom-color: var(--accent2); }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+
+  /* HIDDEN */
+  .card[hidden] { display: none; }
+  .section-group[hidden] { display: none; }
+
+  /* COUNT */
+  .result-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  /* SCROLL to top */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+</style>
+
+<header>
+  <div class="header-top">
+    <h1>📈 台股 × 美股投資知識庫</h1>
+    <span class="subtitle">台股筆記 + 美股估值 · 財報 · 指標全攻略</span>
+  </div>
+  <div class="filter-bar">
+    <button class="chip active" data-filter="all">全部</button>
+    <button class="chip cat-concept" data-filter="concept">📚 基本概念</button>
+    <button class="chip cat-market" data-filter="market">🏦 法人與市場</button>
+    <button class="chip cat-indicator" data-filter="indicator">📊 高低點指標</button>
+    <button class="chip cat-cb" data-filter="cb">🔄 可轉債</button>
+    <button class="chip cat-restrict" data-filter="restrict">🔴 處置股</button>
+    <button class="chip cat-order" data-filter="order">📋 掛單解讀</button>
+    <button class="chip cat-product" data-filter="product">💹 金融商品</button>
+    <button class="chip cat-volume" data-filter="volume">📦 量與籌碼</button>
+    <button class="chip cat-app" data-filter="app">📱 券商App查詢</button>
+    <button class="chip cat-us-market" data-filter="us-market">🇺🇸 美股市場</button>
+    <button class="chip cat-us-valuation" data-filter="us-valuation">💰 公司估值</button>
+    <button class="chip cat-us-financial" data-filter="us-financial">📋 財報分析</button>
+    <button class="chip cat-us-metrics" data-filter="us-metrics">📈 績效指標</button>
+  </div>
+</header>
+
+<main>
+  <p class="result-count" id="count"></p>
+
+  <div class="cards-grid" id="grid">
+
+    <!-- ====== 基本概念 ====== -->
+
+    <div class="card cat-concept" data-cat="concept" onclick="openModal('m1')">
+      <div class="card-header">
+        <div class="card-title">期望值思維：做什麼都可以賺，但能複製嗎？</div>
+        <span class="card-tag tag-concept">基本概念</span>
+      </div>
+      <p class="card-summary">投資不只看單次報酬，要看能否長久複製、能否在同等報酬下降低風險。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-concept" data-cat="concept" onclick="openModal('m2')">
+      <div class="card-header">
+        <div class="card-title">新手地雷：台指、選擇權、期貨的真實難度</div>
+        <span class="card-tag tag-concept">基本概念</span>
+      </div>
+      <p class="card-summary">衍生性商品本質是避險工具，被當成投機使用難度極高，新手應避免。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-concept" data-cat="concept" onclick="openModal('m3')">
+      <div class="card-header">
+        <div class="card-title">短線 vs 中長線的市場胃納量差異</div>
+        <span class="card-tag tag-concept">基本概念</span>
+      </div>
+      <p class="card-summary">短線近似牌桌零和遊戲，少數贏家通吃；中長線結合產業研究，標的更多元。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-concept" data-cat="concept" onclick="openModal('m4')">
+      <div class="card-header">
+        <div class="card-title">價值陷阱：不要亂撿便宜與右下角股票</div>
+        <span class="card-tag tag-concept">基本概念</span>
+      </div>
+      <p class="card-summary">沒有深度研究不要輕易抄底，市場價格機制往往走在消息前面。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-concept" data-cat="concept" onclick="openModal('m5')">
+      <div class="card-header">
+        <div class="card-title">市場效率：有時有效，有時沒效</div>
+        <span class="card-tag tag-concept">基本概念</span>
+      </div>
+      <p class="card-summary">成交量低、無法人報告的冷門股，消息釋出才動，是市場無效率的具體案例。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-concept" data-cat="concept" onclick="openModal('m6')">
+      <div class="card-header">
+        <div class="card-title">族群性：觀察整個產業鏈的同步異動</div>
+        <span class="card-tag tag-concept">基本概念</span>
+      </div>
+      <p class="card-summary">龍頭帶動族群上漲，透過產業鏈連動可猜測大資金正在佈局的方向。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-concept" data-cat="concept" onclick="openModal('m7')">
+      <div class="card-header">
+        <div class="card-title">農曆春節前的融資降倉賣壓</div>
+        <span class="card-tag tag-concept">基本概念</span>
+      </div>
+      <p class="card-summary">過節前投資人降槓桿避免休市被殺，加上融資利息成本，構成特定賣壓。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <!-- ====== 法人與市場 ====== -->
+
+    <div class="card cat-market" data-cat="market" onclick="openModal('m8')">
+      <div class="card-header">
+        <div class="card-title">投信買盤：不等於真正看多的法人訊號</div>
+        <span class="card-tag tag-market">法人</span>
+      </div>
+      <p class="card-summary">投信持續買超可能是 ETF 被動配置，不代表自營或 buy side 真的看好。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-market" data-cat="market" onclick="openModal('m9')">
+      <div class="card-header">
+        <div class="card-title">外資角色變化：內資崛起，台牛車式緩行</div>
+        <span class="card-tag tag-market">法人</span>
+      </div>
+      <p class="card-summary">外資稍微回買不代表翻多，可能只是短暫休息，台股已逐漸由內資主導。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-market" data-cat="market" onclick="openModal('m10')">
+      <div class="card-header">
+        <div class="card-title">小台多空：程式交易盤，已非純散戶指標</div>
+        <span class="card-tag tag-market">期貨</span>
+      </div>
+      <p class="card-summary">小台期貨藏有大量量化程式單，外國銀行量化組也在其中，解讀需更謹慎。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <!-- ====== 高低點指標 ====== -->
+
+    <div class="card cat-indicator" data-cat="indicator" onclick="openModal('m11')">
+      <div class="card-header">
+        <div class="card-title">融資水位：3,300億是高點，2,200億以下是底部訊號</div>
+        <span class="card-tag tag-indicator">指標</span>
+      </div>
+      <p class="card-summary">融資餘額是觀察市場槓桿和散戶情緒的重要指標，但近年大戶也用融資，需綜合判斷。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-indicator" data-cat="indicator" onclick="openModal('m12')">
+      <div class="card-header">
+        <div class="card-title">融資維持率：150–160% 以下是籌碼乾淨訊號</div>
+        <span class="card-tag tag-indicator">指標</span>
+      </div>
+      <p class="card-summary">維持率低代表斷頭潮或恐慌出清，籌碼清洗完反而是相對低點買進機會。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-indicator" data-cat="indicator" onclick="openModal('m13')">
+      <div class="card-header">
+        <div class="card-title">外資空單：比外資回買更可信的方向指標</div>
+        <span class="card-tag tag-indicator">指標</span>
+      </div>
+      <p class="card-summary">外資期貨空單部位可參考，但單次小量轉多勿追；空單才是更明確的態度。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <!-- ====== 可轉債 ====== -->
+
+    <div class="card cat-cb" data-cat="cb" onclick="openModal('m14')">
+      <div class="card-header">
+        <div class="card-title">可轉債（CB）基礎：債券 + 換股權利的二合一商品</div>
+        <span class="card-tag tag-cb">可轉債</span>
+      </div>
+      <p class="card-summary">股價漲可換股享收益，股價跌保有債券本息。公司以此快速募資，不等同銀行借款。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-cb" data-cat="cb" onclick="openModal('m15')">
+      <div class="card-header">
+        <div class="card-title">高檔現增的警訊：短期大漲後突然現增要小心</div>
+        <span class="card-tag tag-cb">現增</span>
+      </div>
+      <p class="card-summary">短期急拉後現金增資，高機率是「印股票換錢」割韭菜；若用於投資廠房則中長線可能利多。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-cb" data-cat="cb" onclick="openModal('m16')">
+      <div class="card-header">
+        <div class="card-title">可轉債行情三階段：宣布 → 定價前壓盤 → 第二波</div>
+        <span class="card-tag tag-cb">可轉債</span>
+      </div>
+      <p class="card-summary">宣布時有人搶先上車，定價前壓低才能讓轉換價訂得漂亮，定價後再拉第二波。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-cb" data-cat="cb" onclick="openModal('m17')">
+      <div class="card-header">
+        <div class="card-title">CBAS：可轉債拆成固定收益 + 選擇權分開賣</div>
+        <span class="card-tag tag-cb">CBAS</span>
+      </div>
+      <p class="card-summary">券商持有CB後拆解，債券端給穩定收益投資人，選擇權端讓想用槓桿的人以較少資金押注股價。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <!-- ====== 處置股 ====== -->
+
+    <div class="card cat-restrict" data-cat="restrict" onclick="openModal('m18')">
+      <div class="card-header">
+        <div class="card-title">處置股制度：6日漲幅超25%就可能中標</div>
+        <span class="card-tag tag-restrict">處置股</span>
+      </div>
+      <p class="card-summary">處置股是交易所的降溫警示，非壞事本身；對飆股持有者來說有時反而是確認強勢的「認證」。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-restrict" data-cat="restrict" onclick="openModal('m19')">
+      <div class="card-header">
+        <div class="card-title">處置期間的流動性陷阱與獵人策略</div>
+        <span class="card-tag tag-restrict">處置股</span>
+      </div>
+      <p class="card-summary">撮合間隔拉長，流動性被抽乾，有人專門利用上下緣區間來操作價差。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <!-- ====== 掛單解讀 ====== -->
+
+    <div class="card cat-order" data-cat="order" onclick="openModal('m20')">
+      <div class="card-header">
+        <div class="card-title">五檔賣牆 + 左側補買：吃貨敲破的典型結構</div>
+        <span class="card-tag tag-order">盤口</span>
+      </div>
+      <p class="card-summary">整數位置掛厚厚賣牆，同時在左側（低檔）持續小量買進，是主力吃貨再敲破牆的手法。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-order" data-cat="order" onclick="openModal('m21')">
+      <div class="card-header">
+        <div class="card-title">鎖漲停後的隔日買一牆：假接真撤的誘騙術</div>
+        <span class="card-tag tag-order">盤口</span>
+      </div>
+      <p class="card-summary">鎖漲停隔天在買三四設牆，看似要撐盤，實則摜破買一買二時牆會撤，製造假買盤假象。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+    <div class="card cat-order" data-cat="order" onclick="openModal('m22')">
+      <div class="card-header">
+        <div class="card-title">判斷程式單：直接丟單觀察反應</div>
+        <span class="card-tag tag-order">程式交易</span>
+      </div>
+      <p class="card-summary">直接下買單觀察是否有單瞬間追價往上吃，或對手把貨拋給你，藉此判斷程式單走向。</p>
+      <p class="card-expand">點擊展開 →</p>
+    </div>
+
+  </div><!-- end grid -->
+
+    <!-- ====== 金融商品圖鑑 ====== -->
+    <div class="section-label">💹 金融商品圖鑑</div>
+    <div class="cards-grid">
+
+      <div class="card cat-product" data-cat="product" onclick="openModal('p1')">
+        <div class="card-header">
+          <div class="card-title">現股（普通股）：投資的基本單位</div>
+          <span class="card-tag tag-product">現股</span>
+        </div>
+        <p class="card-summary">直接買賣公司股份，享有股息、股東權利，不需保證金，風險有限（最多賠光本金）。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-product" data-cat="product" onclick="openModal('p2')">
+        <div class="card-header">
+          <div class="card-title">ETF：一籃子股票的打包交易</div>
+          <span class="card-tag tag-product">ETF</span>
+        </div>
+        <p class="card-summary">追蹤指數、產業或主題的基金，在證交所像股票一樣買賣，分原型、槓桿型、反向型。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-product" data-cat="product" onclick="openModal('p3')">
+        <div class="card-header">
+          <div class="card-title">期貨：約定未來價格的合約，高槓桿高風險</div>
+          <span class="card-tag tag-product">期貨</span>
+        </div>
+        <p class="card-summary">買賣未來特定時間的商品或指數價格，每日結算，需繳保證金，槓桿高、成本低。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-product" data-cat="product" onclick="openModal('p4')">
+        <div class="card-header">
+          <div class="card-title">選擇權：用小錢買「權利」的非線性商品</div>
+          <span class="card-tag tag-product">選擇權</span>
+        </div>
+        <p class="card-summary">買方付權利金取得買/賣的權利，賣方收權利金但有無限風險，買方最多賠光權利金。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-product" data-cat="product" onclick="openModal('p5')">
+        <div class="card-header">
+          <div class="card-title">權證：券商發行的股票選擇權替代品</div>
+          <span class="card-tag tag-product">權證</span>
+        </div>
+        <p class="card-summary">只能當買方，用少量權利金押注標的股漲跌，槓桿 3~6 倍，時間越近價值遞減越快。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-product" data-cat="product" onclick="openModal('p6')">
+        <div class="card-header">
+          <div class="card-title">融資融券（信用交易）：借錢買股、借股放空</div>
+          <span class="card-tag tag-product">信用交易</span>
+        </div>
+        <p class="card-summary">融資是向券商借錢買股（槓桿約 1.6~2.5 倍），融券是借股賣出，到期要還。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-product" data-cat="product" onclick="openModal('p7')">
+        <div class="card-header">
+          <div class="card-title">債券：固定收益的借貸憑證</div>
+          <span class="card-tag tag-product">債券</span>
+        </div>
+        <p class="card-summary">政府或企業向投資人借錢並定期付息，到期還本。風險比股票低，報酬也相對固定。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-product" data-cat="product" onclick="openModal('p8')">
+        <div class="card-header">
+          <div class="card-title">五大商品風險報酬比較表</div>
+          <span class="card-tag tag-product">比較</span>
+        </div>
+        <p class="card-summary">現股、ETF、期貨、選擇權、權證——一張表看懂槓桿、風險上限、適合族群的差異。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+    </div><!-- end product grid -->
+
+    <!-- ====== 量與籌碼 ====== -->
+    <div class="section-label">📦 量與籌碼定義</div>
+    <div class="cards-grid">
+
+      <div class="card cat-volume" data-cat="volume" onclick="openModal('v1')">
+        <div class="card-header">
+          <div class="card-title">成交量 vs 成交值：張數 vs 金額的差異</div>
+          <span class="card-tag tag-volume">成交量</span>
+        </div>
+        <p class="card-summary">成交量看「幾張」換手，成交值看「多少錢」在流動。各有用途，不能混用。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-volume" data-cat="volume" onclick="openModal('v2')">
+        <div class="card-header">
+          <div class="card-title">換手率：相對活躍度，比成交量更客觀</div>
+          <span class="card-tag tag-volume">換手率</span>
+        </div>
+        <p class="card-summary">換手率 = 成交量 ÷ 流通股數，排除股本差異，是判斷主力吸籌或出貨最好用的指標。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-volume" data-cat="volume" onclick="openModal('v3')">
+        <div class="card-header">
+          <div class="card-title">籌碼是什麼？誰持有，誰說話算</div>
+          <span class="card-tag tag-volume">籌碼</span>
+        </div>
+        <p class="card-summary">「籌碼」指股票持有狀況，集中在少數人手上則易漲，分散在散戶則易跌。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-volume" data-cat="volume" onclick="openModal('v4')">
+        <div class="card-header">
+          <div class="card-title">三大法人：外資、投信、自營商的角色</div>
+          <span class="card-tag tag-volume">法人籌碼</span>
+        </div>
+        <p class="card-summary">三大法人資金佔台股約四成，每日盤後公布買賣超，是最容易追蹤的公開籌碼。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-volume" data-cat="volume" onclick="openModal('v5')">
+        <div class="card-header">
+          <div class="card-title">主力與大戶：千張以上持有者的影響力</div>
+          <span class="card-tag tag-volume">大戶籌碼</span>
+        </div>
+        <p class="card-summary">大戶指持股超過 1,000 張者，資金雄厚且研究深，其持股變化與股價走勢高度相關。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-volume" data-cat="volume" onclick="openModal('v6')">
+        <div class="card-header">
+          <div class="card-title">量價關係四種情境：放量漲、縮量漲、放量跌、縮量跌</div>
+          <span class="card-tag tag-volume">量價</span>
+        </div>
+        <p class="card-summary">量是股價的先行指標，四種量價組合各有不同意涵，是判斷行情是否延續的關鍵。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+    </div><!-- end volume grid -->
+
+    <!-- ====== 券商App查詢 ====== -->
+    <div class="section-label">📱 券商 App 查詢指南</div>
+    <div class="cards-grid">
+
+      <div class="card cat-app" data-cat="app" onclick="openModal('a1')">
+        <div class="card-header">
+          <div class="card-title">永豐大戶投 App：籌碼 + 大戶買賣力</div>
+          <span class="card-tag tag-app">永豐</span>
+        </div>
+        <p class="card-summary">大戶投以籌碼分析見長，內建分價量表、大戶/散戶買賣力、資金分布四大工具。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-app" data-cat="app" onclick="openModal('a2')">
+        <div class="card-header">
+          <div class="card-title">免費公開資料查詢：TWSE / TPEX / 證交所</div>
+          <span class="card-tag tag-app">免費工具</span>
+        </div>
+        <p class="card-summary">不用開戶也能查：台灣證交所、櫃買中心的三大法人、融資、處置股資料全部免費。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-app" data-cat="app" onclick="openModal('a3')">
+        <div class="card-header">
+          <div class="card-title">進階分析平台：XQ、MacroMicro、Fincake</div>
+          <span class="card-tag tag-app">第三方工具</span>
+        </div>
+        <p class="card-summary">超越券商 App 的進階選擇，提供回測、籌碼視覺化、總經指標等功能。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-app" data-cat="app" onclick="openModal('a4')">
+        <div class="card-header">
+          <div class="card-title">各大券商 App 功能速覽比較</div>
+          <span class="card-tag tag-app">比較</span>
+        </div>
+        <p class="card-summary">元大、富邦、國泰、口袋證券、Fugle——介面風格、籌碼功能、當沖支援的快速對照。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+    </div><!-- end app grid -->
+
+    <!-- ====== 美股市場基礎 ====== -->
+    <div class="section-label">🇺🇸 美股市場基礎</div>
+    <div class="cards-grid">
+
+      <div class="card cat-us-market" data-cat="us-market" onclick="openModal('us1')">
+        <div class="card-header">
+          <div class="card-title">三大指數：道瓊、S&amp;P500、NASDAQ 的差異</div>
+          <span class="card-tag tag-us-market">美股基礎</span>
+        </div>
+        <p class="card-summary">DJIA 價格加權 30 檔藍籌；S&amp;P 500 市值加權 500 大、法人首選基準；NASDAQ 科技導向，三者各有不同代表性。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-market" data-cat="us-market" onclick="openModal('us2')">
+        <div class="card-header">
+          <div class="card-title">NYSE vs NASDAQ：兩大交易所的差異</div>
+          <span class="card-tag tag-us-market">美股基礎</span>
+        </div>
+        <p class="card-summary">NYSE 歷史悠久、有實體交易大廳；NASDAQ 全電子化、科技新創聚集地。對散戶下單操作幾乎無差異。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-market" data-cat="us-market" onclick="openModal('us3')">
+        <div class="card-header">
+          <div class="card-title">美股交易時間與台灣投資人的注意事項</div>
+          <span class="card-tag tag-us-market">美股基礎</span>
+        </div>
+        <p class="card-summary">夏令台灣時間 21:30～04:00，冬令 22:30～05:00。盤前盤後流動性差，建議善用限價單。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-market" data-cat="us-market" onclick="openModal('us4')">
+        <div class="card-header">
+          <div class="card-title">財報季 Earnings Season：每季驅動行情</div>
+          <span class="card-tag tag-us-market">美股基礎</span>
+        </div>
+        <p class="card-summary">一月、四月、七月、十月，公司集中公布季報。Beat/Miss 與 Guidance 往往比實際數字更影響股價。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-market" data-cat="us-market" onclick="openModal('us5')">
+        <div class="card-header">
+          <div class="card-title">SEC 申報文件：10-K、10-Q、8-K 怎麼讀</div>
+          <span class="card-tag tag-us-market">美股基礎</span>
+        </div>
+        <p class="card-summary">10-K 年度完整財報、10-Q 季度報告、8-K 重大事件即時揭露，免費查閱於 SEC EDGAR。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-market" data-cat="us-market" onclick="openModal('us6')">
+        <div class="card-header">
+          <div class="card-title">聯準會（Fed）升降息對股市的影響</div>
+          <span class="card-tag tag-us-market">美股基礎</span>
+        </div>
+        <p class="card-summary">升息提高折現率，成長股首當其衝；降息寬鬆環境利好估值擴張。「Don't fight the Fed」是華爾街名言。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-market" data-cat="us-market" onclick="openModal('us7')">
+        <div class="card-header">
+          <div class="card-title">美股放空機制：融券、Put、反向 ETF</div>
+          <span class="card-tag tag-us-market">美股基礎</span>
+        </div>
+        <p class="card-summary">融券理論損失無上限；Buy Put 損失有限但有時間成本；反向 ETF 每日重置不適合長期持有。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-market" data-cat="us-market" onclick="openModal('us8')">
+        <div class="card-header">
+          <div class="card-title">ADR 美國存託憑證：外國股在美上市</div>
+          <span class="card-tag tag-us-market">美股基礎</span>
+        </div>
+        <p class="card-summary">台積電（TSM）1 ADR = 5 台股。存在存託費、匯率風險、股息雙重課稅，需與原股價格比較溢折價。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+    </div><!-- end us-market grid -->
+
+    <!-- ====== 公司估值 ====== -->
+    <div class="section-label">💰 公司估值方法</div>
+    <div class="cards-grid">
+
+      <div class="card cat-us-valuation" data-cat="us-valuation" onclick="openModal('uv1')">
+        <div class="card-header">
+          <div class="card-title">P/E 本益比：最常見估值指標，如何判讀</div>
+          <span class="card-tag tag-us-valuation">公司估值</span>
+        </div>
+        <p class="card-summary">S&amp;P 500 長期均值約 15–17 倍；科技成長股常見 30–60 倍。需同產業比較，不能跨業直接對比。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-valuation" data-cat="us-valuation" onclick="openModal('uv2')">
+        <div class="card-header">
+          <div class="card-title">Forward P/E vs Trailing P/E：前瞻與歷史本益比</div>
+          <span class="card-tag tag-us-valuation">公司估值</span>
+        </div>
+        <p class="card-summary">Trailing 用過去 12 個月實際 EPS；Forward 用分析師預估未來盈餘，更具前瞻性但存在預估誤差。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-valuation" data-cat="us-valuation" onclick="openModal('uv3')">
+        <div class="card-header">
+          <div class="card-title">P/B 股價淨值比：資產密集型產業適用</div>
+          <span class="card-tag tag-us-valuation">公司估值</span>
+        </div>
+        <p class="card-summary">銀行股 P/B 低於 1 可能是資產品質問題；科技公司因無形資產不計入帳面，P/B 虛高並非代表高估。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-valuation" data-cat="us-valuation" onclick="openModal('uv4')">
+        <div class="card-header">
+          <div class="card-title">EV/EBITDA：排除資本結構差異的估值法</div>
+          <span class="card-tag tag-us-valuation">公司估值</span>
+        </div>
+        <p class="card-summary">EV = 市值＋淨負債；S&amp;P 500 均值約 12–15 倍。M&amp;A 併購分析首選，可排除槓桿與折舊差異。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-valuation" data-cat="us-valuation" onclick="openModal('uv5')">
+        <div class="card-header">
+          <div class="card-title">P/S 股價營收比：虧損成長股怎麼估值</div>
+          <span class="card-tag tag-us-valuation">公司估值</span>
+        </div>
+        <p class="card-summary">P/E 無法用於虧損公司時的替代方案。高 P/S 的合理性取決於毛利率與成長率，利率升高時首當其衝。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-valuation" data-cat="us-valuation" onclick="openModal('uv6')">
+        <div class="card-header">
+          <div class="card-title">PEG Ratio：成長調整後的本益比</div>
+          <span class="card-tag tag-us-valuation">公司估值</span>
+        </div>
+        <p class="card-summary">PEG = P/E ÷ 盈餘成長率（%）。PEG &lt; 1 可能被低估，≈ 1 合理，&gt; 2 需確認高成長能持續。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-valuation" data-cat="us-valuation" onclick="openModal('uv7')">
+        <div class="card-header">
+          <div class="card-title">DCF 現金流折現：估值之王的原理與限制</div>
+          <span class="card-tag tag-us-valuation">公司估值</span>
+        </div>
+        <p class="card-summary">理論最嚴謹的估值法，但 WACC 差 1% 可能使估值變動 25–30%。過程中的思考框架比精確數字更有價值。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-valuation" data-cat="us-valuation" onclick="openModal('uv8')">
+        <div class="card-header">
+          <div class="card-title">市值 vs 企業價值（EV）：關鍵差異</div>
+          <span class="card-tag tag-us-valuation">公司估值</span>
+        </div>
+        <p class="card-summary">市值只反映股東這方；EV = 市值＋負債－現金，代表「買下整家公司需付出的真實代價」。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+    </div><!-- end us-valuation grid -->
+
+    <!-- ====== 財報深度解讀 ====== -->
+    <div class="section-label">📋 財報深度解讀</div>
+    <div class="cards-grid">
+
+      <div class="card cat-us-financial" data-cat="us-financial" onclick="openModal('uf1')">
+        <div class="card-header">
+          <div class="card-title">損益表 Income Statement：從營收到淨利的完整路徑</div>
+          <span class="card-tag tag-us-financial">財報分析</span>
+        </div>
+        <p class="card-summary">Revenue → COGS → 毛利 → OpEx → EBIT → EBT → Net Income，每一層「漏出比例」都透露不同的商業問題。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-financial" data-cat="us-financial" onclick="openModal('uf2')">
+        <div class="card-header">
+          <div class="card-title">資產負債表 Balance Sheet：公司財務健康度快照</div>
+          <span class="card-tag tag-us-financial">財報分析</span>
+        </div>
+        <p class="card-summary">資產＝負債＋股東權益。關注現金部位、商譽膨脹、應收帳款天數（DSO）與 SaaS 的遞延收入。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-financial" data-cat="us-financial" onclick="openModal('uf3')">
+        <div class="card-header">
+          <div class="card-title">現金流量表 Cash Flow Statement：現金才是真正的王者</div>
+          <span class="card-tag tag-us-financial">財報分析</span>
+        </div>
+        <p class="card-summary">OCF、ICF、FCF 三大區塊。OCF 長期低於淨利是盈利品質警訊；CapEx 強度反映行業資本密集度。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-financial" data-cat="us-financial" onclick="openModal('uf4')">
+        <div class="card-header">
+          <div class="card-title">FCF 自由現金流：評估真實獲利能力的關鍵指標</div>
+          <span class="card-tag tag-us-financial">財報分析</span>
+        </div>
+        <p class="card-summary">FCF = OCF − CapEx。Apple、Microsoft FCF Margin 長期 25–30%，是回購股票與發股利的底氣。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-financial" data-cat="us-financial" onclick="openModal('uf5')">
+        <div class="card-header">
+          <div class="card-title">EPS：GAAP vs Non-GAAP 的重要差異</div>
+          <span class="card-tag tag-us-financial">財報分析</span>
+        </div>
+        <p class="card-summary">Non-GAAP 排除 SBC、重組費用、併購攤銷，通常比 GAAP 高看很多。若 Non-GAAP 高出 50%+ 需特別追問 SBC 佔比。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-financial" data-cat="us-financial" onclick="openModal('uf6')">
+        <div class="card-header">
+          <div class="card-title">Earnings Call 法說會：機構在聽什麼重點</div>
+          <span class="card-tag tag-us-financial">財報分析</span>
+        </div>
+        <p class="card-summary">Guidance 展望、Demand Environment、Margin Trajectory 是分析師最在意的三大主題，Q&amp;A 環節才是精華。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-financial" data-cat="us-financial" onclick="openModal('uf7')">
+        <div class="card-header">
+          <div class="card-title">財報 Red Flags：這些數字出現要馬上警覺</div>
+          <span class="card-tag tag-us-financial">財報分析</span>
+        </div>
+        <p class="card-summary">OCF 長期低於淨利、AR 成長超營收、商譽膨脹、CFO 離職、審計師更換——安隆、Wirecard 事前都有這些跡象。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+    </div><!-- end us-financial grid -->
+
+    <!-- ====== 績效指標 KPI ====== -->
+    <div class="section-label">📈 績效指標 KPI</div>
+    <div class="cards-grid">
+
+      <div class="card cat-us-metrics" data-cat="us-metrics" onclick="openModal('uk1')">
+        <div class="card-header">
+          <div class="card-title">ROE 股東權益報酬率：杜邦分析三分解</div>
+          <span class="card-tag tag-us-metrics">績效指標</span>
+        </div>
+        <p class="card-summary">ROE = 淨利率 × 資產週轉率 × 財務槓桿。高 ROE 來源不同，靠高槓桿的比靠高利潤率的風險大很多。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-metrics" data-cat="us-metrics" onclick="openModal('uk2')">
+        <div class="card-header">
+          <div class="card-title">ROA 與 ROIC：資產使用效率的深度比較</div>
+          <span class="card-tag tag-us-metrics">績效指標</span>
+        </div>
+        <p class="card-summary">ROIC &gt; WACC 代表公司在創造價值；ROIC &lt; WACC 代表即使有盈利，也在銷毀股東價值。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-metrics" data-cat="us-metrics" onclick="openModal('uk3')">
+        <div class="card-header">
+          <div class="card-title">三大利潤率：毛利率、營業利潤率、淨利率</div>
+          <span class="card-tag tag-us-metrics">績效指標</span>
+        </div>
+        <p class="card-summary">SaaS 毛利率 65–85%；零售業 20–40%。毛利率趨勢比絕對數字更重要，連續下滑是定價能力警訊。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-metrics" data-cat="us-metrics" onclick="openModal('uk4')">
+        <div class="card-header">
+          <div class="card-title">負債比率：D/E、淨負債、利息覆蓋率</div>
+          <span class="card-tag tag-us-metrics">績效指標</span>
+        </div>
+        <p class="card-summary">Net Debt/EBITDA &lt; 2 穩健，&gt; 4 偏高；利息覆蓋率 &lt; 1.5 危險。升息周期中高負債公司財務壓力急劇放大。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-metrics" data-cat="us-metrics" onclick="openModal('uk5')">
+        <div class="card-header">
+          <div class="card-title">流動性指標：Current Ratio 與 Quick Ratio</div>
+          <span class="card-tag tag-us-metrics">績效指標</span>
+        </div>
+        <p class="card-summary">Current Ratio &gt; 1.5 通常安全；Quick Ratio 排除存貨更保守。亞馬遜等平台因 CCC 為負，比率低卻代表商業模式優勢。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-metrics" data-cat="us-metrics" onclick="openModal('uk6')">
+        <div class="card-header">
+          <div class="card-title">SaaS/科技股特有指標：ARR、NRR、CAC、LTV</div>
+          <span class="card-tag tag-us-metrics">績效指標</span>
+        </div>
+        <p class="card-summary">NRR &gt; 120% 是極佳信號；LTV/CAC &gt; 3 代表健康單位經濟。這些指標是評估訂閱制公司最重要的工具。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-metrics" data-cat="us-metrics" onclick="openModal('uk7')">
+        <div class="card-header">
+          <div class="card-title">Rule of 40：SaaS 健康度黃金法則</div>
+          <span class="card-tag tag-us-metrics">績效指標</span>
+        </div>
+        <p class="card-summary">成長率（%）＋ FCF Margin（%）≥ 40 代表健康。得分越高，EV/Revenue 估值倍數通常越高。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+      <div class="card cat-us-metrics" data-cat="us-metrics" onclick="openModal('uk8')">
+        <div class="card-header">
+          <div class="card-title">週期性行業指標：庫存週轉、DSO、現金轉換週期</div>
+          <span class="card-tag tag-us-metrics">績效指標</span>
+        </div>
+        <p class="card-summary">CCC = DIO + DSO − DPO。負 CCC（如 Amazon）代表「先收錢後付款」的超強商業模式。DIO 攀升是景氣降溫領先指標。</p>
+        <p class="card-expand">點擊展開 →</p>
+      </div>
+
+    </div><!-- end us-metrics grid -->
+</main>
+
+<footer>
+  Static, no build step. / 純靜態，無建置流程。<br>
+  ⚠️ 本頁內容僅供學習參考，不構成任何投資建議。投資有風險，請自行判斷。
+
+    <nav class="related-links" data-related-links aria-label="相關頁面">
+      <a href="/projects/one-more-step/">← One More Step 全部筆記</a>
+      <a href="/projects/family-investing-course/">給家人的投資課（52 週）</a>
+      <a href="/writing/?series=投資專欄">投資專欄</a>
+    </nav>
+  </footer>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModalBtn()">✕ 關閉</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const MODALS = {
+  m1: {
+    cat: 'concept', tag: '基本概念', tagClass: 'tag-concept',
+    title: '期望值思維：做什麼都可以賺，但能複製嗎？',
+    html: `
+      <p>投資的本質不只是「這次有沒有賺到錢」，而是要問：</p>
+      <ul>
+        <li>這個方法能<strong>長久複製</strong>嗎？</li>
+        <li>能不能用<strong>同樣報酬換到更低風險</strong>？</li>
+        <li>有沒有<strong>更好的替代方案</strong>？</li>
+      </ul>
+      <div class="highlight">💡 很多人偶爾賺到一筆，就以為找到了方法，但若無法複製，那次獲利只是運氣成分，不是邊際。</div>
+      <p>這是所有投資決策的底層邏輯，也是避免「一招鮮吃遍天」幻覺的解藥。</p>
+    `
+  },
+  m2: {
+    cat: 'concept', tag: '基本概念', tagClass: 'tag-concept',
+    title: '新手地雷：台指、選擇權、期貨的真實難度',
+    html: `
+      <p>期貨的<strong>本質設計是避險工具</strong>，讓持有現貨的人可以鎖定成本。但它在市場上被大量當作投機工具使用，導致難度極高。</p>
+      <div class="risk">⚠️ 衍生性商品具有槓桿，對沒有大量時間盯盤、沒有深厚經驗的新手而言，是相對不友善的市場。</div>
+      <ul>
+        <li>台指期：需要對大盤走勢有高準確度的短期判斷</li>
+        <li>選擇權：時間值流逝、波動率變化都是額外的變數</li>
+        <li>期貨：資金管理稍有不慎就可能爆倉</li>
+      </ul>
+      <p>筆記建議：若非專業或有充裕時間研究，先從現股市場累積經驗。</p>
+    `
+  },
+  m3: {
+    cat: 'concept', tag: '基本概念', tagClass: 'tag-concept',
+    title: '短線 vs 中長線的市場胃納量差異',
+    html: `
+      <p><strong>短線（當沖、隔日沖）</strong>的性質接近牌桌零和遊戲：</p>
+      <ul>
+        <li>少數強大的贏家會把錢都賺走</li>
+        <li>出現更強的新贏家，就會排擠掉舊贏家</li>
+        <li>隔日沖分點、當沖分點都有在慢慢換人</li>
+      </ul>
+      <div class="highlight">📊 中長線結合產業研究 + 技術型態，標的更多元，市場胃納量更大，也不用整天盯盤。</div>
+      <p>這不代表中長線沒有難度，而是進入門檻的形式不同——需要的是產業研究能力，而非反應速度。</p>
+    `
+  },
+  m4: {
+    cat: 'concept', tag: '基本概念', tagClass: 'tag-concept',
+    title: '價值陷阱：不要亂撿便宜與右下角股票',
+    html: `
+      <p>「右下角股票」指的是長期跌勢、看起來很便宜、基期很低的個股。</p>
+      <div class="risk">⚠️ 如果你對該標的、該產業沒有深度了解，沒有資格做出「它現在便宜」的判斷。</div>
+      <ul>
+        <li>市場的價格機制需要被尊重，很多時候股價已提前反映了不好的訊息</li>
+        <li>「消息兩個月後才公告」的情況很常見，線圖可能已先跌完了</li>
+        <li>只有確信「市場在犯錯」才敢進去抄底</li>
+      </ul>
+      <div class="highlight">💡 真正的抄底機會建立在深度研究之上，而非「看起來很便宜」的直覺。</div>
+    `
+  },
+  m5: {
+    cat: 'concept', tag: '基本概念', tagClass: 'tag-concept',
+    title: '市場效率：有時有效，有時沒效',
+    html: `
+      <p>市場大部分時候是有效率的（消息已反映在價格中），但有些個股的「沒效率」是可以觀察到的：</p>
+      <ul>
+        <li><strong>沒效率的標的特徵：</strong>成交量低、沒有券商分析報告、不能融資券、幾乎沒有法說溝通機會</li>
+        <li>可能在法說釋出消息後才開始動作</li>
+        <li>甚至出現「連續 3~4 個月營收年增 40~50%，才有人發現進去炒」的狀況</li>
+      </ul>
+      <div class="highlight">💡 冷門小股的市場無效率，對有研究能力的人是機會，對沒有研究能力的人是陷阱。</div>
+      <p>美股方面，財報電話會議的 Q&A 環節是很好觀察分析師重點關注議題的地方。</p>
+    `
+  },
+  m6: {
+    cat: 'concept', tag: '基本概念', tagClass: 'tag-concept',
+    title: '族群性：觀察整個產業鏈的同步異動',
+    html: `
+      <p>族群輪動是台股很重要的現象：</p>
+      <ul>
+        <li>整個族群同時啟動 → 市場大資金在買單上車</li>
+        <li>龍頭股帶頭衝 → 可能帶動整個族群跟進</li>
+        <li>觀察<strong>成交值、成交量、價格變化</strong>可找出資金正在關注的方向</li>
+      </ul>
+      <div class="highlight">📌 案例：台股探針卡噴發時，美股相關股票落後補漲；台股 OEM 噴發時，CLS 也跟著補漲。</div>
+      <p>當發現整個產業鏈都在動，就代表有重大異常值得深入研究。</p>
+    `
+  },
+  m7: {
+    cat: 'concept', tag: '基本概念', tagClass: 'tag-concept',
+    title: '農曆春節前的融資降倉賣壓',
+    html: `
+      <p>每年春節前，市場通常出現一定程度的賣壓，主要來自兩個原因：</p>
+      <ul>
+        <li><strong>避免被關廁所：</strong>過年期間台股休市多天，若持有融資部位，萬一國際市場暴跌，開盤就是殺尾，所以投資人提前降槓桿</li>
+        <li><strong>資金成本：</strong>融資需要付利息，休市期間依然計算，持倉成本增加</li>
+      </ul>
+      <div class="highlight">📅 春節前通常是台股的短期壓力時段，但過完節若基本面沒問題，往往有機會回升。</div>
+    `
+  },
+  m8: {
+    cat: 'market', tag: '法人', tagClass: 'tag-market',
+    title: '投信買盤：不等於真正看多的法人訊號',
+    html: `
+      <p>一般投資人很常看「投信買超」當多頭訊號，但需要區分：</p>
+      <ul>
+        <li><strong>ETF 的被動配置：</strong>指數型 ETF 會在個股成分股調整時被動買進，不代表主動看好</li>
+        <li><strong>投信自營部門 vs buy side：</strong>買盤的主動性程度有差異</li>
+      </ul>
+      <div class="risk">⚠️ 持續買超若來自 ETF 的機械式配置，不代表基本面改善，不應直接解讀為多頭訊號。</div>
+      <p>觀察投信時，要看的是「期貨多單部位」是否同步增加，以及基金本身的主動操盤方向。</p>
+      <a class="source-link" href="https://quantpass.org/retail-investor-index/" target="_blank">→ 三大法人指標解讀（量化通）</a>
+    `
+  },
+  m9: {
+    cat: 'market', tag: '法人', tagClass: 'tag-market',
+    title: '外資角色變化：內資崛起，台牛車式緩行',
+    html: `
+      <p>外資在台股的影響力已逐漸下降，原因：</p>
+      <ul>
+        <li>台灣人財富累積使<strong>內資越來越強大</strong></li>
+        <li>外資買台股的節奏是「台大牛車」——方向確定後慢慢走，但不代表稍微轉買就代表翻多</li>
+      </ul>
+      <div class="highlight">💡 實用技巧：外資空單比外資轉買更具參考意義，空單部位代表他們真正在押注下跌方向。</div>
+      <p>稍微轉買 1~2 天 → 可能只是短暫休息，後面有可能繼續倒貨。不要太嗨。</p>
+    `
+  },
+  m10: {
+    cat: 'market', tag: '期貨', tagClass: 'tag-market',
+    title: '小台多空：程式交易盤，已非純散戶指標',
+    html: `
+      <p>過去「小台散戶多空比」被當成反向指標，因為散戶通常是錯的一方。但現在情況不同了：</p>
+      <ul>
+        <li>大量程式交易（量化策略）藏在小台期貨裡</li>
+        <li>知名外國銀行的量化組也在小台操作</li>
+        <li>現在已<strong>不能單純視為散戶指標</strong>來反向操作</li>
+      </ul>
+      <div class="risk">⚠️ 解讀小台數據時需更謹慎，不能直接套用「散戶做多=賣點」的舊邏輯。</div>
+      <a class="source-link" href="https://en.macromicro.me/charts/80666/tai-wan-san-hu-zhi-biao-da-pan-rong-zi-wei-chi-lyu" target="_blank">→ MacroMicro 散戶指標與融資維持率</a>
+    `
+  },
+  m11: {
+    cat: 'indicator', tag: '指標', tagClass: 'tag-indicator',
+    title: '融資水位：3,300億是高點，2,200億以下是底部訊號',
+    html: `
+      <p>大盤融資餘額是觀察市場槓桿與散戶情緒的重要指標：</p>
+      <ul>
+        <li><strong>3,300 億左右</strong>：市場槓桿過高、散戶追高，通常是相對高點的警訊</li>
+        <li><strong>2,200~1,800 億</strong>：過去代表散戶大逃亡、籌碼乾淨，接近相對低點</li>
+        <li><strong>現在參考標準：2,800~3,000 億</strong>附近洗乾淨才算</li>
+      </ul>
+      <div class="highlight">📌 注意：近年資產近百億的大戶也會使用融資，加上質押盛行，融資已不完全是純散戶指標，參考權重略降。</div>
+      <div class="risk">⚠️「大借錢時代」：很多人用股票質押而非融資，因此大盤融資餘額可能低估了市場實際的槓桿水位。</div>
+      <a class="source-link" href="https://fmstudio.blog/market-margin-balance-analysis-2025/" target="_blank">→ 大盤融資餘額全解析（理財研究室）</a>
+    `
+  },
+  m12: {
+    cat: 'indicator', tag: '指標', tagClass: 'tag-indicator',
+    title: '融資維持率：150–160% 以下是籌碼乾淨訊號',
+    html: `
+      <p><strong>融資維持率</strong> = 所有融資股票市值 ÷ 大盤融資餘額</p>
+      <p>當股價下跌時，維持率降低：</p>
+      <ul>
+        <li>降至一定比例 → 券商通知補繳（追繳）</li>
+        <li>無力補繳 → <strong>斷頭</strong>（強制賣出）</li>
+      </ul>
+      <div class="highlight">💡 當大盤整體融資維持率降至低點（150~160% 以下），代表市場出現不理性賣壓或斷頭潮，往往是相對低點。籌碼被洗乾淨後，反彈的基礎更穩固。</div>
+      <a class="source-link" href="https://en.macromicro.me/charts/80666/tai-wan-san-hu-zhi-biao-da-pan-rong-zi-wei-chi-lyu" target="_blank">→ MacroMicro 融資維持率圖表</a>
+    `
+  },
+  m13: {
+    cat: 'indicator', tag: '指標', tagClass: 'tag-indicator',
+    title: '外資空單：比外資回買更可信的方向指標',
+    html: `
+      <p>為什麼外資空單比外資買超更有參考價值？</p>
+      <ul>
+        <li>外資買超可能只是一兩天的「短暫修復」，後面繼續倒貨</li>
+        <li>但<strong>空單需要承擔持倉成本與風險</strong>，代表外資真的在押注方向</li>
+        <li>外資空單持續增加 → 相對可信的看空訊號</li>
+      </ul>
+      <div class="highlight">📌 實際觀察重點：
+        <br>• 外資期貨淨空單是否持續擴大？
+        <br>• 外資稍微轉多只 1~2 天不要過度解讀
+      </div>
+    `
+  },
+  m14: {
+    cat: 'cb', tag: '可轉債', tagClass: 'tag-cb',
+    title: '可轉債（CB）基礎：債券 + 換股權利的二合一商品',
+    html: `
+      <p><strong>可轉換公司債（Convertible Bond, CB）</strong>是公司發行的一種特殊債券，持有人可以在特定條件下，將債券轉換成公司普通股。</p>
+      <ul>
+        <li><strong>股價漲：</strong>按約定轉換價換成股票，享有股價上漲收益</li>
+        <li><strong>股價跌：</strong>保留債券性質，到期領回本息</li>
+      </ul>
+      <div class="highlight">💡「進可攻退可守」是可轉債的核心特性：上有股票潛力、下有債券保底。</div>
+      <p>公司為何發 CB 而非直接借銀行？通常是融資速度快、成本可能較低，或有特定股本擴張需求。</p>
+      <a class="source-link" href="https://rich01.com/cb-asset-swap-cbas/" target="_blank">→ 可轉債 CBAS 詳細說明（Mr.Market 市場先生）</a>
+    `
+  },
+  m15: {
+    cat: 'cb', tag: '現增', tagClass: 'tag-cb',
+    title: '高檔現增的警訊：短期大漲後突然現增要小心',
+    html: `
+      <p>現金增資（現增）是公司向市場增發新股募集資金，需要投資人特別留意時機：</p>
+      <div class="risk">⚠️ 短期內股價被急拉很高後，公司突然宣布現增 → 高機率是「印股票換錢」的割韭菜操作。大股東趁高點稀釋持股套現。</div>
+      <p>但也有例外：</p>
+      <ul>
+        <li>若現增目的是<strong>投資新廠房或技術擴產</strong>，短線雖有稀釋效應，中長線可能反而是利多</li>
+        <li>關鍵是<strong>看募資用途</strong>：廠房建設 vs 補充流動性 vs 償還債務，性質差很多</li>
+      </ul>
+      <div class="highlight">📌 判斷邏輯：查公開說明書的資金用途，比看時機點更重要。</div>
+    `
+  },
+  m16: {
+    cat: 'cb', tag: '可轉債', tagClass: 'tag-cb',
+    title: '可轉債行情三階段：宣布 → 定價前壓盤 → 第二波',
+    html: `
+      <p>可轉債行情通常有清晰的三個階段：</p>
+      <ol style="padding-left:1.2rem; margin:0.5rem 0;">
+        <li style="margin-bottom:0.6rem"><strong>宣布發行時：</strong>識途老馬搶先上車，拉出第一波行情</li>
+        <li style="margin-bottom:0.6rem"><strong>定價前：</strong>刻意壓盤甚至破前低，讓轉換價可以訂得較低（對持有人有利），這段是正常現象</li>
+        <li style="margin-bottom:0.6rem"><strong>定價後：</strong>共識是拉抬股價到轉換價附近，形成第二波行情</li>
+      </ol>
+      <div class="highlight">📌 過了轉換價之後：大量融券湧入鎖住價差，有人套利（做多現股+空融券）。此時要小心，因為有時候回頭看只是「半山腰」。</div>
+      <p>低檔或盤整時發的可轉債通常風險較低，急拉之後才發的可轉債要特別謹慎。</p>
+    `
+  },
+  m17: {
+    cat: 'cb', tag: 'CBAS', tagClass: 'tag-cb',
+    title: 'CBAS：可轉債拆成固定收益 + 選擇權分開賣',
+    html: `
+      <p><strong>可轉換公司債資產交換（CBAS, Convertible Bond Asset Swap）</strong>是券商把持有的 CB 拆解後，賣給兩種不同需求的投資人：</p>
+      <ul>
+        <li><strong>固定收益端：</strong>支付本金，收取約定利率配息，享有比普通公司債更高的收益，但承擔公司信用風險</li>
+        <li><strong>選擇權端（CBAS 選擇權）：</strong>支付較少的權利金，取得股票換股的買權，有槓桿效果</li>
+      </ul>
+      <div class="highlight">💡 對想參與可轉債行情又沒辦法第一時間上車的人，發行後第 6 天起可以在次級市場透過 CBAS 選擇權進場。</div>
+      <div class="risk">⚠️ CBAS 有交易對手風險（是與券商的協議，非交易所掛牌），需了解流動性與早期解約限制。</div>
+      <a class="source-link" href="https://rich01.com/cb-asset-swap-cbas/" target="_blank">→ CBAS 完整說明（Mr.Market 市場先生）</a>
+    `
+  },
+  m18: {
+    cat: 'restrict', tag: '處置股', tagClass: 'tag-restrict',
+    title: '處置股制度：6日漲幅超25%就可能中標',
+    html: `
+      <p>處置股是台灣證交所/櫃買中心的<strong>市場監視警示機制</strong>：</p>
+      <ul>
+        <li>個股 6 個交易日累積漲跌幅超過 <strong>25%</strong> 即可能被列為「注意股」</li>
+        <li>連續 3 日被列注意股，或短時間內多次遭列，就進入「處置」</li>
+        <li>處置期間：撮合時間延長至每 5 分鐘一次（再次處置則 20 分鐘一次）</li>
+        <li>買賣須<strong>圈存全額預繳</strong>款券，禁止融資融券</li>
+      </ul>
+      <div class="highlight">📌 對飆股持有者而言，進入處置反而是「強勢認證」——大籌碼在處置期間不會急著出貨，守得夠好，出處置後可能繼續上漲甚至進第二次處置。</div>
+      <a class="source-link" href="https://www.ctee.com.tw/news/20240508700606-430201" target="_blank">→ 注意股、處置股完整說明（工商時報）</a>
+    `
+  },
+  m19: {
+    cat: 'restrict', tag: '處置股', tagClass: 'tag-restrict',
+    title: '處置期間的流動性陷阱與獵人策略',
+    html: `
+      <p>處置股的交易環境因撮合間隔大幅拉長，產生獨特的<strong>流動性真空</strong>：</p>
+      <ul>
+        <li>一般投資人買賣困難，成交量大幅萎縮</li>
+        <li>「處置股獵人」專門在這段期間操作：利用流動性低、上下緣區間固定的特性進行價差交易</li>
+        <li>若在處置期間沒守住，會有大量賣單在流動性最差的時間點出現，衝擊更大</li>
+      </ul>
+      <div class="risk">⚠️ 對一般投資人：處置股期間流動性差，急需出場時可能賣不到理想價格，務必衡量持倉風險。</div>
+      <div class="highlight">💡 守得夠好 → 出處置後市場恢復流動性 → 可能重新上攻甚至二次處置（俗稱「越關越大尾」）。</div>
+    `
+  },
+  m20: {
+    cat: 'order', tag: '盤口', tagClass: 'tag-order',
+    title: '五檔賣牆 + 左側補買：吃貨敲破的典型結構',
+    html: `
+      <p>這是觀察五檔掛單（委買委賣）時，主力吃貨的一種典型手法：</p>
+      <ul>
+        <li><strong>整數位置掛厚厚賣牆：</strong>在整數價格（如 100 元）掛大量賣單，製造有阻力的假象</li>
+        <li><strong>左側（低一點的買盤）持續少量補買：</strong>緩慢吸收浮籌</li>
+        <li>吃夠籌碼後，敲破整數牆 → 追多的「動能仔」蜂擁追價</li>
+      </ul>
+      <div class="highlight">💡 判斷關鍵：<strong>左側是否有持續補買</strong>。有補買 = 真的在吃貨；沒有補買 = 可能只是阻力，不一定會敲破。</div>
+    `
+  },
+  m21: {
+    cat: 'order', tag: '盤口', tagClass: 'tag-order',
+    title: '鎖漲停後的隔日買一牆：假接真撤的誘騙術',
+    html: `
+      <p>這是漲停鎖板後隔天的一種常見手法：</p>
+      <ul>
+        <li>前一天鎖漲停，隔天開盤在<strong>買三或買四位置掛大量買單</strong></li>
+        <li>看似要接盤撐盤，誘導其他人以為有支撐</li>
+        <li>實際操作：<strong>摜破買一買二</strong>時，這個「牆」就會往下撤</li>
+        <li>目的是製造「有人要接但不是真心接」的假象，希望你去搶買一買二</li>
+      </ul>
+      <div class="risk">⚠️ 注意：如果對方決心「硬丟」（直接大量賣），牆還是會被接走。所以這個手法的成功與否，取決於雙方的資金量體。</div>
+      <div class="highlight">💡 這類手法在盤口觀察中屬於進階判斷，需要累積足夠的實盤觀察經驗才能準確識別。</div>
+    `
+  },
+  m22: {
+    cat: 'order', tag: '程式交易', tagClass: 'tag-order',
+    title: '判斷程式單：直接丟單觀察反應',
+    html: `
+      <p>如何在盤中判斷程式交易（Algo）的方向與強度：</p>
+      <ul>
+        <li><strong>直接下買單</strong>，觀察是否有單<strong>瞬間往上追價</strong>（表示有買盤 Algo 在搶）</li>
+        <li>或者對手直接<strong>把貨拋給你</strong>（表示有賣盤 Algo 在出貨）</li>
+        <li>透過這個「刺探」動作，判斷程式單的走向，並加以利用</li>
+      </ul>
+      <div class="highlight">💡 這是一種實盤測試法，適合有一定經驗的投資人。對於散戶而言，認識這個手法的意義在於：看到瞬間追價或大量拋售，往往不是正常的人工單，背後可能是程式。</div>
+      <div class="risk">⚠️ 本方法有一定成本（買賣價差），需謹慎評估是否適合自己的操作風格。</div>
+    `
+  }
+};
+
+function openModal(id) {
+  const m = MODALS[id];
+  if (!m) return;
+  document.getElementById('modal-content').innerHTML = `
+    <span class="modal-cat-badge ${m.tagClass}">${m.tag}</span>
+    <div class="modal-title">${m.title}</div>
+    <hr class="divider">
+    <div class="modal-body">${m.html}</div>
+  `;
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('overlay')) closeModalBtn();
+}
+function closeModalBtn() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalBtn(); });
+
+// Filter
+const chips = document.querySelectorAll('.chip');
+chips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    chips.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const filter = chip.dataset.filter;
+    let count = 0;
+    document.querySelectorAll('.card').forEach(card => {
+      const show = filter === 'all' || card.dataset.cat === filter;
+      card.hidden = !show;
+      if (show) count++;
+    });
+    document.getElementById('count').textContent = `顯示 ${count} 筆筆記`;
+  });
+});
+
+// Init count
+document.getElementById('count').textContent = `顯示 ${document.querySelectorAll('.card').length} 筆筆記`;
+
+// ===== NEW MODALS: PRODUCTS =====
+const MODALS_EXTRA = {
+  p1: {
+    cat: 'product', tag: '現股', tagClass: 'tag-product',
+    title: '現股（普通股）：投資的基本單位',
+    html: `
+      <p>買進一家公司的<strong>普通股（現股）</strong>，代表你成為公司股東，擁有：</p>
+      <ul>
+        <li>股票增值的收益（資本利得）</li>
+        <li>每年配發的<strong>股利（現金股息、股票股利）</strong></li>
+        <li>股東會投票、優先認購增資的權利</li>
+      </ul>
+      <div class="highlight">💡 台灣股票以「張」為基本交易單位，1 張 = 1,000 股。也可以買「零股」（1 股起），門檻更低。</div>
+      <p><strong>風險上限：</strong>最多損失投入本金（股價跌到 0）。不像期貨，不會倒賠。</p>
+      <p><strong>證交稅：</strong>台股賣出時收 0.3% 證交稅，當沖則是 0.15%（2025 年現行）。</p>
+    `
+  },
+  p2: {
+    cat: 'product', tag: 'ETF', tagClass: 'tag-product',
+    title: 'ETF：一籃子股票的打包交易',
+    html: `
+      <p><strong>ETF（Exchange Traded Fund，指數股票型基金）</strong>像股票一樣在交易所買賣，但持有的是一整籃子標的。</p>
+      <p><strong>三種主要類型：</strong></p>
+      <ul>
+        <li><strong>原型 ETF：</strong>如 0050、0056，追蹤指數，風險分散，適合長期持有</li>
+        <li><strong>槓桿型 ETF：</strong>放大追蹤指數的報酬，如正 2（2 倍）。長期持有因「每日重置」效應，報酬≠指數漲幅×2</li>
+        <li><strong>反向型 ETF：</strong>如 R1（-1 倍），指數跌時獲利，通常用來短期避險</li>
+      </ul>
+      <div class="risk">⚠️ 槓反型 ETF 不適合長期持有，震盪市場中會因每日重置而產生「漲跌不對稱損耗」。</div>
+      <div class="highlight">💡 主題型 ETF（如 5G ETF、半導體 ETF）的成分股編法各不同，需特別了解其指數規則，避免「買的跟想的不一樣」。</div>
+    `
+  },
+  p3: {
+    cat: 'product', tag: '期貨', tagClass: 'tag-product',
+    title: '期貨：約定未來價格的合約，高槓桿高風險',
+    html: `
+      <p><strong>期貨</strong>是買賣雙方約定在未來某個時間，以特定價格交割某商品或指數的合約。</p>
+      <p><strong>台股期貨常見商品：</strong></p>
+      <ul>
+        <li>台指期（大台）、小型台指期（小台）</li>
+        <li>個股期貨、電子期貨、金融期貨</li>
+      </ul>
+      <p><strong>期貨優點：</strong></p>
+      <ul>
+        <li>交易成本極低（約現股的 2~10%）</li>
+        <li>雙向操作，做空同樣方便</li>
+        <li>可做避險（對沖持股風險）</li>
+      </ul>
+      <div class="risk">⚠️ 風險提醒：<br>• 每日結算，虧損超過保證金需補繳（追繳），否則強制砍倉<br>• 有到期日，不能無限期持有<br>• 建議資金至少是保證金的 3~5 倍，才有緩衝空間</div>
+      <div class="highlight">💡 台指期外資未平倉多空是很重要的參考指標，台灣期交所每日盤後公布。</div>
+    `
+  },
+  p4: {
+    cat: 'product', tag: '選擇權', tagClass: 'tag-product',
+    title: '選擇權：用小錢買「權利」的非線性商品',
+    html: `
+      <p>選擇權分為<strong>買方</strong>和<strong>賣方</strong>，性質截然不同：</p>
+      <ul>
+        <li><strong>買方：</strong>付出一筆「權利金」，取得在特定時間以特定價格買進（Call）或賣出（Put）的「權利」，不是「義務」。最大損失 = 權利金，獲利無上限（理論上）。</li>
+        <li><strong>賣方：</strong>收取權利金，但有「履約義務」，若對方執行，賣方必須照辦。需繳保證金，損失理論上無上限。</li>
+      </ul>
+      <div class="highlight">💡 台指選擇權（週選）：每週四到期，特別適合短線方向交易或波動率策略。同時提供 Call 和 Put，可做多空兩方。</div>
+      <div class="risk">⚠️ 買方雖然損失有限，但勝率低；賣方勝率高，但遇到黑天鵝事件可能爆損。兩者都不適合新手。</div>
+      <p>台股上常見的台指選擇權（TXOQ）流動性遠好於個股選擇權。</p>
+    `
+  },
+  p5: {
+    cat: 'product', tag: '權證', tagClass: 'tag-product',
+    title: '權證：券商發行的股票選擇權替代品',
+    html: `
+      <p><strong>權證</strong>是由證券商發行、掛牌在交易所的衍生性商品。持有人只能當<strong>買方</strong>，付出權利金押注標的股的漲（認購權證）或跌（認售權證）。</p>
+      <p><strong>與選擇權的差異：</strong></p>
+      <ul>
+        <li>選擇權你可以選擇當買方或賣方；權證只能當買方</li>
+        <li>權證義務由發行券商負擔，不需像選擇權賣方那樣繳保證金</li>
+        <li>個股權證的標的是個股，而非指數</li>
+      </ul>
+      <div class="highlight">💡 槓桿效果通常 3~6 倍，比融資更高；證交稅只有 0.1%（比現股的 0.3% 低）。</div>
+      <div class="risk">⚠️ 風險：<br>• 時間價值每天流逝（越接近到期日越快）<br>• 隱含波動率下降也會讓權證跌價<br>• 流動性差時，買賣價差大，實際成本高</div>
+    `
+  },
+  p6: {
+    cat: 'product', tag: '信用交易', tagClass: 'tag-product',
+    title: '融資融券（信用交易）：借錢買股、借股放空',
+    html: `
+      <p>信用交易是向券商借錢或借股票進行交易：</p>
+      <ul>
+        <li><strong>融資（借錢買股）：</strong>自備約 40% 保證金，券商借剩下 60%，等於 ~2.5 倍槓桿。要付融資利息（年利率約 6~7%）</li>
+        <li><strong>融券（借股放空）：</strong>先借券賣出，等股價跌後再買回還券，賺取價差。需繳保證金與融券費。</li>
+      </ul>
+      <div class="highlight">📌 重要機制：
+        <br>• <strong>融資追繳：</strong>股價下跌使維持率低於 130%，須補繳保證金，否則強制斷頭
+        <br>• <strong>融券強制回補：</strong>遇除權息、股東會前須強制還券
+      </div>
+      <div class="risk">⚠️ 信用交易的核心風險是「槓桿放大虧損」。正確使用融資的前提是對個股有高度信心，且資金充裕。</div>
+      <p>部分熱門股或小型股<strong>不開放信用交易</strong>（不得融資融券）。</p>
+    `
+  },
+  p7: {
+    cat: 'product', tag: '債券', tagClass: 'tag-product',
+    title: '債券：固定收益的借貸憑證',
+    html: `
+      <p><strong>債券</strong>是政府或企業向投資人借款，承諾定期支付利息（票息），到期償還本金的有價證券。</p>
+      <p><strong>主要種類：</strong></p>
+      <ul>
+        <li><strong>政府公債：</strong>台灣中央政府發行，幾乎無違約風險，但殖利率低</li>
+        <li><strong>公司債：</strong>企業發行，殖利率較高，需承擔信用風險（違約可能）</li>
+        <li><strong>可轉債（CB）：</strong>可轉換為股票的特殊公司債（詳見可轉債章節）</li>
+        <li><strong>ETF 債券型：</strong>如 00679B（美國公債），讓一般人低門檻投資債券</li>
+      </ul>
+      <div class="highlight">💡 債券與利率反向：利率上升，債券價格下跌；利率下降，債券價格上漲。</div>
+      <p>台灣一般投資人接觸債券最方便的方式是透過<strong>債券型 ETF</strong>，門檻低、流動性好。</p>
+    `
+  },
+  p8: {
+    cat: 'product', tag: '比較', tagClass: 'tag-product',
+    title: '五大商品風險報酬比較表',
+    html: `
+      <p>快速對照各類商品的核心特性：</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead>
+            <tr style="border-bottom:1px solid #3a3d50;">
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">商品</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">槓桿</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">最大損失</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">到期日</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">適合</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#2bbfbf;">現股</td>
+              <td style="padding:0.5rem 0.4rem;">無（1x）</td>
+              <td style="padding:0.5rem 0.4rem;">本金</td>
+              <td style="padding:0.5rem 0.4rem;">無</td>
+              <td style="padding:0.5rem 0.4rem;">所有人</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#2bbfbf;">ETF</td>
+              <td style="padding:0.5rem 0.4rem;">1x（原型）</td>
+              <td style="padding:0.5rem 0.4rem;">本金</td>
+              <td style="padding:0.5rem 0.4rem;">無</td>
+              <td style="padding:0.5rem 0.4rem;">穩健/長期</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:var(--accent);">融資</td>
+              <td style="padding:0.5rem 0.4rem;">~2.5x</td>
+              <td style="padding:0.5rem 0.4rem;">保證金+追繳</td>
+              <td style="padding:0.5rem 0.4rem;">6個月</td>
+              <td style="padding:0.5rem 0.4rem;">有經驗者</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#e0904a;">期貨</td>
+              <td style="padding:0.5rem 0.4rem;">5~15x</td>
+              <td style="padding:0.5rem 0.4rem;">理論無上限</td>
+              <td style="padding:0.5rem 0.4rem;">每月/季</td>
+              <td style="padding:0.5rem 0.4rem;">專業人士</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#c49dff;">選擇權買方</td>
+              <td style="padding:0.5rem 0.4rem;">10x+</td>
+              <td style="padding:0.5rem 0.4rem;">權利金</td>
+              <td style="padding:0.5rem 0.4rem;">每週/月</td>
+              <td style="padding:0.5rem 0.4rem;">專業人士</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem 0.4rem; color:#f08080;">權證</td>
+              <td style="padding:0.5rem 0.4rem;">3~6x</td>
+              <td style="padding:0.5rem 0.4rem;">權利金</td>
+              <td style="padding:0.5rem 0.4rem;">數月~1年</td>
+              <td style="padding:0.5rem 0.4rem;">中階投資人</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="risk">⚠️ 槓桿越高，潛在報酬越大，但虧損也可能超過預期。新手應從現股、原型 ETF 出發。</div>
+    `
+  },
+  // ===== VOLUME & CHIPS =====
+  v1: {
+    cat: 'volume', tag: '成交量', tagClass: 'tag-volume',
+    title: '成交量 vs 成交值：張數 vs 金額的差異',
+    html: `
+      <p>兩個看起來相似、實際上用途不同的指標：</p>
+      <ul>
+        <li><strong>成交量（Volume）：</strong>當日成交的股票張數（1張=1,000股）。反映「有多少股票在換手」，是股價走勢的先行指標。</li>
+        <li><strong>成交值（成交金額）：</strong>成交量 × 股價，反映「流入市場的總資金量」。更能反映市場熱度，適合比較不同股價的個股。</li>
+      </ul>
+      <div class="highlight">📌 使用場合：
+        <br>• 判斷行情力道 → 用<strong>成交量</strong>（量比前期放大了嗎？）
+        <br>• 判斷資金熱度 → 用<strong>成交值</strong>（大錢有沒有進來？）
+        <br>• 跨股比較活躍度 → 用<strong>換手率</strong>（排除股本大小差異）
+      </div>
+      <p>成交量在 K 線圖下方顯示為直條圖，紅色代表收盤上漲日，綠色代表下跌日（各券商略有不同）。</p>
+      <a class="source-link" href="https://www.stockfeel.com.tw/%E4%BB%80%E9%BA%BC%E6%98%AF%E6%88%90%E4%BA%A4%E9%87%8F%EF%BC%9F%E8%A6%81%E6%80%8E%E9%BA%BC%E7%9C%8B%EF%BC%9F/" target="_blank">→ 成交量完整說明（股感）</a>
+    `
+  },
+  v2: {
+    cat: 'volume', tag: '換手率', tagClass: 'tag-volume',
+    title: '換手率：相對活躍度，比成交量更客觀',
+    html: `
+      <p><strong>換手率（Turnover Rate）= 成交量 ÷ 流通在外股數 × 100%</strong></p>
+      <p>為什麼需要換手率？成交量是絕對數值，但股本 100 萬股的公司成交 10 萬股，和股本 1 億股的公司成交 10 萬股，意義天差地遠。換手率把這個差異標準化。</p>
+      <p><strong>換手率參考區間：</strong></p>
+      <ul>
+        <li><strong>&lt; 1%：</strong>低度活躍，籌碼穩定，少人關注</li>
+        <li><strong>1~3%：</strong>正常交投水準</li>
+        <li><strong>3~5%：</strong>相對活躍，有一定關注</li>
+        <li><strong>&gt; 10%：</strong>高度熱門，短線資金聚焦，或主力在換手</li>
+        <li><strong>&gt; 20%：</strong>異常熱門，可能是炒作或重大事件</li>
+      </ul>
+      <div class="highlight">💡 換手率結合股價方向判讀：<br>• 放量（高換手）+上漲 → 強勢確認，追漲有依據<br>• 放量（高換手）+下跌 → 出貨訊號，要警惕<br>• 縮量（低換手）+上漲 → 籌碼穩，惜售<br>• 縮量（低換手）+下跌 → 無量陰跌，或盤整</div>
+    `
+  },
+  v3: {
+    cat: 'volume', tag: '籌碼', tagClass: 'tag-volume',
+    title: '籌碼是什麼？誰持有，誰說話算',
+    html: `
+      <p><strong>「籌碼」</strong>在股市裡指的是股票的持有狀況——就像賭場籌碼代表資金，股市籌碼代表你「持有多少股票」。</p>
+      <div class="highlight">💡 核心邏輯：
+        <br>• 籌碼<strong>集中</strong>在少數人（法人、大戶）手上 → 控盤力強，股價易漲
+        <br>• 籌碼<strong>分散</strong>在眾多散戶手上 → 人心惶惶，股價易跌
+      </div>
+      <p><strong>籌碼分析的優勢：</strong></p>
+      <ul>
+        <li>真金白銀交易，無法造假（不像消息面可能是謠言）</li>
+        <li>跟著法人、大戶的研究成果操作，間接利用他們的資訊優勢</li>
+        <li>台灣是全球少數開放籌碼數據給一般大眾查看的市場</li>
+      </ul>
+      <div class="risk">⚠️ 籌碼分析的限制：<br>• 籌碼是歷史數據，反映的是「已發生」的交易<br>• 法人可能有被動配置成分（如 ETF），不等於主動看好<br>• 需搭配技術面、基本面綜合判斷</div>
+      <a class="source-link" href="https://www.fincake.co/blog/chip-analysis" target="_blank">→ 籌碼面分析入門（Fincake）</a>
+    `
+  },
+  v4: {
+    cat: 'volume', tag: '法人籌碼', tagClass: 'tag-volume',
+    title: '三大法人：外資、投信、自營商的角色',
+    html: `
+      <p>台灣股市的<strong>三大法人</strong>合計資金佔台股約四成，每個交易日盤後，台灣證交所和期交所都會公布他們的買賣超數據。</p>
+      <ul>
+        <li><strong>外資（QFII）：</strong>境外法人，通常有大量研究資源，對大型權值股（台積電、台達電等）影響最大。外資的期貨未平倉多空部位尤其值得觀察。</li>
+        <li><strong>投信：</strong>台灣本土基金公司，買盤穩定，但需區分「主動看好」vs「ETF 被動配置」（見法人與市場章節）。</li>
+        <li><strong>自營商：</strong>券商自有資金操盤，反應靈敏，但有時是為了造市或避險，方向性參考價值較低。</li>
+      </ul>
+      <div class="highlight">📌 查詢方式：台灣證券交易所官網 (twse.com.tw) → 交易資訊 → 三大法人，或直接用 Fincake、CMoney 等工具。</div>
+      <p>三大法人期貨未平倉可在<strong>台灣期貨交易所（taifex.com.tw）</strong>每日盤後查詢。</p>
+      <a class="source-link" href="https://quantpass.org/institutional-investors-tw/" target="_blank">→ 三大法人未平倉說明（量化通）</a>
+    `
+  },
+  v5: {
+    cat: 'volume', tag: '大戶籌碼', tagClass: 'tag-volume',
+    title: '主力與大戶：千張以上持有者的影響力',
+    html: `
+      <p>在籌碼分析中，<strong>「主力」</strong>泛指資金雄厚、可影響股價的大型投資人，包含三大法人，以及持股超過千張的<strong>大戶</strong>。</p>
+      <ul>
+        <li><strong>千張大戶：</strong>持有單一個股超過 1,000 張的投資人，集保公司依持股區間統計其持股比例，每週公布</li>
+        <li><strong>董監事持股：</strong>公司內部人，其增減持是重要的籌碼信號</li>
+        <li><strong>分點主力（分公司）：</strong>透過觀察各券商分點（如富邦信義、元大敦南）的買賣情況，可追蹤特定主力的動向</li>
+      </ul>
+      <div class="highlight">💡 觀察要點：<br>• 千張大戶持股連續增加多日 → 籌碼集中，看漲<br>• 千張大戶持股連續減少 → 籌碼鬆動，要小心<br>• 連續性比單日變化更有參考價值</div>
+      <div class="risk">⚠️ 分點主力資料有 T+1 延遲，且主力可能用多個帳號分散，觀察時需多方交叉比對。</div>
+    `
+  },
+  v6: {
+    cat: 'volume', tag: '量價', tagClass: 'tag-volume',
+    title: '量價關係四種情境：放量漲、縮量漲、放量跌、縮量跌',
+    html: `
+      <p>成交量是股價的「先行指標」，四種量價組合各有不同意涵：</p>
+      <div style="overflow-x:auto; margin:0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead>
+            <tr style="border-bottom:1px solid #3a3d50;">
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">情境</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">解讀</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">意涵</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#3bbf8a;">放量上漲</td>
+              <td style="padding:0.5rem 0.4rem;">多方強勁</td>
+              <td style="padding:0.5rem 0.4rem;">趨勢確認，最強訊號</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#c9a96e;">縮量上漲</td>
+              <td style="padding:0.5rem 0.4rem;">惜售、籌碼穩</td>
+              <td style="padding:0.5rem 0.4rem;">短線持穩，但需注意量能能否跟上</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#e06060;">放量下跌</td>
+              <td style="padding:0.5rem 0.4rem;">空方強勁，賣壓重</td>
+              <td style="padding:0.5rem 0.4rem;">趨勢反轉或加速下跌</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem 0.4rem; color:#7a7d8c;">縮量下跌</td>
+              <td style="padding:0.5rem 0.4rem;">無量陰跌</td>
+              <td style="padding:0.5rem 0.4rem;">可能是盤整，或市場觀望</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight">💡 特別注意：<br>• 「高檔放量後股價不再創高」→ 出貨訊號，資金在流出<br>• 「下跌途中放量止跌反彈」→ 可能是籌碼清洗完、底部訊號</div>
+      <p>比較對象：成交量要和「同一標的過去的量」相比，不同個股之間的成交量比較無意義。</p>
+    `
+  },
+  // ===== APP GUIDE =====
+  a1: {
+    cat: 'app', tag: '永豐', tagClass: 'tag-app',
+    title: '永豐大戶投 App：籌碼 + 大戶買賣力',
+    html: `
+      <p><strong>永豐金證券大戶投 App</strong> 是台灣市場上籌碼分析功能最完整的券商 App 之一。</p>
+      <p><strong>四大核心功能：</strong></p>
+      <ul>
+        <li><strong>分價量表：</strong>顯示不同價位區間的成交分布，判斷主力成本帶</li>
+        <li><strong>大戶/散戶買賣力：</strong>依交易金額將投資人分級，觀察不同規模資金的流向方向</li>
+        <li><strong>資金分布：</strong>顯示當日資金集中在哪個產業或個股</li>
+        <li><strong>資金流向：</strong>即時觀察資金是流入還是流出</li>
+      </ul>
+      <div class="highlight">📱 查詢路徑：<br>• 個股頁面 → 籌碼 → 大戶/散戶買賣力<br>• 個股頁面 → 籌碼 → 分價量表<br>• 首頁 → 資金分布（大盤整體）</div>
+      <div class="risk">⚠️ 部分進階功能需要在永豐開戶後才能使用。免費帳號可查基本行情，但籌碼深度功能需要驗證身份。</div>
+    `
+  },
+  a2: {
+    cat: 'app', tag: '免費工具', tagClass: 'tag-app',
+    title: '免費公開資料查詢：TWSE / TPEX / 期交所',
+    html: `
+      <p>不用開戶也能查到的重要資料，全部免費：</p>
+      <ul>
+        <li><strong>台灣證券交易所 twse.com.tw：</strong><br>→ 三大法人買賣超、融資融券、個股資料、注意/處置股清單</li>
+        <li><strong>證券櫃買中心 tpex.org.tw：</strong><br>→ 上櫃股票的三大法人、信用交易、ETF 統計</li>
+        <li><strong>台灣期貨交易所 taifex.com.tw：</strong><br>→ 三大法人期貨未平倉、選擇權統計、小台散戶多空比</li>
+        <li><strong>公開資訊觀測站 mops.twse.com.tw：</strong><br>→ 公司財報、重大訊息、股東持股結構、月營收</li>
+      </ul>
+      <div class="highlight">📌 實用快速查詢網站（第三方整合）：<br>• <strong>Goodinfo 台灣股市資訊網：</strong>免費、資料最齊全，融資、法人、董監全有<br>• <strong>CMoney：</strong>基本面 + 籌碼，部分免費<br>• <strong>Yahoo 股市（台灣版）：</strong>資券餘額、即時行情快速查</div>
+    `
+  },
+  a3: {
+    cat: 'app', tag: '第三方工具', tagClass: 'tag-app',
+    title: '進階分析平台：XQ、MacroMicro、Fincake',
+    html: `
+      <p>超越一般券商 App 的進階工具：</p>
+      <ul>
+        <li><strong>XQ 全球贏家：</strong>台灣最強的看盤 + 選股 + 回測平台，支援 20+ 家券商直接下單。功能最全，但要付費訂閱。適合中階以上投資人。</li>
+        <li><strong>MacroMicro（財經M平方）：</strong>總體經濟指標視覺化神器，融資維持率、散戶多空比、外資期貨部位都有圖表。部分免費。</li>
+        <li><strong>Fincake（籌碼K線）：</strong>籌碼面分析為主，三大法人、主力分點、千張大戶一目了然。有免費版和付費版。</li>
+        <li><strong>StockFeel 股感：</strong>財經知識教育 + 個股基本面，適合學習階段。</li>
+        <li><strong>TradingView：</strong>國際通用的技術分析繪圖工具，支援台股，圖表功能強大，社群豐富。</li>
+      </ul>
+      <div class="highlight">💡 推薦新手路徑：<br>① 先用 Goodinfo 看基本數據（免費）<br>② 搭配 MacroMicro 理解大盤環境（部分免費）<br>③ 有需要深度籌碼分析時再考慮 Fincake 或 XQ 付費</div>
+    `
+  },
+  a4: {
+    cat: 'app', tag: '比較', tagClass: 'tag-app',
+    title: '各大券商 App 功能速覽比較',
+    html: `
+      <p>台灣各大券商 App 各有特色，以下是快速對照：</p>
+      <div style="overflow-x:auto; margin:0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.76rem; font-family:'Space Mono',monospace;">
+          <thead>
+            <tr style="border-bottom:1px solid #3a3d50;">
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">券商</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">App 名稱</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">籌碼功能</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">特色</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">永豐</td>
+              <td style="padding:0.5rem 0.4rem;">大戶投</td>
+              <td style="padding:0.5rem 0.4rem;">★★★★★</td>
+              <td style="padding:0.5rem 0.4rem;">籌碼最完整</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">元大</td>
+              <td style="padding:0.5rem 0.4rem;">投資先生</td>
+              <td style="padding:0.5rem 0.4rem;">★★★☆☆</td>
+              <td style="padding:0.5rem 0.4rem;">法人買賣超、基本籌碼</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">富邦</td>
+              <td style="padding:0.5rem 0.4rem;">e點通/AI PRO</td>
+              <td style="padding:0.5rem 0.4rem;">★★★☆☆</td>
+              <td style="padding:0.5rem 0.4rem;">介面較新，台美股整合</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">國泰</td>
+              <td style="padding:0.5rem 0.4rem;">國泰證券</td>
+              <td style="padding:0.5rem 0.4rem;">★★☆☆☆</td>
+              <td style="padding:0.5rem 0.4rem;">年輕族群友善，定期定額強</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">口袋證券</td>
+              <td style="padding:0.5rem 0.4rem;">口袋證券</td>
+              <td style="padding:0.5rem 0.4rem;">★★★☆☆</td>
+              <td style="padding:0.5rem 0.4rem;">介面最新潮，法人買賣</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">Fugle</td>
+              <td style="padding:0.5rem 0.4rem;">Fugle 富果</td>
+              <td style="padding:0.5rem 0.4rem;">★★★☆☆</td>
+              <td style="padding:0.5rem 0.4rem;">API 友善，開發者最愛</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight">💡 建議策略：用自己券商的 App 下單，另外搭配 Goodinfo 或 Fincake 查籌碼，不必強求單一 App 全包。</div>
+      <div class="risk">⚠️ 功能評比以公開資訊為準，各 App 版本持續更新，建議實際下載試用後再決定。</div>
+    `
+  }
+};
+
+// ===== US MARKET BASICS =====
+const MODALS_US = {
+  us1: {
+    cat: 'us-market', tag: '美股基礎', tagClass: 'tag-us-market',
+    title: '三大指數：道瓊、S&P500、NASDAQ 的差異',
+    html: `
+      <p>美股三大指數各有不同的編製邏輯與代表性，投資人必須了解其差異，才能正確解讀市場訊號。</p>
+      <ul>
+        <li><strong>道瓊工業平均指數（DJIA）：</strong>由 30 檔大型藍籌股組成，採<strong>價格加權</strong>（Price-Weighted）方式計算，股價高的股票影響力更大。歷史最悠久（1896年創立），但成分股少、代表性有限，科技股比重偏低。</li>
+        <li><strong>標普500指數（S&P 500）：</strong>涵蓋 500 家市值最大的上市公司，採<strong>市值加權</strong>（Market-Cap Weighted），覆蓋美股總市值約 80%，是機構法人與指數基金最常用的基準指標（Benchmark）。</li>
+        <li><strong>那斯達克綜合指數（NASDAQ Composite）：</strong>涵蓋那斯達克交易所所有上市股票（超過 3,000 檔），科技股、生技股比重極高，波動性大於 S&P 500。另有 <strong>NASDAQ 100</strong>，精選非金融類前 100 大市值公司，是 QQQ ETF 的追蹤標的。</li>
+        <li><strong>Russell 2000：</strong>小型股指數，2,000 家小市值公司，是觀察美國中小企業景氣的重要指標。</li>
+      </ul>
+      <div class="highlight">💡 實務上，S&P 500 是最具代表性的「美股整體表現」指標。道瓊因價格加權的缺陷，較適合作為歷史比較參考；NASDAQ 走勢主要反映科技產業景氣。三大指數長期年化報酬（含股息再投入）：S&P 500 約 <strong>10%</strong>，NASDAQ 100 約 <strong>14%</strong>（波動極大），道瓊約 <strong>9~10%</strong>。</div>
+      <div class="risk">⚠️ 指數高點不代表所有股票都好，S&P 500 前十大成分股市值佔比常超過 30%，科技巨頭主導走勢，需留意集中風險。</div>
+    `
+  },
+  us2: {
+    cat: 'us-market', tag: '美股基礎', tagClass: 'tag-us-market',
+    title: 'NYSE vs NASDAQ：兩大交易所的差異',
+    html: `
+      <p>美國兩大主要股票交易所在運作機制、上市標準與產業組成上有明顯差異。</p>
+      <ul>
+        <li><strong>NYSE（紐約證券交易所）：</strong>成立於 1792 年，全球最大交易所（以市值計）。採<strong>混合式市場</strong>，有實體交易大廳（Floor）及電子交易。傳統由「專門交易商（DMM）」負責維持市場秩序。上市公司多為傳統大型企業，如 JP Morgan、Coca-Cola、Walmart 等。</li>
+        <li><strong>NASDAQ：</strong>1971 年創立，全球首個電子化交易所，<strong>純電子撮合</strong>，無實體交易大廳。由多家「做市商（Market Maker）」競價提供流動性。吸引科技、生技新創企業，如 Apple、Microsoft、Amazon、Meta 均掛牌於此。</li>
+        <li><strong>上市門檻：</strong>NYSE 要求更嚴格，最低股東權益達 400 萬美元以上；NASDAQ 分三層（Global Select、Global Market、Capital Market），門檻較低，適合成長型企業。</li>
+        <li><strong>股票代碼慣例：</strong>NYSE 通常 1~3 個英文字母（T、GE、IBM），NASDAQ 通常 4~5 個字母（AAPL、MSFT、GOOGL）。</li>
+      </ul>
+      <div class="highlight">💡 對一般投資人而言，兩個交易所的股票都可透過同一券商帳戶買賣，操作上幾乎無差異。交易所本身不影響股票品質，重點仍是公司基本面。</div>
+      <div class="risk">⚠️ 部分公司會在兩所之間轉板，轉板本身不代表公司優劣變化，但可能影響短期流動性。</div>
+    `
+  },
+  us3: {
+    cat: 'us-market', tag: '美股基礎', tagClass: 'tag-us-market',
+    title: '美股交易時間與台灣投資人的注意事項',
+    html: `
+      <p>美股交易時間與台灣時區相差甚大，投資人需特別注意時間管理與夜間風險。</p>
+      <ul>
+        <li><strong>正式交易時間（Regular Hours）：</strong>美東時間（ET）09:30 ~ 16:00，換算台灣時間（UTC+8）：
+          <ul>
+            <li>夏令時間（3月中～11月初）：台灣 <strong>21:30 ~ 04:00</strong></li>
+            <li>冬令時間（11月初～3月中）：台灣 <strong>22:30 ~ 05:00</strong></li>
+          </ul>
+        </li>
+        <li><strong>盤前交易（Pre-Market）：</strong>ET 04:00 ~ 09:30，流動性低、價差大，財報公布後常有大幅跳動。</li>
+        <li><strong>盤後交易（After-Hours）：</strong>ET 16:00 ~ 20:00，同樣流動性差，重大財報常在此時公布。</li>
+        <li><strong>台灣常用券商：</strong>複委託（元大、富邦、國泰）手續費較高但有中文客服；海外券商（Interactive Brokers）手續費低但需英文操作，需注意美國遺產稅問題。</li>
+      </ul>
+      <div class="highlight">💡 台灣投資人建議善用「限價單（Limit Order）」，避免在流動性差的盤前/盤後以市價單造成滑點損失。多數下單可在台灣白天掛好條件單，等待美股開盤自動執行。</div>
+      <div class="risk">⚠️ 財報季期間，持倉股票可能在台灣深夜大幅波動。建議提前了解財報公布時間（BMO = 開盤前，AMC = 收盤後），避免過度集中持倉。</div>
+    `
+  },
+  us4: {
+    cat: 'us-market', tag: '美股基礎', tagClass: 'tag-us-market',
+    title: '財報季 Earnings Season：每季驅動行情',
+    html: `
+      <p>財報季（Earnings Season）是美股行情最重要的催化劑之一，每季結束後約三週，大量公司集中公布季度財報，市場波動顯著放大。</p>
+      <ul>
+        <li><strong>四個財報季時間：</strong>
+          <ul>
+            <li>Q1 財報（1~3月業績）：約 4 月中旬開始</li>
+            <li>Q2 財報（4~6月業績）：約 7 月中旬開始</li>
+            <li>Q3 財報（7~9月業績）：約 10 月中旬開始</li>
+            <li>Q4 財報（10~12月業績）：約隔年 1 月中旬開始</li>
+          </ul>
+        </li>
+        <li><strong>財報重點指標：</strong>
+          <ul>
+            <li><strong>EPS（每股盈餘）：</strong>實際 vs 分析師預估（Consensus Estimate），Beat/Miss/In-line</li>
+            <li><strong>Revenue（營收）：</strong>年增率（YoY）、季增率（QoQ）是否符合預期</li>
+            <li><strong>Guidance（展望）：</strong>公司對下一季或全年的預測，往往比當季財報更影響股價</li>
+            <li><strong>Gross Margin（毛利率）：</strong>反映定價能力與成本控制</li>
+          </ul>
+        </li>
+        <li><strong>大型財報帶動效應：</strong>Apple、Microsoft、Amazon、Alphabet、Meta 等市值巨頭財報，往往影響整體指數走向。</li>
+      </ul>
+      <div class="highlight">💡 「Buy the rumor, sell the news」在財報季常見：股價提前反映預期，財報公布後即便亮眼也可能下跌。關注「Beat 幅度」與 Guidance 是否超越預期，而非單純看是否 Beat。可用 Earnings Whisper 查財報公布時間。</div>
+      <div class="risk">⚠️ 財報公布前後，選擇權（Options）隱含波動率（IV）大幅上升，選擇權賣方需特別注意。即便基本面良好，若 Guidance 低於預期，股價單日下跌 10~20% 並非罕見。</div>
+    `
+  },
+  us5: {
+    cat: 'us-market', tag: '美股基礎', tagClass: 'tag-us-market',
+    title: 'SEC 申報文件：10-K、10-Q、8-K 怎麼讀',
+    html: `
+      <p>美國證券交易委員會（SEC）要求上市公司定期申報各類文件，是基本面分析最原始、最可靠的資料來源，免費公開於 SEC EDGAR 系統。</p>
+      <ul>
+        <li><strong>10-K（年度報告）：</strong>每年財政年度結束後 60~90 天內申報。包含：完整財務報表、業務描述、風險因子（Risk Factors）、管理層討論與分析（MD&A）。通常 100~200 頁，是了解公司最全面的文件。</li>
+        <li><strong>10-Q（季度報告）：</strong>每季結束後 40~45 天內申報（第四季由 10-K 取代）。財務資訊未經完整審計，但可追蹤公司季度進展。</li>
+        <li><strong>8-K（重大事件即時申報）：</strong>發生重大事件後 4 個工作天內申報。常見觸發：財報公布、合併收購、CEO 更換、股息宣告、訴訟和解等。</li>
+        <li><strong>DEF 14A（委託書聲明）：</strong>股東大會前申報，含高管薪酬細節，是公司治理分析重要參考。</li>
+        <li><strong>S-1：</strong>IPO 申請書，新股上市前的完整業務說明，包含風險因子、財務歷史。</li>
+      </ul>
+      <div class="highlight">💡 閱讀建議順序：先看 8-K 掌握最新動態 → 10-K 的 Risk Factors（管理層誠實揭露的風險）→ MD&A 中管理層對業績的解釋 → 財務報表數字。大多數散戶忽略 Risk Factors，但這往往是最誠實的公司自我揭露。</div>
+      <div class="risk">⚠️ SEC 文件是法律文件，管理層對財報數字負法律責任，但 MD&A 的前瞻描述仍可能過度樂觀。搭配第三方分析師報告交叉驗證更佳。</div>
+      <a class="source-link" href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany" target="_blank">→ SEC EDGAR 公司文件查詢</a>
+    `
+  },
+  us6: {
+    cat: 'us-market', tag: '美股基礎', tagClass: 'tag-us-market',
+    title: '聯準會（Fed）升降息對股市的影響',
+    html: `
+      <p>美國聯邦準備系統（Federal Reserve，簡稱 Fed）的貨幣政策是影響美股最重要的總體經濟因素之一，投資人必須了解其運作機制與市場傳導路徑。</p>
+      <ul>
+        <li><strong>聯邦基金利率（Federal Funds Rate）：</strong>Fed 設定的目標利率，由聯邦公開市場委員會（FOMC）在每年 8 次例會中決定，每次調整通常為 25 個基點（bps）。</li>
+        <li><strong>升息對股市的影響：</strong>
+          <ul>
+            <li>借貸成本上升 → 企業獲利壓力增加</li>
+            <li>無風險利率（Risk-Free Rate）上升 → 股票相對吸引力下降（DCF 折現率提高）</li>
+            <li>成長股（高本益比）受衝擊最大，因未來現金流折現後價值縮水更多</li>
+            <li>金融股（銀行）通常受益，因存放款利差擴大</li>
+          </ul>
+        </li>
+        <li><strong>降息對股市的影響：</strong>流動性寬鬆 → 估值擴張 → 科技、成長股受益最大；但若降息因衰退引發，股市可能同步下行。</li>
+        <li><strong>重要觀察指標：</strong>CME FedWatch Tool（市場預期升降息機率）、CPI 通膨數據、非農就業人數（NFP）、Fed 官員講話（尤其 Fed Chair）。</li>
+      </ul>
+      <div class="highlight">💡 歷史參考：2022 年 Fed 以史上最快速度升息（從 0.25% 升至 5.5%），S&P 500 全年下跌約 19.4%，那斯達克跌逾 33%。2023~2024 年停止升息後，市場強勁反彈。利率預期的轉變往往比實際升降息時點更早影響股市。</div>
+      <div class="risk">⚠️ 「Don't fight the Fed」是華爾街名言，貨幣政策方向與股市長期趨勢高度相關。但市場對 Fed 政策的解讀常過度反應，短期波動不代表長期趨勢改變。</div>
+      <a class="source-link" href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank">→ CME FedWatch Tool 利率預期</a>
+    `
+  },
+  us7: {
+    cat: 'us-market', tag: '美股基礎', tagClass: 'tag-us-market',
+    title: '美股放空機制：融券、Put、反向 ETF',
+    html: `
+      <p>美股提供多種「做空（Short）」工具，讓投資人在預期股價下跌時獲利，或用於避險（Hedging）。各工具風險特性不同，需審慎選擇。</p>
+      <ul>
+        <li><strong>融券放空（Short Selling）：</strong>向券商借股票賣出，待股價下跌後買回還券，賺取價差。
+          <ul>
+            <li>需支付<strong>借券費率（Stock Borrow Rate）</strong>，熱門放空股票費率可高達年化 50%~100%+</li>
+            <li>理論最大虧損無限（股價可以無限上漲），風險極高</li>
+            <li>「軋空行情（Short Squeeze）」：做空比例過高時，股價急漲迫使空方回補（如 2021 年 GME 事件）</li>
+          </ul>
+        </li>
+        <li><strong>買入賣權（Buy Put Options）：</strong>支付權利金購買「在特定價格賣出股票」的權利。最大損失為權利金，適合定向做空或避險。缺點是有時間價值損耗（Theta Decay）。</li>
+        <li><strong>反向 ETF（Inverse ETF）：</strong>追蹤指數反向報酬的 ETF，如 SQQQ（三倍做空 NASDAQ 100）、SH（一倍做空 S&P 500）。操作簡單，但長期持有因<strong>每日複利重置（Daily Rebalancing）</strong>會出現衰耗，不適合長期持有。</li>
+      </ul>
+      <div class="highlight">💡 散戶最常用的避險方式：持有個股的同時買入對應指數的 Put（如持有科技股時買 QQQ Put），可在市場大跌時減少整體損失。成本即為保險費。可查詢「Short Interest Ratio（Days to Cover）」評估軋空風險大小。</div>
+      <div class="risk">⚠️ 裸放空（Naked Short Selling）在美國大多數情況下屬違法行為。融券放空理論上虧損無上限，新手投資人建議以 Put Options 替代，確保最大損失可控。</div>
+    `
+  },
+  us8: {
+    cat: 'us-market', tag: '美股基礎', tagClass: 'tag-us-market',
+    title: 'ADR 美國存託憑證：外國股在美上市',
+    html: `
+      <p>美國存託憑證（American Depositary Receipt，ADR）讓投資人可在美國市場用美元買賣外國公司股票，是接觸台積電（TSM）、阿里巴巴（BABA）、豐田（TM）等非美國公司的主要管道。</p>
+      <ul>
+        <li><strong>運作機制：</strong>美國存託銀行（如 BNY Mellon、Citibank）在外國市場持有原股，發行對應的 ADR 在美交易。1 ADR 可代表多股或小數股的原股（兌換比率各異）。</li>
+        <li><strong>ADR 分級：</strong>
+          <ul>
+            <li><strong>Level I：</strong>僅在 OTC 場外市場交易，申報要求最低，流動性較差</li>
+            <li><strong>Level II & III：</strong>在 NYSE 或 NASDAQ 掛牌，需向 SEC 申報（20-F 年報），流動性佳</li>
+          </ul>
+        </li>
+        <li><strong>台積電 ADR（TSM）：</strong>1 ADR = 5 股台灣普通股，在 NYSE 掛牌，是流動性最高的亞洲科技 ADR 之一。</li>
+        <li><strong>ADR 費用：</strong>持有 ADR 需負擔<strong>存託費（Depositary Fee）</strong>，通常每年每 ADR 收取 $0.01~$0.05，由股息中扣除。</li>
+      </ul>
+      <div class="highlight">💡 ADR 價格會因匯率波動與原股市場差異產生溢價或折價（Premium/Discount）。台積電 ADR 與台股之間存在套利空間，但一般散戶難以直接套利，需留意兩市場價差。</div>
+      <div class="risk">⚠️ 投資 ADR 除股票風險外，還需承擔<strong>匯率風險</strong>（原幣對美元）、<strong>地緣政治風險</strong>（如中概股下市風險）及<strong>股息雙重課稅</strong>問題（台灣先扣 21%，美國再課稅）。</div>
+    `
+  },
+
+  // ===== VALUATION =====
+  uv1: {
+    cat: 'us-valuation', tag: '公司估值', tagClass: 'tag-us-valuation',
+    title: 'P/E 本益比：最常見估值指標，如何判讀',
+    html: `
+      <p>本益比（Price-to-Earnings Ratio，P/E）是最廣泛使用的估值指標，代表投資人為每一元盈餘願意支付的價格，反映市場對公司未來成長的預期。</p>
+      <ul>
+        <li><strong>計算公式：</strong>P/E = 股價（Price）÷ 每股盈餘（EPS）</li>
+        <li><strong>歷史參考數值：</strong>
+          <ul>
+            <li>S&P 500 長期平均 P/E：約 <strong>15~17 倍</strong></li>
+            <li>S&P 500 近十年平均（低利率時代）：約 <strong>20~25 倍</strong></li>
+            <li>科技成長股常見：<strong>30~60 倍</strong>甚至更高</li>
+            <li>傳統產業、公用事業：<strong>10~15 倍</strong></li>
+            <li>金融股：<strong>8~12 倍</strong></li>
+          </ul>
+        </li>
+        <li><strong>席勒 P/E（CAPE）：</strong>採用通膨調整後的 10 年平均盈餘計算，可排除單一年份盈餘波動，歷史均值約 <strong>16~17 倍</strong>，常用於判斷整體市場是否高估。</li>
+        <li><strong>P/E 必須同產業比較（Peer Comparison）才有意義</strong>，不同產業基準差異極大。若公司正逢週期低點導致 EPS 極低，P/E 會虛高。</li>
+      </ul>
+      <div class="highlight">💡 P/E 最大缺點：無法用於虧損公司（EPS 為負數時無意義）、對資本結構差異不敏感、盈餘可能因會計操縱而失真。建議搭配其他估值指標（EV/EBITDA、P/FCF）交叉驗證。</div>
+      <div class="risk">⚠️ 週期性行業（能源、礦業）在景氣高點時 EPS 暴漲使 P/E 看似低估，景氣低點 EPS 崩跌使 P/E 看似極高——這是週期股的「P/E 陷阱」，需用跨週期均化盈餘（如 CAPE）來看。</div>
+    `
+  },
+  uv2: {
+    cat: 'us-valuation', tag: '公司估值', tagClass: 'tag-us-valuation',
+    title: 'Forward P/E vs Trailing P/E：前瞻與歷史本益比',
+    html: `
+      <p>P/E 因所用 EPS 時間基準不同，分為回顧型（Trailing）與前瞻型（Forward）兩種，在不同情境下各有優劣。</p>
+      <ul>
+        <li><strong>Trailing P/E（TTM P/E）：</strong>使用過去 12 個月實際 EPS（Trailing Twelve Months）。優點：數字已確定，基於已發生的事實；缺點：向後看，不反映公司未來變化，對快速成長或衰退的公司失真。</li>
+        <li><strong>Forward P/E：</strong>使用分析師預估的未來 12 個月（或下一財政年度）EPS。優點：更具前瞻性；缺點：依賴分析師預估，預估值可能大幅偏離實際結果。S&P 500 Forward P/E 歷史均值：約 <strong>15~18 倍</strong>。</li>
+        <li><strong>NTM P/E（Next Twelve Months）：</strong>使用未來 12 個月滾動預估，是機構法人最常用的比較基準。</li>
+        <li><strong>訊號解讀：</strong>
+          <ul>
+            <li>Forward P/E 遠低於 Trailing P/E → 市場預期盈餘將顯著成長（加速訊號）</li>
+            <li>Forward P/E 遠高於 Trailing P/E → 市場預期盈餘將下滑（警示訊號）</li>
+          </ul>
+        </li>
+      </ul>
+      <div class="highlight">💡 實務上，看 Forward P/E 同時要關注「EPS 預估修正趨勢（Earnings Revision）」：若分析師持續上調預估，Forward P/E 的分母增大使估值看起來更便宜；若持續下調，則相反。</div>
+      <div class="risk">⚠️ 財報季期間，若公司下修 Guidance，Forward EPS 預估會被分析師快速調降，導致 Forward P/E 瞬間膨脹，股價也往往同步重挫。這是持倉前需評估的主要風險之一。</div>
+    `
+  },
+  uv3: {
+    cat: 'us-valuation', tag: '公司估值', tagClass: 'tag-us-valuation',
+    title: 'P/B 股價淨值比：資產密集型產業適用',
+    html: `
+      <p>股價淨值比（Price-to-Book Ratio，P/B）衡量股價相對於公司帳面淨資產的倍數，特別適用於資產價值為核心的產業，如銀行、保險、房地產。</p>
+      <ul>
+        <li><strong>計算公式：</strong>P/B = 股價 ÷ 每股帳面價值（Book Value Per Share）</li>
+        <li><strong>帳面價值（Book Value）：</strong>= 總資產 − 總負債，即股東權益（Shareholders' Equity）</li>
+        <li><strong>典型數值參考：</strong>
+          <ul>
+            <li>S&P 500 整體 P/B：約 <strong>3.5~4.5 倍</strong>（因科技股佔比高而偏高）</li>
+            <li>銀行股：<strong>0.8~1.5 倍</strong>（低於 1 倍代表市場認為資產品質有疑慮）</li>
+            <li>科技、輕資產公司：<strong>5~20 倍甚至更高</strong>（品牌、IP、人才不列入帳面）</li>
+            <li>房地產（REIT）：通常接近 <strong>1~2 倍</strong></li>
+          </ul>
+        </li>
+        <li><strong>P/B < 1 的意涵：</strong>股價低於清算價值，可能代表低估（Graham 古典價值投資買入訊號），但也可能反映資產品質惡化。</li>
+        <li><strong>ROE 與 P/B 的關係：</strong>高 ROE 公司理應有高 P/B，因其帳面資產能創造更多收益。P/B ÷ ROE ≈ P/E，三者存在數學恆等關係。</li>
+      </ul>
+      <div class="highlight">💡 對科技公司使用 P/B 意義有限：Google、Apple 等公司核心價值在於品牌、演算法、生態系，這些無形資產在 GAAP 下幾乎不計入帳面，導致 P/B 虛高卻不代表高估。P/B 最適合「資產可信且流動」的金融業。</div>
+      <div class="risk">⚠️ 帳面價值可能受商譽（Goodwill）大量虛增（收購溢價計入），若商譽減損，P/B 會突然大幅上升。評估銀行股時需特別關注不良貸款比率（NPL Ratio）以判斷資產真實品質。</div>
+    `
+  },
+  uv4: {
+    cat: 'us-valuation', tag: '公司估值', tagClass: 'tag-us-valuation',
+    title: 'EV/EBITDA：排除資本結構差異的估值法',
+    html: `
+      <p>EV/EBITDA 是併購（M&A）和機構分析師最廣泛使用的估值倍數之一，透過企業價值（EV）與稅息折舊攤銷前盈餘（EBITDA）的比較，排除了資本結構與會計折舊的影響，更適合跨公司、跨產業比較。</p>
+      <ul>
+        <li><strong>企業價值（EV）：</strong>EV = 市值（Market Cap）+ 有息負債（Debt）− 現金與約當現金（Cash）。代表「買下整家公司需付出的總代價」，包含承接債務。</li>
+        <li><strong>EBITDA：</strong>稅前息前折舊攤銷前盈餘 = 營業利益（EBIT）+ 折舊（D）+ 攤銷（A），近似於「經營現金流的代理指標」。</li>
+        <li><strong>典型數值參考：</strong>
+          <ul>
+            <li>S&P 500 整體：約 <strong>12~15 倍</strong></li>
+            <li>科技 SaaS 公司：<strong>20~40 倍</strong>（高成長溢價）</li>
+            <li>傳統製造業：<strong>6~10 倍</strong></li>
+            <li>電信業：<strong>5~8 倍</strong></li>
+            <li>私募股權（PE）收購基準：通常 <strong>7~12 倍</strong></li>
+          </ul>
+        </li>
+        <li><strong>優點：</strong>不受資本結構（負債多寡）影響；排除折舊攤銷；對跨國公司排除稅率差異。在 LBO（槓桿收購）分析中極為重要。</li>
+      </ul>
+      <div class="highlight">💡 EV/EBITDA 在 LBO 分析中，PE 基金常以目標公司的 EV/EBITDA 判斷收購價格合理性，並設定目標退出倍數（Exit Multiple）。一般而言，EV/EBITDA 低於行業均值可能代表低估或被併購目標。</div>
+      <div class="risk">⚠️ EBITDA 的批評：Warren Buffett 稱 EBITDA 是「垃圾盈餘」，因為它忽略了資本支出（Capex）。對重資產行業（航空、礦業）而言，折舊是真實的經濟成本。重資產公司更建議使用 EV/EBIT 或 EV/FCF。</div>
+    `
+  },
+  uv5: {
+    cat: 'us-valuation', tag: '公司估值', tagClass: 'tag-us-valuation',
+    title: 'P/S 股價營收比：虧損成長股怎麼估值',
+    html: `
+      <p>股價營收比（Price-to-Sales Ratio，P/S）在 P/E 無法使用（公司持續虧損）時，成為評估高成長公司的重要替代估值指標，尤其在 SaaS、生技、電商領域廣泛應用。</p>
+      <ul>
+        <li><strong>計算公式：</strong>P/S = 市值（Market Cap）÷ 年度總營收；或 EV/Revenue = EV ÷ 年度總營收（更常用於比較）</li>
+        <li><strong>典型數值參考：</strong>
+          <ul>
+            <li>S&P 500 整體：約 <strong>2~3 倍</strong></li>
+            <li>高成長 SaaS（ARR 成長 > 30%）：<strong>8~20 倍</strong></li>
+            <li>成熟軟體公司：<strong>4~8 倍</strong></li>
+            <li>傳統零售：<strong>0.3~0.8 倍</strong></li>
+            <li>2021 年泡沫高點時，部分 SaaS 公司 P/S 達 <strong>50~100 倍</strong></li>
+          </ul>
+        </li>
+        <li><strong>使用前提：</strong>公司雖虧損，但毛利率（Gross Margin）結構健康（如 SaaS 毛利率 > 70%），虧損主要來自銷售費用和研發投入，而非商業模式本身的缺陷。</li>
+        <li><strong>與 Rule of 40 結合：</strong>SaaS 行業常用：營收成長率（%）+ 自由現金流利潤率（%）≥ 40，可支撐較高 P/S 估值。</li>
+      </ul>
+      <div class="highlight">💡 高 P/S 的合理性完全取決於毛利率與成長率。P/S = 10 倍但毛利率 80% 的 SaaS，與 P/S = 2 倍但毛利率 10% 的零售商，前者可能更合理，因未來利潤空間截然不同。</div>
+      <div class="risk">⚠️ P/S 最大危險：無法區分「高成長優質虧損」與「燒錢無底洞」。利率升高時，高 P/S 成長股首當其衝（2022 年 Zoom、DocuSign 等從 P/S 30+ 暴跌至 P/S 3~5 倍），下行風險極大。</div>
+    `
+  },
+  uv6: {
+    cat: 'us-valuation', tag: '公司估值', tagClass: 'tag-us-valuation',
+    title: 'PEG Ratio：成長調整後的本益比',
+    html: `
+      <p>PEG Ratio（Price/Earnings to Growth Ratio）由 Peter Lynch 推廣，在 P/E 的基礎上納入盈餘成長率，解決了高成長公司 P/E 看似偏高卻實為合理的問題。</p>
+      <ul>
+        <li><strong>計算公式：</strong>PEG = P/E ÷ 盈餘年成長率（EPS Growth Rate，%）</li>
+        <li><strong>例：</strong>A 公司 P/E = 30 倍，EPS 年成長率 30% → PEG = 1.0；B 公司 P/E = 15 倍，EPS 年成長率 5% → PEG = 3.0。儘管 A 的 P/E 是 B 的兩倍，A 的 PEG 顯示更便宜。</li>
+        <li><strong>判讀標準（Peter Lynch 建議）：</strong>
+          <ul>
+            <li>PEG < 1：可能被低估，值得深入研究</li>
+            <li>PEG ≈ 1：合理估值（Fair Value）</li>
+            <li>PEG > 2：明顯溢價，需非常確定高成長能持續</li>
+          </ul>
+        </li>
+        <li><strong>成長率的選取：</strong>可使用歷史 3~5 年 EPS 成長率（Trailing PEG）或分析師預估未來 3~5 年成長率（Forward PEG），後者更具前瞻性但預估誤差較大。</li>
+        <li><strong>適用範圍：</strong>最適合穩定成長型公司（成長率 10~30%），對超高速成長（>50%）或負成長公司不適用。Peter Lynch 在 Fidelity 管理 Magellan 基金期間（年化 29%）大量使用此指標。</li>
+      </ul>
+      <div class="highlight">💡 PEG 結合了靜態估值（P/E）與動態成長（Growth），是選股時快速篩選「合理成長定價」的有效工具。</div>
+      <div class="risk">⚠️ PEG 的局限性：成長率估計高度主觀；對週期性行業（能源、礦業）失效；若公司 EPS 基期極低，成長率可能虛高導致 PEG 看起來極低但實際無意義。成長率的可持續性才是關鍵。</div>
+    `
+  },
+  uv7: {
+    cat: 'us-valuation', tag: '公司估值', tagClass: 'tag-us-valuation',
+    title: 'DCF 現金流折現：估值之王的原理與限制',
+    html: `
+      <p>現金流折現模型（Discounted Cash Flow，DCF）是理論上最嚴謹的估值方法，核心思想是：公司的內在價值（Intrinsic Value）等於其未來所有自由現金流（FCF）折現至今的總和。</p>
+      <ul>
+        <li><strong>關鍵輸入參數：</strong>
+          <ul>
+            <li><strong>自由現金流（FCF）：</strong>= 營業現金流（CFO）− 資本支出（Capex）</li>
+            <li><strong>折現率（r）：</strong>通常使用加權平均資本成本（WACC），一般企業約 <strong>8~12%</strong></li>
+            <li><strong>預測期間：</strong>通常 5~10 年，之後進入「終值（Terminal Value）」階段</li>
+            <li><strong>永續成長率（g）：</strong>終值計算用，通常設 <strong>2~3%</strong>（接近長期 GDP 成長率）</li>
+          </ul>
+        </li>
+        <li><strong>終值的重要性：</strong>在大多數 DCF 模型中，終值佔估值總額的 60~80%，意味著模型對長期假設極為敏感。</li>
+        <li><strong>敏感度分析（Sensitivity Analysis）：</strong>改變 WACC 與永續成長率各 ±1%，內在價值可能變動 30~50%，顯示 DCF 的估值區間極寬。</li>
+        <li><strong>適用情境：</strong>現金流穩定可預測的公司（消費必需品、公用事業）；不適合：早期虧損公司、高度不確定性行業、週期性行業的週期底部。</li>
+      </ul>
+      <div class="highlight">💡 DCF 最大的價值不在於得到「精確數字」，而在於<strong>迫使你思考企業的核心驅動力</strong>：現金流成長動力是什麼？競爭壁壘能維持多久？資本配置效率如何？Warren Buffett 說：「寧要模糊的正確，不要精確的錯誤。」</div>
+      <div class="risk">⚠️ DCF 的致命缺陷：「Garbage in, garbage out」——輸入假設的微小偏差會導致估值大幅偏離。折現率若從 10% 改為 8%，估值可能膨脹 25~30%。切勿將 DCF 結果視為精確真理，應視為合理範圍的參考。</div>
+    `
+  },
+  uv8: {
+    cat: 'us-valuation', tag: '公司估值', tagClass: 'tag-us-valuation',
+    title: '市值 vs 企業價值（EV）：關鍵差異',
+    html: `
+      <p>市值（Market Capitalization）與企業價值（Enterprise Value，EV）是估值分析的兩個核心概念，正確理解兩者差異是使用 EV 系列指標（EV/EBITDA、EV/Revenue）的基礎。</p>
+      <ul>
+        <li><strong>市值（Market Cap）：</strong>= 股價 × 流通在外股數。代表市場對<strong>股東權益</strong>的定價，僅反映股東這一方的觀點，未考慮公司的負債與現金狀況。</li>
+        <li><strong>企業價值（EV）：</strong>EV = 市值 + 有息負債（Debt）+ 少數股東權益 + 優先股 − 現金及約當現金（Cash）。代表「買下整家公司（包含承接所有債務）實際需支付的總代價」。</li>
+        <li><strong>兩者差異的直觀理解：</strong>
+          <ul>
+            <li>公司 A 市值 100 億，持有 50 億現金、零負債 → EV = 50 億（實際代價更低）</li>
+            <li>公司 B 市值 100 億，負債 80 億、現金 10 億 → EV = 170 億（實際代價更高）</li>
+          </ul>
+        </li>
+        <li><strong>何時用市值，何時用 EV：</strong>
+          <ul>
+            <li>P/E、P/B、P/S 均基於<strong>市值</strong>，分母為股東層面指標</li>
+            <li>EV/EBITDA、EV/EBIT、EV/Revenue 基於<strong>企業價值</strong>，資本結構中立，更適合跨公司比較</li>
+          </ul>
+        </li>
+      </ul>
+      <div class="highlight">💡 在評估潛在收購目標（M&A Target）時，EV 是最關鍵的參考數字，因為收購方不僅需支付股權溢價，還需承接目標公司的全部負債（或享有其現金）。</div>
+      <div class="risk">⚠️ EV 中的「有息負債」需精確定義：應包含長短期借款、債券、融資租賃等，但排除應付帳款等營業負債。不同分析師對 EV 構成的定義略有差異，比較時需確認口徑一致。</div>
+    `
+  },
+
+  // ===== FINANCIAL STATEMENTS =====
+  uf1: {
+    cat: 'us-financial', tag: '財報分析', tagClass: 'tag-us-financial',
+    title: '損益表 Income Statement：從營收到淨利的完整路徑',
+    html: `
+      <p>損益表（Income Statement）又稱利潤表，呈現公司在特定期間內的經營成果，是最常被投資人閱讀的財報。美股公司每季公布（10-Q）、每年公布（10-K）。</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">項目</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">英文</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">說明</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>營收</strong></td><td style="padding:0.5rem 0.4rem;">Revenue / Net Sales</td><td style="padding:0.5rem 0.4rem;">銷售產品或服務的總收入</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>銷貨成本</strong></td><td style="padding:0.5rem 0.4rem;">COGS</td><td style="padding:0.5rem 0.4rem;">直接生產成本，原料＋人工</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>毛利</strong></td><td style="padding:0.5rem 0.4rem;">Gross Profit</td><td style="padding:0.5rem 0.4rem;">Revenue－COGS</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>營業費用</strong></td><td style="padding:0.5rem 0.4rem;">OpEx（R&D、S&M、G&A）</td><td style="padding:0.5rem 0.4rem;">研發、行銷、行政費用</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>營業利益</strong></td><td style="padding:0.5rem 0.4rem;">Operating Income / EBIT</td><td style="padding:0.5rem 0.4rem;">毛利－OpEx</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>稅前淨利</strong></td><td style="padding:0.5rem 0.4rem;">EBT</td><td style="padding:0.5rem 0.4rem;">EBIT ± 利息收支</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem; color:#e8c84a;"><strong>淨利</strong></td><td style="padding:0.5rem 0.4rem;">Net Income</td><td style="padding:0.5rem 0.4rem;">EBT－所得稅</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight">💡 閱讀損益表時要特別注意<strong>營收成長率（YoY Revenue Growth）</strong>和<strong>各利潤率的趨勢變化</strong>，而非只看單季絕對數字。若毛利率連續下滑，代表定價能力或成本控制出現問題。科技公司毛利率通常 60–80%，零售業僅 25–40%，跨產業比較要謹慎。</div>
+      <div class="risk">⚠️ GAAP 淨利可能包含一次性項目（impairment、訴訟和解等），建議同時對照 Non-GAAP 數字，以及管理層在 Earnings Call 的說明。</div>
+    `
+  },
+  uf2: {
+    cat: 'us-financial', tag: '財報分析', tagClass: 'tag-us-financial',
+    title: '資產負債表 Balance Sheet：公司財務健康度快照',
+    html: `
+      <p>資產負債表（Balance Sheet）呈現公司在特定日期的財務狀況。核心恆等式：<strong>資產 = 負債 + 股東權益（Assets = Liabilities + Equity）</strong>。</p>
+      <ul>
+        <li><strong>資產（Assets）：</strong>
+          <ul>
+            <li>流動資產（Current Assets）：現金與約當現金、應收帳款（AR）、存貨</li>
+            <li>非流動資產（Non-current Assets）：廠房設備（PP&E）、商譽（Goodwill）、無形資產</li>
+          </ul>
+        </li>
+        <li><strong>負債（Liabilities）：</strong>
+          <ul>
+            <li>流動負債（Current Liabilities）：應付帳款（AP）、短期借款、遞延收入</li>
+            <li>長期負債（Long-term Liabilities）：長期債務、租賃負債</li>
+          </ul>
+        </li>
+        <li><strong>股東權益（Equity）：</strong>普通股、保留盈餘（Retained Earnings）</li>
+      </ul>
+      <p><strong>重點關注項目：</strong></p>
+      <ul>
+        <li><strong>現金部位：</strong>科技龍頭如 Apple、Microsoft 持有數百億美元現金，是安全墊與回購資源</li>
+        <li><strong>商譽膨脹：</strong>大量併購後商譽佔比過高，若未來減損（impairment），衝擊淨利巨大</li>
+        <li><strong>應收帳款天數（DSO）：</strong>DSO 持續攀升代表收款能力下降或渠道壓貨（Red Flag）</li>
+        <li><strong>遞延收入（Deferred Revenue）：</strong>SaaS 公司的遞延收入增長，代表未來可認列的收入儲備（正面信號）</li>
+      </ul>
+      <div class="highlight">💡 健康信號：現金 > 總負債（Net Cash 狀態）、流動比率（Current Ratio）> 1.5、商譽佔總資產比例 < 30%。Apple 長期維持大量現金回購，是極端但有效的資本配置策略。</div>
+      <div class="risk">⚠️ 若公司商譽佔股東權益超過 100%，一旦核心業務走下坡，帳面淨值可能瞬間蒸發。2008 年金融危機後許多銀行即因此陷入技術破產危機。</div>
+    `
+  },
+  uf3: {
+    cat: 'us-financial', tag: '財報分析', tagClass: 'tag-us-financial',
+    title: '現金流量表 Cash Flow Statement：現金才是真正的王者',
+    html: `
+      <p>現金流量表（Cash Flow Statement）是三大財報中最難造假的一張，因為現金流動是實際發生的交易紀錄。即便損益表顯示獲利，若現金流持續為負，公司仍可能面臨流動性危機。</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">類別</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">英文</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">內容</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>營業活動現金流</strong></td><td style="padding:0.5rem 0.4rem;">OCF</td><td style="padding:0.5rem 0.4rem;">核心業務產生的現金，淨利＋非現金費用（折舊、SBC）± 營運資金變動</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>投資活動現金流</strong></td><td style="padding:0.5rem 0.4rem;">ICF</td><td style="padding:0.5rem 0.4rem;">CapEx 支出、併購、出售資產，通常為負值</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;"><strong>融資活動現金流</strong></td><td style="padding:0.5rem 0.4rem;">FCF</td><td style="padding:0.5rem 0.4rem;">舉債、還債、發股、庫藏股回購、股利</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>OCF vs Net Income：</strong>長期健康的公司 OCF 應高於或接近 Net Income。若 OCF 長期低於淨利，代表應收帳款或存貨侵蝕現金，盈利品質差。</li>
+        <li><strong>SBC（股票薪酬）問題：</strong>科技公司常大量發放 SBC 回加淨利算 OCF，需警惕這是否稀釋股東，要看「FCF − SBC」的保守口徑。</li>
+        <li><strong>CapEx 強度：</strong>重資產行業（半導體、航空）CapEx 佔營收可達 15–25%；輕資產行業（SaaS）則僅 1–3%。</li>
+      </ul>
+      <div class="highlight">💡 投資人最愛看的公式：Free Cash Flow = OCF − CapEx。FCF 持續為正且成長的公司，才有真正的財務彈性去回購股票、發股利或投資成長。</div>
+      <div class="risk">⚠️ 陷阱：有些公司將 CapEx 歸類為投資活動以美化 OCF，實際上卻是維持業務運作必須的花費（maintenance CapEx）。閱讀時要仔細區分 growth CapEx 與 maintenance CapEx。</div>
+    `
+  },
+  uf4: {
+    cat: 'us-financial', tag: '財報分析', tagClass: 'tag-us-financial',
+    title: 'FCF 自由現金流：評估真實獲利能力的關鍵指標',
+    html: `
+      <p>自由現金流（Free Cash Flow, FCF）是扣除資本支出（CapEx）後，公司實際可自由運用的現金。它比 EPS 更難被會計手法操控，被視為評估公司「真實賺錢能力」的核心指標。巴菲特稱之為「owner earnings（股東盈餘）」。</p>
+      <p><strong>主要計算公式：</strong></p>
+      <ul>
+        <li>基本版：<strong>FCF = Operating Cash Flow − Capital Expenditures</strong></li>
+        <li>FCFF（企業自由現金流）= EBIT × (1 − Tax Rate) + D&A − ΔWorking Capital − CapEx</li>
+      </ul>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">評估維度</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">指標</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">健康標準</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">FCF Margin</td><td style="padding:0.5rem 0.4rem;">FCF / Revenue</td><td style="padding:0.5rem 0.4rem;">科技股 > 20% 優秀；製造業 > 8% 尚可</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;">P/FCF 估值</td><td style="padding:0.5rem 0.4rem;">市值 / 年化 FCF</td><td style="padding:0.5rem 0.4rem;">< 25x 相對合理；> 50x 需高成長支撐</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">FCF Yield</td><td style="padding:0.5rem 0.4rem;">FCF / 市值</td><td style="padding:0.5rem 0.4rem;">> 4% 代表估值具吸引力</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;">FCF 轉換率</td><td style="padding:0.5rem 0.4rem;">FCF / Net Income</td><td style="padding:0.5rem 0.4rem;">> 80% 代表盈利品質高</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight">💡 實例：Apple 的 FCF Margin 長期維持在 25–30%，Microsoft 約 30–35%，這也是兩者能持續大規模回購股票的底氣。相比之下，許多「看起來獲利」的企業，FCF 卻長期為負。</div>
+      <div class="risk">⚠️ 注意：SBC（股票薪酬）加回 OCF 會讓 FCF 虛高。部分分析師使用「FCF − SBC」作為更保守的口徑，特別適用於 SBC 佔比高的科技成長股（如 Palantir、Snowflake 早期）。</div>
+    `
+  },
+  uf5: {
+    cat: 'us-financial', tag: '財報分析', tagClass: 'tag-us-financial',
+    title: 'EPS：GAAP vs Non-GAAP 的重要差異',
+    html: `
+      <p>每股盈餘（Earnings Per Share, EPS）是最常被媒體引用的財報數字，但美股存在 <strong>GAAP EPS</strong> 與 <strong>Non-GAAP EPS</strong>（Adjusted EPS）兩種口徑，差異有時極大。</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">項目</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">GAAP EPS</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Non-GAAP EPS</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">計算基礎</td><td style="padding:0.5rem 0.4rem;">依會計準則（US GAAP）</td><td style="padding:0.5rem 0.4rem;">管理層自行定義，需揭露調整項目</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;">常見排除項</td><td style="padding:0.5rem 0.4rem;">全部包含</td><td style="padding:0.5rem 0.4rem;">SBC、重組費用、併購攤銷、一次性項目</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">數字通常</td><td style="padding:0.5rem 0.4rem;">較低（保守）</td><td style="padding:0.5rem 0.4rem;">較高（樂觀）</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;">監管要求</td><td style="padding:0.5rem 0.4rem;">SEC 強制要求</td><td style="padding:0.5rem 0.4rem;">非強制，但需揭露調整明細</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>Basic EPS：</strong>Net Income / Weighted Avg. Basic Shares</li>
+        <li><strong>Diluted EPS：</strong>Net Income / Weighted Avg. Diluted Shares（含選擇權、可轉換債等潛在稀釋效果）</li>
+        <li><strong>財報 Beat/Miss：</strong>市場更關注「相對預期的表現」，而非數字本身。Beat by $0.05 但 guidance 下修，股價往往下跌；Miss by $0.02 但 guidance 上修，股價反而上漲。</li>
+      </ul>
+      <div class="highlight">💡 快速判斷法：若公司 Non-GAAP EPS 比 GAAP EPS 高出 50% 以上，要特別追問 SBC 佔比。Salesforce、Palantir 等公司長年 Non-GAAP 獲利豐厚，但 GAAP 層面卻虧損，關鍵就在鉅額 SBC。</div>
+      <div class="risk">⚠️ 陷阱：若公司每年「一次性費用」年年都有，就不算「一次性」了。管理層用 Non-GAAP 包裝業績是合法的，但投資人必須自行判斷調整項目是否合理。</div>
+    `
+  },
+  uf6: {
+    cat: 'us-financial', tag: '財報分析', tagClass: 'tag-us-financial',
+    title: 'Earnings Call 法說會：機構在聽什麼重點',
+    html: `
+      <p>Earnings Call（財報電話會議）是每季財報後，CEO / CFO 對外說明業績的公開活動，任何人都可透過直播或事後文字稿（Transcript）免費閱讀。</p>
+      <p><strong>法說會結構：</strong></p>
+      <ul>
+        <li><strong>Opening Remarks（管理層說明）：</strong>CEO 說本季亮點，CFO 說財務細節，約 15–20 分鐘</li>
+        <li><strong>Q&A Session：</strong>機構分析師提問，通常 30–45 分鐘，是最有料的部分</li>
+      </ul>
+      <p><strong>機構分析師最在意的問題方向：</strong></p>
+      <ul>
+        <li><strong>Guidance（展望）：</strong>下季 / 全年的 Revenue、EPS、Margin 指引，往往比本季業績更影響股價</li>
+        <li><strong>Demand Environment：</strong>客戶需求是否轉弱？有沒有 deal push-out（案子被延後）？</li>
+        <li><strong>Margin Trajectory：</strong>毛利率、營業利益率的趨勢，何時達到規模效益？</li>
+        <li><strong>Capital Allocation：</strong>現金用在回購、股利還是 M&A？</li>
+        <li><strong>競爭環境：</strong>面對競爭者（包括 AI 新進者）如何應對？</li>
+      </ul>
+      <p><strong>值得注意的語氣訊號：</strong></p>
+      <ul>
+        <li>Confident & specific → 正面訊號</li>
+        <li>Hedged language（「we expect... broadly...」）→ 不確定性提升</li>
+        <li>CFO 主動提到「macro headwinds」→ 可能在預告下修</li>
+        <li>分析師問題被轉移焦點 → 管理層在迴避什麼？</li>
+      </ul>
+      <div class="highlight">💡 免費 Transcript 可在 Seeking Alpha、The Motley Fool、公司 IR 網站取得。建議重點看 Q&A，自動忽略開場白的 PR 措辭，因為股價反應才是市場的真實投票。</div>
+      <div class="risk">⚠️ 管理層天然傾向正面描述，但股價反應才是市場的真實投票。有時業績看似 beat，但 guidance 保守，或分析師提問中透露擔憂，法說會後股價反跌。</div>
+    `
+  },
+  uf7: {
+    cat: 'us-financial', tag: '財報分析', tagClass: 'tag-us-financial',
+    title: '財報 Red Flags：這些數字出現要馬上警覺',
+    html: `
+      <p>財報造假或業績惡化往往有跡可循，以下是投資人必須熟悉的財報警示信號（Red Flags）。這些模式在歷史上多起財務醜聞（安隆 Enron、Wirecard、Luckin Coffee）事前都曾出現。</p>
+      <p><strong>損益表 Red Flags：</strong></p>
+      <ul>
+        <li><strong>營收成長但現金流負成長：</strong>收入認列可能過於激進，或應收帳款膨脹（channel stuffing）</li>
+        <li><strong>GAAP 與 Non-GAAP 差距持續擴大：</strong>每年「一次性費用」越來越多</li>
+        <li><strong>毛利率突然大幅改善，但無合理解釋：</strong>可能更改成本分類方式</li>
+      </ul>
+      <p><strong>資產負債表 Red Flags：</strong></p>
+      <ul>
+        <li><strong>應收帳款成長速度遠超營收：</strong>DSO 飆升，可能是虛構訂單</li>
+        <li><strong>存貨持續異常累積：</strong>產品賣不動但公司不承認，之後可能大規模減損</li>
+        <li><strong>關聯方交易（Related Party Transactions）頻繁：</strong>利益輸送的溫床</li>
+      </ul>
+      <p><strong>現金流量表 Red Flags：</strong></p>
+      <ul>
+        <li><strong>OCF 長期低於 Net Income：</strong>盈利品質差，利潤未能轉化為真實現金</li>
+        <li><strong>FCF 持續為負但管理層無清晰說明：</strong>「燒錢換成長」需要明確的回收時程</li>
+        <li><strong>融資活動現金流持續大額流入：</strong>靠發股票 / 舉債維持運作，不是靠業務獲利</li>
+      </ul>
+      <p><strong>其他警示：</strong></p>
+      <ul>
+        <li>審計師更換或出具保留意見（Qualified Opinion）</li>
+        <li>CFO / 財務長突然離職，且無合理繼任計畫</li>
+        <li>管理層大規模出售自家股票</li>
+        <li>公司推遲財報發布日期（需向 SEC 申請 NT 10-K / NT 10-Q）</li>
+      </ul>
+      <div class="highlight">💡 工具提示：可使用 SEC EDGAR 直接查閱 10-K / 10-Q 原始文件；做空機構（如 Hindenburg Research、Muddy Waters）的報告雖有立場，但往往點出真實的財務異常值得參考。</div>
+      <div class="risk">⚠️ 重要原則：單一 Red Flag 不一定代表問題，但多個信號同時出現，風險便急劇上升。遇到疑點，寧可先減倉觀察，等管理層給出清楚的解釋後再重新評估。</div>
+    `
+  },
+
+  // ===== KPI METRICS =====
+  uk1: {
+    cat: 'us-metrics', tag: '績效指標', tagClass: 'tag-us-metrics',
+    title: 'ROE 股東權益報酬率：杜邦分析三分解',
+    html: `
+      <p>股東權益報酬率（Return on Equity, ROE）衡量公司用股東的錢創造多少獲利，是巴菲特最重視的指標之一。但單看 ROE 數字容易被誤導，需透過<strong>杜邦分析（DuPont Analysis）</strong>拆解本質。</p>
+      <p><strong>杜邦三因素分解：ROE = 淨利率 × 資產週轉率 × 財務槓桿</strong></p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">因素</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">公式</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">代表意義</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>淨利率</strong></td><td style="padding:0.5rem 0.4rem;">Net Income / Revenue</td><td style="padding:0.5rem 0.4rem;">每一元營收能賺多少（獲利效率）</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>資產週轉率</strong></td><td style="padding:0.5rem 0.4rem;">Revenue / Total Assets</td><td style="padding:0.5rem 0.4rem;">每一元資產能產生多少收入（經營效率）</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;"><strong>財務槓桿</strong></td><td style="padding:0.5rem 0.4rem;">Total Assets / Equity</td><td style="padding:0.5rem 0.4rem;">用了多少槓桿放大報酬（資本結構）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>透過這個分解，可以判斷高 ROE 的來源：</p>
+      <ul>
+        <li>靠<strong>高利潤率</strong>（蘋果、奢侈品）→ 具競爭護城河，最可持續</li>
+        <li>靠<strong>高週轉率</strong>（沃爾瑪 Walmart）→ 薄利多銷模式</li>
+        <li>靠<strong>高槓桿</strong>（銀行、部分零售）→ 需評估風險</li>
+      </ul>
+      <p><strong>業界參考值：</strong>ROE > 15% 通常被視為優秀；科技龍頭（Apple、Microsoft）常超過 30%。</p>
+      <div class="highlight">💡 巴菲特標準：持續 10 年以上 ROE > 15%，且不依賴過高槓桿，是他判斷「優秀企業」的重要篩選條件之一。波克夏長期持有的可口可樂 ROE 長期超過 40%。</div>
+      <div class="risk">⚠️ 注意：若公司大量回購股票，股東權益（分母）會大幅縮小，導致 ROE 虛高。Apple 的超高 ROE 部分來自多年回購使帳面權益趨近於零，需搭配 ROIC 一同觀察。</div>
+    `
+  },
+  uk2: {
+    cat: 'us-metrics', tag: '績效指標', tagClass: 'tag-us-metrics',
+    title: 'ROA 與 ROIC：資產使用效率的深度比較',
+    html: `
+      <p>ROE 容易被資本結構影響，ROA（資產報酬率）與 ROIC（投入資本報酬率）提供更中性的視角，評估公司實際部署資本的效率。</p>
+      <ul>
+        <li><strong>ROA（Return on Assets）：</strong>= Net Income / Total Assets。評估排除融資方式差異後的資本效率；但受非核心資產（大量現金、投資）干擾。</li>
+        <li><strong>ROIC（Return on Invested Capital）：</strong>NOPAT / Invested Capital
+          <ul>
+            <li>NOPAT（稅後營業淨利）= EBIT × (1 − Tax Rate)</li>
+            <li>Invested Capital = 股東權益 + 有息負債 − 現金</li>
+            <li>最能反映核心業務資本效率，計算較複雜但最有意義</li>
+          </ul>
+        </li>
+      </ul>
+      <p><strong>ROIC vs WACC（加權平均資本成本）— 最關鍵的比較：</strong></p>
+      <ul>
+        <li>ROIC > WACC → 公司在<strong>創造價值</strong>（value creation），每投入一元資本能獲得超額報酬</li>
+        <li>ROIC < WACC → 公司在<strong>銷毀價值</strong>（value destruction），即使帳面獲利，也是在虧損股東</li>
+        <li>WACC 一般企業約 8–12%；科技公司因 Beta 高，WACC 可能達 10–15%</li>
+      </ul>
+      <p><strong>業界參考值：</strong>ROIC > 15% 屬優質企業；> 20% 是頂尖護城河的象徵（Microsoft、Visa 長期超過 25%）。輕資產平台型企業天然具備高 ROIC 優勢。</p>
+      <div class="highlight">💡 McKinsey 研究顯示：長期股價表現與 ROIC 的相關性，遠高於 EPS 成長率。找到能長期維持高 ROIC 的公司，是價值投資的核心。</div>
+      <div class="risk">⚠️ ROA 的局限：現金儲量龐大的公司（如 Berkshire Hathaway）ROA 會被低估，因現金也算資產但不直接產生業務報酬。ROIC 排除現金可解決此問題，更適合評估業務本身的資本效率。</div>
+    `
+  },
+  uk3: {
+    cat: 'us-metrics', tag: '績效指標', tagClass: 'tag-us-metrics',
+    title: '三大利潤率：毛利率、營業利潤率、淨利率',
+    html: `
+      <p>利潤率（Profit Margin）是衡量公司將營收轉化為利潤能力的核心工具。三大利潤率各自反映不同層次的成本控制能力，需<strong>橫向比較同業</strong>且<strong>縱向觀察趨勢</strong>，才能得出有意義的結論。</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">指標</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">公式</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">衡量範圍</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>毛利率</strong></td><td style="padding:0.5rem 0.4rem;">(Revenue − COGS) / Revenue</td><td style="padding:0.5rem 0.4rem;">產品本身的獲利能力，定價權與成本結構</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>營業利潤率</strong></td><td style="padding:0.5rem 0.4rem;">Operating Income / Revenue</td><td style="padding:0.5rem 0.4rem;">含研發、行銷、管理費後的實際營運效率</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>淨利率</strong></td><td style="padding:0.5rem 0.4rem;">Net Income / Revenue</td><td style="padding:0.5rem 0.4rem;">考量利息、稅務後的最終獲利比例</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>各行業典型利潤率：</strong></p>
+      <ul>
+        <li><strong>軟體 / SaaS：</strong>毛利率 65–85%、營業利潤率 15–35%（成熟期）</li>
+        <li><strong>半導體（Fabless）：</strong>毛利率 50–70%、NVIDIA 近年毛利率突破 70%</li>
+        <li><strong>電商 / 零售：</strong>毛利率 20–40%、淨利率 2–5%</li>
+        <li><strong>航空業：</strong>毛利率僅 15–25%，且對油價、利率極度敏感</li>
+      </ul>
+      <p>三者關係：毛利率是上限，每往下一層都會「扣掉」更多費用。若<strong>毛利率高但營業利潤率低</strong>，代表費用管控差；若<strong>營業利潤率好但淨利率差</strong>，通常是利息負擔重或稅務問題。</p>
+      <div class="highlight">💡 核心觀察：毛利率的趨勢方向比絕對數字更重要。若公司毛利率連續 3 季下滑，代表定價能力減弱或投入成本上升，需要深入了解原因。</div>
+      <div class="risk">⚠️ 陷阱：若公司削減研發（R&D）支出來提升短期利潤率，看似改善，實則犧牲長期競爭力。務必同時追蹤各項費用的絕對金額，而非只看比率。</div>
+    `
+  },
+  uk4: {
+    cat: 'us-metrics', tag: '績效指標', tagClass: 'tag-us-metrics',
+    title: '負債比率：D/E、淨負債、利息覆蓋率',
+    html: `
+      <p>負債管理是評估公司財務風險的關鍵面向，尤其在升息環境下，高負債公司的財務壓力會顯著放大。投資人需從<strong>負債結構、淨債務水位、還息能力</strong>三個維度全面評估。</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">指標</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">公式</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">健康參考值</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>D/E 比率</strong></td><td style="padding:0.5rem 0.4rem;">Total Debt / Equity</td><td style="padding:0.5rem 0.4rem;">一般企業 < 1.0；金融業例外</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>淨負債 Net Debt</strong></td><td style="padding:0.5rem 0.4rem;">Total Debt − Cash</td><td style="padding:0.5rem 0.4rem;">負值（Net Cash）代表現金超過負債，極為安全</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>Net Debt/EBITDA</strong></td><td style="padding:0.5rem 0.4rem;">Net Debt / EBITDA</td><td style="padding:0.5rem 0.4rem;">< 2.0x 穩健；> 4.0x 風險偏高</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;"><strong>利息覆蓋率</strong></td><td style="padding:0.5rem 0.4rem;">EBIT / Interest Expense</td><td style="padding:0.5rem 0.4rem;">> 3x 尚可；> 5x 穩健；< 1.5x 危險</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>固定利率 vs 浮動利率：</strong>升息周期中，浮動利率債務直接提高利息支出</li>
+        <li><strong>到期日分佈：</strong>短期集中到期（debt maturity wall）帶來再融資風險</li>
+        <li><strong>產業差異：</strong>重資產行業（電信、公用事業、房地產 REIT）天然高負債，D/E 超過 2 仍正常；輕資產科技公司若 D/E > 1，需要特別審視。</li>
+      </ul>
+      <div class="highlight">💡 優質財務信號：擁有「Net Cash（淨現金）」的公司（現金 > 總負債），在景氣下行時有絕佳的防禦性，也有空間進行逆週期併購。Meta、Alphabet 都屬此類。</div>
+      <div class="risk">⚠️ 警示：2022–2023 升息周期中，Net Debt/EBITDA > 5x 的高負債企業（如部分私募槓桿收購標的）面臨嚴重財務壓力，甚至被迫資產出售或申請破產保護。</div>
+    `
+  },
+  uk5: {
+    cat: 'us-metrics', tag: '績效指標', tagClass: 'tag-us-metrics',
+    title: '流動性指標：Current Ratio 與 Quick Ratio',
+    html: `
+      <p>流動性指標（Liquidity Ratios）評估公司在短期（通常 12 個月內）償還到期債務的能力，是判斷公司是否面臨<strong>流動性危機（Liquidity Crisis）</strong>的第一道防線。</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">指標</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">公式</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">說明</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>流動比率 Current Ratio</strong></td><td style="padding:0.5rem 0.4rem;">流動資產 / 流動負債</td><td style="padding:0.5rem 0.4rem;">含存貨的短期償債能力；> 1.5 通常安全</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>速動比率 Quick Ratio</strong></td><td style="padding:0.5rem 0.4rem;">(流動資產 − 存貨) / 流動負債</td><td style="padding:0.5rem 0.4rem;">排除流動性較低的存貨；> 1.0 較穩健</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;"><strong>現金比率 Cash Ratio</strong></td><td style="padding:0.5rem 0.4rem;">(現金 + 短期投資) / 流動負債</td><td style="padding:0.5rem 0.4rem;">最保守口徑，僅算可立即動用的現金</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>製造業 / 零售業：</strong>存貨轉現金需時，Quick Ratio 比 Current Ratio 更具參考性</li>
+        <li><strong>SaaS / 科技業：</strong>存貨幾乎為零，需注意遞延收入是否被計入流動負債（SaaS 的遞延收入不需現金支付，會低估真實流動性）</li>
+        <li><strong>特殊案例：</strong>Amazon、Walmart 等 Current Ratio 常低於 1，因其收款快但付款慢（負 Cash Conversion Cycle），這是商業模式優勢而非風險。</li>
+      </ul>
+      <div class="highlight">💡 實務建議：對零售商和製造商，同時追蹤存貨週轉天數（DIO）。若存貨週轉放緩同時 Current Ratio 下滑，是雙重危險信號，代表產品競爭力可能已出現問題。</div>
+      <div class="risk">⚠️ 陷阱：Current Ratio > 2 但存貨佔大多數，且存貨有跌價風險（如半導體庫存過剩）→ 實際流動性遠不如表面數字所呈現的那樣安全。</div>
+    `
+  },
+  uk6: {
+    cat: 'us-metrics', tag: '績效指標', tagClass: 'tag-us-metrics',
+    title: 'SaaS/科技股特有指標：ARR、NRR、CAC、LTV',
+    html: `
+      <p>傳統財務指標對高速成長的 SaaS 與科技公司往往解釋力不足。以下四大 SaaS 核心指標，是機構評估此類公司的必備工具。</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">指標</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">全稱</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">定義與健康標準</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem; color:#ba68c8;"><strong>ARR</strong></td><td style="padding:0.5rem 0.4rem;">Annual Recurring Revenue</td><td style="padding:0.5rem 0.4rem;">年化經常性收入，反映訂閱業務規模；YoY 成長 > 30% 屬優秀</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem; color:#ba68c8;"><strong>NRR / NDR</strong></td><td style="padding:0.5rem 0.4rem;">Net Revenue Retention</td><td style="padding:0.5rem 0.4rem;">現有客戶收入留存率（含 upsell）；> 120% 極佳，> 110% 良好，< 100% 客戶流失</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem; color:#ba68c8;"><strong>CAC</strong></td><td style="padding:0.5rem 0.4rem;">Customer Acquisition Cost</td><td style="padding:0.5rem 0.4rem;">獲取一個新客戶的平均成本（含 S&M 費用）</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem; color:#ba68c8;"><strong>LTV</strong></td><td style="padding:0.5rem 0.4rem;">Customer Lifetime Value</td><td style="padding:0.5rem 0.4rem;">客戶全生命週期貢獻的毛利；LTV/CAC > 3x 健康，> 5x 優秀</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>其他常用 SaaS 指標：</strong></p>
+      <ul>
+        <li><strong>Churn Rate（流失率）：</strong>年流失率 < 5% 健康，企業級 SaaS 通常 < 3%</li>
+        <li><strong>Magic Number：</strong>= 新增 ARR × 4 / S&M 費用；> 0.75 代表銷售效率良好</li>
+        <li><strong>CAC Payback Period：</strong>多少月能回收獲客成本；< 18 個月為健康，< 12 個月為優秀</li>
+        <li><strong>RPO（Remaining Performance Obligations）：</strong>已簽約尚未認列的收入，反映未來可見度</li>
+      </ul>
+      <div class="highlight">💡 NRR > 100% 的關鍵意義：即使不開發任何新客戶，現有客戶擴充訂閱即可驅動收入成長，代表公司擁有強大的「Net Expansion（淨擴充）」能力，如 Snowflake、Datadog 長期 NRR 超過 130%。</div>
+      <div class="risk">⚠️ 注意：ARR 和 NRR 是自行揭露的非 GAAP 指標，各公司定義略有不同。閱讀時需查看公司的 Investor Relations 頁面，確認計算口徑，避免跨公司直接比較的誤差。</div>
+    `
+  },
+  uk7: {
+    cat: 'us-metrics', tag: '績效指標', tagClass: 'tag-us-metrics',
+    title: 'Rule of 40：SaaS 健康度黃金法則',
+    html: `
+      <p>Rule of 40（40 法則）是 SaaS 投資界最廣泛使用的「一鍵評估」工具，核心邏輯是：成長與獲利之間存在取捨（trade-off），兩者之和達到 40% 以上，代表公司處於健康狀態。</p>
+      <p><strong>公式：Revenue Growth Rate (%) + Profit Margin (%) ≥ 40%</strong></p>
+      <p>其中 Profit Margin 可使用不同口徑：FCF Margin（最嚴格）、Operating Margin（GAAP）、EBITDA Margin（最寬鬆）。</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">情境範例</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">成長率</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">FCF Margin</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">得分</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">高速成長早期 SaaS</td><td style="padding:0.5rem 0.4rem;">60%</td><td style="padding:0.5rem 0.4rem;">−15%</td><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>45% ✓</strong></td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;">成熟期獲利型</td><td style="padding:0.5rem 0.4rem;">15%</td><td style="padding:0.5rem 0.4rem;">28%</td><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>43% ✓</strong></td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">問題公司</td><td style="padding:0.5rem 0.4rem;">20%</td><td style="padding:0.5rem 0.4rem;">−25%</td><td style="padding:0.5rem 0.4rem; color:#e06060;"><strong>−5% ✗</strong></td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;">頂尖（Rule of 60+）</td><td style="padding:0.5rem 0.4rem;">40%</td><td style="padding:0.5rem 0.4rem;">30%</td><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>70% ✓✓</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>研究顯示，Rule of 40 得分與 EV/Revenue 估值倍數呈正相關。得分 > 50% 的公司往往獲得 15–20x Revenue 的估值溢價；得分 < 20% 則通常只得到 4–6x。頂尖如 Veeva、ServiceNow 長期維持 40–60%。</p>
+      <div class="highlight">💡 最新趨勢：2022 年後市場轉向「盈利品質」，Rule of 40 中的 FCF 口徑比 EBITDA 口徑更受重視。部分投資人甚至提出「Rule of 40（FCF 版）× EV/Revenue」作為估值合理性的快速篩選工具。</div>
+      <div class="risk">⚠️ 局限性：Rule of 40 是快速篩選工具，不能替代深度分析。公司可透過削減研發或減少銷售投入，短期內提升得分，但這可能犧牲長期競爭力。需搭配 NRR、ARR 增速一同評估。</div>
+    `
+  },
+  uk8: {
+    cat: 'us-metrics', tag: '績效指標', tagClass: 'tag-us-metrics',
+    title: '週期性行業指標：庫存週轉、DSO、現金轉換週期',
+    html: `
+      <p>對製造業、零售業、工業等週期性行業，<strong>營運效率指標（Operating Efficiency Metrics）</strong>比利潤率更能揭示公司的真實競爭力。這三大指標共同構成<strong>現金轉換週期（Cash Conversion Cycle, CCC）</strong>。</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">指標</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">公式</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">越低越好？</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>DIO（庫存週轉天數）</strong></td><td style="padding:0.5rem 0.4rem;">存貨 / COGS × 365</td><td style="padding:0.5rem 0.4rem;">是（但太低代表供應風險）</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>DSO（應收帳款天數）</strong></td><td style="padding:0.5rem 0.4rem;">應收帳款 / 營收 × 365</td><td style="padding:0.5rem 0.4rem;">是（代表收款速度快）</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;"><strong>DPO（應付帳款天數）</strong></td><td style="padding:0.5rem 0.4rem;">應付帳款 / COGS × 365</td><td style="padding:0.5rem 0.4rem;">否（越高代表延後付款，保留現金）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>現金轉換週期（CCC）= DIO + DSO − DPO</strong></p>
+      <p>CCC 越低（甚至為負），代表公司的現金週轉越快。<strong>負 CCC</strong> 是商業模式的超強護城河，代表「先收錢、後付款、不需囤貨」。</p>
+      <ul>
+        <li><strong>Amazon（電商 + AWS）：</strong>CCC 長期為負（−20 至 −30 天），顯示客戶預付而供應商後付</li>
+        <li><strong>Walmart：</strong>CCC 約 −10 至 5 天，商業模式強大</li>
+        <li><strong>一般製造業：</strong>CCC 約 40–80 天，需大量運營資金</li>
+        <li><strong>半導體設備商：</strong>DIO 可高達 120–180 天，因生產週期長</li>
+      </ul>
+      <p><strong>庫存週轉率（Inventory Turnover）= COGS / 平均存貨</strong>：零售業健康水準 6–12x / 年；汽車業 8–10x；奢侈品 2–4x（刻意維持稀缺感）。</p>
+      <div class="highlight">💡 景氣觀察：庫存週轉天數（DIO）是景氣領先指標之一。當半導體、電子製造商的 DIO 大幅攀升時，往往預示需求下滑和未來的降價壓力（如 2022 年半導體庫存去化週期）。</div>
+      <div class="risk">⚠️ 注意：DPO 過高（超過 120 天）可能損害供應商關係，尤其對中小型企業是財務壓力。過度壓迫供應商的大廠，在供應鏈緊張時可能遭遇報復性限供，2021 年晶片荒期間即有類似案例。</div>
+    `
+  }
+};
+
+// Merge all modals
+Object.assign(MODALS, MODALS_EXTRA);
+Object.assign(MODALS, MODALS_US);
+</script>

@@ -1,0 +1,1354 @@
+<!-- 由 scripts/extract-static-pages.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+/* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8f9fa; --card: #ffffff; --border: #e5e7eb;
+      --text: #111827; --muted: #6b7280; --light-text: #9ca3af;
+      --accent: #4f46e5; --accent-bg: #eef2ff; --accent-hover: #3730a3;
+      --green: #059669; --green-bg: #d1fae5;
+      --blue: #1d4ed8; --blue-bg: #dbeafe;
+      --orange: #d97706; --orange-bg: #fef3c7;
+      --red: #dc2626; --red-bg: #fee2e2;
+      --code-bg: #1e293b; --code-text: #e2e8f0;
+      --sidebar-w: 260px; --header-h: 58px;
+      --radius: 12px; --radius-sm: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+      --transition: .2s ease;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif;
+      --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+    }
+    [data-theme="dark"] {
+      --bg: #0f172a; --card: #1e293b; --border: #334155;
+      --text: #f1f5f9; --muted: #94a3b8; --light-text: #64748b;
+      --accent: #818cf8; --accent-bg: #1e1b4b; --accent-hover: #a5b4fc;
+      --green: #34d399; --green-bg: #064e3b;
+      --blue: #60a5fa; --blue-bg: #1e3a5f;
+      --orange: #fbbf24; --orange-bg: #451a03;
+      --red: #f87171; --red-bg: #450a0a;
+      --shadow: 0 1px 3px rgba(0,0,0,.3); --shadow-md: 0 4px 12px rgba(0,0,0,.4);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text);
+      font-size: 15px; line-height: 1.6; }
+
+    /* ── Header ── */
+    #header {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+      background: var(--card); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px; padding: 0 20px;
+      z-index: 100; box-shadow: var(--shadow);
+    }
+    #hamburger { display: none; background: none; border: none; cursor: pointer;
+      color: var(--text); padding: 6px; border-radius: 6px; }
+    #hamburger:hover { background: var(--accent-bg); }
+    .header-title { font-weight: 700; font-size: 1.05rem; color: var(--accent);
+      white-space: nowrap; flex-shrink: 0; }
+    .header-title span { color: var(--muted); font-weight: 400; font-size: .85rem; margin-left: 6px; }
+    #searchWrap { flex: 1; max-width: 400px; position: relative; }
+    #searchBox {
+      width: 100%; padding: 7px 12px 7px 34px; border: 1px solid var(--border);
+      border-radius: 20px; background: var(--bg); color: var(--text);
+      font-size: .875rem; outline: none; transition: border-color var(--transition);
+    }
+    #searchBox:focus { border-color: var(--accent); }
+    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: .9rem; pointer-events: none; }
+    #searchClear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted);
+      display: none; font-size: 1rem; line-height: 1; }
+    .header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .icon-btn {
+      background: none; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      cursor: pointer; color: var(--text); padding: 6px 10px; font-size: .8rem;
+      display: flex; align-items: center; gap: 4px; transition: all var(--transition);
+      white-space: nowrap;
+    }
+    .icon-btn:hover { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+    .glossary-btn { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .glossary-btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+
+    /* ── Layout ── */
+    #layout { display: flex; padding-top: var(--header-h); min-height: 100vh; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: var(--sidebar-w); flex-shrink: 0; position: sticky;
+      top: var(--header-h); height: calc(100vh - var(--header-h));
+      overflow-y: auto; border-right: 1px solid var(--border);
+      padding: 16px 0; background: var(--card);
+    }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .sidebar-section { padding: 0 12px; margin-bottom: 8px; }
+    .sidebar-label { font-size: .7rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .06em; padding: 8px 4px 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+      border-radius: var(--radius-sm); text-decoration: none; color: var(--text);
+      font-size: .875rem; transition: all var(--transition); cursor: pointer;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .nav-item:hover { background: var(--accent-bg); color: var(--accent); }
+    .nav-item.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+    .nav-item .icon { font-size: 1rem; flex-shrink: 0; width: 20px; text-align: center; }
+    .nav-item .badge { margin-left: auto; background: var(--accent-bg); color: var(--accent);
+      font-size: .65rem; padding: 1px 6px; border-radius: 10px; font-weight: 600; }
+    .sidebar-divider { height: 1px; background: var(--border); margin: 8px 12px; }
+
+    /* ── Main Content ── */
+    #main { flex: 1; padding: 32px 24px 64px; max-width: 900px; min-width: 0; }
+
+    /* ── Hero Section ── */
+    .hero {
+      background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+      border-radius: var(--radius); padding: 32px; margin-bottom: 28px; color: #fff;
+    }
+    .hero h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 6px; }
+    .hero p { opacity: .9; font-size: .95rem; margin-bottom: 20px; }
+    .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .hero-stat { background: rgba(255,255,255,.15); border-radius: 8px;
+      padding: 12px; text-align: center; }
+    .hero-stat .num { font-size: 1.4rem; font-weight: 700; }
+    .hero-stat .lbl { font-size: .72rem; opacity: .85; margin-top: 2px; }
+
+    /* ── Topic Section ── */
+    .topic-section { margin-bottom: 28px; scroll-margin-top: 76px; }
+    .topic-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+    }
+    .topic-header {
+      display: flex; align-items: center; gap: 12px; padding: 18px 20px;
+      cursor: pointer; user-select: none; transition: background var(--transition);
+    }
+    .topic-header:hover { background: var(--accent-bg); }
+    .topic-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .topic-title-wrap { flex: 1; }
+    .topic-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+    .topic-subtitle { font-size: .8rem; color: var(--muted); margin-top: 1px; }
+    .topic-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+    .tag { font-size: .68rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .tag-green { background: var(--green-bg); color: var(--green); }
+    .tag-blue { background: var(--blue-bg); color: var(--blue); }
+    .tag-orange { background: var(--orange-bg); color: var(--orange); }
+    .tag-purple { background: var(--accent-bg); color: var(--accent); }
+    .topic-chevron { color: var(--muted); transition: transform var(--transition); font-size: 1.1rem; }
+    .topic-card.open .topic-chevron { transform: rotate(180deg); }
+    .topic-body { display: none; border-top: 1px solid var(--border); }
+    .topic-card.open .topic-body { display: block; }
+
+    /* ── Sub-sections (details) ── */
+    .sub-section { border-bottom: 1px solid var(--border); }
+    .sub-section:last-child { border-bottom: none; }
+    .sub-section summary {
+      list-style: none; padding: 12px 20px; cursor: pointer;
+      font-weight: 600; font-size: .875rem; color: var(--muted);
+      display: flex; align-items: center; gap: 8px;
+      transition: color var(--transition); user-select: none;
+    }
+    .sub-section summary::-webkit-details-marker { display: none; }
+    .sub-section summary:hover { color: var(--accent); }
+    .sub-section[open] summary { color: var(--accent); }
+    .sub-section summary::after { content: '›'; margin-left: auto;
+      transition: transform var(--transition); font-size: 1.1rem; }
+    .sub-section[open] summary::after { transform: rotate(90deg); }
+    .sub-content { padding: 4px 20px 16px; }
+
+    /* ── Content Elements ── */
+    .sub-content p { color: var(--text); margin-bottom: 10px; font-size: .9rem; }
+    .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .bullet-list li { display: flex; align-items: flex-start; gap: 8px;
+      font-size: .875rem; color: var(--text); }
+    .bullet-list li::before { content: '▸'; color: var(--accent); flex-shrink: 0;
+      margin-top: 1px; font-size: .8rem; }
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .step-list li { display: flex; gap: 12px; font-size: .875rem; color: var(--text); }
+    .step-num { background: var(--accent); color: #fff; border-radius: 50%;
+      width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .warning-box {
+      background: var(--orange-bg); border: 1px solid var(--orange); border-radius: var(--radius-sm);
+      padding: 12px 14px; display: flex; gap: 10px; font-size: .875rem; color: var(--text);
+      margin-bottom: 8px;
+    }
+    .warning-box::before { content: '⚠️'; flex-shrink: 0; }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin: 8px 0; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .data-table th {
+      background: var(--accent-bg); color: var(--accent); font-weight: 600;
+      padding: 9px 12px; text-align: left; border-bottom: 2px solid var(--accent);
+      white-space: nowrap;
+    }
+    .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--accent-bg); }
+
+    /* ── Code Block ── */
+    .code-block {
+      background: var(--code-bg); border-radius: var(--radius-sm);
+      padding: 16px; overflow-x: auto; margin: 8px 0;
+    }
+    .code-block pre { color: var(--code-text); font-family: var(--font-mono);
+      font-size: .8rem; line-height: 1.6; white-space: pre; }
+    .code-label { font-size: .7rem; color: #64748b; margin-bottom: 6px; }
+
+    /* ── Links Section ── */
+    .links-grid { display: flex; flex-direction: column; gap: 6px; }
+    .link-item {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+      border-radius: var(--radius-sm); border: 1px solid var(--border);
+      text-decoration: none; color: var(--text); transition: all var(--transition);
+      font-size: .85rem;
+    }
+    .link-item:hover { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); }
+    .link-tag { font-size: .65rem; padding: 1px 6px; border-radius: 8px; font-weight: 700;
+      flex-shrink: 0; }
+    .link-official { background: var(--green-bg); color: var(--green); }
+    .link-community { background: var(--blue-bg); color: var(--blue); }
+    .link-title { flex: 1; }
+    .link-arrow { color: var(--muted); flex-shrink: 0; }
+
+    /* ── Resources Section ── */
+    .resources-section { scroll-margin-top: 76px; margin-bottom: 28px; }
+    .resources-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .resource-card { background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+    .resource-card h3 { font-size: .9rem; font-weight: 700; margin-bottom: 10px;
+      color: var(--accent); display: flex; align-items: center; gap: 6px; }
+    .resource-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .resource-list li a {
+      display: flex; align-items: center; gap: 8px; text-decoration: none;
+      color: var(--text); font-size: .83rem; padding: 4px 0;
+      transition: color var(--transition);
+    }
+    .resource-list li a:hover { color: var(--accent); }
+    .resource-list li a span { color: var(--muted); font-size: .7rem; }
+
+    /* ── Notices Banner ── */
+    .notices-section { margin-bottom: 28px; scroll-margin-top: 76px; }
+    .notice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .notice-card { background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 16px;
+      border-left: 4px solid var(--accent); box-shadow: var(--shadow); }
+    .notice-card h3 { font-size: .82rem; font-weight: 700; color: var(--accent); margin:0 0 4px; }
+    .notice-card p { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Glossary Panel ── */
+    #glossaryOverlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
+      z-index: 200; cursor: pointer;
+    }
+    #glossaryOverlay.open { display: block; }
+    #glossaryPanel {
+      position: fixed; top: 0; right: -380px; width: 380px; max-width: 94vw;
+      height: 100vh; background: var(--card); border-left: 1px solid var(--border);
+      z-index: 201; display: flex; flex-direction: column;
+      transition: right .3s cubic-bezier(.4,0,.2,1); box-shadow: var(--shadow-md);
+    }
+    #glossaryPanel.open { right: 0; }
+    .gp-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .gp-header h2 { font-size: 1rem; font-weight: 700; flex: 1; }
+    .gp-close { background: none; border: none; cursor: pointer; color: var(--muted);
+      font-size: 1.2rem; padding: 4px; border-radius: 4px; }
+    .gp-close:hover { color: var(--text); background: var(--border); }
+    #gpSearch { width: 100%; padding: 8px 12px; margin: 12px 16px; width: calc(100% - 32px);
+      border: 1px solid var(--border); border-radius: 8px; background: var(--bg);
+      color: var(--text); font-size: .875rem; outline: none; }
+    #gpSearch:focus { border-color: var(--accent); }
+    #gpList { flex: 1; overflow-y: auto; padding: 0 16px 16px; }
+    #gpList::-webkit-scrollbar { width: 4px; }
+    #gpList::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .gp-item { border: 1px solid var(--border); border-radius: var(--radius-sm);
+      margin-bottom: 8px; overflow: hidden; }
+    .gp-term { padding: 10px 12px; font-weight: 600; font-size: .875rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      transition: background var(--transition); }
+    .gp-term:hover { background: var(--accent-bg); color: var(--accent); }
+    .gp-def { display: none; padding: 0 12px 10px; font-size: .82rem;
+      color: var(--muted); line-height: 1.5; border-top: 1px solid var(--border);
+      background: var(--bg); }
+    .gp-item.open .gp-def { display: block; }
+    .gp-def .zh { margin-bottom: 4px; }
+    .gp-def .en { color: var(--light-text); font-style: italic; }
+
+    /* ── Search Highlight ── */
+    mark { background: #fef08a; color: #713f12; border-radius: 2px; padding: 0 1px; }
+    [data-theme="dark"] mark { background: #713f12; color: #fef08a; }
+    .hidden-by-search { display: none !important; }
+
+    /* ── Framework Cards ── */
+    .framework-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0; }
+    .fw-card { background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px; }
+    .fw-card h3 { font-size: .82rem; font-weight: 700; color: var(--accent); margin:0 0 4px; }
+    .fw-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; font-size: .8rem; }
+    .fw-label { font-weight: 600; color: var(--text); flex-shrink: 0; min-width: 90px; }
+    .fw-desc { color: var(--muted); }
+
+    /* ── Data Pipeline ── */
+    .pipeline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin: 12px 0; padding: 12px; background: var(--bg); border-radius: var(--radius-sm); }
+    .pipeline-step { background: var(--accent-bg); color: var(--accent);
+      border-radius: 6px; padding: 6px 12px; font-size: .8rem; font-weight: 600; }
+    .pipeline-arrow { color: var(--muted); font-size: 1.1rem; }
+
+    /* ── Footer ── */
+    footer { text-align: center; padding: 20px; color: var(--muted);
+      font-size: .78rem; border-top: 1px solid var(--border); margin-top: 20px; }
+
+    /* ── Lang Visibility ── */
+    [data-lang="zh"] .en-only { display: none; }
+    [data-lang="en"] .zh-only { display: none; }
+    [data-lang="en"] [data-i18n] { /* handled by JS */ }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      #hamburger { display: flex; }
+      #sidebar { position: fixed; left: -100%; top: var(--header-h);
+        height: calc(100vh - var(--header-h)); z-index: 50;
+        transition: left var(--transition); box-shadow: var(--shadow-md); }
+      #sidebar.open { left: 0; }
+      #main { padding: 20px 16px 48px; }
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .resources-grid, .notice-grid, .framework-grid { grid-template-columns: 1fr; }
+      #glossaryPanel { width: 100%; max-width: 100%; }
+      .header-title span { display: none; }
+      #searchWrap { max-width: 200px; }
+    }
+  
+    /* <summary> 本身是 button role，不進文件大綱；把標題包進 h2 讓摺疊區塊
+       在大綱裡佔一層。display:inline 與 margin/font 歸零，視覺與改動前相同。 */
+    .summary-heading { display:inline; margin:0; font-size:inherit; font-weight:inherit; }
+</style>
+
+<!-- ── Header ── -->
+<header id="header">
+  <button id="hamburger" aria-label="Menu" onclick="toggleSidebar()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div class="header-title">
+    <span class="zh-only">📊 GA4 全攻略</span>
+    <span class="en-only">📊 GA4 Complete Guide</span>
+    <span class="zh-only">團隊教學手冊</span>
+    <span class="en-only">Team Reference</span>
+  </div>
+  <div id="searchWrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchBox" placeholder="搜尋概念、術語… / Search…" oninput="handleSearch(this.value)">
+    <button id="searchClear" onclick="clearSearch()">✕</button>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn glossary-btn" onclick="openGlossary()">📖 <span class="zh-only">術語速查</span><span class="en-only">Glossary</span></button>
+    <button class="icon-btn" onclick="toggleLang()" id="langBtn">🌐 EN</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</header>
+
+<!-- ── Layout ── -->
+<div id="layout">
+
+  <!-- ── Sidebar ── -->
+  <nav id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label zh-only">導覽</div>
+      <div class="sidebar-label en-only">Navigation</div>
+      <a class="nav-item" href="#overview" onclick="closeSidebar()"><span class="icon">🏠</span><span class="zh-only">概覽</span><span class="en-only">Overview</span></a>
+      <a class="nav-item" href="#topic-1" onclick="closeSidebar()"><span class="icon">📊</span><span class="zh-only">GA4 基礎</span><span class="en-only">Fundamentals</span></a>
+      <a class="nav-item" href="#topic-2" onclick="closeSidebar()"><span class="icon">🔽</span><span class="zh-only">漏斗分析</span><span class="en-only">Funnels</span></a>
+      <a class="nav-item" href="#topic-3" onclick="closeSidebar()"><span class="icon">👤</span><span class="zh-only">使用者行為</span><span class="en-only">User Behavior</span></a>
+      <a class="nav-item" href="#topic-4" onclick="closeSidebar()"><span class="icon">📣</span><span class="zh-only">行銷應用</span><span class="en-only">Marketing</span></a>
+      <a class="nav-item" href="#topic-5" onclick="closeSidebar()"><span class="icon">🤖</span><span class="zh-only">爬蟲偵測</span><span class="en-only">Bot Detection</span></a>
+      <a class="nav-item" href="#topic-6" onclick="closeSidebar()"><span class="icon">⚡</span><span class="zh-only">進階功能</span><span class="en-only">Advanced</span></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <a class="nav-item" href="#resources" onclick="closeSidebar()"><span class="icon">🔗</span><span class="zh-only">資源清單</span><span class="en-only">Resources</span></a>
+      <a class="nav-item" href="#notices" onclick="closeSidebar()"><span class="icon">📌</span><span class="zh-only">跨主題注意</span><span class="en-only">Key Notes</span></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <button class="nav-item" onclick="openGlossary()"><span class="icon">📖</span><span class="zh-only">術語速查</span><span class="en-only">Glossary</span><span class="badge">24</span></button>
+    </div>
+  </nav>
+
+  <!-- ── Main ── -->
+  <main id="main">
+
+    <!-- Hero -->
+    <section id="overview">
+      <div class="hero">
+        <h1><span class="zh-only">GA4 全攻略 · 團隊教學手冊</span><span class="en-only">GA4 Complete Guide · Team Reference</span></h1>
+        <p class="zh-only">涵蓋基礎概念、漏斗分析、使用者行為、行銷應用、爬蟲偵測到進階 BigQuery，附所有官方與社群參考資源。</p>
+        <p class="en-only">Covers fundamentals, funnel analysis, user behavior, marketing, bot detection, and advanced BigQuery — with all official and community references.</p>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num">6</div><div class="lbl zh-only">主題模組</div><div class="lbl en-only">Topic Modules</div></div>
+          <div class="hero-stat"><div class="num">24</div><div class="lbl zh-only">術語解釋</div><div class="lbl en-only">Glossary Terms</div></div>
+          <div class="hero-stat"><div class="num">30+</div><div class="lbl zh-only">參考連結</div><div class="lbl en-only">Reference Links</div></div>
+          <div class="hero-stat"><div class="num"><span class="zh-only">中/EN</span><span class="en-only">EN/中</span></div><div class="lbl zh-only">雙語並列</div><div class="lbl en-only">Bilingual</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── TOPIC 1: GA4 Fundamentals ───── -->
+    <section class="topic-section" id="topic-1">
+      <div class="topic-card" id="card-1">
+        <div class="topic-header" onclick="toggleCard('card-1')">
+          <div class="topic-icon">📊</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title zh-only">GA4 基礎 · 核心概念</div>
+            <div class="topic-title en-only">GA4 Fundamentals</div>
+            <div class="topic-subtitle">Google Analytics 4 · Event-Based Model</div>
+            <div class="topic-tags">
+              <span class="tag tag-green"><span class="zh-only">必讀 Must-Read</span><span class="en-only">Must-Read</span></span>
+              <span class="tag tag-purple"><span class="zh-only">基礎 Fundamentals</span><span class="en-only">Fundamentals</span></span>
+            </div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+
+          <details class="sub-section" open>
+            <summary>🔄 <h2 class="summary-heading"><span class="zh-only">GA4 vs UA 核心差異</span><span class="en-only">GA4 vs Universal Analytics</span></h2></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">面向</span><span class="en-only">Aspect</span></th><th>Universal Analytics (UA)</th><th>Google Analytics 4 (GA4)</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong><span class="zh-only">資料核心 Core</span><span class="en-only">Core Concepts</span></strong></td><td><span class="zh-only">Session（工作階段）</span><span class="en-only">Session</span></td><td><span class="zh-only">Event（事件）</span><span class="en-only">Event</span></td></tr>
+                    <tr><td><strong><span class="zh-only">跳出率 Bounce Rate</span><span class="en-only">Bounce Rate</span></strong></td><td><span class="zh-only">只看一頁就離開</span><span class="en-only">Left after viewing a single page</span></td><td><span class="zh-only">未參與工作階段的比例</span><span class="en-only">Share of sessions that were not engaged</span></td></tr>
+                    <tr><td><strong><span class="zh-only">Session 重設</span><span class="en-only">Session reset</span></strong></td><td><span class="zh-only">午夜自動重設</span><span class="en-only">Resets automatically at midnight</span></td><td><span class="zh-only">以 session_start 事件為起點</span><span class="en-only">Starts from the session_start event</span></td></tr>
+                    <tr><td><strong><span class="zh-only">轉換 Conversion</span><span class="en-only">Conversion</span></strong></td><td><span class="zh-only">目標（頁面/時間/頁數）</span><span class="en-only">Goals (page / duration / pages per session)</span></td><td><span class="zh-only">任何事件都可標記</span><span class="en-only">Any event can be marked as one</span></td></tr>
+                    <tr><td><strong><span class="zh-only">跨平台 Cross-platform</span><span class="en-only">Cross-platform</span></strong></td><td><span class="zh-only">僅限網站</span><span class="en-only">Web only</span></td><td><span class="zh-only">網站 + App（Firebase）</span><span class="en-only">Web + app (Firebase)</span></td></tr>
+                    <tr><td><strong><span class="zh-only">Views 檢視</span><span class="en-only">Views</span></strong></td><td><span class="zh-only">支援多個 View</span><span class="en-only">Multiple views supported</span></td><td><span class="zh-only">改用 Data Filters 取代</span><span class="en-only">Replaced by Data Filters</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🏗️ <h2 class="summary-heading"><span class="zh-only">資料結構</span><span class="en-only">Data Structure</span></h2></summary>
+            <div class="sub-content">
+              <div class="pipeline">
+                <div class="pipeline-step"><span class="zh-only">👤 使用者 User</span><span class="en-only">👤 User</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step"><span class="zh-only">🗂️ 工作階段 Session</span><span class="en-only">🗂️ Session</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step"><span class="zh-only">⚡ 事件 Event</span><span class="en-only">⚡ Event</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step"><span class="zh-only">🏷️ 參數 Parameters</span><span class="en-only">🏷️ Parameters</span></div>
+              </div>
+              <ul class="bullet-list">
+                <li><strong>User：</strong><span class="zh-only">以 User Pseudo ID 或 User ID 識別，可跨裝置</span><span class="en-only">Identified by User Pseudo ID or User ID, so it can span devices</span></li>
+                <li><strong>Session：</strong><span class="zh-only">從 session_start 到 30 分鐘無活動為止</span><span class="en-only">From session_start until 30 minutes of inactivity</span></li>
+                <li><strong>Event：</strong><span class="zh-only">GA4 最小資料單位，自動收集 + 自訂事件</span><span class="en-only">GA4's smallest unit of data — automatically collected events plus custom ones</span></li>
+                <li><strong>Parameters：</strong><span class="zh-only">每個事件可攜帶最多 25 個參數（key-value）</span><span class="en-only">Each event can carry up to 25 key-value parameters</span></li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔬 <h2 class="summary-heading"><span class="zh-only">探索報表類型</span><span class="en-only">Exploration Report Types</span></h2></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">類型 Type</span><span class="en-only">Type</span></th><th><span class="zh-only">用途 Use Case</span><span class="en-only">Use Case</span></th></tr></thead>
+                  <tbody>
+                    <tr><td><strong><span class="zh-only">自由格式 Free Form</span><span class="en-only">Free Form</span></strong></td><td><span class="zh-only">拖放維度/指標自訂分析，最靈活</span><span class="en-only">Drag and drop dimensions and metrics for custom analysis — the most flexible option</span></td></tr>
+                    <tr><td><strong><span class="zh-only">漏斗探索 Funnel</span><span class="en-only">Funnel</span></strong></td><td><span class="zh-only">追蹤使用者步驟流失率</span><span class="en-only">Track where users drop off, step by step</span></td></tr>
+                    <tr><td><strong><span class="zh-only">路徑探索 Path</span><span class="en-only">Path</span></strong></td><td><span class="zh-only">視覺化使用者行為路徑（前後）</span><span class="en-only">Visualise user journeys, forwards and backwards</span></td></tr>
+                    <tr><td><strong><span class="zh-only">區隔重疊 Segment Overlap</span><span class="en-only">Segment Overlap</span></strong></td><td><span class="zh-only">最多 3 個區隔的交集分析</span><span class="en-only">Intersection analysis across up to three segments</span></td></tr>
+                    <tr><td><strong><span class="zh-only">同期群 Cohort</span><span class="en-only">Cohort</span></strong></td><td><span class="zh-only">依獲取日期分群，追蹤留存</span><span class="en-only">Group by acquisition date and track retention</span></td></tr>
+                    <tr><td><strong><span class="zh-only">使用者生命週期 User Lifetime</span><span class="en-only">User Lifetime</span></strong></td><td><span class="zh-only">全旅程 LTV / 行為追蹤</span><span class="en-only">Whole-journey LTV and behaviour tracking</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>📐 <h2 class="summary-heading"><span class="zh-only">常見維度 × 指標</span><span class="en-only">Key Dimensions & Metrics</span></h2></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">類別</span><span class="en-only">Category</span></th><th><span class="zh-only">常用維度 Dimensions</span><span class="en-only">Common Dimensions</span></th><th><span class="zh-only">常用指標 Metrics</span><span class="en-only">Common Metrics</span></th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="zh-only">使用者</span><span class="en-only">User</span></td><td>User ID, New/Returning</td><td>Active Users, New Users, DAU/MAU</td></tr>
+                    <tr><td><span class="zh-only">工作階段</span><span class="en-only">Session</span></td><td>Source / Medium / Campaign</td><td>Sessions, Engaged Sessions, Engagement Rate</td></tr>
+                    <tr><td><span class="zh-only">事件</span><span class="en-only">Event</span></td><td>Event Name</td><td>Event Count, Conversions</td></tr>
+                    <tr><td><span class="zh-only">頁面</span><span class="en-only">Page</span></td><td>Page Title, Page Path</td><td>Views, Scroll Depth</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
+            <div class="sub-content">
+              <div class="warning-box"><span class="zh-only">Exploration 報表有資料取樣限制（非 GA4 360 帳戶），大流量時報表旁會顯示橙色取樣警告。</span><span class="en-only">Explorations are subject to data sampling on non-360 accounts; at high traffic an orange sampling warning appears beside the report.</span></div>
+              <div class="warning-box"><span class="zh-only">Exploration 保存最多 14 個月資料；超過需匯出至 BigQuery 保存。</span><span class="en-only">Explorations retain at most 14 months of data; anything longer has to be exported to BigQuery.</span></div>
+              <div class="warning-box"><span class="zh-only">標準報表 vs 探索報表數字可能不一致，原因：計算方式與去重邏輯不同。</span><span class="en-only">Standard reports and Explorations can disagree, because they calculate and de-duplicate differently.</span></div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
+            <div class="sub-content">
+              <div class="links-grid">
+                <a class="link-item" href="https://support.google.com/analytics/?hl=en#topic=14090456" target="_blank">
+                  <span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">GA4 官方 Help Center</span><span class="en-only">GA4 Help Center</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference/events" target="_blank">
+                  <span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">事件參考文件 Events Reference</span><span class="en-only">Events reference</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://support.google.com/analytics/answer/7579450?hl=en" target="_blank">
+                  <span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">探索報表入門 Explorations</span><span class="en-only">Getting started with Explorations</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://data.ga4spy.com/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">GA4 Dimensions & Metrics 速查表</span><span class="en-only">GA4 dimensions & metrics cheat sheet</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://piwik.pro/blog/universal-analytics-vs-google-analytics-4/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">GA4 vs UA 差異深入比較</span><span class="en-only">GA4 vs UA — an in-depth comparison</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://analytics.google.com/analytics/web/demoAccount" target="_blank">
+                  <span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">🎯 GA4 Demo Account（練習真實資料）</span><span class="en-only">🎯 GA4 demo account (practise on real data)</span></span><span class="link-arrow">↗</span>
+                </a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── TOPIC 2: Funnel Analysis ───── -->
+    <section class="topic-section" id="topic-2">
+      <div class="topic-card" id="card-2">
+        <div class="topic-header" onclick="toggleCard('card-2')">
+          <div class="topic-icon">🔽</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title zh-only">漏斗分析 · 行銷框架</div>
+            <div class="topic-title en-only">Funnel Analysis · Marketing Frameworks</div>
+            <div class="topic-subtitle">Funnel Exploration · AARRR · AIDA</div>
+            <div class="topic-tags">
+              <span class="tag tag-blue"><span class="zh-only">分析核心 Core Analysis</span><span class="en-only">Core Analysis</span></span>
+              <span class="tag tag-orange"><span class="zh-only">需設定事件 Requires Events</span><span class="en-only">Requires Events</span></span>
+            </div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+
+          <details class="sub-section" open>
+            <summary>🔑 <h2 class="summary-heading"><span class="zh-only">核心概念</span><span class="en-only">Core Concepts</span></h2></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">漏斗類型</span><span class="en-only">Funnel type</span></th><th><span class="zh-only">進入規則</span><span class="en-only">Entry rule</span></th><th><span class="zh-only">適用情境</span><span class="en-only">Best suited to</span></th></tr></thead>
+                  <tbody>
+                    <tr><td><strong><span class="zh-only">封閉式 Closed</span><span class="en-only">Closed</span></strong></td><td><span class="zh-only">必須從第一步進入</span><span class="en-only">Users must enter at step one</span></td><td><span class="zh-only">線性結帳流程、Onboarding</span><span class="en-only">Linear checkout flows, onboarding</span></td></tr>
+                    <tr><td><strong><span class="zh-only">開放式 Open</span><span class="en-only">Open</span></strong></td><td><span class="zh-only">可從任何步驟進入</span><span class="en-only">Users can enter at any step</span></td><td><span class="zh-only">內容消費、非線性旅程</span><span class="en-only">Content consumption, non-linear journeys</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="bullet-list" style="margin-top:10px">
+                <li><strong><span class="zh-only">棄置率 Abandonment Rate：</span><span class="en-only">Abandonment rate:</span></strong><span class="zh-only">每一步驟流失的使用者比例，是優化的核心指標</span><span class="en-only">The share of users lost at each step — the core metric for optimisation</span></li>
+                <li><strong><span class="zh-only">趨勢漏斗 Trended Funnel：</span><span class="en-only">Trended funnel:</span></strong><span class="zh-only">查看漏斗表現隨時間的變化，評估改版效益</span><span class="en-only">See how the funnel performs over time, to judge whether a redesign worked</span></li>
+                <li><strong><span class="zh-only">轉換事件 Conversion Event：</span><span class="en-only">Conversion event:</span></strong><span class="zh-only">需先在 Admin 標記事件為轉換，才能在漏斗中追蹤</span><span class="en-only">The event has to be marked as a conversion in Admin before a funnel can track it</span></li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🏴‍☠️ <h2 class="summary-heading"><span class="zh-only">行銷漏斗框架</span><span class="en-only">Marketing Funnel Frameworks</span></h2></summary>
+            <div class="sub-content">
+              <div class="framework-grid">
+                <div class="fw-card">
+                  <h3><span class="zh-only">AARRR 海盜指標（Dave McClure, 2007）</span><span class="en-only">AARRR pirate metrics (Dave McClure, 2007)</span></h3>
+                  <div class="fw-row"><span class="fw-label"><span class="zh-only">Acquisition 獲取</span><span class="en-only">Acquisition</span></span><span class="fw-desc">Sessions by Source/Medium</span></div>
+                  <div class="fw-row"><span class="fw-label"><span class="zh-only">Activation 啟動</span><span class="en-only">Activation</span></span><span class="fw-desc"><span class="zh-only">Key Event 自訂轉換</span><span class="en-only">Key Event (custom conversion)</span></span></div>
+                  <div class="fw-row"><span class="fw-label"><span class="zh-only">Retention 留存</span><span class="en-only">Retention</span></span><span class="fw-desc"><span class="zh-only">Cohort 同期群報表</span><span class="en-only">Cohort report</span></span></div>
+                  <div class="fw-row"><span class="fw-label"><span class="zh-only">Revenue 營收</span><span class="en-only">Revenue</span></span><span class="fw-desc">Purchase Revenue, ARPU</span></div>
+                  <div class="fw-row"><span class="fw-label"><span class="zh-only">Referral 推薦</span><span class="en-only">Referral</span></span><span class="fw-desc">Referral Source Sessions</span></div>
+                </div>
+                <div class="fw-card">
+                  <h3><span class="zh-only">AIDA 行銷漏斗</span><span class="en-only">The AIDA marketing funnel</span></h3>
+                  <div class="fw-row"><span class="fw-label">Awareness</span><span class="fw-desc"><span class="zh-only">曝光、廣告觸及 (Impressions)</span><span class="en-only">Impressions and ad reach</span></span></div>
+                  <div class="fw-row"><span class="fw-label">Interest</span><span class="fw-desc"><span class="zh-only">頁面停留、滾動深度</span><span class="en-only">Time on page, scroll depth</span></span></div>
+                  <div class="fw-row"><span class="fw-label">Desire</span><span class="fw-desc"><span class="zh-only">加入購物車、收藏</span><span class="en-only">Add to cart, save for later</span></span></div>
+                  <div class="fw-row"><span class="fw-label">Action</span><span class="fw-desc"><span class="zh-only">購買、填單 (Conversion)</span><span class="en-only">Purchase, form submission (conversion)</span></span></div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🛠️ <h2 class="summary-heading"><span class="zh-only">建立漏斗操作步驟</span><span class="en-only">How to Build a Funnel</span></h2></summary>
+            <div class="sub-content">
+              <ol class="step-list">
+                <li><div class="step-num">1</div><div><span class="zh-only">確認事件已收集：報表 → 事件，確認清單中有目標事件</span><span class="en-only">Confirm the event is being collected: Reports → Events, and check it appears in the list</span></div></li>
+                <li><div class="step-num">2</div><div><span class="zh-only">探索 → 新建探索 → 選「漏斗探索 Funnel Exploration」</span><span class="en-only">Explore → Create new exploration → choose "Funnel exploration"</span></div></li>
+                <li><div class="step-num">3</div><div><span class="zh-only">點擊「編輯步驟」→ 每步驟設定事件名稱 + AND/OR 條件篩選</span><span class="en-only">Click "Edit steps" → set an event name per step, with AND/OR conditions</span></div></li>
+                <li><div class="step-num">4</div><div><span class="zh-only">右上角切換開放式 / 封閉式漏斗</span><span class="en-only">Switch between open and closed funnels in the top right</span></div></li>
+                <li><div class="step-num">5</div><div><span class="zh-only">加「維度細分」（裝置、流量來源）找出特定流失族群</span><span class="en-only">Add a breakdown dimension (device, traffic source) to find which groups drop off</span></div></li>
+                <li><div class="step-num">6</div><div><span class="zh-only">切換「趨勢 Trended」視圖比較不同時段表現</span><span class="en-only">Switch to the "Trended" view to compare periods</span></div></li>
+              </ol>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
+            <div class="sub-content">
+              <div class="warning-box"><span class="zh-only">GA4 漏斗資料不溯及既往：建立後才開始計算，未事先標記轉換則資料永遠遺失。</span><span class="en-only">GA4 funnels are not retroactive: they only count from creation onward, and data is lost forever if the conversion was not marked in advance.</span></div>
+              <div class="warning-box"><span class="zh-only">封閉漏斗轉換率通常遠低於開放漏斗，選擇時須理解業務情境再比較。</span><span class="en-only">Closed funnels usually show far lower conversion than open ones — understand the business context before comparing.</span></div>
+              <div class="warning-box"><span class="zh-only">每個探索最多 200 個步驟，實際操作建議控制在 5–8 步以內，過多步驟難以解讀。</span><span class="en-only">An exploration allows up to 200 steps, but keep it to 5–8 in practice — more becomes unreadable.</span></div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
+            <div class="sub-content">
+              <div class="links-grid">
+                <a class="link-item" href="https://support.google.com/analytics/answer/9327974?hl=en" target="_blank">
+                  <span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">漏斗探索官方說明</span><span class="en-only">Official funnel exploration docs</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://www.analyticsmania.com/post/funnel-analysis-report-in-google-analytics-4/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Analytics Mania 漏斗完整教學</span><span class="en-only">Analytics Mania — complete funnel tutorial</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://measureschool.com/funnel-exploration-report-in-ga4/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Measure School 漏斗建立教學</span><span class="en-only">Measure School — building funnels</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://posthog.com/product-engineers/aarrr-pirate-funnel" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">AARRR 框架詳解</span><span class="en-only">The AARRR framework explained</span></span><span class="link-arrow">↗</span>
+                </a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── TOPIC 3: User Behavior ───── -->
+    <section class="topic-section" id="topic-3">
+      <div class="topic-card" id="card-3">
+        <div class="topic-header" onclick="toggleCard('card-3')">
+          <div class="topic-icon">👤</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title zh-only">使用者行為分析</div>
+            <div class="topic-title en-only">User Behavior Analysis</div>
+            <div class="topic-subtitle">Cohort · User Lifecycle · Engagement · RFM</div>
+            <div class="topic-tags">
+              <span class="tag tag-purple"><span class="zh-only">行為洞察 Insights</span><span class="en-only">Insights</span></span>
+              <span class="tag tag-green"><span class="zh-only">留存 Retention</span><span class="en-only">Retention</span></span>
+            </div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+
+          <details class="sub-section" open>
+            <summary>🔑 <h2 class="summary-heading"><span class="zh-only">核心概念與指標</span><span class="en-only">Core Concepts & Metrics</span></h2></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li><strong><span class="zh-only">同期群分析 Cohort：</span><span class="en-only">Cohort analysis:</span></strong><span class="zh-only">依共同特徵（首次造訪日期）分群，追蹤後續留存率</span><span class="en-only">Group users by a shared trait (first visit date) and track retention over time</span></li>
+                <li><strong>Engaged Sessions：</strong><span class="zh-only">超過 10 秒 / 發生 2+ 事件 / 有轉換 → 三者任一成立</span><span class="en-only">Over 10 seconds, or 2+ events, or a conversion — any one qualifies</span></li>
+                <li><strong>Engagement Rate：</strong><span class="zh-only">Engaged Sessions ÷ Total Sessions（GA4 核心指標）</span><span class="en-only">Engaged sessions ÷ total sessions (a core GA4 metric)</span></li>
+                <li><strong>Average Engagement Time：</strong><span class="zh-only">使用者實際與頁面互動的時間（非單純停留）</span><span class="en-only">Time users actually interacted with the page, not merely sat on it</span></li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>📅 <h2 class="summary-heading"><span class="zh-only">User Lifecycle 四大報表</span><span class="en-only">User Lifecycle Reports</span></h2></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">報表</span><span class="en-only">Report</span></th><th><span class="zh-only">路徑</span><span class="en-only">Path</span></th><th><span class="zh-only">分析目標</span><span class="en-only">Analysis goal</span></th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="zh-only">使用者獲取</span><span class="en-only">User acquisition</span></td><td><span class="zh-only">報告 › 生命週期 › 獲取</span><span class="en-only">Reports › Life cycle › Acquisition</span></td><td><span class="zh-only">流量來源效益、獲客成本</span><span class="en-only">Channel performance and cost of acquisition</span></td></tr>
+                    <tr><td><span class="zh-only">參與度</span><span class="en-only">Engagement</span></td><td><span class="zh-only">報告 › 生命週期 › 參與度</span><span class="en-only">Reports › Life cycle › Engagement</span></td><td><span class="zh-only">內容吸引力、互動品質</span><span class="en-only">Content appeal and quality of interaction</span></td></tr>
+                    <tr><td><span class="zh-only">獲利</span><span class="en-only">Monetisation</span></td><td><span class="zh-only">報告 › 生命週期 › 獲利</span><span class="en-only">Reports › Life cycle › Monetisation</span></td><td><span class="zh-only">收益分析、ARPU</span><span class="en-only">Revenue analysis, ARPU</span></td></tr>
+                    <tr><td><span class="zh-only">留存</span><span class="en-only">Retention</span></td><td><span class="zh-only">報告 › 生命週期 › 留存</span><span class="en-only">Reports › Life cycle › Retention</span></td><td><span class="zh-only">回訪行為、D1/D7/D30 留存</span><span class="en-only">Return behaviour, D1/D7/D30 retention</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🏷️ RFM <h2 class="summary-heading"><span class="zh-only">分析框架</span><span class="en-only">Analysis Framework</span></h2></summary>
+            <div class="sub-content">
+              <div class="framework-grid">
+                <div class="fw-card">
+                  <h3><span class="zh-only">RFM 使用者分群</span><span class="en-only">RFM user segmentation</span></h3>
+                  <div class="fw-row"><span class="fw-label">R — Recency</span><span class="fw-desc"><span class="zh-only">最近一次購買距今多久</span><span class="en-only">How long since the last purchase</span></span></div>
+                  <div class="fw-row"><span class="fw-label">F — Frequency</span><span class="fw-desc"><span class="zh-only">購買/造訪頻率</span><span class="en-only">Purchase or visit frequency</span></span></div>
+                  <div class="fw-row"><span class="fw-label">M — Monetary</span><span class="fw-desc"><span class="zh-only">消費金額總計</span><span class="en-only">Total amount spent</span></span></div>
+                  <div class="fw-row" style="margin-top:8px"><span class="fw-label" style="color:var(--orange)"><span class="zh-only">⚠️ 需要</span><span class="en-only">⚠️ Requires</span></span><span class="fw-desc"><span class="zh-only">BigQuery 或 Looker Studio 計算</span><span class="en-only">BigQuery or Looker Studio to calculate</span></span></div>
+                </div>
+                <div class="fw-card">
+                  <h3><span class="zh-only">同期群分析步驟</span><span class="en-only">Running a cohort analysis</span></h3>
+                  <div class="fw-row"><span class="fw-label">Step 1</span><span class="fw-desc"><span class="zh-only">探索 › 同期群探索</span><span class="en-only">Explore › Cohort exploration</span></span></div>
+                  <div class="fw-row"><span class="fw-label">Step 2</span><span class="fw-desc"><span class="zh-only">納入條件：first_visit</span><span class="en-only">Inclusion criterion: first_visit</span></span></div>
+                  <div class="fw-row"><span class="fw-label">Step 3</span><span class="fw-desc"><span class="zh-only">回訪條件：session_start</span><span class="en-only">Return criterion: session_start</span></span></div>
+                  <div class="fw-row"><span class="fw-label">Step 4</span><span class="fw-desc"><span class="zh-only">粒度：日/週/月</span><span class="en-only">Granularity: daily / weekly / monthly</span></span></div>
+                  <div class="fw-row"><span class="fw-label">Step 5</span><span class="fw-desc"><span class="zh-only">顏色越深 = 留存越高</span><span class="en-only">Darker colour = higher retention</span></span></div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
+            <div class="sub-content">
+              <div class="warning-box"><span class="zh-only">GA4 的 Bounce Rate 偏低是正常的（定義放寬），勿直接與 UA 跳出率比較。</span><span class="en-only">GA4's bounce rate reads low by design (the definition was loosened) — don't compare it directly with UA's.</span></div>
+              <div class="warning-box"><span class="zh-only">同期群最多觀察 12 週或 3 個月；更長週期的留存分析需搭配 BigQuery。</span><span class="en-only">Cohorts span at most 12 weeks or 3 months; longer retention analysis needs BigQuery.</span></div>
+              <div class="warning-box"><span class="zh-only">建議實作 User ID 功能，讓 GA4 能跨裝置串聯同一使用者的完整旅程。</span><span class="en-only">Implement User ID so GA4 can stitch one person’s journey together across devices.</span></div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
+            <div class="sub-content">
+              <div class="links-grid">
+                <a class="link-item" href="https://measureschool.com/google-analytics-4-cohort-analysis/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Measure School 同期群分析</span><span class="en-only">Measure School — cohort analysis</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://blog.coupler.io/cohort-analysis-google-analytics/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Coupler.io 同期群完整指南</span><span class="en-only">Coupler.io — complete cohort guide</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://e-dialog.group/en/blog/ga4-explore-reports-understanding-behavioral-analysis/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">e-dialog 行為探索報表</span><span class="en-only">e-dialog — behavioural exploration reports</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://clevertap.com/blog/aarrr-vs-rarra-framework-pirate-metrics/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">AARRR vs RARRA 框架比較</span><span class="en-only">AARRR vs RARRA compared</span></span><span class="link-arrow">↗</span>
+                </a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── TOPIC 4: Marketing ───── -->
+    <section class="topic-section" id="topic-4">
+      <div class="topic-card" id="card-4">
+        <div class="topic-header" onclick="toggleCard('card-4')">
+          <div class="topic-icon">📣</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title zh-only">行銷應用 · 歸因與受眾</div>
+            <div class="topic-title en-only">Marketing Applications</div>
+            <div class="topic-subtitle">Attribution Models · UTM · Audiences · Google Ads</div>
+            <div class="topic-tags">
+              <span class="tag tag-blue"><span class="zh-only">廣告整合 Ads Integration</span><span class="en-only">Ads Integration</span></span>
+              <span class="tag tag-orange"><span class="zh-only">歸因模型 Attribution</span><span class="en-only">Attribution</span></span>
+            </div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+
+          <details class="sub-section" open>
+            <summary>⚖️ <h2 class="summary-heading"><span class="zh-only">歸因模型</span><span class="en-only">Attribution Models</span></h2></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">模型</span><span class="en-only">Model</span></th><th><span class="zh-only">說明</span><span class="en-only">Description</span></th><th><span class="zh-only">適用</span><span class="en-only">Best for</span></th></tr></thead>
+                  <tbody>
+                    <tr><td><strong><span class="zh-only">資料驅動 Data-Driven</span><span class="en-only">Data-Driven</span></strong></td><td><span class="zh-only">ML 根據實際貢獻分配功勞（GA4 預設）</span><span class="en-only">Machine learning assigns credit by actual contribution (the GA4 default)</span></td><td><span class="zh-only">需 300 轉換/30 天</span><span class="en-only">Needs 300 conversions per 30 days</span></td></tr>
+                    <tr><td><strong><span class="zh-only">最後點擊 Last Click</span><span class="en-only">Last Click</span></strong></td><td><span class="zh-only">100% 功勞給最後觸點</span><span class="en-only">All credit to the final touchpoint</span></td><td><span class="zh-only">直效行銷評估</span><span class="en-only">Evaluating direct-response marketing</span></td></tr>
+                    <tr><td><strong><span class="zh-only">首次點擊 First Click</span><span class="en-only">First Click</span></strong></td><td><span class="zh-only">100% 功勞給第一觸點</span><span class="en-only">All credit to the first touchpoint</span></td><td><span class="zh-only">品牌知名度評估</span><span class="en-only">Evaluating brand awareness</span></td></tr>
+                    <tr><td><strong><span class="zh-only">線性 Linear</span><span class="en-only">Linear</span></strong></td><td><span class="zh-only">均分所有觸點</span><span class="en-only">Credit split evenly across touchpoints</span></td><td><span class="zh-only">每步驟都重要時</span><span class="en-only">When every step matters</span></td></tr>
+                    <tr><td><strong><span class="zh-only">跨管道衰退 Time Decay</span><span class="en-only">Time Decay</span></strong></td><td><span class="zh-only">越近轉換獲越多功勞</span><span class="en-only">The closer to conversion, the more credit</span></td><td><span class="zh-only">短促銷活動</span><span class="en-only">Short promotional campaigns</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔖 UTM <h2 class="summary-heading"><span class="zh-only">參數追蹤</span><span class="en-only">Parameter Tracking</span></h2></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">參數</span><span class="en-only">Parameter</span></th><th><span class="zh-only">說明</span><span class="en-only">Description</span></th><th><span class="zh-only">範例</span><span class="en-only">Example</span></th></tr></thead>
+                  <tbody>
+                    <tr><td><code>utm_source</code></td><td><span class="zh-only">流量來源</span><span class="en-only">Traffic source</span></td><td>google, facebook, newsletter</td></tr>
+                    <tr><td><code>utm_medium</code></td><td><span class="zh-only">流量媒介</span><span class="en-only">Traffic medium</span></td><td>cpc, email, social, organic</td></tr>
+                    <tr><td><code>utm_campaign</code></td><td><span class="zh-only">活動名稱</span><span class="en-only">Campaign name</span></td><td>summer_sale_2024</td></tr>
+                    <tr><td><code>utm_content</code></td><td><span class="zh-only">廣告內容識別</span><span class="en-only">Ad content identifier</span></td><td>banner_top, text_link</td></tr>
+                    <tr><td><code>utm_term</code></td><td><span class="zh-only">付費關鍵字</span><span class="en-only">Paid keyword</span></td><td>running+shoes</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="bullet-list" style="margin-top:10px">
+                <li><span class="zh-only">使用 Google Campaign URL Builder 產生 UTM 連結（避免手打錯誤）</span><span class="en-only">Use the Google Campaign URL Builder to generate UTM links and avoid typos</span></li>
+                <li><span class="zh-only">全團隊統一命名規範，</span><span class="en-only">Agree one naming convention across the team,</span><code>utm_source/medium</code> <span class="zh-only">一律小寫</span><span class="en-only">always lowercase</span></li>
+                <li><span class="zh-only">Email 行銷務必加 UTM，否則流量被歸類為 Direct，無法追蹤效益</span><span class="en-only">Always tag email campaigns with UTMs, or the traffic lands in Direct and cannot be measured</span></li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>👥 <h2 class="summary-heading"><span class="zh-only">受眾建立與再行銷</span><span class="en-only">Audience & Remarketing</span></h2></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li><span class="zh-only">受眾 Audience 建立後才開始累積，</span><span class="en-only">Audiences only start accumulating once created —</span><strong><span class="zh-only">不溯及既往</span><span class="en-only">they are not retroactive</span></strong></li>
+                <li><span class="zh-only">標準帳戶最多 100 個受眾，成員資格期間最長 540 天</span><span class="en-only">Standard accounts allow up to 100 audiences, with membership lasting at most 540 days</span></li>
+                <li><span class="zh-only">連結 Google Ads 後，受眾自動同步（需 24–48 小時）</span><span class="en-only">Once Google Ads is linked, audiences sync automatically (allow 24–48 hours)</span></li>
+                <li><strong>Segments vs Audiences：</strong><span class="zh-only">Segments 可追溯歷史，Audiences 不行</span><span class="en-only">Segments can look back over history; audiences cannot</span></li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
+            <div class="sub-content">
+              <div class="warning-box"><span class="zh-only">資料驅動歸因需每 30 天至少 300 個轉換，不足時系統降級為「最後點擊」。</span><span class="en-only">Data-driven attribution needs at least 300 conversions per 30 days; below that, GA4 falls back to last click.</span></div>
+              <div class="warning-box"><span class="zh-only">utm_source/medium 大小寫不同會被視為不同來源（`Facebook` ≠ `facebook`）。</span><span class="en-only">utm_source and utm_medium are case-sensitive, so `Facebook` and `facebook` count as different sources.</span></div>
+              <div class="warning-box"><span class="zh-only">GA4 Audiences 需 24–48 小時才會出現在 Google Ads 廣告管理界面。</span><span class="en-only">GA4 audiences take 24–48 hours to appear in the Google Ads interface.</span></div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
+            <div class="sub-content">
+              <div class="links-grid">
+                <a class="link-item" href="https://measureschool.com/google-analytics-4-attribution-models/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Measure School 歸因模型完整指南</span><span class="en-only">Measure School — complete attribution guide</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://www.analyticsmania.com/post/utm-parameters-in-google-analytics-4/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title">Analytics Mania UTM in GA4</span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://www.analyticsmania.com/post/google-analytics-4-audiences/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Analytics Mania Audiences 完整指南</span><span class="en-only">Analytics Mania — complete audiences guide</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://ga-dev-tools.google/campaign-url-builder/" target="_blank">
+                  <span class="link-tag link-official">Official</span><span class="link-title">🔧 Google Campaign URL Builder</span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://adswerve.com/blog/google-ads-ga4-conversions-best-practices-recommendations/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Adswerve GA4 + Google Ads 整合</span><span class="en-only">Adswerve — GA4 + Google Ads integration</span></span><span class="link-arrow">↗</span>
+                </a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── TOPIC 5: Bot Detection ───── -->
+    <section class="topic-section" id="topic-5">
+      <div class="topic-card" id="card-5">
+        <div class="topic-header" onclick="toggleCard('card-5')">
+          <div class="topic-icon">🤖</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title zh-only">爬蟲與異常流量偵測</div>
+            <div class="topic-title en-only">Bot & Anomaly Traffic Detection</div>
+            <div class="topic-subtitle">Bot Filtering · Ghost Traffic · Referral Spam · Cloudflare</div>
+            <div class="topic-tags">
+              <span class="tag tag-orange"><span class="zh-only">安全性 Security</span><span class="en-only">Security</span></span>
+              <span class="tag tag-blue"><span class="zh-only">資料品質 Data Quality</span><span class="en-only">Data Quality</span></span>
+            </div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+
+          <details class="sub-section" open>
+            <summary>🛡️ <h2 class="summary-heading"><span class="zh-only">GA4 內建 Bot 過濾</span><span class="en-only">GA4 Built-in Bot Filtering</span></h2></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li><span class="zh-only">自動過濾</span><span class="en-only">Filtered automatically</span> <strong><span class="zh-only">IAB/ABC 已知 Bot 清單</span><span class="en-only">The IAB/ABC known-bot list</span></strong><span class="zh-only">（含 Googlebot、Bingbot、Screaming Frog、Ahrefs）</span><span class="en-only">(includes Googlebot, Bingbot, Screaming Frog, Ahrefs)</span></li>
+                <li><span class="zh-only">預設啟用，無法手動關閉</span><span class="en-only">On by default and cannot be turned off</span></li>
+                <li><span class="zh-only">⚠️ 只過濾已知 Bot，新型或自訂爬蟲仍會進入資料</span><span class="en-only">⚠️ Only known bots are filtered — new or custom crawlers still reach your data</span></li>
+              </ul>
+              <div style="margin-top:12px">
+                <strong style="font-size:.85rem"><span class="zh-only">垃圾流量類型 Spam Traffic Types：</span><span class="en-only">Types of spam traffic:</span></strong>
+                <div class="table-wrap" style="margin-top:6px">
+                  <table class="data-table">
+                    <thead><tr><th><span class="zh-only">類型</span><span class="en-only">Type</span></th><th><span class="zh-only">說明</span><span class="en-only">Description</span></th><th><span class="zh-only">能否靠 GA4 過濾</span><span class="en-only">Can GA4 filter it?</span></th></tr></thead>
+                    <tbody>
+                      <tr><td>Referral Spam</td><td><span class="zh-only">偽造來源 Domain 的假 Session</span><span class="en-only">Fake sessions with a spoofed source domain</span></td><td><span class="zh-only">部分</span><span class="en-only">Partly</span></td></tr>
+                      <tr><td>Ghost Traffic</td><td><span class="zh-only">直接送 Measurement Protocol，不載入頁面</span><span class="en-only">Sent straight to the Measurement Protocol without loading the page</span></td><td><span class="zh-only">❌ 無法</span><span class="en-only">❌ No</span></td></tr>
+                      <tr><td>Fake Organic</td><td><span class="zh-only">模仿搜尋引擎的 Bot</span><span class="en-only">Bots impersonating search engines</span></td><td><span class="zh-only">已知可，未知否</span><span class="en-only">Known ones yes, unknown ones no</span></td></tr>
+                      <tr><td>DDoS Referral Spam</td><td><span class="zh-only">大量假 Referral 干擾報表與出價演算法</span><span class="en-only">Floods of fake referrals distort reports and bidding algorithms</span></td><td><span class="zh-only">部分</span><span class="en-only">Partly</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔍 <h2 class="summary-heading"><span class="zh-only">異常流量特徵識別</span><span class="en-only">Anomaly Signals</span></h2></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">指標</span><span class="en-only">Metric</span></th><th><span class="zh-only">異常閾值</span><span class="en-only">Anomaly threshold</span></th><th><span class="zh-only">可能原因</span><span class="en-only">Likely cause</span></th></tr></thead>
+                  <tbody>
+                    <tr><td>Session Duration</td><td><span class="zh-only">&lt; 1 秒</span><span class="en-only">&lt; 1 second</span></td><td><span class="zh-only">自動腳本</span><span class="en-only">Automated script</span></td></tr>
+                    <tr><td>Events per Session</td><td><span class="zh-only">50+ 在 1 分鐘內</span><span class="en-only">50+ within one minute</span></td><td><span class="zh-only">爬蟲</span><span class="en-only">Crawler</span></td></tr>
+                    <tr><td>Engagement Rate</td><td><span class="zh-only">&lt; 2% 於流量尖峰</span><span class="en-only">&lt; 2% during a traffic spike</span></td><td><span class="zh-only">假流量</span><span class="en-only">Fake traffic</span></td></tr>
+                    <tr><td><span class="zh-only">IP 來源</span><span class="en-only">IP origin</span></td><td><span class="zh-only">AWS/GCP/Azure IP 段</span><span class="en-only">AWS/GCP/Azure IP ranges</span></td><td><span class="zh-only">資料中心機器人</span><span class="en-only">Data-centre bots</span></td></tr>
+                    <tr><td><span class="zh-only">地理位置</span><span class="en-only">Geography</span></td><td><span class="zh-only">集中在單一非目標城市</span><span class="en-only">Concentrated in one city outside your market</span></td><td><span class="zh-only">流量農場</span><span class="en-only">Traffic farm</span></td></tr>
+                    <tr><td><span class="zh-only">每日 Session</span><span class="en-only">Daily sessions</span></td><td><span class="zh-only">固定整數（每天剛好 247 次）</span><span class="en-only">A fixed round number (exactly 247 every day)</span></td><td><span class="zh-only">排程腳本</span><span class="en-only">Scheduled script</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🛠️ <h2 class="summary-heading"><span class="zh-only">調查 SOP + 排除內部流量</span><span class="en-only">Investigation SOP & Internal Traffic</span></h2></summary>
+            <div class="sub-content">
+              <ol class="step-list">
+                <li><div class="step-num">1</div><div><span class="zh-only">探索 › 自由格式：加維度「城市」「裝置類別」「瀏覽器」，找異常集中點</span><span class="en-only">Explore › Free form: add City, Device category and Browser as dimensions to find abnormal clustering</span></div></li>
+                <li><div class="step-num">2</div><div><span class="zh-only">加入維度</span><span class="en-only">Add the dimension</span> <code>hostname</code><span class="zh-only">，過濾不屬於你的域名（Ghost Traffic 特徵）</span><span class="en-only"> and filter out anything that is not your own domain — the signature of ghost traffic</span></div></li>
+                <li><div class="step-num">3</div><div><span class="zh-only">分析特定來源的 Engagement Rate（正常 &gt; 50%，&lt; 5% 需調查）</span><span class="en-only">Check engagement rate by source (over 50% is normal; under 5% warrants investigation)</span></div></li>
+                <li><div class="step-num">4</div><div><span class="zh-only">比對 Google Search Console 點擊數 vs GA4 Organic 流量（若 GA4 遠大於 GSC，高度可疑）</span><span class="en-only">Compare Search Console clicks against GA4 organic traffic — if GA4 is far higher, be suspicious</span></div></li>
+              </ol>
+              <div style="margin-top:14px; font-size:.85rem; font-weight:600; color:var(--muted)"><span class="zh-only">排除內部流量 Exclude Internal IP</span><span class="en-only">Excluding internal traffic</span></div>
+              <ol class="step-list" style="margin-top:8px">
+                <li><div class="step-num">1</div><div><span class="zh-only">Admin › 資料串流 › 設定標記設定 › 定義內部流量 → 輸入公司 IP 或 IP 範圍</span><span class="en-only">Admin › Data streams › Configure tag settings › Define internal traffic → enter your office IP or range</span></div></li>
+                <li><div class="step-num">2</div><div><span class="zh-only">Admin › 資料篩選器 › 找到「Internal Traffic」篩選器</span><span class="en-only">Admin › Data filters › find the "Internal Traffic" filter</span></div></li>
+                <li><div class="step-num">3</div><div><span class="zh-only">從「測試中」改為「啟用」狀態</span><span class="en-only">Change it from Testing to Active</span></div></li>
+              </ol>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔧 <h2 class="summary-heading"><span class="zh-only">第三方工具</span><span class="en-only">Third-party Tools</span></h2></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">工具</span><span class="en-only">Tool</span></th><th><span class="zh-only">用途</span><span class="en-only">Purpose</span></th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Cloudflare WAF</strong></td><td><span class="zh-only">邊緣層攔截爬蟲，在到達 GA4 前就過濾</span><span class="en-only">Blocks crawlers at the edge, before they ever reach GA4</span></td></tr>
+                    <tr><td><strong>Spider AF</strong></td><td><span class="zh-only">無效廣告點擊偵測</span><span class="en-only">Invalid click detection</span></td></tr>
+                    <tr><td><strong>ClickCease</strong></td><td><span class="zh-only">PPC 點擊詐欺防護</span><span class="en-only">PPC click-fraud protection</span></td></tr>
+                    <tr><td><strong>Server-side GTM</strong></td><td><span class="zh-only">伺服器端過濾後再送 GA4，最乾淨</span><span class="en-only">Filters server-side before sending to GA4 — the cleanest option</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
+            <div class="sub-content">
+              <div class="warning-box"><span class="zh-only">Bot 過濾設定不溯及既往，啟用後只對未來資料有效。</span><span class="en-only">Bot filtering is not retroactive; it only applies to data collected after you enable it.</span></div>
+              <div class="warning-box"><span class="zh-only">Ghost Traffic 無法靠 GA4 本身過濾，Hit 直接送 Measurement Protocol 不觸發頁面。</span><span class="en-only">GA4 cannot filter ghost traffic on its own — those hits go straight to the Measurement Protocol and never load a page.</span></div>
+              <div class="warning-box"><span class="zh-only">IP 封鎖非萬靈丹，Bot 使用輪換 IP，需搭配行為特徵過濾（Cloudflare WAF 規則）。</span><span class="en-only">IP blocking is not a cure-all: bots rotate addresses, so pair it with behavioural filtering such as Cloudflare WAF rules.</span></div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
+            <div class="sub-content">
+              <div class="links-grid">
+                <a class="link-item" href="https://support.google.com/analytics/answer/10104470?hl=en" target="_blank">
+                  <span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">官方：排除內部流量設定</span><span class="en-only">Official: excluding internal traffic</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://www.kissmetrics.io/blog/ga4-bot-spam-traffic" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Kissmetrics GA4 Bot 完整指南</span><span class="en-only">Kissmetrics — complete GA4 bot guide</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://www.analyticsmania.com/post/how-to-exclude-internal-traffic-in-google-analytics-4/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Analytics Mania 排除內部流量</span><span class="en-only">Analytics Mania — excluding internal traffic</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://wellows.com/blog/detect-bot-traffic-in-google-analytics/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Wellows Bot 流量識別指南</span><span class="en-only">Wellows — identifying bot traffic</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://www.fdaytalk.com/block-bot-traffic-cloudflare-waf/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Cloudflare WAF Bot 攔截教學</span><span class="en-only">Cloudflare WAF — blocking bots</span></span><span class="link-arrow">↗</span>
+                </a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── TOPIC 6: Advanced ───── -->
+    <section class="topic-section" id="topic-6">
+      <div class="topic-card" id="card-6">
+        <div class="topic-header" onclick="toggleCard('card-6')">
+          <div class="topic-icon">⚡</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title zh-only">進階功能</div>
+            <div class="topic-title en-only">Advanced Features</div>
+            <div class="topic-subtitle">BigQuery · GA4 API · Custom Dimensions · Looker Studio</div>
+            <div class="topic-tags">
+              <span class="tag tag-purple"><span class="zh-only">進階 Advanced</span><span class="en-only">Advanced</span></span>
+              <span class="tag tag-blue">BigQuery · SQL</span>
+            </div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+
+          <details class="sub-section" open>
+            <summary>🗄️ BigQuery <h2 class="summary-heading"><span class="zh-only">匯出</span><span class="en-only">Export</span></h2></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li><span class="zh-only">免費啟用，每日 1M 事件上限；超過需升級 GA4 360</span><span class="en-only">Free to enable, capped at 1M events a day; beyond that you need GA4 360</span></li>
+                <li><span class="zh-only">資料結構：每列 = 一個事件，含巢狀欄位</span><span class="en-only">Data shape: one row per event, with nested fields</span> <code>event_params</code><span class="zh-only">（ARRAY 型態）</span><span class="en-only">(an ARRAY type)</span></li>
+                <li><code>events_YYYYMMDD</code><span class="zh-only">：日資料（永久保留）</span><span class="en-only">: daily tables, kept permanently</span></li>
+                <li><code>events_intraday_YYYYMMDD</code><span class="zh-only">：即時資料（24 小時後刪除）</span><span class="en-only">: intraday tables, deleted after 24 hours</span></li>
+                <li><span class="zh-only">費用：儲存極低，查詢 $5/TB（前 1TB/月免費）</span><span class="en-only">Cost: storage is negligible; queries are $5/TB with the first 1TB each month free</span></li>
+              </ul>
+
+              <div class="code-label" style="margin-top:14px"><span class="zh-only">📝 BigQuery SQL 範例 — 查詢頁面瀏覽事件：</span><span class="en-only">📝 BigQuery SQL example — querying page_view events:</span></div>
+              <div class="code-block">
+                <pre>SELECT
+  event_date,
+  event_name,
+  (SELECT value.string_value
+   FROM UNNEST(event_params)
+   WHERE key = 'page_location') AS page_url,
+  COUNT(*) AS event_count
+FROM `your_project.analytics_XXXXXXX.events_*`
+WHERE _TABLE_SUFFIX BETWEEN '20240101' AND '20240131'
+  AND event_name = 'page_view'
+GROUP BY 1, 2, 3
+ORDER BY event_count DESC</pre>
+              </div>
+              <p style="margin-top:6px; font-size:.8rem; color:var(--muted)">⚠️ <code>event_params</code> <span class="zh-only">是 ARRAY&lt;STRUCT&gt;，必須用 UNNEST 展開才能存取參數值。</span><span class="en-only">is an ARRAY&lt;STRUCT&gt;, so you have to UNNEST it before you can read parameter values.</span></p>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔌 GA4 Data API</summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li><span class="zh-only">支援方法：</span><span class="en-only">Supported methods:</span><code>runReport</code>、<code>runRealtimeReport</code>、<code>batchRunReports</code>、<code>runPivotReport</code></li>
+                <li><span class="zh-only">官方 SDK：Python、Node.js、Java、Go</span><span class="en-only">Official SDKs: Python, Node.js, Java, Go</span></li>
+                <li><span class="zh-only">配額：每個屬性每小時 60,000 token（用</span><span class="en-only">Quota: 60,000 tokens per property per hour (use</span> <code>batchRunReports</code> <span class="zh-only">合併請求節省配額）</span><span class="en-only">to batch requests and conserve quota)</span></li>
+                <li><span class="zh-only">資料有 24–48 小時延遲，即時監控請用 Realtime API</span><span class="en-only">Data lags by 24–48 hours; use the Realtime API for live monitoring</span></li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🏷️ <h2 class="summary-heading"><span class="zh-only">自訂維度與指標</span><span class="en-only">Custom Dimensions & Metrics</span></h2></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">範疇 Scope</span><span class="en-only">Scope</span></th><th><span class="zh-only">說明</span><span class="en-only">Description</span></th><th><span class="zh-only">範例</span><span class="en-only">Example</span></th><th><span class="zh-only">上限</span><span class="en-only">Limit</span></th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Event-scoped</strong></td><td><span class="zh-only">每次事件的屬性</span><span class="en-only">Attributes of each event</span></td><td><span class="zh-only">文章類別、按鈕名稱</span><span class="en-only">Article category, button name</span></td><td><span class="zh-only">50 個</span><span class="en-only">50</span></td></tr>
+                    <tr><td><strong>User-scoped</strong></td><td><span class="zh-only">使用者層級屬性</span><span class="en-only">User-level attributes</span></td><td><span class="zh-only">會員等級、付費狀態</span><span class="en-only">Membership tier, payment status</span></td><td><span class="zh-only">25 個</span><span class="en-only">25</span></td></tr>
+                    <tr><td><strong>Item-scoped</strong></td><td><span class="zh-only">電商商品屬性</span><span class="en-only">Ecommerce item attributes</span></td><td><span class="zh-only">商品顏色、尺寸</span><span class="en-only">Product colour, size</span></td><td><span class="zh-only">10 個</span><span class="en-only">10</span></td></tr>
+                    <tr><td><strong>Custom Metrics</strong></td><td><span class="zh-only">自訂數值指標</span><span class="en-only">Custom numeric metrics</span></td><td><span class="zh-only">閱讀進度 %</span><span class="en-only">Reading progress %</span></td><td><span class="zh-only">50 個</span><span class="en-only">50</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>📊 <h2 class="summary-heading"><span class="zh-only">Looker Studio 整合架構</span><span class="en-only">Looker Studio Integration</span></h2></summary>
+            <div class="sub-content">
+              <div class="pipeline">
+                <div class="pipeline-step"><span class="zh-only">GA4 原始資料</span><span class="en-only">Raw GA4 data</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step"><span class="zh-only">BigQuery 每日匯出</span><span class="en-only">Daily BigQuery export</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step"><span class="zh-only">預聚合報表表</span><span class="en-only">Pre-aggregated reporting tables</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Looker Studio Dashboard</div>
+              </div>
+              <ul class="bullet-list" style="margin-top:8px">
+                <li><span class="zh-only">直連 GA4（小流量可用）：查詢慢（20–30 秒），有取樣問題</span><span class="en-only">Connecting Looker Studio straight to GA4 (fine at low traffic): slow queries, 20–30 seconds, and sampling</span></li>
+                <li><span class="zh-only">BigQuery 中介（推薦）：速度快、無取樣、可自訂 SQL</span><span class="en-only">Going through BigQuery (recommended): fast, unsampled, and you can write your own SQL</span></li>
+                <li><span class="zh-only">建立預聚合表（Scheduled Query）：Looker Studio 直接讀取，最快速</span><span class="en-only">Building pre-aggregated tables with a scheduled query: Looker Studio reads them directly, the fastest option</span></li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>⚠️ <h2 class="summary-heading"><span class="zh-only">注意事項</span><span class="en-only">Gotchas</span></h2></summary>
+            <div class="sub-content">
+              <div class="warning-box"><span class="zh-only">直連 GA4 的 Looker Studio 報表有取樣問題，大流量網站必須透過 BigQuery 中介。</span><span class="en-only">Looker Studio reports wired straight to GA4 are sampled; high-traffic sites must route through BigQuery.</span></div>
+              <div class="warning-box"><span class="zh-only">BigQuery 中避免</span><span class="en-only">In BigQuery, avoid</span> <code>SELECT *</code><span class="zh-only">，應指定欄位名稱，否則費用大幅增加。</span><span class="en-only"> — name the columns you need, or the bill climbs sharply.</span></div>
+              <div class="warning-box"><span class="zh-only">自訂維度需先在 GA4 Admin 後台「新增自訂維度」才能在報表中看到，已收集的數據不會自動顯示。</span><span class="en-only">A custom dimension has to be registered under GA4 Admin before it shows up in reports — already-collected data will not appear on its own.</span></div>
+            </div>
+          </details>
+
+          <details class="sub-section">
+            <summary>🔗 <h2 class="summary-heading"><span class="zh-only">參考連結</span><span class="en-only">References</span></h2></summary>
+            <div class="sub-content">
+              <div class="links-grid">
+                <a class="link-item" href="https://developers.google.com/analytics/devguides/reporting/data/v1" target="_blank">
+                  <span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">GA4 Data API 官方文件</span><span class="en-only">GA4 Data API documentation</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://support.google.com/analytics/answer/7029846?hl=en" target="_blank">
+                  <span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">BigQuery Export Schema 官方說明</span><span class="en-only">BigQuery export schema documentation</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://www.ga4bigquery.com/" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">ga4bigquery.com SQL 教學庫</span><span class="en-only">ga4bigquery.com — SQL tutorial library</span></span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://www.owox.com/blog/articles/ga4-bigquery-export-building-looker-studio-dashboard" target="_blank">
+                  <span class="link-tag link-community">Community</span><span class="link-title">OWOX: GA4→BigQuery→Looker Studio</span><span class="link-arrow">↗</span>
+                </a>
+                <a class="link-item" href="https://support.google.com/analytics/answer/14240153?hl=en" target="_blank">
+                  <span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">GA4 自訂維度與指標官方說明</span><span class="en-only">Official docs on custom dimensions and metrics</span></span><span class="link-arrow">↗</span>
+                </a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── Resources ───── -->
+    <section class="resources-section" id="resources">
+      <h2 style="font-size:1.1rem; font-weight:700; margin-bottom:16px; color:var(--text)">
+        🔗 <span class="zh-only">必備資源清單</span><span class="en-only">Essential Resources</span>
+      </h2>
+      <div class="resources-grid">
+        <div class="resource-card">
+          <h3>🏛️ <span class="zh-only">官方資源</span><span class="en-only">Official Resources</span></h3>
+          <ul class="resource-list">
+            <li><a href="https://support.google.com/analytics/?hl=en" target="_blank">GA4 Help Center <span><span class="zh-only">官方說明中心</span><span class="en-only">Official Help Center</span></span></a></li>
+            <li><a href="https://developers.google.com/analytics/devguides/collection/ga4" target="_blank"><span class="zh-only">GA4 開發者文件</span><span class="en-only">GA4 developer documentation</span> <span>Developer Docs</span></a></li>
+            <li><a href="https://support.google.com/analytics/answer/7029846" target="_blank">BigQuery Export Schema <span><span class="zh-only">匯出結構說明</span><span class="en-only">Export schema reference</span></span></a></li>
+            <li><a href="https://support.google.com/analytics/answer/7579450" target="_blank"><span class="zh-only">Explorations 探索說明</span><span class="en-only">Explorations reference</span> <span><span class="zh-only">官方教學</span><span class="en-only">Official tutorials</span></span></a></li>
+            <li><a href="https://analytics.google.com/analytics/web/demoAccount" target="_blank">🎯 GA4 Demo Account <span><span class="zh-only">練習用真實資料</span><span class="en-only">Real data to practise on</span></span></a></li>
+            <li><a href="https://ga-dev-tools.google/campaign-url-builder/" target="_blank">Campaign URL Builder <span><span class="zh-only">UTM 連結產生器</span><span class="en-only">UTM link builder</span></span></a></li>
+          </ul>
+        </div>
+        <div class="resource-card">
+          <h3>📚 <span class="zh-only">知名社群教學</span><span class="en-only">Community Resources</span></h3>
+          <ul class="resource-list">
+            <li><a href="https://www.analyticsmania.com/" target="_blank">Analytics Mania <span><span class="zh-only">GTM + GA4 深度教學</span><span class="en-only">GTM + GA4 in depth</span></span></a></li>
+            <li><a href="https://measureschool.com/" target="_blank">Measure School <span><span class="zh-only">影片 + 實作步驟</span><span class="en-only">Video plus hands-on steps</span></span></a></li>
+            <li><a href="https://www.optimizesmart.com/" target="_blank">Optimize Smart <span><span class="zh-only">指標深度解析</span><span class="en-only">Metrics explained in depth</span></span></a></li>
+            <li><a href="https://www.ga4bigquery.com/" target="_blank">ga4bigquery.com <span><span class="zh-only">BigQuery SQL 查詢庫</span><span class="en-only">BigQuery SQL query library</span></span></a></li>
+            <li><a href="https://data.ga4spy.com/" target="_blank">GA4 Spy <span><span class="zh-only">Dimensions & Metrics 速查</span><span class="en-only">Dimensions & metrics quick reference</span></span></a></li>
+            <li><a href="https://www.tatvic.com/blog/" target="_blank">Tatvic Analytics Blog <span><span class="zh-only">GA4 全面概覽</span><span class="en-only">A complete GA4 overview</span></span></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── Key Notices ───── -->
+    <section class="notices-section" id="notices">
+      <h2 style="font-size:1.1rem; font-weight:700; margin-bottom:16px; color:var(--text)">
+        📌 <span class="zh-only">跨主題重要注意事項</span><span class="en-only">Cross-Topic Key Notes</span>
+      </h2>
+      <div class="notice-grid">
+        <div class="notice-card">
+          <h3><span class="zh-only">📅 資料保留期限 Data Retention</span><span class="en-only">📅 Data Retention</span></h3>
+          <p class="zh-only">預設保留 2 個月，可在 Admin › 資料保留 改為 14 個月（免費版上限）。超過需匯出至 BigQuery 永久保存。</p>
+          <p class="en-only">Default 2 months; extend to 14 months (free tier max) in Admin › Data Retention. Beyond that, export to BigQuery.</p>
+        </div>
+        <div class="notice-card">
+          <h3><span class="zh-only">⚖️ 報表口徑差異 Report Discrepancies</span><span class="en-only">⚖️ Report Discrepancies</span></h3>
+          <p class="zh-only">標準報表、探索報表、Looker Studio 直連、API 查詢，四者計算方式與去重邏輯有細微差異，數字可能不一致。</p>
+          <p class="en-only">Standard reports, Explorations, Looker Studio direct, and API queries may show slightly different numbers due to sampling and dedup logic.</p>
+        </div>
+        <div class="notice-card">
+          <h3><span class="zh-only">🚫 不再支援 Views No More Views</span><span class="en-only">🚫 No More Views</span></h3>
+          <p class="zh-only">GA4 取消 UA 的多個 View（檢視）功能，改由 Data Filters（資料篩選器）部分取代，規劃帳戶架構時需調整。</p>
+          <p class="en-only">GA4 removed UA's multiple Views. Data Filters partially replace this; adjust your account architecture accordingly.</p>
+        </div>
+        <div class="notice-card">
+          <h3><span class="zh-only">🔐 Consent Mode v2 合規</span><span class="en-only">🔐 Consent Mode v2 compliance</span></h3>
+          <p class="zh-only">GDPR/CCPA 環境下需正確設定 Consent Mode v2，否則 EU 流量資料會因用戶拒絕追蹤而缺失，影響報表準確度。</p>
+          <p class="en-only">In GDPR/CCPA environments, properly configure Consent Mode v2. Without it, EU traffic data will be missing when users decline tracking.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ── Glossary Panel ── -->
+<div id="glossaryOverlay" onclick="closeGlossary()"></div>
+<div id="glossaryPanel">
+  <div class="gp-header">
+    <span>📖</span>
+    <h2><span class="zh-only">GA4 術語速查</span><span class="en-only">GA4 Glossary</span></h2>
+    <button class="gp-close" onclick="closeGlossary()">✕</button>
+  </div>
+  <input type="text" id="gpSearch" placeholder="搜尋術語… / Search term…" oninput="filterGlossary(this.value)">
+  <div id="gpList"></div>
+</div>
+
+<footer>
+  <span class="zh-only">GA4 全攻略 · 純靜態，無建置流程。</span>
+  <span class="en-only">GA4 Complete Guide · Static, no build step.</span>
+
+    <nav class="related-links" data-related-links aria-label="相關頁面 / Related pages">
+      <a href="/projects/one-more-step/"><span class="zh-only">← One More Step 全部筆記</span><span class="en-only">← All One More Step notes</span></a>
+      <a href="/projects/marketing/"><span class="zh-only">行銷專欄</span><span class="en-only">Marketing notes</span></a>
+      <a href="/projects/"><span class="zh-only">所有專案</span><span class="en-only">All projects</span></a>
+    </nav>
+  </footer>
+
+<script>
+// ── Glossary Data ──
+const GLOSSARY = [
+  { term: "Event 事件", zh: "GA4 最小資料單位，所有使用者互動（頁面瀏覽、點擊、滾動）都是事件，搭配 Parameters 描述細節。", en: "The smallest data unit in GA4; all user interactions are events accompanied by parameters." },
+  { term: "Session 工作階段", zh: "從 session_start 事件開始，到 30 分鐘無活動為止的一段連續互動；不在午夜重設。", en: "A period of continuous interaction from session_start until 30 min of inactivity; never resets at midnight." },
+  { term: "Conversion 轉換", zh: "被標記為重要動作的事件，任何事件都可設為轉換，不再限於 UA 的「目標」類型。", en: "An event marked as a key action; any event can be designated a conversion unlike UA's rigid Goal types." },
+  { term: "Bounce Rate 跳出率", zh: "未參與工作階段的比例 = 1 − Engagement Rate（GA4 新定義，非 UA 的「只看一頁就離開」）。", en: "Proportion of non-engaged sessions = 1 − Engagement Rate; completely different from UA's definition." },
+  { term: "Engaged Session 參與工作階段", zh: "超過 10 秒、發生 2 個以上事件、或有轉換的工作階段，三者任一成立。", en: "Session lasting 10+ seconds, with 2+ events, or containing at least one conversion." },
+  { term: "Engagement Rate 參與率", zh: "Engaged Sessions ÷ Total Sessions，GA4 的核心健康指標，取代 UA 跳出率。", en: "Engaged Sessions / Total Sessions; GA4's core health metric replacing UA's bounce rate." },
+  { term: "Cohort 同期群", zh: "具共同特徵（通常是首次造訪日期）的使用者群組，用於追蹤後續留存率與行為。", en: "A group of users sharing a common trait (usually first-visit date) for tracking retention over time." },
+  { term: "Segment 區隔", zh: "篩選特定子集使用者進行分析，可追溯歷史資料；探索報表中使用，不同於 Audiences。", en: "A filtered user subset for analysis; retroactive unlike Audiences. Used in Explorations." },
+  { term: "Audience 受眾", zh: "依行為建立的使用者群組，可同步至 Google Ads 進行再行銷；建立後才開始累積，不溯及既往。", en: "Behavior-based user group synced to Google Ads for remarketing; not retroactive after creation." },
+  { term: "Attribution 歸因", zh: "分配轉換功勞給各行銷觸點的方法論；GA4 預設使用資料驅動歸因（需足夠轉換量）。", en: "Methodology for assigning conversion credit across touchpoints; GA4 defaults to data-driven." },
+  { term: "UTM 參數", zh: "附加到 URL 的追蹤標籤（source / medium / campaign / content / term），用於追蹤行銷活動來源。", en: "URL tracking tags (source/medium/campaign/content/term) for identifying marketing traffic origins." },
+  { term: "Funnel 漏斗", zh: "追蹤使用者完成一系列步驟的過程，分析各步驟的流失率與轉換率；分封閉/開放兩種。", en: "Tracks users through sequential steps, analyzing dropout and conversion rates at each stage." },
+  { term: "AARRR 海盜指標", zh: "Acquisition / Activation / Retention / Revenue / Referral，Dave McClure 2007 年提出的成長框架。", en: "Five-stage growth framework by Dave McClure (2007): Acquisition/Activation/Retention/Revenue/Referral." },
+  { term: "RFM 分析", zh: "Recency（最近購買）/ Frequency（頻率）/ Monetary（金額），使用者價值分群框架；需 BigQuery 計算。", en: "User segmentation by Recency/Frequency/Monetary value; requires BigQuery to compute in GA4 context." },
+  { term: "BigQuery", zh: "Google 雲端資料倉儲，GA4 可每日匯出原始事件資料（免費 1M 事件/日），支援 SQL 查詢。", en: "Google's cloud data warehouse; GA4 exports raw event data daily (free up to 1M events/day)." },
+  { term: "Looker Studio", zh: "Google 免費 BI 工具，可直連 GA4 或透過 BigQuery 製作視覺化儀表板；大流量建議 BigQuery 中介。", en: "Google's free BI tool for dashboards; connect directly to GA4 or via BigQuery for large-scale sites." },
+  { term: "GTM / Google Tag Manager", zh: "無需修改程式碼即可管理追蹤標籤的容器工具，常與 GA4 搭配使用。", en: "Container tool for managing tracking tags without code changes; commonly paired with GA4." },
+  { term: "Bot Traffic 機器人流量", zh: "非真實人類訪客的自動化程式流量，可能大幅扭曲分析數據；GA4 自動過濾已知 Bot。", en: "Automated non-human traffic that distorts analytics; GA4 auto-filters known bots via IAB/ABC list." },
+  { term: "Ghost Traffic 幽靈流量", zh: "直接向 Measurement Protocol 發送假資料的垃圾流量，不實際載入頁面，GA4 本身無法過濾。", en: "Spam that sends fake hits directly to Measurement Protocol without loading the page; cannot be filtered by GA4 alone." },
+  { term: "Referral Spam 推薦垃圾", zh: "偽造 Referral 來源 Domain 的假流量，污染來源/媒介報表，干擾行銷決策。", en: "Fake traffic with spoofed referral domains that pollutes source/medium reports." },
+  { term: "Exploration 探索報表", zh: "GA4 中可自由組合維度/指標的進階分析工作區，含漏斗、路徑、同期群等 6 種報表類型。", en: "GA4's advanced analysis workspace for freely combining dimensions and metrics; 6 report types." },
+  { term: "Custom Dimension 自訂維度", zh: "用於追蹤 GA4 預設未包含的特定屬性，分 Event / User / Item 三種範疇，需先在 Admin 註冊。", en: "Tracks attributes not in GA4 defaults; three scopes: Event/User/Item. Must register in Admin first." },
+  { term: "Data-Driven Attribution 資料驅動歸因", zh: "GA4 預設歸因模型，ML 根據各觸點實際貢獻分配轉換功勞；需每 30 天至少 300 個轉換。", en: "GA4's default model; ML distributes conversion credit based on actual contribution. Requires 300+ conversions/30 days." },
+  { term: "Consent Mode v2", zh: "在用戶拒絕追蹤的情況下，GA4 透過建模估算轉換資料，實現 GDPR 合規的同時保留部分洞察。", en: "Allows GA4 to model conversion data when users decline tracking, enabling GDPR-compliant measurement." },
+];
+
+// ── Glossary UI ──
+function renderGlossary(filter) {
+  const list = document.getElementById('gpList');
+  const lang = document.documentElement.dataset.lang;
+  const q = (filter || '').toLowerCase();
+  list.innerHTML = '';
+  GLOSSARY.forEach((item, i) => {
+    if (q && !item.term.toLowerCase().includes(q) && !item.zh.toLowerCase().includes(q) && !item.en.toLowerCase().includes(q)) return;
+    const div = document.createElement('div');
+    div.className = 'gp-item';
+    div.innerHTML = `
+      <div class="gp-term" onclick="this.parentElement.classList.toggle('open')">
+        ${escapeHtml(item.term)} <span style="color:var(--muted);font-size:.8rem">›</span>
+      </div>
+      <div class="gp-def">
+        <div class="zh">${escapeHtml(item.zh)}</div>
+        <div class="en">${escapeHtml(item.en)}</div>
+      </div>`;
+    list.appendChild(div);
+  });
+  if (list.children.length === 0) {
+    list.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:.875rem">找不到術語 / No match found</div>`;
+  }
+}
+function filterGlossary(v) { renderGlossary(v); }
+function openGlossary() {
+  document.getElementById('glossaryOverlay').classList.add('open');
+  document.getElementById('glossaryPanel').classList.add('open');
+  renderGlossary('');
+}
+function closeGlossary() {
+  document.getElementById('glossaryOverlay').classList.remove('open');
+  document.getElementById('glossaryPanel').classList.remove('open');
+}
+
+// ── Card Toggle ──
+function toggleCard(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+// ── Sidebar ──
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar() {
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+}
+
+// ── Theme ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  try { localStorage.setItem('ga4_theme', html.dataset.theme); } catch(e) {}
+}
+
+// ── Language ──
+function toggleLang() {
+  const html = document.documentElement;
+  const isZh = html.dataset.lang === 'zh';
+  html.dataset.lang = isZh ? 'en' : 'zh';
+  document.getElementById('langBtn').textContent = isZh ? '🌐 中' : '🌐 EN';
+  document.title = isZh ? 'GA4 Complete Guide' : 'GA4 全攻略';
+  document.getElementById('searchBox').placeholder = isZh
+    ? 'Search concepts, terms…'
+    : '搜尋概念、術語…';
+  try { localStorage.setItem('ga4_lang', html.dataset.lang); } catch(e) {}
+}
+
+// ── Search ──
+let searchTimer;
+function handleSearch(val) {
+  clearTimeout(searchTimer);
+  document.getElementById('searchClear').style.display = val ? 'block' : 'none';
+  searchTimer = setTimeout(() => applySearch(val.trim().toLowerCase()), 200);
+}
+function clearSearch() {
+  document.getElementById('searchBox').value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  applySearch('');
+}
+function applySearch(q) {
+  const sections = document.querySelectorAll('.topic-section, .resources-section, .notices-section');
+  sections.forEach(sec => {
+    if (!q) {
+      sec.classList.remove('hidden-by-search');
+      return;
+    }
+    const text = sec.textContent.toLowerCase();
+    sec.classList.toggle('hidden-by-search', !text.includes(q));
+  });
+}
+
+// ── Sidebar Active on Scroll ──
+const navItems = document.querySelectorAll('.nav-item[href]');
+function updateActiveNav() {
+  const scrollY = window.scrollY + 90;
+  const sections = ['overview','topic-1','topic-2','topic-3','topic-4','topic-5','topic-6','resources','notices'];
+  let active = '';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= scrollY) active = '#' + id;
+  });
+  navItems.forEach(a => a.classList.toggle('active', a.getAttribute('href') === active));
+}
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+updateActiveNav();
+
+// ── Keyboard ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeGlossary();
+});
+
+// ── Escape HTML ──
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Init ──
+(function init() {
+  try {
+    const theme = localStorage.getItem('ga4_theme');
+    const lang = localStorage.getItem('ga4_lang');
+    if (theme) { document.documentElement.dataset.theme = theme; document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙'; }
+    if (lang) { document.documentElement.dataset.lang = lang; document.getElementById('langBtn').textContent = lang === 'en' ? '🌐 中' : '🌐 EN'; }
+  } catch(e) {}
+})();
+</script>

@@ -1,0 +1,161 @@
+---
+/*
+ * Sponsor — 贊助入口 + 金額選擇 modal。
+ * 後端沿用 dreamcatcher-worker 的 /create-donation（telaaurealab.com 已驗證上線），
+ * 純前端呼叫：TWD 走綠界（回傳自動送出的 form html）、USD 走 Polar（回傳結帳 url）。
+ * 金額白名單由伺服器端強制（TWD 50/150/300、USD 2/5/10），前端僅呈現同一組選項。
+ * 付款完成後落在 telaaurealab.com/success.html?thanks=1（已知取捨，return URL 為 worker 白名單）。
+ */
+import T from './T.astro';
+import AmountPicker from './AmountPicker.astro';
+---
+<button type="button" class="sponsor-entry" data-sponsor-open data-source="mattye_footer">☕ <T zh="贊助我" en="Sponsor" /></button>
+
+<div id="sponsor-modal" role="dialog" aria-modal="true" aria-label="Sponsor">
+  <div class="sponsor-card">
+    <div class="sponsor-ico">☕</div>
+    {/* h2 而非 h3：這個 modal 每頁都在，前面不一定有 h2——用 h3 會造成 h1→h3 跳級。
+        它在語意上是頁面的一個獨立區塊（雖然以 modal 呈現），h2 是正確的層級。 */}
+    <h2><T zh="贊助 Matt" en="Sponsor Matt" /></h2>
+    <p class="sponsor-desc"><T zh="喜歡這裡的內容嗎？請我喝杯咖啡，支持網站持續更新。" en="Enjoying the content? Buy me a coffee and help keep this site going." /></p>
+    <AmountPicker prefix="sponsor" compact />
+    <button type="button" class="sponsor-pay" id="sponsor-pay"><T zh="前往付款" en="Continue to payment" /></button>
+    <button type="button" class="sponsor-later" id="sponsor-close"><T zh="下次再說" en="Maybe later" /></button>
+    <p class="sponsor-note"><T zh="贊助恕不退款，感謝支持！" en="Donations are non-refundable — thank you!" /></p>
+  </div>
+</div>
+
+<style>
+  /* 入口：小型金黃漸層 pill（與 telaaurealab.com 贊助按鈕同款，跨站「贊助=金色」識別） */
+  .sponsor-entry {
+    display: inline-block;
+    padding: 2px 12px;
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    color: #451a03;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: inherit;
+    line-height: 1.6;
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  .sponsor-entry:hover { filter: brightness(1.07); }
+
+  #sponsor-modal { display: none; }
+  #sponsor-modal.show {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.55);
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .sponsor-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    max-width: 360px;
+    width: 100%;
+    padding: 1.6rem 1.5rem 1.2rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  }
+  .sponsor-ico { font-size: 1.8rem; margin-bottom: 0.3rem; }
+  .sponsor-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.45rem; }
+  .sponsor-desc { font-size: 0.83rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 0.9rem; }
+
+  .sponsor-pay {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 0.3rem;
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    color: #451a03;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  .sponsor-pay:hover { filter: brightness(1.07); }
+  .sponsor-pay:disabled { opacity: 0.6; cursor: wait; }
+
+  .sponsor-later {
+    display: block;
+    width: 100%;
+    margin-top: 0.45rem;
+    padding: 0.4rem;
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .sponsor-later:hover { color: var(--color-text); }
+  .sponsor-note { font-size: 0.68rem; color: var(--color-text-muted); margin-top: 0.6rem; }
+</style>
+
+<script>
+  /* 金額選擇（含自填與驗證）交給 AmountPicker，付款交給 donate.ts，
+     這裡只負責 modal 的開關與把 picker 選到的金額送出去。 */
+  import { L, startDonation } from '../lib/donate';
+
+  const modal    = document.getElementById('sponsor-modal');
+  const payBtn   = document.getElementById('sponsor-pay') as HTMLButtonElement | null;
+  const openBtns = document.querySelectorAll<HTMLElement>('[data-sponsor-open]');
+  const closeBtn = document.getElementById('sponsor-close');
+  const picker   = modal?.querySelector<HTMLElement>('[data-amount-picker]');
+
+  if (modal && payBtn && openBtns.length && closeBtn && picker) {
+    const track = (name: string, params: Record<string, unknown>) => {
+      try { (window as any).gtag?.('event', name, params); } catch (e) {}
+    };
+
+    const payBtnHtml = payBtn.innerHTML;
+
+    /* picker 只回報金額有效與否，付款按鈕的可用狀態由這裡決定 */
+    function syncPay() {
+      payBtn!.disabled = picker!.dataset.valid !== 'true';
+    }
+    picker.addEventListener('amountchange', syncPay);
+    syncPay();
+
+    function openModal(source: string) {
+      payBtn!.innerHTML = payBtnHtml;
+      syncPay();
+      modal!.classList.add('show');
+      track('donate_open', { source });
+    }
+    function closeModal() { modal!.classList.remove('show'); }
+
+    openBtns.forEach(btn =>
+      btn.addEventListener('click', () => openModal(btn.dataset.source || 'mattye_footer')));
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modal!.classList.contains('show')) closeModal();
+    });
+
+    payBtn.addEventListener('click', async () => {
+      const amt = Number(picker!.dataset.amount);
+      const cur = (picker!.querySelector('.ap-tab.sel') as HTMLElement | null)?.dataset.cur || 'twd';
+      if (!Number.isFinite(amt) || picker!.dataset.valid !== 'true') return;
+      payBtn!.disabled = true;
+      payBtn!.textContent = L('處理中…', 'Processing…');
+      try {
+        await startDonation(amt, cur, 'mattye');
+        closeModal();
+      } catch (err: any) {
+        alert(L('付款連結建立失敗：', 'Could not create the payment link: ') + err.message);
+      }
+      payBtn!.innerHTML = payBtnHtml;
+      syncPay();
+    });
+  }
+</script>

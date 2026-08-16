@@ -1,0 +1,724 @@
+<!-- 由 scripts/extract-static-pages.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#f8f9fa; --card:#fff; --border:#e5e7eb; --text:#111827; --muted:#6b7280;
+      --light-text:#9ca3af; --accent:#0d9488; --accent-bg:#f0fdfa; --accent-hover:#0f766e;
+      --green:#059669; --green-bg:#d1fae5; --blue:#1d4ed8; --blue-bg:#dbeafe;
+      --orange:#d97706; --orange-bg:#fef3c7; --code-bg:#1e293b; --code-text:#e2e8f0;
+      --sidebar-w:260px; --header-h:58px; --radius:12px; --radius-sm:8px;
+      --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+      --shadow-md:0 4px 12px rgba(0,0,0,.08); --transition:.2s ease;
+      --font:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;
+    }
+    [data-theme="dark"] {
+      --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#f1f5f9; --muted:#94a3b8;
+      --light-text:#64748b; --accent:#2dd4bf; --accent-bg:#134e4a; --accent-hover:#5eead4;
+      --green:#34d399; --green-bg:#064e3b; --blue:#60a5fa; --blue-bg:#1e3a5f;
+      --orange:#fbbf24; --orange-bg:#451a03;
+      --shadow:0 1px 3px rgba(0,0,0,.3); --shadow-md:0 4px 12px rgba(0,0,0,.4);
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:var(--font); background:var(--bg); color:var(--text); font-size:15px; line-height:1.6; }
+    #header { position:fixed; top:0; left:0; right:0; height:var(--header-h); background:var(--card);
+      border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; padding:0 20px;
+      z-index:100; box-shadow:var(--shadow); }
+    #hamburger { display:none; background:none; border:none; cursor:pointer; color:var(--text); padding:6px; border-radius:6px; }
+    #hamburger:hover { background:var(--accent-bg); }
+    .header-title { font-weight:700; font-size:1rem; color:var(--accent); white-space:nowrap; flex-shrink:0; }
+    .header-title .week { color:var(--muted); font-weight:400; font-size:.8rem; margin-left:6px; }
+    #searchWrap { flex:1; max-width:360px; position:relative; }
+    #searchBox { width:100%; padding:7px 12px 7px 34px; border:1px solid var(--border); border-radius:20px;
+      background:var(--bg); color:var(--text); font-size:.875rem; outline:none; }
+    #searchBox:focus { border-color:var(--accent); }
+    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.9rem; pointer-events:none; }
+    .header-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
+    .icon-btn { background:none; border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer;
+      color:var(--text); padding:6px 10px; font-size:.8rem; display:flex; align-items:center; gap:4px; white-space:nowrap; }
+    .icon-btn:hover { background:var(--accent-bg); border-color:var(--accent); color:var(--accent); }
+    .glossary-btn { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .glossary-btn:hover { background:var(--accent-hover); border-color:var(--accent-hover); color:#fff; }
+    #layout { display:flex; padding-top:var(--header-h); min-height:100vh; }
+    #sidebar { width:var(--sidebar-w); flex-shrink:0; position:sticky; top:var(--header-h);
+      height:calc(100vh - var(--header-h)); overflow-y:auto; border-right:1px solid var(--border);
+      padding:16px 0; background:var(--card); }
+    .sidebar-section { padding:0 12px; margin-bottom:8px; }
+    .sidebar-label { font-size:.7rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding:8px 4px 4px; }
+    .nav-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:var(--radius-sm);
+      text-decoration:none; color:var(--text); font-size:.875rem; cursor:pointer; border:none; background:none; width:100%; text-align:left; }
+    .nav-item:hover, .nav-item.active { background:var(--accent-bg); color:var(--accent); }
+    .nav-item.active { font-weight:600; }
+    .nav-item .icon { font-size:1rem; flex-shrink:0; width:20px; text-align:center; }
+    .sidebar-divider { height:1px; background:var(--border); margin:8px 12px; }
+    #main { flex:1; padding:32px 24px 64px; max-width:900px; min-width:0; }
+    .hero { background:linear-gradient(135deg,var(--accent) 0%,#0891b2 100%); border-radius:var(--radius);
+      padding:32px; margin-bottom:28px; color:#fff; }
+    .hero .crumb { font-size:.8rem; opacity:.85; margin-bottom:8px; }
+    .hero .crumb a { color:#fff; }
+    .hero h1 { font-size:1.6rem; font-weight:800; margin-bottom:6px; }
+    .hero p { opacity:.92; font-size:.95rem; margin-bottom:16px; }
+    .hero-goals { background:rgba(255,255,255,.15); border-radius:8px; padding:14px 16px; font-size:.875rem; }
+    .hero-goals strong { display:block; margin-bottom:6px; }
+    .topic-section { margin-bottom:28px; scroll-margin-top:76px; }
+    .topic-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      overflow:hidden; box-shadow:var(--shadow); }
+    .topic-header { display:flex; align-items:center; gap:12px; padding:18px 20px; cursor:pointer; user-select:none; }
+    .topic-header:hover { background:var(--accent-bg); }
+    .topic-icon { font-size:1.5rem; flex-shrink:0; }
+    .topic-title-wrap { flex:1; }
+    .topic-title { font-size:1.05rem; font-weight:700; }
+    .topic-subtitle { font-size:.8rem; color:var(--muted); margin-top:1px; }
+    .topic-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .tag { font-size:.68rem; padding:2px 8px; border-radius:10px; font-weight:600; }
+    .tag-green { background:var(--green-bg); color:var(--green); }
+    .tag-blue { background:var(--blue-bg); color:var(--blue); }
+    .tag-orange { background:var(--orange-bg); color:var(--orange); }
+    .tag-teal { background:var(--accent-bg); color:var(--accent); }
+    .topic-chevron { color:var(--muted); transition:transform var(--transition); font-size:1.1rem; }
+    .topic-card.open .topic-chevron { transform:rotate(180deg); }
+    .topic-body { display:none; border-top:1px solid var(--border); }
+    .topic-card.open .topic-body { display:block; }
+    .sub-section { border-bottom:1px solid var(--border); }
+    .sub-section:last-child { border-bottom:none; }
+    .sub-section summary { list-style:none; padding:12px 20px; cursor:pointer; font-weight:600; font-size:.875rem;
+      color:var(--muted); display:flex; align-items:center; gap:8px; user-select:none; }
+    .sub-section summary::-webkit-details-marker { display:none; }
+    .sub-section summary:hover, .sub-section[open] summary { color:var(--accent); }
+    .sub-section summary::after { content:'›'; margin-left:auto; transition:transform var(--transition); font-size:1.1rem; }
+    .sub-section[open] summary::after { transform:rotate(90deg); }
+    .sub-content { padding:4px 20px 16px; }
+    .sub-content p { margin-bottom:10px; font-size:.9rem; }
+    .bullet-list { list-style:none; display:flex; flex-direction:column; gap:7px; }
+    .bullet-list li { display:flex; align-items:flex-start; gap:8px; font-size:.875rem; }
+    .bullet-list li::before { content:'▸'; color:var(--accent); flex-shrink:0; margin-top:1px; font-size:.8rem; }
+    .step-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+    .step-list li { display:flex; gap:12px; font-size:.875rem; }
+    .step-num { background:var(--accent); color:#fff; border-radius:50%; width:22px; height:22px;
+      display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:700; flex-shrink:0; margin-top:1px; }
+    .warning-box { background:var(--orange-bg); border:1px solid var(--orange); border-radius:var(--radius-sm);
+      padding:12px 14px; display:flex; gap:10px; font-size:.875rem; margin-bottom:8px; }
+    .warning-box::before { content:'⚠️'; flex-shrink:0; }
+    .practice-box { background:var(--green-bg); border:1px solid var(--green); border-radius:var(--radius-sm);
+      padding:14px 16px; font-size:.875rem; margin-bottom:8px; }
+    .practice-box strong { color:var(--green); display:block; margin-bottom:6px; }
+    .table-wrap { overflow-x:auto; margin:8px 0; }
+    .data-table { width:100%; border-collapse:collapse; font-size:.84rem; }
+    .data-table th { background:var(--accent-bg); color:var(--accent); font-weight:600; padding:9px 12px;
+      text-align:left; border-bottom:2px solid var(--accent); white-space:nowrap; }
+    .data-table td { padding:8px 12px; border-bottom:1px solid var(--border); }
+    .data-table tr:last-child td { border-bottom:none; }
+    .data-table tr:hover td { background:var(--accent-bg); }
+    .links-grid { display:flex; flex-direction:column; gap:6px; }
+    .link-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:var(--radius-sm);
+      border:1px solid var(--border); text-decoration:none; color:var(--text); font-size:.85rem; }
+    .link-item:hover { border-color:var(--accent); background:var(--accent-bg); color:var(--accent); }
+    .link-tag { font-size:.65rem; padding:1px 6px; border-radius:8px; font-weight:700; flex-shrink:0; }
+    .link-official { background:var(--green-bg); color:var(--green); }
+    .link-community { background:var(--blue-bg); color:var(--blue); }
+    .link-title { flex:1; }
+    .link-arrow { color:var(--muted); flex-shrink:0; }
+    .fw-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:8px 0; }
+    .fw-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; }
+    .fw-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
+    .fw-row { display:flex; align-items:flex-start; gap:8px; margin-bottom:5px; font-size:.8rem; }
+    .fw-label { font-weight:600; flex-shrink:0; min-width:96px; }
+    .fw-desc { color:var(--muted); }
+    .pipeline { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:12px 0; padding:12px;
+      background:var(--bg); border-radius:var(--radius-sm); }
+    .pipeline-step { background:var(--accent-bg); color:var(--accent); border-radius:6px; padding:6px 12px;
+      font-size:.8rem; font-weight:600; }
+    .pipeline-arrow { color:var(--muted); font-size:1.1rem; }
+    #glossaryOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; cursor:pointer; }
+    #glossaryOverlay.open { display:block; }
+    #glossaryPanel { position:fixed; top:0; right:-380px; width:380px; max-width:94vw; height:100vh;
+      background:var(--card); border-left:1px solid var(--border); z-index:201; display:flex; flex-direction:column;
+      transition:right .3s cubic-bezier(.4,0,.2,1); box-shadow:var(--shadow-md); }
+    #glossaryPanel.open { right:0; }
+    .gp-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .gp-header h2 { font-size:1rem; font-weight:700; flex:1; }
+    .gp-close { background:none; border:none; cursor:pointer; color:var(--muted); font-size:1.2rem; padding:4px; border-radius:4px; }
+    .gp-close:hover { color:var(--text); background:var(--border); }
+    #gpSearch { padding:8px 12px; margin:12px 16px; width:calc(100% - 32px); border:1px solid var(--border);
+      border-radius:8px; background:var(--bg); color:var(--text); font-size:.875rem; outline:none; }
+    #gpSearch:focus { border-color:var(--accent); }
+    #gpList { flex:1; overflow-y:auto; padding:0 16px 16px; }
+    .gp-item { border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:8px; overflow:hidden; }
+    .gp-term { padding:10px 12px; font-weight:600; font-size:.875rem; cursor:pointer; display:flex;
+      align-items:center; justify-content:space-between; }
+    .gp-term:hover { background:var(--accent-bg); color:var(--accent); }
+    .gp-def { display:none; padding:0 12px 10px; font-size:.82rem; color:var(--muted); line-height:1.5;
+      border-top:1px solid var(--border); background:var(--bg); }
+    .gp-item.open .gp-def { display:block; }
+    .gp-def .zh { margin-bottom:4px; padding-top:8px; }
+    .gp-def .en { color:var(--light-text); font-style:italic; }
+    mark { background:#fef08a; color:#713f12; border-radius:2px; padding:0 1px; }
+    [data-theme="dark"] mark { background:#713f12; color:#fef08a; }
+    .hidden-by-search { display:none !important; }
+    footer { text-align:center; padding:20px; color:var(--muted); font-size:.78rem; border-top:1px solid var(--border); margin-top:20px; }
+    footer a { color:var(--accent); }
+    [data-lang="zh"] .en-only { display:none; }
+    [data-lang="en"] .zh-only { display:none; }
+    @media (max-width:768px) {
+      #hamburger { display:flex; }
+      #sidebar { position:fixed; left:-100%; top:var(--header-h); height:calc(100vh - var(--header-h));
+        z-index:50; transition:left var(--transition); box-shadow:var(--shadow-md); }
+      #sidebar.open { left:0; }
+      #main { padding:20px 16px 48px; }
+      .fw-grid { grid-template-columns:1fr; }
+      #glossaryPanel { width:100%; }
+      .header-title .week { display:none; }
+      #searchWrap { max-width:170px; }
+    }
+  
+    /* 這兩個標題原本是 div，改成 heading 是為了讓爬蟲讀得到文件結構；
+       margin 歸零讓視覺與改動前一致（font-size/font-weight 原本就有明確設定）。 */
+    .topic-title { margin:0; }
+    .hook-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
+</style>
+
+<header id="header">
+  <button id="hamburger" aria-label="Menu" onclick="toggleSidebar()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div class="header-title">
+    <span class="zh-only">📈 行銷基礎與趨勢</span>
+    <span class="en-only">📈 Marketing Foundations</span>
+    <span class="week">W1-2</span>
+  </div>
+  <div id="searchWrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchBox" placeholder="搜尋… / Search…" oninput="handleSearch(this.value)">
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn glossary-btn" onclick="openGlossary()">📖 <span class="zh-only">術語</span><span class="en-only">Glossary</span></button>
+    <button class="icon-btn" onclick="toggleLang()" id="langBtn">🌐 EN</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</header>
+
+<div id="layout">
+  <nav id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label zh-only">Week 1</div>
+      <div class="sidebar-label en-only">Week 1</div>
+      <a class="nav-item" href="#overview" onclick="closeSidebar()"><span class="icon">🏠</span><span class="zh-only">單元總覽</span><span class="en-only">Overview</span></a>
+      <a class="nav-item" href="#topic-funnels" onclick="closeSidebar()"><span class="icon">🔻</span><span class="zh-only">漏斗演進三部曲</span><span class="en-only">Funnel Evolution</span></a>
+      <a class="nav-item" href="#topic-content-ads" onclick="closeSidebar()"><span class="icon">⚖️</span><span class="zh-only">內容 vs 廣告</span><span class="en-only">Content vs Ads</span></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 2</div>
+      <a class="nav-item" href="#topic-trends" onclick="closeSidebar()"><span class="icon">🚀</span><span class="zh-only">2025-26 趨勢</span><span class="en-only">2025-26 Trends</span></a>
+      <a class="nav-item" href="#topic-frameworks" onclick="closeSidebar()"><span class="icon">🧭</span><span class="zh-only">三個必學框架</span><span class="en-only">3 Key Frameworks</span></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <a class="nav-item" href="#practice" onclick="closeSidebar()"><span class="icon">✏️</span><span class="zh-only">實作練習</span><span class="en-only">Practice</span></a>
+      <a class="nav-item" href="#resources" onclick="closeSidebar()"><span class="icon">🔗</span><span class="zh-only">參考資源</span><span class="en-only">Resources</span></a>
+      <button class="nav-item" onclick="openGlossary()"><span class="icon">📖</span><span class="zh-only">術語速查</span><span class="en-only">Glossary</span></button>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section id="overview">
+      <div class="hero">
+        <div class="crumb"><a href="/projects/marketing/"><span class="zh-only">← 行銷專欄 Marketing</span><span class="en-only">← Marketing Column</span></a> <span class="zh-only">· 行銷學習地圖 W1-2</span><span class="en-only">· Marketing Roadmap W1-2</span></div>
+        <h1><span class="zh-only">行銷基礎與 2025-26 趨勢</span><span class="en-only">Marketing Foundations & 2025-26 Trends</span></h1>
+        <p class="zh-only">漏斗思維的百年演進、內容與廣告的取捨，以及 AI 時代行銷的三大變局。</p>
+        <p class="en-only">A century of funnel thinking, the content-vs-ads tradeoff, and three seismic shifts in AI-era marketing.</p>
+        <div class="hero-goals">
+          <strong class="zh-only">🎯 學完你能做到</strong>
+          <strong class="en-only">🎯 Learning Goals</strong>
+          <span class="zh-only">① 為任何產品選對框架（AIDA / AARRR / Flywheel）② 解釋 AEO/GEO 與 zero-click 的成因與對策 ③ 用 JTBD、StoryBrand、Hook Model 各分析一個真實產品</span>
+          <span class="en-only">① Pick the right framework (AIDA / AARRR / Flywheel) for any product ② Explain AEO/GEO and zero-click, with countermeasures ③ Analyze a real product with JTBD, StoryBrand, and the Hook Model</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Funnels -->
+    <section class="topic-section" id="topic-funnels">
+      <div class="topic-card open" id="card-funnels">
+        <div class="topic-header" onclick="toggleCard('card-funnels')">
+          <div class="topic-icon">🔻</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">漏斗演進三部曲：AIDA → AARRR → Flywheel</span><span class="en-only">Funnel Evolution: AIDA → AARRR → Flywheel</span></h2>
+            <div class="topic-subtitle">1898 → 2007 → 2018</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 1</span><span class="tag tag-teal"><span class="zh-only">必讀 Core</span><span class="en-only">Core</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🗺️ <span class="zh-only">三者是巢狀關係，不是取代關係</span><span class="en-only">Nested, Not Replacing</span></summary>
+            <div class="sub-content">
+              <div class="pipeline">
+                <div class="pipeline-step">AIDA<br><span style="font-weight:400;font-size:.72rem"><span class="zh-only">單次轉換 conversion copy</span><span class="en-only">Conversion copy</span></span></div>
+                <div class="pipeline-arrow">⊂</div>
+                <div class="pipeline-step">AARRR<br><span style="font-weight:400;font-size:.72rem"><span class="zh-only">指標體系 metrics system</span><span class="en-only">Metrics system</span></span></div>
+                <div class="pipeline-arrow">⊂</div>
+                <div class="pipeline-step">Flywheel<br><span style="font-weight:400;font-size:.72rem"><span class="zh-only">整體成長觀 growth model</span><span class="en-only">Growth model</span></span></div>
+              </div>
+              <p class="zh-only">最常見的錯誤是把三者當「新淘汰舊」。實際上 AIDA 管一頁文案的說服結構、AARRR 管全公司的量測體系、Flywheel 管顧客如何成為成長動力——三層同時存在。</p>
+              <p class="en-only">The most common mistake is treating these as "new replaces old." In reality AIDA governs persuasion within a single page, AARRR governs company-wide measurement, and the Flywheel governs how customers power growth — all three layers coexist.</p>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>1️⃣ AIDA（1898, E. St. Elmo Lewis）</summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li><strong>Awareness → Interest → Desire → Action</strong><span class="zh-only">，最古老的線性漏斗</span><span class="en-only"> — the oldest linear funnel</span></li>
+                <li class="zh-only">現代定位：<strong>轉換文案層面</strong>仍然有效——sales page、landing page、廣告腳本的段落結構</li>
+                <li class="en-only">Modern role: still valid for <strong>conversion copy</strong> — sales pages, landing pages, ad scripts</li>
+                <li class="zh-only">侷限：只走到成交為止，不處理留存與推薦；真實消費者會跳階、回流</li>
+                <li class="en-only">Limit: stops at the sale; ignores retention & referral; real consumers skip and loop back</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：宣稱「AIDA 過時該淘汰」。錯的是拿它當整體成長模型，不是框架本身。</span><span class="en-only">Pitfall: declaring "AIDA is dead." What's wrong is using it as a growth model, not the framework itself.</span></div>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>2️⃣ AARRR / Pirate Metrics（2007, Dave McClure）</summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th><span class="zh-only">階段 Stage</span><span class="en-only">Stage</span></th><th class="zh-only">問題</th><th class="en-only">Question</th><th class="zh-only">範例 KPI</th><th class="en-only">Example KPI</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Acquisition</strong> <span class="zh-only">獲客</span></td><td class="zh-only">使用者從哪來？</td><td class="en-only">Where do users come from?</td><td>Sessions by source/medium</td><td class="en-only">Sessions by source</td></tr>
+                    <tr><td><strong>Activation</strong> <span class="zh-only">啟用</span></td><td class="zh-only">第一次就體驗到價值？</td><td class="en-only">First-run value (aha moment)?</td><td class="zh-only">完成關鍵動作率</td><td class="en-only">Key action completion</td></tr>
+                    <tr><td><strong>Retention</strong> <span class="zh-only">留存</span></td><td class="zh-only">會回來嗎？</td><td class="en-only">Do they return?</td><td>D7 / D30 retention</td><td class="en-only">D7 / D30 retention</td></tr>
+                    <tr><td><strong>Revenue</strong> <span class="zh-only">營收</span></td><td class="zh-only">願意付錢嗎？</td><td class="en-only">Do they pay?</td><td>ARPU, conversion rate</td><td class="en-only">ARPU</td></tr>
+                    <tr><td><strong>Referral</strong> <span class="zh-only">推薦</span></td><td class="zh-only">會帶朋友來嗎？</td><td class="en-only">Do they refer?</td><td>NPS, referral sessions</td><td class="en-only">NPS</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only">核心價值：每階段對應可量測 KPI，讓團隊脫離 vanity metrics（虛榮指標）</li>
+                <li class="en-only">Core value: every stage maps to a measurable KPI, escaping vanity metrics</li>
+                <li class="zh-only">變體 <strong>RARRA</strong>：把 Retention 排最前——反映「留存比獲客重要」的現代共識</li>
+                <li class="en-only">Variant <strong>RARRA</strong>: Retention first — reflecting the modern consensus that retention beats acquisition</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：一次優化全部五階段。正確做法是找出漏水最嚴重的一段（one metric that matters）集中火力。</span><span class="en-only">Pitfall: optimizing all five stages at once. Find the leakiest stage (one metric that matters) and focus.</span></div>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>3️⃣ Flywheel（2018, HubSpot）</summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li><strong>Attract → Engage → Delight</strong><span class="zh-only"> 循環，顧客位於圓心</span><span class="en-only"> loop, with the customer at the center</span></li>
+                <li class="zh-only">核心論點：漏斗把顧客當「產出物」（掉出底部就結束）；飛輪把顧客當「動力來源」——口碑、評論、推薦帶動下一輪成長</li>
+                <li class="en-only">Core thesis: funnels treat customers as output; the flywheel treats them as the force — word-of-mouth, reviews, referrals power the next cycle</li>
+                <li class="zh-only">兩個操作變數：加「力」force（投資顧客成功）、減「摩擦」friction（移除購買與使用障礙）</li>
+                <li class="en-only">Two levers: add force (invest in customer success), remove friction (eliminate obstacles)</li>
+                <li class="zh-only">最適用：訂閱制、社群驅動、口碑效應強的產品</li>
+                <li class="en-only">Best fit: subscriptions, community-driven, word-of-mouth products</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：以為飛輪取代漏斗所以不用管轉換率——飛輪內部每個階段仍然有轉換漏斗。</span><span class="en-only">Pitfall: assuming the flywheel replaces funnels — every flywheel stage still contains conversion funnels.</span></div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content vs Ads -->
+    <section class="topic-section" id="topic-content-ads">
+      <div class="topic-card" id="card-ca">
+        <div class="topic-header" onclick="toggleCard('card-ca')">
+          <div class="topic-icon">⚖️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">內容行銷 vs 付費廣告</span><span class="en-only">Content Marketing vs Paid Ads</span></h2>
+            <div class="topic-subtitle zh-only">資產 vs 租金</div>
+            <div class="topic-subtitle en-only">Asset vs Rent</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 1</span><span class="tag tag-blue"><span class="zh-only">策略 Strategy</span><span class="en-only">Strategy</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🔑 <span class="zh-only">核心觀念</span><span class="en-only">Core Concepts</span></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th></th><th class="zh-only">內容行銷 Content</th><th class="en-only">Content</th><th class="zh-only">付費廣告 Paid Ads</th><th class="en-only">Paid Ads</th></tr></thead>
+                  <tbody>
+                    <tr><td class="zh-only"><strong>本質</strong></td><td class="en-only"><strong>Nature</strong></td><td class="zh-only">資產（複利累積）</td><td class="en-only">Asset (compounds)</td><td class="zh-only">租金（停付歸零）</td><td class="en-only">Rent (stops when paused)</td></tr>
+                    <tr><td class="zh-only"><strong>見效</strong></td><td class="en-only"><strong>Speed</strong></td><td class="zh-only">6-12 個月見複利</td><td class="en-only">6-12 months to compound</td><td class="zh-only">立即</td><td class="en-only">Immediate</td></tr>
+                    <tr><td class="zh-only"><strong>適合</strong></td><td class="en-only"><strong>Best for</strong></td><td class="zh-only">長期信任、教育型產品、SEO 資產</td><td class="en-only">Trust, education, SEO assets</td><td class="zh-only">限時活動、放大已驗證漏斗、受眾測試</td><td class="en-only">Launches, scaling proven funnels, testing</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>最佳實務是混合</strong>：廣告導流到高品質內容 → 內容養信任 → 轉換 → 顧客帶來 organic referral</li>
+                <li class="en-only"><strong>Best practice is hybrid</strong>: ads drive traffic to quality content → content builds trust → converts → customers refer organically</li>
+                <li class="zh-only">先用有機內容驗證訊息（哪個 hook 有共鳴），再用廣告放大——別花錢推沒驗證過的訊息</li>
+                <li class="en-only">Validate messaging organically first, then amplify with ads — never pay to push unvalidated messages</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trends -->
+    <section class="topic-section" id="topic-trends">
+      <div class="topic-card" id="card-trends">
+        <div class="topic-header" onclick="toggleCard('card-trends')">
+          <div class="topic-icon">🚀</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">2025-26 三大變局 + Creator Economy 現實</span><span class="en-only">2025-26 Seismic Shifts + Creator Economy Reality</span></h2>
+            <div class="topic-subtitle">AI Marketing · AEO/GEO · Social Search · Zero-Click</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 2</span><span class="tag tag-orange"><span class="zh-only">時效敏感 Time-sensitive</span><span class="en-only">Time-sensitive</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🤖 <span class="zh-only">AI 行銷現況</span><span class="en-only">AI Marketing Today</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only">HubSpot 2026 調查：<strong>86.4%</strong> 行銷人已用 AI；每週省 10-14 小時</li>
+                <li class="en-only">HubSpot 2026: <strong>86.4%</strong> of marketers use AI; saving 10-14 hrs/week</li>
+                <li class="zh-only"><strong>關鍵矛盾</strong>：AI 內容量已超過人類但多為平均水準 → 「人味」成為差異化</li>
+                <li class="en-only"><strong>Key paradox</strong>: AI content volume exceeds human output but is mostly average → "human touch" is now the differentiator</li>
+                <li class="zh-only">贏家策略：human-led + AI-assisted——AI 省流程時間，人力集中在原創觀點與第一手數據</li>
+                <li class="en-only">Winning strategy: human-led + AI-assisted — AI saves process time; humans focus on original perspectives and first-party data</li>
+              </ul>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>🔍 AEO / GEO</summary>
+            <div class="sub-content">
+              <div class="fw-grid">
+                <div class="fw-card">
+                  <h3>AEO — Answer Engine Optimization</h3>
+                  <p style="font-size:.8rem" class="zh-only">優化給 AI 搜尋功能（Google AI Overviews、featured snippets）<strong>直接引用</strong>你的內容。</p>
+                  <p style="font-size:.8rem" class="en-only">Optimizing for AI search features (Google AI Overviews, featured snippets) to <strong>quote you directly</strong>.</p>
+                </div>
+                <div class="fw-card">
+                  <h3>GEO — Generative Engine Optimization</h3>
+                  <p style="font-size:.8rem" class="zh-only">讓 LLM（ChatGPT / Claude / Gemini）生成回答時<strong>引用你為來源</strong>。</p>
+                  <p style="font-size:.8rem" class="en-only">Getting LLMs (ChatGPT / Claude / Gemini) to <strong>cite you as a source</strong> in generated answers.</p>
+                </div>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only">公式：<strong>SEO + AEO + GEO</strong>——建立在 SEO 之上，不是取代</li>
+                <li class="en-only">Formula: <strong>SEO + AEO + GEO</strong> — built on SEO, not replacing it</li>
+                <li class="zh-only">Princeton GEO 研究：加專家引言 <strong>+41%</strong> 可見度、統計數據 <strong>+30%</strong>、引用來源 <strong>+30%</strong></li>
+                <li class="en-only">Princeton GEO study: expert quotes <strong>+41%</strong> visibility, statistics <strong>+30%</strong>, citations <strong>+30%</strong></li>
+                <li class="zh-only">手法：question-first 結構、schema markup、原創數據、llms.txt</li>
+                <li class="en-only">Tactics: question-first structure, schema markup, original data, llms.txt</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：砍 SEO 預算全轉 AEO——生成引擎依賴的權威訊號與傳統搜尋高度重疊。</span><span class="en-only">Pitfall: cutting SEO budget for AEO — generative engines rely on authority signals that heavily overlap with traditional search.</span></div>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>📱 <span class="zh-only">社群平台搜尋化</span><span class="en-only">Social Search</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only">近 <strong>40%</strong> Gen Z 用 TikTok/IG 而非 Google 搜尋（Google 自家數據）；2026 年 49% 消費者曾把 TikTok 當搜尋引擎</li>
+                <li class="en-only">Nearly <strong>40%</strong> of Gen Z searches on TikTok/IG instead of Google (Google's own data); 49% of consumers used TikTok as a search engine in 2026</li>
+                <li class="zh-only">搜尋內容偏好：教學影片 61% &gt; 產品評測 45% &gt; 個人故事 41%</li>
+                <li class="en-only">Search content preference: tutorials 61% &gt; reviews 45% &gt; personal stories 41%</li>
+                <li class="zh-only"><strong>影片口說文字、字幕、caption 關鍵字都被平台索引</strong>——社群內容要做「社群 SEO」</li>
+                <li class="en-only"><strong>Spoken words, captions, and on-screen text are all indexed</strong> — social content needs "social SEO"</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：只在 hashtag 塞關鍵字——2026 索引主力是口說語音轉錄、螢幕文字與 caption，hashtag 權重已下降。</span><span class="en-only">Pitfall: keyword-stuffing hashtags — in 2026 the main index signals are speech transcripts, on-screen text, and captions.</span></div>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>🖱️ Zero-Click Content（Rand Fishkin / SparkToro）</summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only">2026 年 Google 搜尋 <strong>68%</strong> 以零點擊結束（SparkToro 第一手研究）</li>
+                <li class="en-only"><strong>68%</strong> of Google searches end without a click in 2026 (SparkToro first-party research)</li>
+                <li class="zh-only">策略轉向：從「優化網站流量」到「<strong>在受眾聚集處建立影響力</strong>」（LinkedIn、Reddit、YouTube、LLM），接受不可追蹤的多觸點</li>
+                <li class="en-only">Strategic shift: from "optimizing site traffic" to "<strong>building influence where audiences gather</strong>," accepting untrackable touchpoints</li>
+                <li class="zh-only">心法：zero clicks ≠ zero sales——品牌記憶在平台累積，購買時機到了自然回流</li>
+                <li class="en-only">Mindset: zero clicks ≠ zero sales — brand memory accumulates on-platform and returns at purchase time</li>
+                <li class="zh-only">指標改用：品牌搜尋量、直接流量、社群提及</li>
+                <li class="en-only">New metrics: branded search volume, direct traffic, social mentions</li>
+              </ul>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>💰 Creator Economy <span class="zh-only">現實檢查</span><span class="en-only">Reality Check</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only">2026 市場規模 $205B–$323B（各家統計口徑不同，取區間）；全球 2 億+ 創作者</li>
+                <li class="en-only">2026 market size $205B–$323B (varies by methodology); 200M+ creators globally</li>
+                <li class="zh-only"><strong>收入殘酷長尾</strong>：半數年收 &lt;$15K、僅 4% 超過 $100K、中位數約 $3K/年</li>
+                <li class="en-only"><strong>Brutal long tail</strong>: half earn &lt;$15K/year, only 4% exceed $100K, median ~$3K/year</li>
+                <li class="zh-only">品牌贊助佔創作者收入約 70%；趨勢是經營 <strong>owned audience</strong>（email、會員制）脫離演算法依賴</li>
+                <li class="en-only">Brand sponsorships = ~70% of creator income; the trend is building <strong>owned audiences</strong> (email, memberships) to escape algorithm dependence</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Frameworks -->
+    <section class="topic-section" id="topic-frameworks">
+      <div class="topic-card" id="card-fw">
+        <div class="topic-header" onclick="toggleCard('card-fw')">
+          <div class="topic-icon">🧭</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">三個必學框架：JTBD、StoryBrand、Hook Model</span><span class="en-only">3 Key Frameworks: JTBD, StoryBrand, Hook Model</span></h2>
+            <div class="topic-subtitle zh-only">需求洞察 · 品牌敘事 · 習慣設計</div>
+            <div class="topic-subtitle en-only">Demand Insight · Brand Narrative · Habit Design</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 2</span><span class="tag tag-teal"><span class="zh-only">必讀 Core</span><span class="en-only">Core</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🥤 Jobs-to-be-Done（Clayton Christensen）</summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only">核心問句：「顧客<strong>雇用</strong>你的產品來完成什麼任務（job）？」</li>
+                <li class="en-only">Core question: "What job does the customer <strong>hire</strong> your product to do?"</li>
+                <li class="zh-only"><strong>奶昔案例</strong>：McDonald's 奶昔多在早晨售出——顧客雇用它「陪伴無聊通勤 + 單手可食 + 撐到中午」。競品不是其他甜點，是貝果、香蕉、無聊本身。做更濃稠後銷量成長</li>
+                <li class="en-only"><strong>Milkshake case</strong>: morning milkshakes were hired to "accompany a boring commute + one-handed + last till noon." Competitors weren't desserts — they were bagels, bananas, and boredom itself</li>
+                <li class="zh-only">Job 三維度：functional（功能）、emotional（情緒）、social（社交）</li>
+                <li class="en-only">Three job dimensions: functional, emotional, social</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：做成人口統計 persona——JTBD 刻意去人口統計化，同一個人在不同情境雇用不同產品。</span><span class="en-only">Pitfall: turning JTBD into demographic personas — JTBD is deliberately demographic-free; the same person hires different products in different situations.</span></div>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>📖 StoryBrand SB7（Donald Miller）</summary>
+            <div class="sub-content">
+              <div class="pipeline">
+                <div class="pipeline-step">Character<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">顧客=主角</span><span class="en-only">customer = hero</span></span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Problem</div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Guide<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">品牌=嚮導</span><span class="en-only">brand = guide</span></span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Plan</div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">CTA</div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Failure / Success</div>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only">最重要的翻轉：<strong>顧客是英雄、品牌是嚮導</strong>（Yoda 之於 Luke）——多數品牌失敗因為把自己當英雄</li>
+                <li class="en-only">The key inversion: <strong>the customer is the hero, the brand is the guide</strong> (Yoda to Luke) — most brands fail by casting themselves as the hero</li>
+                <li class="zh-only">名言："If you confuse, you lose"——顧客買講得最清楚的，不是講得最聰明的</li>
+                <li class="en-only">"If you confuse, you lose" — customers buy from whoever is clearest, not cleverest</li>
+                <li class="zh-only">適用：官網首頁訊息、品牌敘事、elevator pitch、email 序列</li>
+                <li class="en-only">Use for: homepage messaging, brand narrative, elevator pitch, email sequences</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：Problem 只寫外部問題——SB7 要求同時處理 internal（挫折感）與 philosophical（這不應該發生）層次，內部問題才是購買動機。</span><span class="en-only">Pitfall: only writing external problems — SB7 requires internal (frustration) and philosophical layers too; internal problems drive purchases.</span></div>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>🪝 Hook Model（Nir Eyal）</summary>
+            <div class="sub-content">
+              <div class="pipeline">
+                <div class="pipeline-step">Trigger<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">外部→內部觸發</span><span class="en-only">external → internal</span></span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Action<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">最低阻力行為</span><span class="en-only">lowest-friction action</span></span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Variable Reward<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">變動獎勵</span><span class="en-only">variable reward</span></span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Investment<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">用戶投入</span><span class="en-only">user investment</span></span></div>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only">變動獎勵三類：<strong>Tribe</strong>（社交認同）、<strong>Hunt</strong>（資源獵取，如無限滾動）、<strong>Self</strong>（自我掌握感）</li>
+                <li class="en-only">Three variable rewards: <strong>Tribe</strong> (social), <strong>Hunt</strong> (resources, e.g. infinite scroll), <strong>Self</strong> (mastery)</li>
+                <li class="zh-only">行銷應用：內容系列化（養成回訪習慣）、email/推播設計、產品 onboarding</li>
+                <li class="en-only">Marketing use: serialized content (habit-forming return visits), email/push design, onboarding</li>
+                <li class="zh-only">附帶倫理：Eyal 本人提出 Manipulation Matrix 自我檢驗——負責任的習慣設計</li>
+                <li class="en-only">Ethics: Eyal's own Manipulation Matrix for responsible habit design</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：獎勵做成固定（可預測的獎勵不形成習慣）；跳過 Investment 步驟（用戶無沉澱、隨時流失）。</span><span class="en-only">Pitfall: fixed rewards (predictable rewards don't form habits); skipping Investment (no user deposit, easy churn).</span></div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Practice -->
+    <section class="topic-section" id="practice">
+      <div class="topic-card open" id="card-practice">
+        <div class="topic-header" onclick="toggleCard('card-practice')">
+          <div class="topic-icon">✏️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">實作練習</span><span class="en-only">Practice Exercises</span></h2>
+            <div class="topic-subtitle zh-only">用自己的專案練，不是紙上談兵</div>
+            <div class="topic-subtitle en-only">Practice on your real projects</div>
+            <div class="topic-tags"><span class="tag tag-green"><span class="zh-only">動手做 Hands-on</span><span class="en-only">Hands-on</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <div class="practice-box">
+              <strong class="zh-only">練習 1（W1）：AARRR 健檢</strong>
+              <strong class="en-only">Exercise 1 (W1): AARRR Audit</strong>
+              <span class="zh-only">用 AARRR 幫你的產品（如 telaaurealab.com）畫出五階段現況與 KPI：Acquisition = GA4 流量來源、Activation = 使用者第一次生成圖案、Revenue = 付款完成……找出漏水最嚴重的一段，寫下一個改善假設。</span>
+              <span class="en-only">Map your product's five AARRR stages with KPIs (Acquisition = GA4 sources, Activation = first pattern generated, Revenue = checkout…). Identify the leakiest stage and write one improvement hypothesis.</span>
+            </div>
+            <div class="practice-box">
+              <strong class="zh-only">練習 2（W2）：JTBD 陳述</strong>
+              <strong class="en-only">Exercise 2 (W2): JTBD Statement</strong>
+              <span class="zh-only">為你的產品寫一份 JTBD：誰、在什麼情境、雇用它完成什麼 job？functional / emotional / social 各是什麼？（例：手作愛好者雇用捕夢網生成器，在「想送獨一無二的禮物」情境下，完成「快速做出有個人意義的設計」——emotional job 是心意的表達。）</span>
+              <span class="en-only">Write a JTBD statement: who, in what situation, hires it for what job? What are the functional / emotional / social dimensions?</span>
+            </div>
+            <div class="practice-box">
+              <strong class="zh-only">練習 3（W2）：SB7 重寫首頁</strong>
+              <strong class="en-only">Exercise 3 (W2): SB7 Homepage Rewrite</strong>
+              <span class="zh-only">用 StoryBrand 七元素重寫你網站首頁的 hero 區塊文案：顧客是英雄（不是你的產品）、指出 internal problem、你是給計畫的嚮導、一個清楚的 CTA。</span>
+              <span class="en-only">Rewrite your homepage hero copy with SB7: customer as hero, name the internal problem, position yourself as the guide with a plan, one clear CTA.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resources -->
+    <section class="topic-section" id="resources">
+      <div class="topic-card open" id="card-res">
+        <div class="topic-header" onclick="toggleCard('card-res')">
+          <div class="topic-icon">🔗</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">參考資源</span><span class="en-only">References</span></h2>
+            <div class="topic-subtitle zh-only">官方 / 第一手研究優先</div>
+            <div class="topic-subtitle en-only">Official / first-party research first</div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <div class="links-grid">
+              <a class="link-item" href="https://blog.hubspot.com/marketing/our-flywheel" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">How the Flywheel Killed HubSpot's Funnel — HubSpot</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://www.hubspot.com/flywheel" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">The Flywheel Model — HubSpot</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://fourweekmba.com/pirate-metrics/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Dave McClure's Pirate Metrics — FourWeekMBA</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://www.chameleon.io/blog/aarrr-vs-rarra" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">AARRR vs. RARRA — Chameleon</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://www.hubspot.com/state-of-marketing" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">2026 State of Marketing Report — HubSpot</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://developers.google.com/search/docs/fundamentals/ai-optimization-guide" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Google's Guide to Optimizing for Generative AI Features</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://www.jasper.ai/blog/geo-aeo" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">GEO vs AEO vs SEO Guide 2026 — Jasper</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://sparktoro.com/blog/in-2026-less-than-one-third-of-google-searches-still-send-a-click/" target="_blank" rel="noopener"><span class="link-tag link-official">Research</span><span class="link-title">2026: Less than 1/3 of Google Searches Send a Click — SparkToro</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://www.niemanlab.org/reading/almost-40-of-gen-z-is-using-tiktok-and-instagram-for-search-instead-of-google-according-to-googles-own-data/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">40% of Gen Z searches on TikTok/IG — Nieman Lab</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://www.demandsage.com/creator-economy-statistics/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Creator Economy Statistics 2026 — DemandSage</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://www.library.hbs.edu/working-knowledge/clay-christensens-milkshake-marketing" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Clay Christensen's Milkshake Marketing — HBS</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://umbrex.com/resources/frameworks/marketing-frameworks/storybrand-sb7-framework/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">StoryBrand SB7 Framework — Umbrex</span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://www.nirandfar.com/how-to-manufacture-desire/" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">The Hooked Model — Nir Eyal (author's site)</span><span class="link-arrow">↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="glossaryOverlay" onclick="closeGlossary()"></div>
+<div id="glossaryPanel">
+  <div class="gp-header"><span>📖</span>
+    <h2><span class="zh-only">術語速查</span><span class="en-only">Glossary</span></h2>
+    <button class="gp-close" onclick="closeGlossary()">✕</button>
+  </div>
+  <input type="text" id="gpSearch" placeholder="搜尋術語… / Search…" oninput="filterGlossary(this.value)">
+  <div id="gpList"></div>
+</div>
+
+<footer>
+  <span class="zh-only">行銷專欄 · <a href="/projects/marketing/">回到列表</a> · Matt Ye — <a href="https://mattye.dev">mattye.dev</a></span>
+  <span class="en-only">Marketing Column · <a href="/projects/marketing/">Back to list</a> · Matt Ye — <a href="https://mattye.dev">mattye.dev</a></span>
+</footer>
+
+<script>
+const GLOSSARY = [
+  { term:"AIDA", zh:"Awareness→Interest→Desire→Action，1898 年提出的線性行銷漏斗，現代定位為轉換文案的段落結構。", en:"The 1898 linear funnel; today best used for structuring conversion copy." },
+  { term:"AARRR / Pirate Metrics 海盜指標", zh:"Dave McClure 2007 年提出：獲客→啟用→留存→營收→推薦，每階段對應可量測 KPI。", en:"Dave McClure's 2007 framework: Acquisition→Activation→Retention→Revenue→Referral, each with measurable KPIs." },
+  { term:"RARRA", zh:"AARRR 變體，把 Retention 排最前——反映「留存比獲客重要」的現代共識。", en:"AARRR variant with Retention first, reflecting the retention-over-acquisition consensus." },
+  { term:"Flywheel 飛輪", zh:"HubSpot 2018 年提出：Attract→Engage→Delight 循環，顧客位於圓心、是成長動力來源而非漏斗產出物。", en:"HubSpot's 2018 model: Attract→Engage→Delight loop with customers at the center as the growth force." },
+  { term:"Vanity Metrics 虛榮指標", zh:"看起來漂亮但無法指導決策的數字（如總瀏覽量、粉絲數），AARRR 的存在就是為了取代它們。", en:"Numbers that look good but don't guide decisions (total views, follower counts)." },
+  { term:"Aha Moment", zh:"使用者第一次體驗到產品核心價值的瞬間，是 Activation 階段的關鍵定義。", en:"The moment a user first experiences core product value; defines Activation." },
+  { term:"AEO — Answer Engine Optimization", zh:"優化內容讓 AI 搜尋功能（Google AI Overviews、featured snippets）直接引用。", en:"Optimizing content for AI search features to quote directly." },
+  { term:"GEO — Generative Engine Optimization", zh:"讓 LLM（ChatGPT/Claude/Gemini）生成回答時引用你為來源；Princeton 研究：專家引言 +41% 可見度。", en:"Getting LLMs to cite you as a source; Princeton study: expert quotes +41% visibility." },
+  { term:"Zero-Click Content 零點擊內容", zh:"Rand Fishkin 提出：在平台原生提供完整價值、不強迫點擊外連的內容。2026 年 68% Google 搜尋以零點擊結束。", en:"Rand Fishkin's term: content delivering full value natively on-platform. 68% of Google searches end without a click in 2026." },
+  { term:"Social Search 社群搜尋化", zh:"用 TikTok/IG 取代 Google 搜尋的行為；近 40% Gen Z 已如此。影片口說、字幕、caption 都被索引。", en:"Using TikTok/IG instead of Google; ~40% of Gen Z does. Speech, captions, and on-screen text are indexed." },
+  { term:"Social SEO 社群搜尋優化", zh:"為社群平台的搜尋功能優化內容：口說關鍵字、螢幕文字、caption 自然語句。", en:"Optimizing for in-platform search: spoken keywords, on-screen text, natural-language captions." },
+  { term:"llms.txt", zh:"放在網站根目錄、給 AI 爬蟲讀的網站說明檔，GEO 手法之一。", en:"A root-level file describing your site for AI crawlers; a GEO tactic." },
+  { term:"Owned Audience 自有受眾", zh:"不受平台演算法控制的受眾管道：email 名單、會員制、自有社群。創作者經濟的避險趨勢。", en:"Audience channels you control: email lists, memberships, own communities." },
+  { term:"Creator Economy 創作者經濟", zh:"2026 市場 $205B-$323B；收入長尾殘酷：半數年收 <$15K、僅 4% 超過 $100K。", en:"$205B-$323B market in 2026; brutal long tail: half earn <$15K/yr, only 4% exceed $100K." },
+  { term:"JTBD — Jobs-to-be-Done", zh:"Christensen：顧客「雇用」產品完成任務。Job 有 functional/emotional/social 三維度。奶昔案例是經典。", en:"Christensen: customers 'hire' products for jobs with functional/emotional/social dimensions." },
+  { term:"StoryBrand SB7", zh:"Donald Miller 七元素品牌敘事：顧客是英雄、品牌是嚮導。'If you confuse, you lose.'", en:"Donald Miller's 7-part narrative: customer as hero, brand as guide." },
+  { term:"Internal Problem 內部問題", zh:"SB7 概念：顧客的挫折感受（相對於外部的實際問題）——內部問題才是購買動機。", en:"SB7 concept: the customer's frustration (vs. the external problem) — internal problems drive purchases." },
+  { term:"Hook Model", zh:"Nir Eyal：Trigger→Action→Variable Reward→Investment 四步習慣迴圈。", en:"Nir Eyal's four-step habit loop: Trigger→Action→Variable Reward→Investment." },
+  { term:"Variable Reward 變動獎勵", zh:"Hook Model 核心：不可預測的獎勵才形成習慣。三類：Tribe（社交）、Hunt（獵取）、Self（掌握）。", en:"Unpredictable rewards form habits. Three types: Tribe, Hunt, Self." },
+  { term:"Content Repurposing 一源多用", zh:"一次創作、多種產出：長片→短片→圖文→文章。詳見 W10。", en:"One creation, many outputs: long video → clips → carousels → articles. See W10." },
+  { term:"First-party Data 第一方數據", zh:"你自己收集的用戶數據（會員、購買紀錄）——AI 內容氾濫時代的差異化資產。", en:"Data you collect yourself — a differentiation asset in the AI content era." },
+];
+function renderGlossary(filter) {
+  const list = document.getElementById('gpList');
+  const q = (filter || '').toLowerCase();
+  list.innerHTML = '';
+  GLOSSARY.forEach(item => {
+    if (q && !item.term.toLowerCase().includes(q) && !item.zh.toLowerCase().includes(q) && !item.en.toLowerCase().includes(q)) return;
+    const div = document.createElement('div');
+    div.className = 'gp-item';
+    div.innerHTML = '<div class="gp-term" onclick="this.parentElement.classList.toggle(\'open\')">' + escapeHtml(item.term) +
+      ' <span style="color:var(--muted);font-size:.8rem">›</span></div><div class="gp-def"><div class="zh">' +
+      escapeHtml(item.zh) + '</div><div class="en">' + escapeHtml(item.en) + '</div></div>';
+    list.appendChild(div);
+  });
+  if (!list.children.length) list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:.875rem">找不到術語 / No match</div>';
+}
+function filterGlossary(v){ renderGlossary(v); }
+function openGlossary(){ document.getElementById('glossaryOverlay').classList.add('open'); document.getElementById('glossaryPanel').classList.add('open'); renderGlossary(''); }
+function closeGlossary(){ document.getElementById('glossaryOverlay').classList.remove('open'); document.getElementById('glossaryPanel').classList.remove('open'); }
+function toggleCard(id){ document.getElementById(id).classList.toggle('open'); }
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar(){ if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open'); }
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  try { localStorage.setItem('oms_theme', html.dataset.theme); } catch(e) {}
+}
+function toggleLang(){
+  const html = document.documentElement;
+  const isZh = html.dataset.lang === 'zh';
+  html.dataset.lang = isZh ? 'en' : 'zh';
+  document.getElementById('langBtn').textContent = isZh ? '🌐 中' : '🌐 EN';
+  document.title = isZh ? 'Marketing Foundations & 2025-26 Trends | Marketing Column · Matt Ye' : '行銷基礎與 2026 趨勢 — Marketing Foundations | Marketing Column · Matt Ye';
+  document.getElementById('searchBox').placeholder = isZh ? 'Search…' : '搜尋… / Search…';
+  try { localStorage.setItem('oms_lang', html.dataset.lang); } catch(e) {}
+}
+let searchTimer;
+function handleSearch(val){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const q = val.trim().toLowerCase();
+    document.querySelectorAll('.topic-section').forEach(sec => {
+      sec.classList.toggle('hidden-by-search', q && !sec.textContent.toLowerCase().includes(q));
+    });
+  }, 200);
+}
+const navItems = document.querySelectorAll('.nav-item[href]');
+function updateActiveNav(){
+  const y = window.scrollY + 90;
+  let active = '';
+  ['overview','topic-funnels','topic-content-ads','topic-trends','topic-frameworks','practice','resources'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= y) active = '#' + id;
+  });
+  navItems.forEach(a => a.classList.toggle('active', a.getAttribute('href') === active));
+}
+window.addEventListener('scroll', updateActiveNav, { passive:true });
+updateActiveNav();
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGlossary(); });
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+(function init(){
+  try {
+    const t = localStorage.getItem('oms_theme'), l = localStorage.getItem('oms_lang');
+    if (t) { document.documentElement.dataset.theme = t; document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙'; }
+    if (l) { document.documentElement.dataset.lang = l; document.getElementById('langBtn').textContent = l === 'en' ? '🌐 中' : '🌐 EN'; }
+  } catch(e) {}
+})();
+</script>

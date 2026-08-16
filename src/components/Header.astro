@@ -1,21 +1,57 @@
 ---
 import T from './T.astro';
+import { localeHref, hasEnglishRoute } from '../lib/i18n';
+
 const pathname = Astro.url.pathname;
+/* 導覽列與語言鈕都要以「中文版路徑」為基準思考，因為 MIGRATED_PATHS 存的是
+   中文路徑。先把 /en 前綴剝掉，後面的比較與查表才會落在同一個座標系。 */
+const zhPath = pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+const isEn = Astro.currentLocale === 'en';
+const locale = isEn ? 'en' : 'zh';
+
+/* data-nav 是給 Tour 用的穩定選擇器。
+   ⚠ 不要讓別的地方用 href 當選擇器——href 會隨語言改變，
+   Tour 原本寫 nav a[href="/speeches/"]，英文頁一律落空而且靜默跳過。 */
+const NAV = [
+  { key: 'home', path: '/', zh: '首頁', en: 'Home' },
+  { key: 'speeches', path: '/speeches/', zh: '演講', en: 'Speeches' },
+  { key: 'coaching', path: '/coaching/', zh: '培訓', en: 'Coaching' },
+  { key: 'writing', path: '/writing/', zh: '寫作', en: 'Writing' },
+  { key: 'projects', path: '/projects/', zh: '專案', en: 'Projects' },
+];
+
+/* 語言切換必須是真的 <a href>，不能只有 <button> ＋ JS。
+   爬蟲不執行 JS——原本的做法讓中文站與 /en/ 之間**一條連結都沒有**，
+   兩邊各自成為封閉子圖。sitemap 與 hreflang 讓 Google 仍找得到那些頁，
+   但沒有任何內部連結權重流得過去，使用者也只能靠那顆鈕。
+
+   有對應語言版本時才給 <a>；沒有的頁面仍用 <button> 做 CSS 切換。
+   對應網址在建置期就算好，不必等 JS 去讀 hreflang——少一個執行期依賴，
+   就少一個會不同步的地方。 */
+const hasAlt = hasEnglishRoute(pathname);
+const altHref = isEn ? zhPath : localeHref(zhPath, 'en');
+const LangInner = `<span class="lang-zh">EN</span><span class="lang-en">中</span>`;
 ---
 <header>
   <div class="container">
-    <a href="/" class="site-name">Matt Ye</a>
+    <a href={localeHref('/', locale)} class="site-name">Matt Ye</a>
     <div class="nav-right">
       <nav>
-        <a href="/" aria-current={pathname === '/' ? 'page' : undefined}><T zh="首頁" en="Home" /></a>
-        <a href="/speeches" aria-current={pathname.startsWith('/speeches') ? 'page' : undefined}><T zh="演講" en="Speeches" /></a>
-        <a href="/coaching" aria-current={pathname.startsWith('/coaching') ? 'page' : undefined}><T zh="培訓" en="Coaching" /></a>
-        <a href="/writing" aria-current={pathname.startsWith('/writing') ? 'page' : undefined}><T zh="寫作" en="Writing" /></a>
-        <a href="/projects" aria-current={pathname.startsWith('/projects') ? 'page' : undefined}><T zh="專案" en="Projects" /></a>
+        {NAV.map((n) => (
+          <a
+            href={localeHref(n.path, locale)}
+            data-nav={n.key}
+            aria-current={(n.path === '/' ? zhPath === '/' : zhPath.startsWith(n.path.replace(/\/$/, ''))) ? 'page' : undefined}
+          ><T zh={n.zh} en={n.en} /></a>
+        ))}
       </nav>
-      <button class="lang-toggle" id="lang-toggle" aria-label="切換語言 / Switch language">
-        <span class="lang-zh">EN</span><span class="lang-en">中</span>
-      </button>
+      {hasAlt ? (
+        <a class="lang-toggle" id="lang-toggle" href={altHref}
+           hreflang={isEn ? 'zh-TW' : 'en'}
+           aria-label={isEn ? "Switch language" : "切換語言 / Switch language"} set:html={LangInner} />
+      ) : (
+        <button class="lang-toggle" id="lang-toggle" aria-label={isEn ? "Switch language" : "切換語言 / Switch language"} set:html={LangInner} />
+      )}
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode">
         <!-- Sun icon (shown in dark mode) -->
         <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -47,13 +83,35 @@ const pathname = Astro.url.pathname;
     localStorage.setItem('theme', next);
   });
 
+  /* <T> 產出的 en 區塊在 HTML 裡預設帶 hidden（給不套 CSS 的爬蟲讀）。
+     切換語言時必須把 hidden 對調，否則會出現「畫面看得到、但螢幕閱讀器
+     被 hidden 跳過」的不一致狀態。顯示與否仍由 CSS 負責，這裡只管語義。 */
+  function syncLangHidden(lang: string) {
+    const en = lang === 'en';
+    document.querySelectorAll('.lang-zh').forEach(el => el.toggleAttribute('hidden', en));
+    document.querySelectorAll('.lang-en').forEach(el => el.toggleAttribute('hidden', !en));
+  }
+  syncLangHidden(document.documentElement.getAttribute('data-lang') ?? 'zh');
+
   const langBtn = document.getElementById('lang-toggle');
   langBtn?.addEventListener('click', () => {
     const current = document.documentElement.getAttribute('data-lang') ?? 'zh';
     const next = current === 'en' ? 'zh' : 'en';
+
+    /* 已遷移的頁面，切換鈕本身就是 <a>，對應網址在建置期算好了——
+       這裡只負責記住偏好，跳轉交給瀏覽器。不攔 click、不改 location，
+       這樣連結對爬蟲與「在新分頁開啟」都是真的連結。
+
+       偏好先存再跳轉，讓下一頁（若尚未遷移）沿用同樣的語言。 */
+    if (langBtn instanceof HTMLAnchorElement) {
+      localStorage.setItem('lang', next);
+      return;
+    }
+
     document.documentElement.setAttribute('data-lang', next);
     document.documentElement.lang = next === 'en' ? 'en' : 'zh-TW';
     localStorage.setItem('lang', next);
+    syncLangHidden(next);
     window.dispatchEvent(new Event('langchange'));
   });
 </script>

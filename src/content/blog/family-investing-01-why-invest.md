@@ -1,12 +1,17 @@
 ---
 title: 為什麼要投資？讓時間成為你的資產
+titleEn: "Why Invest? Making Time Work as Your Asset"
 description: 從零開始認識投資的本質：它不是賭博，不是快速致富，而是讓資產替你工作，對抗通膨的侵蝕。
+descriptionEn: "What investing actually is, from scratch: not gambling, not getting rich quick, but putting your assets to work against the erosion of inflation."
 pubDate: 2026-06-08
 lang: zh
 series: family-investing
+ymyl: true
 tags: [投資基礎, 心態]
 draft: false
 ---
+
+<div class="lang-zh" lang="zh-TW">
 
 這是「寫給家人：投資心態與終身學習」系列的第一篇。寫給我的爸媽——兩個努力工作了幾十年，現在準備讓錢也開始替自己工作的人。
 
@@ -19,6 +24,8 @@ draft: false
 名目上是。但實際上，它已經縮水了。
 
 這就是**通貨膨脹**（Inflation）在做的事：你的錢沒有減少，但它能買到的東西越來越少。台灣近年的通膨率大約在 2–3%，看起來很小，但 72 年法則告訴我們：以 2% 的通膨率，物價大約每 36 年翻一倍。
+
+<p class="source-note">近年台灣 CPI 全年平均年增率：<a href="https://www.stat.gov.tw/News_Content.aspx?n=2668&s=27514" target="_blank" rel="noopener">2021 年 1.96%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=230621" target="_blank" rel="noopener">2022 年 2.95%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=232877" target="_blank" rel="noopener">2023 年 2.50%</a>、<a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=234403" target="_blank" rel="noopener">2024 年 2.18%</a>（行政院主計總處各年 12 月消費者物價指數新聞稿）。</p>
 
 所以問題不是「要不要投資」，而是「我能不能承受不投資的代價」。
 
@@ -50,6 +57,8 @@ draft: false
 
 注意：什麼都沒改變，只是時間不一樣，資產差了快四倍。
 
+<p class="source-note">關於這個 7%：它指的是<strong>扣掉通膨之後</strong>的實質報酬，所以上表的「761 萬」約當於今天的購買力，不是三十年後帳面上的數字。名目報酬要更高——依 <a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html" target="_blank" rel="noopener">Damodaran 的美股長期年報酬資料</a>，1928 年初投入的 100 美元到 2025 年底成長為 1,157,599 美元，換算幾何平均年報酬約 10.0%（此為由該表累積值推算）。兩者的差距大致就是這段期間的通膨。<br>⚠ 這是歷史平均，不是保證；任何單一年份都可能大幅偏離，短期甚至為負。</p>
+
 這就是為什麼「開始」比「選到好股票」更重要。早十年開始，幾乎可以彌補大部分的選股誤差。
 
 ---
@@ -74,3 +83,80 @@ draft: false
 這個系列，就是幫你建立這個「冷靜」的基礎。
 
 下一篇，我們來談**通貨膨脹**：它是什麼，你為什麼要認識它，它怎麼影響你的每一個財務決策。
+
+</div>
+
+<div class="lang-en" lang="en" hidden>
+
+This is the first piece in a series written for my family — about the mindset of investing, and about learning for life. It is written for my parents: two people who have worked hard for decades and are now getting ready to let their money start working for them too.
+
+---
+
+## Start with a question
+
+If you put NT$1,000,000 in a drawer at home, will it still be NT$1,000,000 twenty years from now?
+
+On paper, yes. In practice, it has already shrunk.
+
+That is what **inflation** does: the money hasn't gone anywhere, but it buys less and less. Taiwan's inflation has run at roughly 2–3% in recent years. That sounds small, but the rule of 72 tells us that at 2% inflation, prices roughly double every 36 years.
+
+<p class="source-note">Taiwan CPI, full-year average growth: <a href="https://www.stat.gov.tw/News_Content.aspx?n=2668&s=27514" target="_blank" rel="noopener">2021: 1.96%</a>, <a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=230621" target="_blank" rel="noopener">2022: 2.95%</a>, <a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=232877" target="_blank" rel="noopener">2023: 2.50%</a>, <a href="https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=234403" target="_blank" rel="noopener">2024: 2.18%</a> (December CPI releases, Directorate-General of Budget, Accounting and Statistics).</p>
+
+So the question isn't "should I invest?" It's "can I afford the cost of not investing?"
+
+---
+
+## What investing actually is
+
+A lot of people lump investing together with gambling. Let me separate them first.
+
+**Gambling**: your gain comes from someone else's loss. It's zero-sum, and the long-run expected value is negative — the house takes a cut.
+
+**Investing**: you hand your money to a company, or to the economy as a whole, so it can create real value — and you share in that growth. The long-run expected value is positive, because human civilisation as a whole keeps moving forward.
+
+You ran a phone shop in Hsinchu for decades. You watched Nokia collapse, watched the iPhone change the world, watched TSMC go from one fab to a critical node in the global economy. You already have a very direct sense of which companies create real value — and that sense is the most important foundation there is.
+
+---
+
+## Compounding: time is the strongest tool you have
+
+Einstein supposedly called compound interest the eighth wonder of the world. Whoever really said it, the arithmetic is real.
+
+Assume a 7% annual return (close to the long-run stock-market average):
+
+| Principal | Time | Final value |
+|------|------|----------|
+| NT$1M | 10 years | about NT$1.97M |
+| NT$1M | 20 years | about NT$3.87M |
+| NT$1M | 30 years | about NT$7.61M |
+
+Notice: nothing changed except the amount of time — and the result is nearly four times larger.
+
+<p class="source-note">About that 7%: it is the <strong>real</strong> return, after inflation. So the "NT$7.61M" above is roughly in today's purchasing power, not the number that would appear on a statement thirty years from now. The nominal return is higher — using <a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html" target="_blank" rel="noopener">Damodaran's long-run US equity return data</a>, US$100 invested at the start of 1928 grew to US$1,157,599 by the end of 2025, which works out to a geometric average of about 10.0% a year (derived from the cumulative value in that table). The gap between the two is roughly the inflation over that period.<br>⚠ This is a historical average, not a guarantee; any single year can deviate widely, and short periods can be negative.</p>
+
+This is why <em>starting</em> matters more than picking the right stock. Starting ten years earlier makes up for most stock-picking mistakes.
+
+---
+
+## So what should I do?
+
+This series will not tell you which stock to buy.
+
+We'll spend the first few pieces building the foundation:
+
+1. What inflation is, and how interest rates reach into daily life
+2. What a stock actually is (you're not buying a ticker — you're buying part of a company)
+3. Why most active funds trail the index over the long run
+4. What an ETF is, and why it's the best starting point for most people
+
+Once those feel familiar, we can talk about individual companies, industries, and more advanced ideas.
+
+---
+
+There are no shortcuts in investing. But it isn't hard either — the hard part is staying calm when the market falls, and holding on.
+
+This series exists to build that calm.
+
+Next: **inflation** — what it is, why you need to understand it, and how it shapes every financial decision you make.
+
+</div>

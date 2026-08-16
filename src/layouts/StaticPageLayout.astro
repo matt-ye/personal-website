@@ -1,0 +1,175 @@
+---
+/*
+ * 從 public/ 遷移過來的手刻頁共用版型。
+ *
+ * 這些頁刻意不走 BaseLayout：每一頁都是自包含的教材／筆記，有自己的導覽、
+ * 主題切換與版面，不需要站台的 header／footer。這裡只負責 <head>。
+ *
+ * 遷移前 14 頁各自帶一份完整的 head（15 個共通 meta ＋ 各自的選配項），
+ * 改一個 meta 標籤要動 14 個檔案。現在 meta 從 src/data/staticPageMeta.ts 來。
+ *
+ * ⚠ 幾個刻意不「順手統一」的地方：
+ *   htmlAttrs  各頁自己的 data-theme／data-lang 初始值，改了會影響首屏狀態
+ *   jsonLd     原始字串原樣輸出；各頁結構不同（Article／+CreativeWorkSeries／
+ *              +Person／WebPage），重組等於把已經正確的東西再賭一次
+ *   選配 meta  有才輸出，不補預設值——補了就是替作者決定他沒決定的事
+ */
+import type { StaticPageMeta } from '../data/staticPageMeta';
+import SiteStrip from '../components/SiteStrip.astro';
+
+interface Props {
+  meta: StaticPageMeta;
+}
+
+const { meta } = Astro.props;
+const isEn = Astro.currentLocale === 'en';
+const locale = isEn ? 'en' : 'zh';
+
+/*
+ * 這批頁面是手刻 HTML 遷移進來的，各自帶完整視覺、沒有站台外殼。
+ * 實測（2026-08-14）：沒有一頁是孤島——從首頁全部走得到，回首頁最多 2 步。
+ * 所以問題不是「走不出去」，是**有幾頁只有一個出口**：
+ * one-more-step 那批只連 /projects/one-more-step/，別無他路，
+ * 檢核器的 L2-FEW-INTERNAL-LINKS 點名的就是它們。
+ *
+ * 補一條低調的站台連結，但**只補給真的需要的頁**。判準用頁面自己的內容算，
+ * 不維護清單：片段裡不足 3 個不重複站內連結才補。
+ * 3 是檢核器 L2-FEW-INTERNAL-LINKS 的門檻，兩邊用同一個數字。
+ *
+ * 實際補到 16 頁：one-more-step 全部（片段只有 1 個出口）與 marketing 全部
+ * （片段只有樞紐 ＋ 一個 mattye.dev，共 2 個）。Miguel 頁片段已有 3 個，不補。
+ * 注意判準看的是**片段**，不是建置後的頁面——語言鈕與這條 strip 本身
+ * 都是版面加上去的，拿建置後的數字當判準會變成自己餵自己。
+ */
+const fragments = import.meta.glob('../data/static-pages/*.html', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+}) as Record<string, string>;
+const fragPath = Object.keys(fragments).find((p) => p.endsWith(`/${meta.key}.html`));
+/* 找不到就讓建置失敗——這裡靜靜當成 0 個連結會讓每一頁都多一條，
+   而多出來的那條看起來很正常，沒有人會發現判斷其實壞了。 */
+if (!fragPath) throw new Error(`StaticPageLayout：找不到內容片段 ${meta.key}.html，無法判斷是否需要補站台連結`);
+
+const ownLinks = new Set(
+  [...fragments[fragPath].matchAll(/<a\b[^>]*href="(\/[^"#?]*|https:\/\/mattye\.dev[^"]*)"/g)].map((m) => m[1]),
+);
+const siteLinks = ownLinks.size < 3;
+
+/* 英文路由的 <html>：語言宣告與 data-lang 都要跟著換。
+   data-lang 尤其重要——各頁的 CSS 用它決定顯示哪一半，meta 裡寫死的是 "zh"。 */
+const htmlAttrs = {
+  lang: 'zh-TW',
+  ...(meta.htmlAttrs ?? {}),
+  ...(isEn ? { lang: 'en', ...(meta.htmlAttrs?.['data-lang'] ? { 'data-lang': 'en' } : {}) } : {}),
+};
+
+const enHref = meta.canonical.replace('https://mattye.dev/', 'https://mattye.dev/en/');
+const canonical = isEn ? enHref : meta.canonical;
+
+/* 有填英文 meta 才算「這頁有英文版」——不另外維護一份清單。
+   同 lib/i18n.ts 的判準精神：能推導的就不該讓人記得同步。 */
+const hasEn = Boolean(meta.titleEn && meta.descriptionEn);
+const title = isEn ? (meta.titleEn ?? meta.title) : meta.title;
+const description = isEn ? (meta.descriptionEn ?? meta.description) : meta.description;
+const ogTitle = isEn ? (meta.ogTitleEn ?? meta.ogTitle) : meta.ogTitle;
+const ogDescription = isEn ? (meta.ogDescriptionEn ?? meta.ogDescription) : meta.ogDescription;
+const ogLocale = isEn ? 'en_US' : meta.ogLocale;
+
+/*
+ * JSON-LD：不手改、不重組，程式覆寫 5 個鍵後再序列化。
+ *
+ * staticPageMeta.ts 的註解說「原始字串原樣輸出，重組等於把已經正確的東西再賭一次」
+ * ——那條防的是人工重寫。這裡是程式化覆寫固定鍵，而且解析失敗會讓建置失敗，
+ * 性質不同。而英文頁的 JSON-LD 若宣稱自己是中文頁的網址，比翻譯不完整嚴重得多：
+ * 那是直接告訴 Google「這兩個網址是同一個東西」。
+ */
+function localizeJsonLd(raw: string): string {
+  let node: Record<string, unknown>;
+  try {
+    node = JSON.parse(raw);
+  } catch (e) {
+    throw new Error(`${meta.key} 的 JSON-LD 無法解析，無法產生英文版：${(e as Error).message}`);
+  }
+  if (node.url) node.url = enHref;
+  if (node.mainEntityOfPage) node.mainEntityOfPage = enHref;
+  if (node.inLanguage) node.inLanguage = 'en';
+  if (node.headline && meta.ogTitleEn) node.headline = meta.ogTitleEn;
+  if (node.description && meta.ogDescriptionEn) node.description = meta.ogDescriptionEn;
+  return JSON.stringify(node, null, 2);
+}
+const jsonLd = isEn ? meta.jsonLd?.map(localizeJsonLd) : meta.jsonLd;
+
+/* hreflang：只有真的兩版都存在才輸出。指向不存在的網址比不輸出更糟——
+   同 BaseLayout 的判斷，差別只在這裡的依據是 meta 有沒有英文欄位。 */
+const alternates = hasEn
+  ? [
+      { hreflang: 'zh-TW', href: meta.canonical },
+      { hreflang: 'en', href: enHref },
+      { hreflang: 'x-default', href: meta.canonical },
+    ]
+  : [];
+---
+
+<!doctype html>
+<html {...htmlAttrs}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="description" content={description} />
+    <meta name="author" content="Ching-Wei Ye" />
+    <link rel="canonical" href={canonical} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+    {/* 這頁自己需要的外部資源（字型等）。遷移時 <head> 被 meta 取代，
+        原本寫在手刻 <head> 裡的連結整批掉了——見 headLinks 的欄位註解。 */}
+    {meta.headLinks?.map((l) => (
+      <link rel={l.rel} href={l.href} {...(l.crossorigin ? { crossorigin: true } : {})} />
+    ))}
+
+    <meta property="og:type" content={meta.ogType} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:url" content={canonical} />
+    {/* 英文頁用英文站名——中文後綴對英語使用者是雜訊，同 BaseLayout 的判斷 */}
+    <meta property="og:site_name" content={isEn ? 'Matt Ye' : '葉淨維 Matt Ye'} />
+    <meta property="og:image" content={meta.ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {ogLocale && <meta property="og:locale" content={ogLocale} />}
+    {meta.ogImageAlt && <meta property="og:image:alt" content={meta.ogImageAlt} />}
+    {meta.articlePublishedTime && (
+      <meta property="article:published_time" content={meta.articlePublishedTime} />
+    )}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={meta.ogImage} />
+    {meta.twitterSite && <meta name="twitter:site" content={meta.twitterSite} />}
+    {meta.twitterCreator && <meta name="twitter:creator" content={meta.twitterCreator} />}
+
+    {meta.themeColor && <meta name="theme-color" content={meta.themeColor} />}
+
+    {jsonLd?.map((ld) => <script type="application/ld+json" set:html={ld} />)}
+
+    {/* Google Analytics 4——與 BaseLayout 同一組設定。
+        遷移前這些頁沒有 GA，靠 astro.config 的 inject-ga-static-html 在建置後
+        用字串手術補上。現在頁面由 Astro 產生，直接放在這裡；那個外掛也就不必再跑。 */}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1RKL72DPPW"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-1RKL72DPPW');
+    </script>
+  </head>
+  <body>
+    <slot />
+        {siteLinks && <SiteStrip />}
+  </body>
+</html>
+

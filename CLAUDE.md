@@ -3,10 +3,10 @@
 ## 專案概覽
 
 **Owner：** 葉淨維 Ching-Wei (Matt) Ye  
-**GitHub：** https://github.com/a0972210123/personal-website  
+**GitHub：** https://github.com/matt-ye/personal-website  
 **部署：** Cloudflare Pages（連接 GitHub `main` branch，push 自動 deploy）  
 **網域：** https://mattye.dev（自訂網域，preview: personal-website-1m7.pages.dev）  
-**Tech stack：** Astro 6 (static) · Plain CSS · Markdown content collections
+**Tech stack：** Astro 7 (static) · Plain CSS · Markdown content collections
 
 ---
 
@@ -39,8 +39,12 @@
 ## 技術規範
 
 ### Astro
-- 使用 Astro 6，**靜態輸出**（`output: 'static'`）
+- 使用 Astro 7，**靜態輸出**（`output: 'static'`）
 - Content collections 設定在 `src/content.config.ts`
+- **`<T zh="…" en="…" />` 的兩個屬性是 JS 字串**，由 `{zh}` 插值輸出、Astro 會轉義一次。
+  裡面寫 `&amp;` / `&nbsp;` / `&gt;` 這類 HTML entity，畫面上會直接看到 `&amp;` 字樣。
+  一律填實際字元（`&`、`>`、nbsp 用 U+00A0 實字元）。這條只適用於「屬性／JS 字串」，
+  模板標籤之間的文字（如 `<h1>演講 &amp; 工作坊</h1>`）照常寫 entity
 - 文章放在 `src/content/blog/`，格式為 Markdown（`.md`）
 - 頁面路由：`/` · `/writing` · `/writing/[slug]`
 
@@ -57,11 +61,29 @@ src/
 ├── components/     # 可重用元件（Header, Footer, PostCard）
 ├── content/blog/   # Markdown 文章
 ├── content.config.ts
+├── data/           # 手刻 HTML 頁的 metadata 清單（essays, marketing…）
 ├── layouts/        # BaseLayout, PostLayout
-├── pages/          # 路由頁面
+├── lib/
+│   └── writing.ts  # 文章來源的單一事實來源 ← 見下節
+├── pages/          # 路由頁面（含 rss.xml.ts）
 └── styles/
     └── global.css
 ```
+
+### 內容來源與 RSS feed（重要）
+
+站上的「文章」散在四個來源：`src/content/blog/`（Markdown）＋ `src/data/` 底下
+三個清單（`oneMoreStep` / `marketingUnits` / `essays`，對應 `public/` 的手刻 HTML）。
+
+**`src/lib/writing.ts` 的 `getWritingItems()` 是這四者合併後的單一事實來源**，
+`/writing` 列表頁與 `/rss.xml` 都讀它。因此：
+
+- 新增一篇文章（`.md` 或在 `src/data/` 加一筆）→ 列表頁與 feed **自動同步**，不需要動別的檔
+- **新增第五種內容來源時，只改 `src/lib/writing.ts`**，兩邊會同時生效
+- 不要在 `rss.xml.ts` 或 `writing/index.astro` 裡各自另建清單——feed 漏文章不會有人發現
+
+Build 期有 `verifyRssFeed()`（`astro.config.mjs`）把關：feed 空掉、連結指向
+不存在的頁、或網址不是絕對路徑，**build 直接失敗**（結束碼 1，Cloudflare 會擋下部署）。
 
 ### 文章 Frontmatter 規範
 ```yaml
@@ -82,6 +104,7 @@ draft: false   # true 時不顯示在列表
 - `description` 長度建議 50-160 字元
 - `lang` 設定正確（`zh` → `zh-TW`，`en` → `en`）
 - canonical URL 由 BaseLayout 自動處理
+- RSS feed 在 `/rss.xml`，BaseLayout 已放 `<link rel="alternate">` 供自動發現
 
 ---
 
@@ -94,13 +117,18 @@ draft: false   # true 時不顯示在列表
 
 ## 待辦事項（之後的 PR）
 - [x] 加入 Google Analytics 4（G-1RKL72DPPW）
-- [ ] 加入 Google Search Console verification meta tag
+- [x] Google Search Console 驗證（2026-08-08 完成，站已編入索引）
+      驗證非走 meta tag，BaseLayout 不需要也不應該再加 verification 標籤
 - [x] 建立 `llms.txt`
-- [ ] 加入個人照片
+- [x] 加入個人照片（首頁 hero 三張輪播）
 - [x] 設定自訂網域（mattye.dev）
-- [ ] 加入 RSS feed（`@astrojs/rss`）
+- [x] 加入 RSS feed（`@astrojs/rss`）— `/rss.xml`，來源見「內容來源與 RSS feed」
+- [x] 依賴漏洞清零（#200，2026-08-11）：Astro 6.4.2 → 7.2.0，`npm audit` 8 個（1 low／7 high）→ 0。
+      留在 6.x 清不完（astro 的 3 個 XSS 修正只出在 7.0.4／7.0.6／7.0.10，sharp／esbuild 也被
+      6.x 的依賴範圍卡住）。**升版的代價寫在上面 Astro 一節的 `<T>` 規範**，判讀方法見
+      `docs/HANDOFF-seo-aeo.md` 的「Astro 7 的轉義陷阱」
 - [x] 加入 sitemap（`@astrojs/sitemap`）
-- [ ] Dark mode support
+- [x] Dark mode support
 
 ---
 

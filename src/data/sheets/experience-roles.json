@@ -1,0 +1,122 @@
+[
+  {
+    "排序": "1",
+    "icon": "🎓",
+    "org_zh": "國立臺灣大學",
+    "org_en": "National Taiwan University",
+    "title": "PhD Candidate · 職能治療學系",
+    "title_eng": "PhD Candidate · School of Occupational Therapy",
+    "description": "研究 AI 輔助認知障礙診斷，結合動作科學與機器學習方法。其他研究主題和經歷：<a href=\"https://doi.org/10.1016/j.apmr.2026.04.024\" target=\"_blank\">VR神經復健</a>、\n<a href=\"https://doi.org/10.6534/jtotrp.202306_19(1).0006\" target=\"_blank\">正念減壓</a>、\n<a href=\"https://doi.org/10.6534/jtotrp.202412_20(2).0004\" target=\"_blank\">Matlab/Android 研究軟體開發</a>、\n<a href=\"https://brownyeh.notion.site/?source=copy_link\" target=\"_blank\">AI輔助文獻回顧方法教學</a>。",
+    "description_eng": "Research on AI-assisted diagnosis of cognitive impairment, combining motion science and machine learning methods. Other research topics and experiences: <a href=\"https://doi.org/10.1016/j.apmr.2026.04.024\" target=\"_blank\">VR neurorehabilitation</a>, \n<a href=\"https://doi.org/10.6534/jtotrp.202306_19(1).0006\" target=\"_blank\">Mindfulness-based stress reduction</a>, \n<a href=\"https://doi.org/10.6534/jtotrp.202412_20(2).0004\" target=\"_blank\">Matlab/Android research software development</a>, \n<a href=\"https://brownyeh.notion.site/?source=copy_link\" target=\"_blank\">AI-assisted literature review teaching</a>.",
+    "period": "2019 – present",
+    "show": "TRUE"
+  },
+  {
+    "排序": "2",
+    "icon": "🕸️",
+    "org_zh": "黃金畫布工作室",
+    "org_en": "Tela Aurea Lab",
+    "title": "創辦人",
+    "title_eng": "Founder",
+    "description": "出於對捕夢網手工藝的熱愛創立 <a href=\"https://telaaurealab.com/\" target=\"_blank\">Tela Aurea Lab</a>，理解捕夢網走線數學規則後，開發網頁捕夢網設計工具，未來計畫無償提供給北美原住民的文化教育機構使用，希望能協助保存文化遺產。歡迎體驗互動式網站入口 <a href=\"https://telaaurealab.com/?dd=1\" target=\"_blank\">每日一網 (Daily Dose)</a>",
+    "description_eng": "Driven by a passion for dreamcatcher craftsmanship, <a href=\"https://telaaurealab.com/\" target=\"_blank\">Tela Aurea Lab</a> was founded. After understanding the mathematical rules governing dreamcatcher weaving, a web-based dreamcatcher design tool was developed. The plan is to provide this tool free of charge to Native American cultural and educational institutions in North America, hoping to help preserve cultural heritage. Welcome to experience the interactive website: <a href=\"https://telaaurealab.com/?dd=1\" target=\"_blank\">Daily Dose</a>.",
+    "period": "2026 – present",
+    "show": "TRUE"
+  },
+  {
+    "排序": "3",
+    "icon": "🎤",
+    "org_zh": "自由講師",
+    "org_en": "Freelance Speaker",
+    "title": "講師",
+    "title_eng": "Lecturer",
+    "description": "已受邀於企業、學術機構、非營利組織進行 150+ 場<a href=\"https://mattye.dev/coaching/\" target=\"_blank\">演講與工作坊</a>。利用職能治療專業背景分析簡報表達技能，並設計系統化訓課程。",
+    "description_eng": "I have been invited to give over 150 <a href=\"https://mattye.dev/coaching/\" target=\"_blank\"> lectures and workshops</a> at businesses, academic institutions, and non-profit organizations. I utilize my occupational therapy background to analyze presentation skills and design systematic training courses.",
+    "period": "2020 – present",
+    "show": "TRUE"
+  },
+  {
+    "排序": "4",
+    "icon": "📣",
+    "org_zh": "起駛簡報表達教育協會",
+    "org_en": "CAPE (Cheese Association of Presentation Education)",
+    "title": "理事 · 兼任講師 · 前課程研發組長",
+    "title_eng": "Board Member, Part-time Lecturer, Former Head of Curriculum Development Team",
+    "description": "開發三套系統化口袋課程（投影片設計｜表達技巧｜簡報邏輯），並至台灣非山非市與偏鄉分享給國高中學生。也協助錄製短影音分享實用簡報表達優化技巧（<a href=\"https://www.instagram.com/cheese_presentationskills108/reels/\" target=\"_blank\">IG@CAPE</a>）。",
+    "description_eng": "Developed three systematic pocket courses (slide design, presentation skills, and presentation logic) and shared them with junior and senior high school students in remote areas and rural regions of Taiwan. Also assisted in recording short videos to share practical presentation optimization techniques (<a href=\"https://www.instagram.com/cheese_presentationskills108/reels/\" target=\"_blank\">IG@CAPE</a>).",
+    "period": "2022 – present",
+    "show": "TRUE"
+  },
+  {
+    "排序": "5",
+    "icon": "🍎",
+    "org_zh": "Straight A 晶盛科技｜Apple優質教育合作夥伴",
+    "org_en": "Straight A × Apple Premium Education Partner",
+    "title": "MAIC 賽前培訓講師",
+    "title_eng": "MAIC Pre-contest Training Instructor",
+    "description": "指導學生團隊簡報與提案結構，協助奪得 MAIC 多項獎項。",
+    "description_eng": "Guided student teams in developing presentation and proposal structures, helping them win multiple awards at MAIC.",
+    "period": "2024 – present",
+    "show": "TRUE"
+  },
+  {
+    "排序": "6",
+    "icon": "🌍",
+    "org_zh": "Falling Walls Lab Taipei",
+    "org_en": "Falling Walls Lab Taipei",
+    "title": "賽前培訓顧問",
+    "title_eng": "Pre-contest Training Consultant",
+    "description": "協助研究生以 3 分鐘英文簡報詮釋研究突破，晉級柏林國際決賽。",
+    "description_eng": "Assist graduate students in presenting their research breakthroughs in English in a 3-minute presentation, thus advancing them to the finals of the Berlin International Competition.",
+    "period": "2023 – present",
+    "show": "TRUE"
+  },
+  {
+    "排序": "7",
+    "icon": "⚗️",
+    "org_zh": "財團法人遠哲科學教育基金會",
+    "org_en": "Yuan T. Lee Foundation Science Education",
+    "title": "3MT4S 校園講師 · 培訓顧問",
+    "title_eng": "3MT4S Campus Instructor & Training Consultant",
+    "description": "擔任遠哲盃「三分鐘英語科學創新挑戰賽（3MT4S）」校園講師與培訓顧問，協助國高中師生以英語短講呈現科學研究、回應 SDGs。主講〈三分鐘說科學：聚光燈背後的故事〉交流講座，並分享〈3 分鐘英文學術簡報秘笈〉，融入 Falling Walls Lab 經驗，指導學生以清晰結構與臨場表達詮釋研究亮點。",
+    "description_eng": "Campus instructor and training consultant for the Yuan T. Cup 3-Minute English Science Innovation Challenge (3MT4S), helping secondary-school students and teachers present scientific research in concise English talks addressing the UN SDGs. Delivered the talk “Three-Minute Science: Stories Behind the Spotlight” and a workshop on crafting 3-minute academic pitches, drawing on Falling Walls Lab international-finals experience to coach structure, storytelling, and on-stage delivery.",
+    "period": "2025 – present",
+    "show": "TRUE"
+  },
+  {
+    "排序": "8",
+    "icon": "🗣️",
+    "org_zh": "華視文教基金會訓練中心",
+    "org_en": "CCEF TRAINING CENTER",
+    "title": "新手配音員 - 華視配音班 192期 學員",
+    "title_eng": "Newbie Voice Actor",
+    "description": "曾錄製個人 Podcast<a href=\"https://brownes-brownie-boxes.firstory.io/\" target=\"_blank\">【Browne`s Brownie Boxes】</a>，雖暫時停更但持續訓練自身的聲音使用技巧，期待在未來能以此提升口語表達課程深度，也為自己開拓新的職涯面向。(培訓期間為 2026/03/19 - 2026/07/21)",
+    "description_eng": "I previously recorded a personal podcast, <a href=\"https://brownes-brownie-boxes.firstory.io/\" target=\"_blank\">\"Browne`s Brownie Boxes,\" </a> which is currently on hiatus. However, I continue to train my voice skills, hoping to use it to deepen my spoken English courses and explore new career avenues. (Training period: 2026/03/19 - 2026/07/21)",
+    "period": "2022 – present",
+    "show": "TRUE"
+  },
+  {
+    "排序": "9",
+    "icon": "✈️",
+    "org_zh": "啟夢股份有限公司",
+    "org_en": "Enlighten-Dream Social Enterprise",
+    "title": "課程開發· 營隊講師",
+    "title_eng": "Curriculum Development & Camp Instructor",
+    "description": "擔任啟夢教育（教育型社會企業）課程開發與營隊講師，協助「系統化科系探索」營隊設計。開發醫藥衛生學群 LV5 體驗課程，由 2022起於夏、冬令營自然組擔任課程講師；另規劃職能治療學系探索課程，把專業領域轉化為高中生可親身操作的科系體驗。",
+    "description_eng": "Served as a curriculum developer and camp instructor for Qimeng Education (an educational social enterprise), assisting in the design of the \"Systematic Departmental Exploration\" camp. Developed LV5 experiential courses for the Medical and Health Sciences group, serving as a course instructor for the summer and winter camp nature groups starting in 2022; also planned occupational therapy departmental exploration courses, transforming professional fields into departmental experiences that high school students can engage in hands-on.",
+    "period": "2021 – 2025",
+    "show": "FALSE"
+  },
+  {
+    "排序": "10",
+    "icon": "",
+    "org_zh": "OT學會",
+    "org_en": "ISW PEERS 等等",
+    "title": "",
+    "title_eng": "",
+    "description": "",
+    "description_eng": "",
+    "period": "",
+    "show": "FALSE"
+  }
+]

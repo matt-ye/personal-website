@@ -1,0 +1,233 @@
+---
+/*
+ * 贊助金額選擇器：幣別 tab + 建議金額 + 自填欄位。
+ * footer 的 modal 與 /sponsor 頁共用這一份——金額驗證只有一套實作，
+ * 不會兩邊各寫一次而日後漂移（金流 UI 尤其不該有兩份真相）。
+ *
+ * 用法：<AmountPicker prefix="sponsor" />
+ * 對外介面：root 元素上的 data-amount / data-valid，並在變動時發出
+ * amountchange 事件，讓外層的付款按鈕自己決定要不要 disable。
+ *
+ * prefix 只用來讓 label 的 for/id 配對唯一（/sponsor 頁上會同時存在
+ * footer 的 modal 與頁面本身的選擇器，兩個實例都在同一份 DOM 裡）。
+ */
+interface Props { prefix: string; compact?: boolean }
+const { prefix, compact = false } = Astro.props;
+const inputId = `${prefix}-custom-input`;
+const hintId = `${prefix}-custom-hint`;
+---
+<div class="ap" data-amount-picker data-amount="" data-valid="false" class:list={[{ 'ap-compact': compact }]}>
+  <div class="ap-tabs" data-ap-tabs role="group" aria-label="Currency">
+    <button type="button" class="ap-tab sel" data-cur="twd">TWD</button>
+    <button type="button" class="ap-tab" data-cur="usd">USD</button>
+  </div>
+
+  <div class="ap-amts" data-ap-amts></div>
+
+  <div class="ap-custom">
+    <label class="ap-custom-label" for={inputId} data-ap-label></label>
+    <div class="ap-custom-row" data-ap-row>
+      <span class="ap-cur" data-ap-cur>NT$</span>
+      <input
+        id={inputId}
+        data-ap-input
+        type="number"
+        inputmode="numeric"
+        step="1"
+        class="ap-custom-input"
+        aria-describedby={hintId}
+      />
+    </div>
+    <p class="ap-custom-hint" id={hintId} data-ap-hint></p>
+  </div>
+</div>
+
+<style>
+  .ap-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.8rem; justify-content: center; }
+  .ap-tab {
+    padding: 0.3rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .ap-tab.sel { border-color: #f59e0b; color: #d97706; background: rgba(251, 191, 36, 0.15); }
+  .ap-tab:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  .ap-amts { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; }
+  /* 金額按鈕由 JS 產生，拿不到 scoped hash，所以用 :global */
+  .ap-amts :global(.ap-amt) {
+    flex: 1;
+    padding: 0.65rem 0.3rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 0.88rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .ap-amts :global(.ap-amt:hover) { border-color: #f59e0b; }
+  .ap-amts :global(.ap-amt.sel) { border-color: #f59e0b; color: #d97706; background: rgba(251, 191, 36, 0.15); }
+  .ap-amts :global(.ap-amt:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  .ap-custom { margin-bottom: 0.9rem; }
+  .ap-custom-label { display: block; font-size: 0.74rem; color: var(--color-text-muted); margin-bottom: 0.3rem; }
+  .ap-custom-row {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .ap-custom-row:focus-within { border-color: #f59e0b; }
+  .ap-custom-row.active { border-color: #f59e0b; background: rgba(251, 191, 36, 0.08); }
+  .ap-cur {
+    display: flex;
+    align-items: center;
+    padding: 0 0.65rem;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .ap-custom-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text);
+    font-family: inherit;
+    /* 16px 以上手機 Safari 聚焦時才不會自動放大整頁 */
+    font-size: 1rem;
+    font-weight: 700;
+    /* 讓整列達到 44px 觸控目標（WCAG 2.5.5） */
+    padding: 0.7rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .ap-custom-input:focus { outline: none; }
+  .ap-custom-hint { font-size: 0.7rem; color: var(--color-text-muted); margin-top: 0.28rem; min-height: 1em; }
+  .ap-custom-hint.err { color: #d63b3b; }
+
+  /* modal 裡空間較緊，縮一點 */
+  .ap-compact .ap-amts { margin-bottom: 0.65rem; }
+  .ap-compact .ap-custom { margin-bottom: 0.75rem; }
+</style>
+
+<script>
+  import { DONATION_AMOUNTS, DONATION_LIMITS, checkAmount, money, L } from '../lib/donate';
+
+  /* 同一份 DOM 上可能有兩個實例（/sponsor 頁上還有 footer 的 modal），
+     所以逐一初始化，不用單一 id 抓元素。 */
+  document.querySelectorAll<HTMLElement>('[data-amount-picker]').forEach(root => {
+    const tabsEl  = root.querySelector<HTMLElement>('[data-ap-tabs]')!;
+    const amtsEl  = root.querySelector<HTMLElement>('[data-ap-amts]')!;
+    const rowEl   = root.querySelector<HTMLElement>('[data-ap-row]')!;
+    const curEl   = root.querySelector<HTMLElement>('[data-ap-cur]')!;
+    const labelEl = root.querySelector<HTMLElement>('[data-ap-label]')!;
+    const inputEl = root.querySelector<HTMLInputElement>('[data-ap-input]')!;
+    const hintEl  = root.querySelector<HTMLElement>('[data-ap-hint]')!;
+
+    let cur = 'twd';
+    let usingCustom = false;
+
+    function publish(amount: number | null) {
+      root.dataset.amount = amount == null ? '' : String(amount);
+      root.dataset.valid = amount == null ? 'false' : 'true';
+      root.dispatchEvent(new CustomEvent('amountchange', {
+        bubbles: true,
+        detail: { amount, currency: cur, custom: usingCustom },
+      }));
+    }
+
+    function clearCustom() {
+      usingCustom = false;
+      inputEl.value = '';
+      rowEl.classList.remove('active');
+      hintEl.textContent = '';
+      hintEl.classList.remove('err');
+    }
+
+    function renderAmts() {
+      amtsEl.innerHTML = '';
+      DONATION_AMOUNTS[cur].forEach((n, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'ap-amt' + (!usingCustom && i === 1 ? ' sel' : ''); // 預選中間金額
+        b.textContent = money(cur, n);
+        b.addEventListener('click', () => {
+          amtsEl.querySelectorAll('.ap-amt').forEach(x => x.classList.remove('sel'));
+          b.classList.add('sel');
+          clearCustom();
+          publish(n);
+        });
+        amtsEl.appendChild(b);
+      });
+      if (!usingCustom) publish(DONATION_AMOUNTS[cur][1]);
+    }
+
+    function renderText() {
+      const lim = DONATION_LIMITS[cur];
+      curEl.textContent = cur === 'twd' ? 'NT$' : '$';
+      labelEl.textContent = L('或自訂金額', 'Or enter your own');
+      inputEl.placeholder = `${lim.min}–${lim.max}`;
+      inputEl.min = String(lim.min);
+      inputEl.max = String(lim.max);
+    }
+
+    tabsEl.addEventListener('click', e => {
+      const tab = (e.target as HTMLElement).closest('.ap-tab') as HTMLElement | null;
+      if (!tab || tab.dataset.cur === cur) return;
+      cur = tab.dataset.cur!;
+      tabsEl.querySelectorAll('.ap-tab').forEach(x => x.classList.remove('sel'));
+      tab.classList.add('sel');
+      /* 換幣別要清掉自填：NT$300 與 $300 是完全不同的金額 */
+      clearCustom();
+      renderText();
+      renderAmts();
+    });
+
+    inputEl.addEventListener('input', () => {
+      const raw = inputEl.value.trim();
+      if (raw === '') {
+        // 清空就回到建議金額，不要卡在沒有可付金額的狀態
+        clearCustom();
+        renderAmts();
+        return;
+      }
+      usingCustom = true;
+      rowEl.classList.add('active');
+      amtsEl.querySelectorAll('.ap-amt').forEach(x => x.classList.remove('sel'));
+
+      const n = Number(raw);
+      const err = checkAmount(cur, n);
+      if (err) {
+        hintEl.textContent = err;
+        hintEl.classList.add('err');
+        publish(null);
+      } else {
+        hintEl.textContent = L(`將贊助 ${money(cur, n)}`, `Sponsoring ${money(cur, n)}`);
+        hintEl.classList.remove('err');
+        publish(n);
+      }
+    });
+
+    window.addEventListener('langchange', () => {
+      renderText();
+      renderAmts();
+      /* 自填的提示是 input 事件寫進去的，renderText 碰不到，要重跑驗證才會翻譯 */
+      if (inputEl.value.trim() !== '') inputEl.dispatchEvent(new Event('input'));
+    });
+
+    renderText();
+    renderAmts();
+  });
+</script>

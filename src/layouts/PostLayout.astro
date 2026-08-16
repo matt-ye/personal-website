@@ -1,22 +1,30 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import T from '../components/T.astro';
+import { tagLabel } from '../lib/tagLabels';
 
 interface Props {
   title: string;
   description: string;
   pubDate: Date;
+  updatedDate?: Date;
   lang?: 'zh' | 'en';
   tags?: string[];
+  titleEn?: string;
+  descriptionEn?: string;
+  ymyl?: boolean;
 }
 
-const { title, description, pubDate, lang = 'zh', tags } = Astro.props;
+const { title, description, pubDate, updatedDate, lang = 'zh', tags, titleEn, descriptionEn, ymyl = false } = Astro.props;
+
+/* 有 titleEn 就是雙語文章：標題與日期跟著站上的語言切換，不再固定單一語言 */
+const bilingual = Boolean(titleEn);
 
 const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
 
-const dateFormatted = pubDate.toLocaleDateString(
-  lang === 'zh' ? 'zh-TW' : 'en-US',
-  { year: 'numeric', month: 'long', day: 'numeric' }
-);
+const dateZh = pubDate.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+const dateEn = pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const dateFormatted = lang === 'zh' ? dateZh : dateEn;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL('/OG.png', Astro.site).href;
@@ -27,6 +35,9 @@ const articleLd = {
   "headline": title,
   "description": description,
   "datePublished": pubDate.toISOString(),
+  /* 只有實際填了 updatedDate 才輸出。沒填就不給，而不是拿 pubDate 或建置時間充數——
+     不準的時間訊號會讓 Google 連帶不信任整站的日期（同 sitemap lastmod 的處理）。 */
+  ...(updatedDate ? { "dateModified": updatedDate.toISOString() } : {}),
   "inLanguage": htmlLang,
   "author": {
     "@type": "Person",
@@ -41,16 +52,45 @@ const articleLd = {
 <BaseLayout title={title} description={description} lang={htmlLang} ogType="article">
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleLd)} />
 
-  <a href="/writing" class="back-link">← Writing</a>
+  <a href="/writing/" class="back-link">← Writing</a>
 
   <header class="post-page-header">
-    <h1>{title}</h1>
+    <h1>
+      {bilingual ? (
+        <>
+          <span class="lang-zh" lang="zh-TW">{title}</span><span class="lang-en" lang="en" hidden>{titleEn}</span>
+        </>
+      ) : title}
+    </h1>
     <div class="post-meta">
-      <time datetime={pubDate.toISOString()}>{dateFormatted}</time>
-      <span class="lang-badge">{lang === 'zh' ? '中' : 'EN'}</span>
+      {/* 作者署名。在此之前「葉淨維」只出現在 <title>、meta 與頁尾版權——
+          那些位置對讀者與評分員都不算內容創作者資訊。rel="author" 是這層
+          關係的機器可讀宣告，連到 /about/ 讓資歷可查證。 */}
+      <a class="post-author" href="/about/" rel="author">
+        <T zh="葉淨維" en="Matt Ye" />
+      </a>
+      <time datetime={pubDate.toISOString()}>
+        {bilingual ? (
+          <>
+            <span class="lang-zh" lang="zh-TW">{dateZh}</span><span class="lang-en" lang="en" hidden>{dateEn}</span>
+          </>
+        ) : dateFormatted}
+      </time>
+      {updatedDate && (
+        <time class="post-updated" datetime={updatedDate.toISOString()}>
+          {lang === 'zh'
+            ? `更新於 ${updatedDate.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })}`
+            : `Updated ${updatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`}
+        </time>
+      )}
+      {/* 徽章與標籤都走 <T>：這篇文章在中文網址上，顯示語言是使用者按切換鈕
+          即時決定的，建置期並不知道——所以兩種都輸出，交給 CSS 切。 */}
+      {bilingual
+        ? <span class="lang-badge"><T zh="中 · EN" en="ZH · EN" /></span>
+        : <span class="lang-badge">{lang === 'zh' ? <T zh="中" en="ZH" /> : 'EN'}</span>}
       {tags && tags.length > 0 && (
         <div class="tags">
-          {tags.map(tag => <span class="tag">{tag}</span>)}
+          {tags.map(tag => <span class="tag"><T zh={tag} en={tagLabel(tag, true)} /></span>)}
         </div>
       )}
     </div>
@@ -59,6 +99,21 @@ const articleLd = {
   <article class="prose">
     <slot />
   </article>
+
+  {/* YMYL 免責聲明。措辭沿用課程頁既有的那句（本課程→本文），定性為
+      「個人學習紀錄」而非專家建議——這對應 Rater Guidelines 3.4.1 節
+      Experience 與 Expertise 的分野。
+
+      放在 </article> 之外是刻意的：它不是文章內容，是關於這篇文章的聲明。
+      放進 prose 裡會被 RSS 全文與 LLM 當成正文的一部分。 */}
+  {ymyl && (
+    <aside class="post-disclaimer" role="note">
+      <T
+        zh="本文為個人學習紀錄與家人教育素材，非投資建議；內容涉及之制度與稅率以主管機關現行公告為準。"
+        en="This article is a personal learning record and educational material for my family — not investment advice. Any regulations or tax rates mentioned are subject to the current announcements of the competent authorities."
+      />
+    </aside>
+  )}
 
   <!-- Tab switching for diagram posts -->
   <script is:inline>

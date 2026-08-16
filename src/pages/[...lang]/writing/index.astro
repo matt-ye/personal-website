@@ -1,0 +1,151 @@
+---
+/*
+ * 寫作列表。同時產出 /writing/（中文，雙 DOM）與 /en/writing/（純英文）。
+ * 遷移模式與 [...lang]/about.astro 相同，見該檔的說明。
+ *
+ * ── 為什麼這頁值得遷，即使文章本身還沒有英文版 ──────────────────
+ * 在此之前英文頁的導覽列「Writing」指回中文 /writing/，等於把英文使用者
+ * 送出英文區。列表頁遷了之後動線才完整；文章逐篇翻譯是另一件事。
+ *
+ * ── 沒有英文標題的文章怎麼辦 ───────────────────────────────────
+ * 沿用 [...lang]/projects/index.astro 已經定下的處理：**退回中文，並標
+ * lang="zh-TW"**。空白比中文更糟（讀者什麼都看不到），但讓爬蟲把中文
+ * 當成英文更糟——那會污染整頁的語言判定，而這頁的語言判定正是它存在的理由。
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import T from '../../../components/T.astro';
+/* 來源合併邏輯抽到 src/lib/writing.ts —— RSS feed 讀同一份，
+   新增內容來源時改那個檔，這頁與 /rss.xml 會同時生效。 */
+import { getWritingItems, CAT_ORDER } from '../../../lib/writing';
+
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+
+const items = await getWritingItems();
+const categories = CAT_ORDER.filter(c => items.some(i => i.category === c));
+
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+const CAT_EN: Record<string, string> = {
+  投資專欄: 'Investing', 硬核簡報: 'Presentation', 管理專欄: 'Management',
+  行銷專欄: 'Marketing', 'One More Step': 'One More Step',
+};
+const catLabel = (c: string) => CAT_EN[c] ?? 'Essays';
+
+/* 卡片徽章有兩種語義混在同一個欄位：語言標示（中／EN）與分類名（行銷專欄／紀念）。
+   兩種在英文頁都要處理，但理由不同：
+     · 「中」是在告訴讀者「這篇是中文的」——資訊有用，只是字形本身是中文，換成 ZH
+     · 分類名單純是沒翻譯
+   對照表放在這裡而不是 lib/writing.ts，因為那份資料 RSS 也讀，
+   改那裡等於同時改了 feed 的內容。徽章是這一頁的呈現，不是資料。 */
+const BADGE_EN: Record<string, string> = {
+  中: 'ZH', '中 · EN': 'ZH · EN', 行銷專欄: 'Marketing', 紀念: 'In Memoriam',
+};
+const badgeLabel = (b: string) => (isEn ? BADGE_EN[b] ?? b : b);
+---
+{/* lang 一定要傳：BaseLayout 用它決定站名後綴（英文 "Matt Ye"／中文「葉淨維 Matt Ye」）。
+    漏傳的話英文頁會掛上中文站名，而且因為本頁的 title 兩種語言都是 "Writing"，
+    兩頁的 <title> 會完全相同——檢核器的 SITE-TITLE-DUP 就是這樣抓到的。 */}
+<BaseLayout
+  title="Writing"
+  lang={isEn ? 'en' : 'zh-TW'}
+  description={isEn
+    ? 'All articles and features by Matt Ye: the presentation column, the investing column, One More Step notes and essays. Filterable by series.'
+    : '葉淨維 Matt Ye 的所有文章與專題：硬核簡報、投資專欄、One More Step 學習筆記與隨筆。可依系列篩選。'}
+>
+  <div class="writing-header">
+    <h1><T zh="反思 &" en="Reflection &" /> <span class="accent-text"><T zh="寫作" en="Writing" /></span></h1>
+    <p class="writing-sub"><T zh="硬核簡報、投資專欄與 One More Step 專題，依系列篩選。" en="The presentation column, the investing column, and One More Step features — filter by series." /></p>
+  </div>
+
+  <div class="filter-group">
+    <div class="filter-row" id="cat-row" aria-label={isEn ? 'Filter by series' : '系列篩選'}>
+      <button class="filter-btn active" data-cat=""><T zh="全部" en="All" /></button>
+      {categories.map(c => <button class="filter-btn" data-cat={c}><T zh={c} en={catLabel(c)} /></button>)}
+    </div>
+    <p class="result-count" id="result-count"></p>
+  </div>
+
+  <ul class="post-list" id="post-list">
+    {items.map(it => (
+      <li class="post-card" data-category={it.category}>
+        <div class="post-card-header">
+          {/* 這頁的結構是「h1 寫作 → 文章清單」，中間沒有分區，所以文章標題就是 h2。
+              heading 用 .post-card-heading（display:contents）只提供語意、不影響排版。 */}
+          <h2 class="post-card-heading">
+            <a href={it.href} class="post-card-title">
+              {it.titleAlt
+                ? <T zh={it.title} en={it.titleAlt} />
+                : (isEn ? <span lang="zh-TW">{it.title}</span> : it.title)}
+            </a>
+          </h2>
+          <span class="post-card-date"><time datetime={it.date.toISOString()}>{fmt(it.date)}</time></span>
+          <span class={`lang-badge${it.kind === 'feature' ? ' feature-badge' : ''}`}>{badgeLabel(it.badge)}</span>
+        </div>
+        {/* 這行小字是中文頁的「英文副標」。英文頁的主標題本身就是英文了，
+            再印一次會變成同一句話連著出現兩次。 */}
+        {!isEn && it.titleEn && <p class="post-card-en">{it.titleEn}</p>}
+        <p class="post-card-desc">
+          {it.descAlt
+            ? <T zh={it.desc} en={it.descAlt} />
+            : (isEn ? <span lang="zh-TW">{it.desc}</span> : it.desc)}
+        </p>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
+
+<style>
+  .writing-sub { color: var(--color-text-muted); font-size: 0.92rem; margin-top: 0.35rem; }
+  .filter-group { margin: 1.5rem 0 2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .filter-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .filter-btn {
+    font-size: 0.82rem; font-weight: 500; padding: 0.3rem 0.8rem; border-radius: 99px;
+    border: 1px solid var(--color-border); background: transparent; color: var(--color-text-muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  .filter-btn.active { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+  .result-count { font-size: 0.78rem; color: var(--color-text-muted); margin: 0.2rem 0 0; }
+
+  .post-card-en { font-size: 0.8rem; color: var(--color-text-muted); margin: 0.1rem 0 0; }
+  .feature-badge { background: var(--color-accent-bg, rgba(124,94,248,.14)); color: var(--color-accent); }
+</style>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const state = { cat: params.get('series') ?? '' };
+
+  /* 筆數文字原本寫死中文。這頁現在有 /en/ 版本，讀 <html lang> 決定語言——
+     不另外傳旗標，因為 lang 屬性本來就是這頁語言的唯一真相來源。 */
+  const isEn = document.documentElement.lang.startsWith('en');
+
+  function apply() {
+    let count = 0;
+    document.querySelectorAll<HTMLElement>('#post-list .post-card').forEach(card => {
+      const show = state.cat === '' || card.dataset.category === state.cat;
+      card.style.display = show ? '' : 'none';
+      if (show) count++;
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('#cat-row .filter-btn').forEach(b =>
+      b.classList.toggle('active', (b.dataset.cat ?? '') === state.cat));
+
+    const rc = document.getElementById('result-count');
+    if (rc) rc.textContent = isEn ? `${count} article${count === 1 ? '' : 's'}` : `顯示 ${count} 篇`;
+
+    const url = new URL(window.location.href);
+    state.cat ? url.searchParams.set('series', state.cat) : url.searchParams.delete('series');
+    history.replaceState(null, '', url.toString());
+  }
+
+  document.getElementById('cat-row')?.addEventListener('click', e => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('.filter-btn');
+    if (b) { state.cat = b.dataset.cat ?? ''; apply(); }
+  });
+
+  apply();
+</script>

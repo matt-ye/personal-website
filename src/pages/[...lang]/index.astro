@@ -1,0 +1,667 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import T from '../../components/T.astro';
+import PostCard from '../../components/PostCard.astro';
+import Tour from '../../components/Tour.astro';
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import { projects } from '../../data/projects';
+/* hero 照片放 src/assets/ 而非 public/：只有前者會經過 Astro 的圖片最佳化。
+   原始檔是相機直出的 6.5–7.5 MB，直接送出去就是首頁 20.8 MB 的來源。 */
+import photoPointing from '../../assets/photo-pointing.jpg';
+import photoStanding from '../../assets/photo-standing.jpg';
+import photo5 from '../../assets/photo-5.jpg';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+
+import speechesRaw from '../../data/sheets/speeches.json';
+import siteContentRaw from '../../data/sheets/site-content.json';
+import coreStrengthsRaw from '../../data/sheets/core-strengths.json';
+import experienceRolesRaw from '../../data/sheets/experience-roles.json';
+import personalAwardsRaw from '../../data/sheets/personal-awards.json';
+import { getSpeeches, getSiteContent, getCoreStrengths, getExperienceRoles, getPersonalAwards } from '../../lib/sheets';
+
+/* 五個 Sheet 的資料在 build 期就備好（每日由 Actions 同步進 src/data/sheets/）。
+   原本是瀏覽器端 fetch——首頁因此有 8 處「載入中」，核心內容不在 HTML 裡。
+
+   下方 client script 的五個 load 函式是用「二維陣列＋欄位索引」的方式讀 CSV，
+   所以這裡把快照還原成同樣的 [表頭, ...資料列] 形狀傳進去，
+   那些函式的內部邏輯就完全不必改動。 */
+const toRows = (raw: Record<string, string>[]): string[][] => {
+  if (!raw.length) return [];
+  const header = Object.keys(raw[0]);
+  return [header, ...raw.map((r) => header.map((h) => r[h] ?? ''))];
+};
+
+/* 演講資料不再傳給 client——統計與排行榜都在 build 期算完，
+   只把三個數字傳過去給 countUp 動畫用。 */
+const CONTENT_ROWS = toRows(siteContentRaw as Record<string, string>[]);
+const STRENGTHS_ROWS = toRows(coreStrengthsRaw as Record<string, string>[]);
+const ROLES_ROWS = toRows(experienceRolesRaw as Record<string, string>[]);
+const AWARDS_ROWS = toRows(personalAwardsRaw as Record<string, string>[]);
+
+/* 同時產出 / 與 /en/，見 [...lang]/about.astro 的說明。 */
+export function getStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+const isEn = Astro.currentLocale === 'en';
+
+/* 與 client script 的 pick() 同一套規則：沒有英文就退回中文。
+   ⚠ 這一頁在遷移前，build 期只輸出 .zh——Sheet 裡的英文從未進入 HTML，
+   只有 JS 載入後才會被換掉。爬蟲與不執行 JS 的讀者因此永遠看到中文。 */
+const pick = (zh: string, en: string) => (isEn && en) ? en : (zh || en || '');
+
+/* 給不執行 JS 的訪客（含爬蟲）用的 build 期版本 */
+const EXCLUDED_TYPES = new Set(['彩排', '教材製作']);
+const speeches = getSpeeches().filter((s) => s.topic.zh && !EXCLUDED_TYPES.has(s.eventType));
+const heroTotal = speeches.length;
+const heroHours = Math.round(speeches.reduce((s, d) => s + d.hours, 0));
+const heroAudience = speeches.reduce((s, d) => s + d.attendees, 0);
+/* 合作單位排行榜（前 5 名）：與原本 client 端算的結果一致，改在 build 期算。
+   好處是爬蟲看得到、畫面不會先閃一版再被 JS 覆蓋，而且 179 筆演講資料
+   不必再 inline 進首頁 HTML。官網連結由 organizations 字典帶入。 */
+const topPartners = (() => {
+  const m = new Map<string, { name: string; nameEn: string; url: string; count: number }>();
+  for (const s of speeches) {
+    for (const o of [s.host, s.coHost1, s.coHost2]) {
+      if (!o?.name) continue;
+      const cur = m.get(o.name);
+      if (cur) cur.count++;
+      else m.set(o.name, { name: o.name, nameEn: o.nameEn, url: o.url, count: 1 });
+    }
+  }
+  const ranked = [...m.values()].sort((a, b) => b.count - a.count).slice(0, 5);
+  const max = ranked.length ? ranked[0].count : 1;
+  return ranked.map((p, i) => ({ ...p, rank: i + 1, pct: (p.count / max) * 100 }));
+})();
+
+const content = getSiteContent();
+const heroTagline = Object.keys(content)
+  .filter((k) => k.startsWith('hero_tagline_line'))
+  .sort()
+  .map((k) => pick(content[k].zh, content[k].en))
+  .join(' ');
+
+const strengths = getCoreStrengths();
+const roles = getExperienceRoles();
+const awards = getPersonalAwards();
+---
+<BaseLayout
+  title={isEn ? 'Matt Ye' : '葉淨維 Matt Ye'}
+  description={isEn
+    ? 'Ching-Wei (Matt) Ye — occupational therapist, researcher and communication educator. NTU PhD candidate, 150+ talks, AI-assisted diagnosis and presentation.'
+    : '葉淨維 Ching-Wei (Matt) Ye — 職能治療師、研究者、溝通教育者。PhD @ NTU，150+ 場演講，專注 AI 輔助診斷與簡報教育。'}
+  lang={isEn ? 'en' : 'zh-TW'}
+  image="/OG.png"
+>
+  <div class="container-wide">
+
+    <!-- ① Hero -->
+    <section class="hero-section">
+      <div class="hero-text">
+        <h1>
+          葉淨維
+          <span class="name-en">Ching-Wei (Matt) Ye</span>
+        </h1>
+        <p class="hero-tagline" id="hero-tagline">{heroTagline}</p>
+        <div class="hero-tags">
+          <span class="hero-tag">🧠 <T zh="AI ＆認知科學研究" en="AI & Cognitive Science Research" /></span>
+          <span class="hero-tag">🎤 <T zh="150+ 場演講" en="150+ Talks Delivered" /></span>
+          <span class="hero-tag">🎓 NTU PhD Candidate</span>
+          <span class="hero-tag">🏆 <T zh="3MT 冠軍" en="3MT Champion" /></span>
+        </div>
+        <div class="hero-actions">
+          <a href="mailto:f08429008@ntu.edu.tw" class="hero-cta">
+            <T zh="合作洽詢 →" en="Get in Touch →" />
+          </a>
+          <button type="button" class="hero-cta hero-cta-sponsor" data-sponsor-open data-source="mattye_hero">
+            ☕ <T zh="贊助我" en="Sponsor" />
+          </button>
+          <div class="hero-social">
+            <a href="https://www.instagram.com/brown.yeh" target="_blank" rel="noopener" aria-label="Instagram" class="social-icon-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+            </a>
+            <a href="https://www.linkedin.com/in/ching-wei-ye" target="_blank" rel="noopener" aria-label="LinkedIn" class="social-icon-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+              </svg>
+            </a>
+            <a href="https://orcid.org/0009-0001-6085-8303" target="_blank" rel="noopener" aria-label="ORCID" class="social-icon-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.947.947 0 0 1 0-1.894zm-.722 3.038h1.444v10.041H6.647V7.416zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.016-5.325 5.016h-3.919V7.416zm1.444 1.303v7.444h2.297c2.359 0 3.9-1.609 3.9-3.722 0-2.016-1.453-3.722-3.866-3.722h-2.331z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-photo-wrap">
+        {/* 用 <Image> 而不是 <img>：原始檔是 6.5–7.5 MB 的相機直出檔，
+            三張加起來 20.8 MB，是 LCP 106 秒的真正原因（不是輪播）。
+            Astro 會在 build 期轉成 WebP 並產生多種尺寸，瀏覽器依螢幕挑最小的那份。
+            widths 上限 1200 是因為這個位置在版面上最多就這麼寬，再大也看不出差別。 */}
+        <div class="hero-carousel" id="hero-carousel">
+          <div class="carousel-slide active">
+            <Image src={photoPointing} alt={isEn ? "Matt Ye speaking on stage" : "葉淨維 Matt Ye — 演講姿態"}
+                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   format="webp" quality={80} loading="eager" fetchpriority="high" />
+          </div>
+          <div class="carousel-slide">
+            {/* 後兩張延後載入：它們要到第 4 秒才會出現，不該和首屏搶頻寬 */}
+            <Image src={photoStanding} alt={isEn ? "Matt Ye, standing portrait" : "葉淨維 Matt Ye — 站姿"}
+                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   format="webp" quality={80} loading="lazy" />
+          </div>
+          <div class="carousel-slide">
+            <Image src={photo5} alt={isEn ? "Matt Ye, smiling" : "葉淨維 Matt Ye — 笑容"}
+                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   format="webp" quality={80} loading="lazy" />
+          </div>
+        </div>
+        <div class="carousel-dots">
+          <button class="carousel-dot active" aria-label="Photo 1"></button>
+          <button class="carousel-dot" aria-label="Photo 2"></button>
+          <button class="carousel-dot" aria-label="Photo 3"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ② Bento Stats -->
+    <section style="margin-bottom: var(--spacing-xl)">
+      <h2 class="section-heading"><T zh="數字看見" en="By the Numbers" /></h2>
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="bento-card-label"><T zh="演講場次" en="Speeches" /></div>
+          <div class="bento-card-num" id="h-total">{heroTotal}</div>
+          <div class="bento-card-sub"><T zh="場次累計" en="Total sessions" /></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-card-label"><T zh="講台時數" en="Hours" /></div>
+          <div class="bento-card-num" id="h-hours">{heroHours}</div>
+          <div class="bento-card-sub"><T zh="講台時數" en="Hours on stage" /></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-card-label"><T zh="觸及人次" en="Audience" /></div>
+          <div class="bento-card-num" id="h-audience">{heroAudience.toLocaleString('en-US')}</div>
+          <div class="bento-card-sub"><T zh="觸及人次" en="People reached" /></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-card-label"><T zh="出版著作" en="Publications" /></div>
+          <div class="bento-card-num" id="h-pubs">2</div>
+          <div class="bento-card-sub">SCIE · SSCI</div>
+          <a href="https://orcid.org/0009-0001-6085-8303" target="_blank" rel="noopener" class="bento-orcid-link">ORCID ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ③ Three Pillars (dynamic from Sheet: core_strengths) -->
+    <section style="margin-bottom: var(--spacing-xl)">
+      <h2 class="section-heading"><T zh="核心優勢" en="Core Strengths" /></h2>
+      {/* build 期渲染＝不執行 JS 時（含爬蟲）看到的內容；JS 載入後會重畫成可切換語言的版本 */}
+      <div class="pillars-grid" id="pillars-grid">
+        {strengths.map((s) => (
+          <div class="pillar-card">
+            <div class="pillar-icon">{s.icon}</div>
+            <div class="pillar-title">{pick(s.title.zh, s.title.en)}</div>
+            <p class="pillar-desc">{pick(s.description.zh, s.description.en)}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ④ Experience Roles (dynamic from Sheet: experience_roles) -->
+    <section style="margin-bottom: var(--spacing-xl)">
+      <h2 class="section-heading"><T zh="經歷 & 角色" en="Experience & Roles" /></h2>
+      <div class="roles-list" id="roles-list">
+        {roles.map((r) => (
+          <div class="role-item">
+            <div class="role-icon">{r.icon}</div>
+            <div class="role-body">
+              <div class="role-title">{pick(r.title.zh, r.title.en)}</div>
+              <div class="role-org">{pick(r.org.zh, r.org.en)}{r.period && `　${r.period}`}</div>
+              {/* set:html 而非插值：這些描述有 5 筆含 <a> 連結，用 {} 會被轉義成字面文字
+                  ——遷移前的 build 產物確實有 9 處 &lt;a href=...，那些外連對爬蟲等於
+                  不存在（使用者看得到是因為 JS 載入後重繪過）。
+                  資料來源是自己維護的 Sheet，不是使用者輸入。 */}
+              {pick(r.description.zh, r.description.en) && (
+                <p class="role-desc" set:html={pick(r.description.zh, r.description.en)} />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ④½ Personal Awards (dynamic from Sheet: personal_awards) -->
+    <section style="margin-bottom: var(--spacing-xl)">
+      <h2 class="section-heading"><T zh="個人獎項" en="Awards & Honors" /></h2>
+      <div class="awards-timeline" id="awards-timeline">
+        {awards.map((a) => (
+          <div class="award-item">
+            <b>{a.year}</b>
+            {/* 有連結就做成連結——只渲染文字的話這些外連對爬蟲不存在 */}
+            {a.link
+              ? <a href={a.link} target="_blank" rel="noopener">{pick(a.contest.zh, a.contest.en)}</a>
+              : <span>{pick(a.contest.zh, a.contest.en)}</span>}
+            　{pick(a.award.zh, a.award.en)}
+            {pick(a.host.zh, a.host.en) && <span>　{pick(a.host.zh, a.host.en)}</span>}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ⑤ Partners / Organizations (dynamic from Sheet) -->
+    <section class="partners-section">
+      <h2 class="section-heading"><T zh="主要合作單位" en="Top Collaborating Organizations" /></h2>
+      <div class="partners-orgs-grid" id="partners-grid">
+        {topPartners.map((p) => (
+          <div class="org-row">
+            <span class={`org-rank${p.rank <= 3 ? ' org-rank-top' : ''}`}>{String(p.rank).padStart(2, '0')}</span>
+            <span class="org-name">
+              <span class="org-name-zh" lang="zh-TW">
+                {p.url
+                  ? <a href={p.url} target="_blank" rel="noopener">{p.name}</a>
+                  : p.name}
+              </span>
+              {p.nameEn && <span class="org-name-en" lang="en">{p.nameEn}</span>}
+            </span>
+            <span class="org-bar-bg"><span class="org-bar" data-width={p.pct} style={`width:${p.pct}%`}></span></span>
+            <span class="org-count">{p.count}</span>
+          </div>
+        ))}
+      </div>
+      <a href="/speeches/" class="section-cta" style="margin-top:1rem"><T zh="查看所有演講 →" en="View all speeches →" /></a>
+    </section>
+
+    <!-- ⑥ Projects — 首頁原本完全沒有指向專案的連結，各個 hub 只能經由
+         導覽列的 /projects 再點一層才到得了（子頁更深一層）。這一區直接連到
+         每個 hub，把它們拉到首頁的一次點擊之內。 -->
+    <section style="margin-top: var(--spacing-xl)">
+      <h2 class="section-heading"><T zh="工具與專案" en="Tools & Projects" /></h2>
+      <div class="home-projects">
+        {projects.map(p => (
+          <a
+            href={p.url}
+            class="home-project"
+            {...(p.internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+          >
+            {/* 專案名是清單項標題：這一區的 h2 是「工具與專案」，所以卡片用 h3。
+            .card-heading 是 display:contents，不影響原本的排版。 */}
+        <h3 class="card-heading"><span class="home-project-title"><T zh={p.title} en={p.titleEn} /></span></h3>
+            <span class="home-project-desc"><T zh={p.description} en={p.descriptionEn} /></span>
+          </a>
+        ))}
+      </div>
+      <a href="/projects/" class="section-cta" style="margin-top:1rem"><T zh="查看所有專案 →" en="View all projects →" /></a>
+    </section>
+
+    <!-- ⑦ Recent Writing -->
+    {posts.length > 0 && (
+      <section style="margin-top: var(--spacing-xl)">
+        <h2 class="section-heading"><T zh="近期文章" en="Recent Writing" /></h2>
+        <ul class="post-list">
+          {posts.map(post => (
+            <PostCard
+              id={post.id}
+              title={isEn ? (post.data.titleEn ?? post.data.title) : post.data.title}
+            titleLang={isEn && !post.data.titleEn ? 'zh-TW' : undefined}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              lang={post.data.lang}
+            />
+          ))}
+        </ul>
+        <a href="/writing/" class="section-cta"><T zh="所有文章 →" en="All posts →" /></a>
+      </section>
+    )}
+
+  </div>
+
+  <!-- 聚光燈導覽：只掛首頁，步驟目標都是 hero 與導覽列元素 -->
+  <Tour />
+</BaseLayout>
+
+<script>
+/* ── Hero Photo Carousel ── */
+(function () {
+  var slides = document.querySelectorAll('#hero-carousel .carousel-slide');
+  var dots   = document.querySelectorAll('.carousel-dots .carousel-dot');
+  if (!slides.length) return;
+
+  var current = 0;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  /* 自動輪播跑完一輪（三張各出現一次）後回到第一張並停止。
+     兩個理由：
+     1. 每次換圖都會產生新的 LCP 候選，而 LCP 取「追蹤期間最後一個」——
+        輪播跑越久，量到的 LCP 越晚。跑一輪就停，指標才會早早定案。
+        （註：LCP 106 秒的主因其實是圖片有 20.8 MB，已在 perf/hero-images 處理；
+         輪播只是讓它更晚定案，不是主因。）
+     2. 無限自動輪播對可及性不友善——會干擾閱讀障礙與注意力障礙的使用者。
+     使用者仍可點圓點手動切換（手動切換後不再自動播放）。 */
+  var ROUNDS = 1;
+  var advances = 0;
+  var timer = setInterval(tick, 4000);
+
+  function tick() {
+    advances++;
+    if (advances >= slides.length * ROUNDS) {
+      clearInterval(timer);
+      timer = null;
+      goTo(0);              // 回到第一張收尾
+      return;
+    }
+    goTo(current + 1);
+  }
+
+  function stopAuto() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  // Dot click → 手動切換，並停止自動播放（使用者已經表達了偏好）
+  dots.forEach(function (dot, i) {
+    dot.addEventListener('click', function () {
+      stopAuto();
+      goTo(i);
+    });
+  });
+
+  /* 滑過時暫停、離開時續播——但三輪跑完之後就不再重啟
+     （否則滑鼠一進一出就把已經停下來的輪播叫醒，LCP 又會被推著跑）。 */
+  var carousel = document.getElementById('hero-carousel');
+  if (carousel) {
+    carousel.addEventListener('mouseenter', stopAuto);
+    carousel.addEventListener('mouseleave', function () {
+      if (timer) return;                                   // 已在跑就不重複開
+      if (advances >= slides.length * ROUNDS) return;       // 已跑完三輪，不再自動播
+      timer = setInterval(tick, 4000);
+    });
+  }
+})();
+</script>
+
+<script define:vars={{ HERO_STATS: { total: heroTotal, hours: heroHours, audience: heroAudience }, CONTENT_ROWS, STRENGTHS_ROWS, ROLES_ROWS, AWARDS_ROWS }}>
+/* ── Count-up animation ── */
+function countUp(el, finalVal, dur) {
+  if (!el || isNaN(finalVal)) return;
+  var fmt = finalVal >= 1000
+    ? function(v) { return (v / 1000).toFixed(1) + 'K'; }
+    : function(v) { return Math.round(v); };
+  var start = performance.now();
+  requestAnimationFrame(function step(now) {
+    var t = Math.min((now - start) / dur, 1);
+    var ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = fmt(finalVal * ease);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = fmt(finalVal);
+  });
+}
+
+/* ── Robust CSV parser ── */
+function parseCSV(text) {
+  var rows = [], row = [], cur = '', inQ = false;
+  var t = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  for (var i = 0; i < t.length; i++) {
+    var c = t[i];
+    if (c === '"') {
+      if (inQ && t[i+1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (c === ',' && !inQ) {
+      row.push(cur.trim()); cur = '';
+    } else if (c === '\n' && !inQ) {
+      row.push(cur.trim());
+      if (row.some(function(v) { return v; })) rows.push(row);
+      row = []; cur = '';
+    } else { cur += c; }
+  }
+  if (cur || row.length) { row.push(cur.trim()); rows.push(row); }
+  return rows;
+}
+
+function makeHI(rows) {
+  var headers = rows[0].map(function(h) { return h.toLowerCase().trim(); });
+  return function(name) {
+    return headers.findIndex(function(h) { return h.includes(name.toLowerCase()); });
+  };
+}
+
+/* ── i18n helpers ── */
+function lang() { return document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'zh'; }
+function pick(zh, en) { return (lang() === 'en' && en) ? en : (zh || en || ''); }
+
+/* render hooks set after each sheet loads; re-invoked on langchange */
+var contentRender = null, strengthsRender = null, rolesRender = null, awardsRender = null;
+
+/* ── Speeches sheet: stats + partners leaderboard ── */
+/* 五個 load 函式的資料改由 build 期經 define:vars 帶入（不再 fetch Google Sheet）。
+   資料形狀維持原本的「二維陣列」，所以下面的欄位索引邏輯完全沒動。 */
+/* 統計數字與合作單位排行榜都已在 build 期算好並渲染進 HTML（見 frontmatter）。
+   這裡只負責兩件純視覺的事：數字的 countUp 動畫、長條圖的展開動畫。
+
+   原本這個函式會在瀏覽器端重算一次再用 innerHTML 覆蓋整個排行榜——那讓 179 筆
+   演講資料必須 inline 進首頁 HTML，而且畫面會先閃一版再被覆蓋。 */
+function loadSpeeches() {
+  countUp(document.getElementById('h-total'),    HERO_STATS.total,    1400);
+  countUp(document.getElementById('h-hours'),    HERO_STATS.hours,    1400);
+  countUp(document.getElementById('h-audience'), HERO_STATS.audience, 1600);
+  countUp(document.getElementById('h-pubs'),     2,                    800);
+
+  /* 長條圖的最終寬度已寫在 HTML 的 style 上（不執行 JS 時也看得到正確比例），
+     所以動畫要先歸零再展開。 */
+  var grid = document.getElementById('partners-grid');
+  if (!grid) return;
+  var bars = grid.querySelectorAll('.org-bar');
+  bars.forEach(function(b) { b.style.width = '0'; });
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      bars.forEach(function(b) { b.style.width = b.dataset.width + '%'; });
+    });
+  });
+}
+
+/* ── site_content: hero tagline ── */
+function loadContent() {
+  (function(rows) {
+      /* Build key → value map (header row is row[0], skip it) */
+      /* 3-column layout: key | value(zh) | value_eng */
+      var kv = {};
+      rows.slice(1).forEach(function(r) {
+        var key = (r[0] || '').trim();
+        if (key) kv[key] = { zh: (r[1] || '').trim(), en: (r[2] || '').trim() };
+      });
+
+      /* Hero tagline: collect hero_tagline_line* keys, sort, pick by lang (en falls back to zh) */
+      var taglineEl = document.getElementById('hero-tagline');
+      contentRender = function() {
+        if (!taglineEl) return;
+        var lines = Object.keys(kv)
+          .filter(function(k) { return k.indexOf('hero_tagline_line') === 0 && k.indexOf('_eng') === -1; })
+          .sort()
+          .map(function(k) { return pick(kv[k].zh, kv[k].en); })
+          .filter(Boolean);
+        taglineEl.innerHTML = lines.join('<br>');
+      };
+      contentRender();
+  })(CONTENT_ROWS);
+}
+
+/* ── core_strengths: pillar cards ── */
+function loadStrengths() {
+  (function(rows) {
+      if (rows.length < 2) return;
+      var hi = makeHI(rows);
+      var iSort = hi('排序'), iIcon = hi('icon'), iTitle = hi('title'), iDesc = hi('description');
+      var iTitleEn = hi('title_eng'), iDescEn = hi('description_eng');
+
+      var data = rows.slice(1)
+        .filter(function(r) { return (r[iTitle] || '').trim(); })
+        .sort(function(a, b) {
+          return (parseInt(a[iSort]) || 99) - (parseInt(b[iSort]) || 99);
+        });
+
+      var grid = document.getElementById('pillars-grid');
+      if (!grid) return;
+      strengthsRender = function() {
+        grid.innerHTML = '';
+        data.forEach(function(r) {
+          var card = document.createElement('div');
+          card.className = 'pillar-card';
+          card.innerHTML =
+            '<div class="pillar-icon">' + (r[iIcon] || '') + '</div>' +
+            '<div class="pillar-title">' + pick(r[iTitle], iTitleEn >= 0 ? r[iTitleEn] : '') + '</div>' +
+            '<p class="pillar-desc">' + pick(r[iDesc], iDescEn >= 0 ? r[iDescEn] : '') + '</p>';
+          grid.appendChild(card);
+        });
+      };
+      strengthsRender();
+  })(STRENGTHS_ROWS);
+}
+
+/* ── experience_roles: role cards ── */
+function loadRoles() {
+  (function(rows) {
+      if (rows.length < 2) return;
+      var hi = makeHI(rows);
+      var iSort   = hi('排序');
+      var iIcon   = hi('icon');
+      var iOrgZh  = hi('org_zh');
+      var iOrgEn  = hi('org_en');
+      var iTitle  = hi('title');
+      var iTitleEn = hi('title_eng');
+      var iDesc   = hi('description');
+      var iDescEn = hi('description_eng');
+      var iPeriod = hi('period');
+      var iShow   = hi('show');
+
+      var data = rows.slice(1)
+        .filter(function(r) {
+          var shown = iShow < 0 || (r[iShow] || '').trim().toUpperCase() !== 'FALSE';
+          return shown && ((r[iOrgZh] || '').trim() || (r[iTitle] || '').trim());
+        })
+        .sort(function(a, b) {
+          return (parseInt(a[iSort]) || 99) - (parseInt(b[iSort]) || 99);
+        });
+
+      var list = document.getElementById('roles-list');
+      if (!list) return;
+      rolesRender = function() {
+        list.innerHTML = '';
+        data.forEach(function(r) {
+          var card = document.createElement('div');
+          card.className = 'role-card';
+          var orgZh  = (r[iOrgZh]  || '').trim();
+          var orgEn  = (r[iOrgEn]  || '').trim();
+          var period = (r[iPeriod] || '').trim();
+          card.innerHTML =
+            '<div class="role-icon-box">' + (r[iIcon] || '') + '</div>' +
+            '<div class="role-body">' +
+              '<div class="role-org">' + orgZh + (orgEn ? ' <span class="role-org-en">· ' + orgEn + '</span>' : '') + '</div>' +
+              '<div class="role-title">' + pick(r[iTitle], iTitleEn >= 0 ? r[iTitleEn] : '') + '</div>' +
+              '<div class="role-desc">'  + pick(r[iDesc], iDescEn >= 0 ? r[iDescEn] : '') + '</div>' +
+            '</div>' +
+            (period ? '<div class="role-period">' + period + '</div>' : '');
+          list.appendChild(card);
+        });
+      };
+      rolesRender();
+  })(ROLES_ROWS);
+}
+
+/* ── personal_awards: year-grouped awards timeline ── */
+function loadPersonalAwards() {
+  (function(rows) {
+      if (rows.length < 2) { var e = document.getElementById('awards-timeline'); if (e) e.innerHTML = ''; return; }
+      var hi = makeHI(rows);
+      var iYear    = hi('年份');
+      var iCompZh  = hi('競賽名稱_zh');
+      var iCompEn  = hi('競賽名稱_eng');
+      var iAwardZh = hi('獎項_zh');
+      var iAwardEn = hi('獎項_eng');
+      var iOrgZh   = hi('主辦單位_zh');
+      var iOrgEn   = hi('主辦單位_eng');
+      var iUrl     = hi('連結');
+      var iNoteZh  = hi('說明_zh');
+      var iNoteEn  = hi('說明_eng');
+      var iIcon    = hi('icon');
+      var iShow    = hi('show');
+
+      var get = function(r, i) { return i >= 0 ? (r[i] || '').trim() : ''; };
+      var data = rows.slice(1)
+        .filter(function(r) {
+          var shown = iShow < 0 || (r[iShow] || '').trim().toUpperCase() !== 'FALSE';
+          return shown && (get(r, iCompZh) || get(r, iCompEn));
+        })
+        .map(function(r) {
+          return {
+            year:    get(r, iYear),
+            compZh:  get(r, iCompZh),  compEn:  get(r, iCompEn),
+            awardZh: get(r, iAwardZh), awardEn: get(r, iAwardEn),
+            orgZh:   get(r, iOrgZh),   orgEn:   get(r, iOrgEn),
+            url:     get(r, iUrl),
+            noteZh:  get(r, iNoteZh),  noteEn:  get(r, iNoteEn),
+            icon:    get(r, iIcon),
+          };
+        });
+
+      var el = document.getElementById('awards-timeline');
+      if (!el) return;
+
+      awardsRender = function() {
+        /* group by year, newest first */
+        var byYear = {};
+        data.forEach(function(d) { (byYear[d.year] = byYear[d.year] || []).push(d); });
+        var years = Object.keys(byYear).sort(function(a, b) { return b.localeCompare(a); });
+
+        el.innerHTML = years.map(function(year) {
+          var items = byYear[year].map(function(d) {
+            var comp  = pick(d.compZh, d.compEn);
+            var award = pick(d.awardZh, d.awardEn);
+            var org   = pick(d.orgZh, d.orgEn);
+            var note  = pick(d.noteZh, d.noteEn);
+            var titleInner =
+              (d.icon ? '<span class="award-icon">' + d.icon + '</span>' : '') +
+              (award ? '<span class="award-name">' + award + '</span>' : '') +
+              '<span class="award-comp">' + comp + '</span>';
+            var title = d.url
+              ? '<a class="award-title award-title-link" href="' + d.url + '" target="_blank" rel="noopener">' + titleInner + '</a>'
+              : '<div class="award-title">' + titleInner + '</div>';
+            return '<div class="award-item">' + title +
+              (org ? '<div class="award-org">' + org + '</div>' : '') +
+              (note ? '<div class="award-note">' + note + '</div>' : '') +
+              '</div>';
+          }).join('');
+          return '<div class="award-year-block">' +
+            '<div class="award-year">' + year + '</div>' +
+            '<div class="award-items">' + items + '</div>' +
+          '</div>';
+        }).join('');
+      };
+      awardsRender();
+  })(AWARDS_ROWS);
+}
+
+/* ── Run all ── */
+loadSpeeches();
+loadContent();
+loadStrengths();
+loadRoles();
+loadPersonalAwards();
+
+window.addEventListener('langchange', function() {
+  if (contentRender) contentRender();
+  if (strengthsRender) strengthsRender();
+  if (rolesRender) rolesRender();
+  if (awardsRender) awardsRender();
+});
+</script>

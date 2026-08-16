@@ -1,0 +1,729 @@
+<!-- 由 scripts/extract-static-pages.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#f8f9fa; --card:#fff; --border:#e5e7eb; --text:#111827; --muted:#6b7280;
+      --light-text:#9ca3af; --accent:#ea580c; --accent-bg:#fff7ed; --accent-hover:#c2410c;
+      --green:#059669; --green-bg:#d1fae5; --blue:#1d4ed8; --blue-bg:#dbeafe;
+      --orange:#d97706; --orange-bg:#fef3c7; --red:#dc2626; --red-bg:#fee2e2;
+      --sidebar-w:260px; --header-h:58px; --radius:12px; --radius-sm:8px;
+      --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+      --shadow-md:0 4px 12px rgba(0,0,0,.08); --transition:.2s ease;
+      --font:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;
+    }
+    [data-theme="dark"] {
+      --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#f1f5f9; --muted:#94a3b8;
+      --light-text:#64748b; --accent:#fb923c; --accent-bg:#431407; --accent-hover:#fdba74;
+      --green:#34d399; --green-bg:#064e3b; --blue:#60a5fa; --blue-bg:#1e3a5f;
+      --orange:#fbbf24; --orange-bg:#451a03; --red:#f87171; --red-bg:#450a0a;
+      --shadow:0 1px 3px rgba(0,0,0,.3); --shadow-md:0 4px 12px rgba(0,0,0,.4);
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:var(--font); background:var(--bg); color:var(--text); font-size:15px; line-height:1.6; }
+    #header { position:fixed; top:0; left:0; right:0; height:var(--header-h); background:var(--card);
+      border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; padding:0 20px;
+      z-index:100; box-shadow:var(--shadow); }
+    #hamburger { display:none; background:none; border:none; cursor:pointer; color:var(--text); padding:6px; border-radius:6px; }
+    #hamburger:hover { background:var(--accent-bg); }
+    .header-title { font-weight:700; font-size:1rem; color:var(--accent); white-space:nowrap; flex-shrink:0; }
+    .header-title .week { color:var(--muted); font-weight:400; font-size:.8rem; margin-left:6px; }
+    #searchWrap { flex:1; max-width:360px; position:relative; }
+    #searchBox { width:100%; padding:7px 12px 7px 34px; border:1px solid var(--border); border-radius:20px;
+      background:var(--bg); color:var(--text); font-size:.875rem; outline:none; }
+    #searchBox:focus { border-color:var(--accent); }
+    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.9rem; pointer-events:none; }
+    .header-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
+    .icon-btn { background:none; border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer;
+      color:var(--text); padding:6px 10px; font-size:.8rem; display:flex; align-items:center; gap:4px; white-space:nowrap; }
+    .icon-btn:hover { background:var(--accent-bg); border-color:var(--accent); color:var(--accent); }
+    .glossary-btn { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .glossary-btn:hover { background:var(--accent-hover); border-color:var(--accent-hover); color:#fff; }
+    #layout { display:flex; padding-top:var(--header-h); min-height:100vh; }
+    #sidebar { width:var(--sidebar-w); flex-shrink:0; position:sticky; top:var(--header-h);
+      height:calc(100vh - var(--header-h)); overflow-y:auto; border-right:1px solid var(--border);
+      padding:16px 0; background:var(--card); }
+    .sidebar-section { padding:0 12px; margin-bottom:8px; }
+    .sidebar-label { font-size:.7rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding:8px 4px 4px; }
+    .nav-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:var(--radius-sm);
+      text-decoration:none; color:var(--text); font-size:.875rem; cursor:pointer; border:none; background:none; width:100%; text-align:left; }
+    .nav-item:hover, .nav-item.active { background:var(--accent-bg); color:var(--accent); }
+    .nav-item.active { font-weight:600; }
+    .nav-item .icon { font-size:1rem; flex-shrink:0; width:20px; text-align:center; }
+    .sidebar-divider { height:1px; background:var(--border); margin:8px 12px; }
+    #main { flex:1; padding:32px 24px 64px; max-width:900px; min-width:0; }
+    .hero { background:linear-gradient(135deg,var(--accent) 0%,#b91c1c 100%); border-radius:var(--radius);
+      padding:32px; margin-bottom:28px; color:#fff; }
+    .hero .crumb { font-size:.8rem; opacity:.85; margin-bottom:8px; }
+    .hero .crumb a { color:#fff; }
+    .hero h1 { font-size:1.6rem; font-weight:800; margin-bottom:6px; }
+    .hero p { opacity:.92; font-size:.95rem; margin-bottom:16px; }
+    .hero-goals { background:rgba(255,255,255,.15); border-radius:8px; padding:14px 16px; font-size:.875rem; }
+    .hero-goals strong { display:block; margin-bottom:6px; }
+    .topic-section { margin-bottom:28px; scroll-margin-top:76px; }
+    .topic-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      overflow:hidden; box-shadow:var(--shadow); }
+    .topic-header { display:flex; align-items:center; gap:12px; padding:18px 20px; cursor:pointer; user-select:none; }
+    .topic-header:hover { background:var(--accent-bg); }
+    .topic-icon { font-size:1.5rem; flex-shrink:0; }
+    .topic-title-wrap { flex:1; }
+    .topic-title { font-size:1.05rem; font-weight:700; }
+    .topic-subtitle { font-size:.8rem; color:var(--muted); margin-top:1px; }
+    .topic-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .tag { font-size:.68rem; padding:2px 8px; border-radius:10px; font-weight:600; }
+    .tag-green { background:var(--green-bg); color:var(--green); }
+    .tag-blue { background:var(--blue-bg); color:var(--blue); }
+    .tag-red { background:var(--red-bg); color:var(--red); }
+    .tag-orange { background:var(--accent-bg); color:var(--accent); }
+    .topic-chevron { color:var(--muted); transition:transform var(--transition); font-size:1.1rem; }
+    .topic-card.open .topic-chevron { transform:rotate(180deg); }
+    .topic-body { display:none; border-top:1px solid var(--border); }
+    .topic-card.open .topic-body { display:block; }
+    .sub-section { border-bottom:1px solid var(--border); }
+    .sub-section:last-child { border-bottom:none; }
+    .sub-section summary { list-style:none; padding:12px 20px; cursor:pointer; font-weight:600; font-size:.875rem;
+      color:var(--muted); display:flex; align-items:center; gap:8px; user-select:none; }
+    .sub-section summary::-webkit-details-marker { display:none; }
+    .sub-section summary:hover, .sub-section[open] summary { color:var(--accent); }
+    .sub-section summary::after { content:'›'; margin-left:auto; transition:transform var(--transition); font-size:1.1rem; }
+    .sub-section[open] summary::after { transform:rotate(90deg); }
+    .sub-content { padding:4px 20px 16px; }
+    .sub-content p { margin-bottom:10px; font-size:.9rem; }
+    .bullet-list { list-style:none; display:flex; flex-direction:column; gap:7px; }
+    .bullet-list li { display:flex; align-items:flex-start; gap:8px; font-size:.875rem; }
+    .bullet-list li::before { content:'▸'; color:var(--accent); flex-shrink:0; margin-top:1px; font-size:.8rem; }
+    .step-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+    .step-list li { display:flex; gap:12px; font-size:.875rem; }
+    .step-num { background:var(--accent); color:#fff; border-radius:50%; width:22px; height:22px;
+      display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:700; flex-shrink:0; margin-top:1px; }
+    .warning-box { background:var(--orange-bg); border:1px solid var(--orange); border-radius:var(--radius-sm);
+      padding:12px 14px; display:flex; gap:10px; font-size:.875rem; margin-bottom:8px; }
+    .warning-box::before { content:'⚠️'; flex-shrink:0; }
+    .ban-box { background:var(--red-bg); border:1px solid var(--red); border-radius:var(--radius-sm);
+      padding:12px 14px; display:flex; gap:10px; font-size:.875rem; margin-bottom:8px; }
+    .ban-box::before { content:'🚫'; flex-shrink:0; }
+    .practice-box { background:var(--green-bg); border:1px solid var(--green); border-radius:var(--radius-sm);
+      padding:14px 16px; font-size:.875rem; margin-bottom:8px; }
+    .practice-box strong { color:var(--green); display:block; margin-bottom:6px; }
+    .case-box { background:var(--blue-bg); border:1px solid var(--blue); border-radius:var(--radius-sm);
+      padding:12px 14px; font-size:.85rem; margin:8px 0; }
+    .case-box strong { color:var(--blue); }
+    .case-box a { color:var(--blue); }
+    .table-wrap { overflow-x:auto; margin:8px 0; }
+    .data-table { width:100%; border-collapse:collapse; font-size:.84rem; }
+    .data-table th { background:var(--accent-bg); color:var(--accent); font-weight:600; padding:9px 12px;
+      text-align:left; border-bottom:2px solid var(--accent); white-space:nowrap; }
+    .data-table td { padding:8px 12px; border-bottom:1px solid var(--border); }
+    .data-table tr:last-child td { border-bottom:none; }
+    .data-table tr:hover td { background:var(--accent-bg); }
+    .links-grid { display:flex; flex-direction:column; gap:6px; }
+    .link-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:var(--radius-sm);
+      border:1px solid var(--border); text-decoration:none; color:var(--text); font-size:.85rem; }
+    .link-item:hover { border-color:var(--accent); background:var(--accent-bg); color:var(--accent); }
+    .link-tag { font-size:.65rem; padding:1px 6px; border-radius:8px; font-weight:700; flex-shrink:0; }
+    .link-official { background:var(--green-bg); color:var(--green); }
+    .link-community { background:var(--blue-bg); color:var(--blue); }
+    .link-title { flex:1; }
+    .link-arrow { color:var(--muted); flex-shrink:0; }
+    .pipeline { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:12px 0; padding:12px;
+      background:var(--bg); border-radius:var(--radius-sm); }
+    .pipeline-step { background:var(--accent-bg); color:var(--accent); border-radius:6px; padding:6px 12px;
+      font-size:.8rem; font-weight:600; }
+    .pipeline-arrow { color:var(--muted); font-size:1.1rem; }
+    #glossaryOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; cursor:pointer; }
+    #glossaryOverlay.open { display:block; }
+    #glossaryPanel { position:fixed; top:0; right:-380px; width:380px; max-width:94vw; height:100vh;
+      background:var(--card); border-left:1px solid var(--border); z-index:201; display:flex; flex-direction:column;
+      transition:right .3s cubic-bezier(.4,0,.2,1); box-shadow:var(--shadow-md); }
+    #glossaryPanel.open { right:0; }
+    .gp-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .gp-header h2 { font-size:1rem; font-weight:700; flex:1; }
+    .gp-close { background:none; border:none; cursor:pointer; color:var(--muted); font-size:1.2rem; padding:4px; border-radius:4px; }
+    .gp-close:hover { color:var(--text); background:var(--border); }
+    #gpSearch { padding:8px 12px; margin:12px 16px; width:calc(100% - 32px); border:1px solid var(--border);
+      border-radius:8px; background:var(--bg); color:var(--text); font-size:.875rem; outline:none; }
+    #gpSearch:focus { border-color:var(--accent); }
+    #gpList { flex:1; overflow-y:auto; padding:0 16px 16px; }
+    .gp-item { border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:8px; overflow:hidden; }
+    .gp-term { padding:10px 12px; font-weight:600; font-size:.875rem; cursor:pointer; display:flex;
+      align-items:center; justify-content:space-between; }
+    .gp-term:hover { background:var(--accent-bg); color:var(--accent); }
+    .gp-def { display:none; padding:0 12px 10px; font-size:.82rem; color:var(--muted); line-height:1.5;
+      border-top:1px solid var(--border); background:var(--bg); }
+    .gp-item.open .gp-def { display:block; }
+    .gp-def .zh { margin-bottom:4px; padding-top:8px; }
+    .gp-def .en { color:var(--light-text); font-style:italic; }
+    .hidden-by-search { display:none !important; }
+    footer { text-align:center; padding:20px; color:var(--muted); font-size:.78rem; border-top:1px solid var(--border); margin-top:20px; }
+    footer a { color:var(--accent); }
+    [data-lang="zh"] .en-only { display:none; }
+    [data-lang="en"] .zh-only { display:none; }
+    @media (max-width:768px) {
+      #hamburger { display:flex; }
+      #sidebar { position:fixed; left:-100%; top:var(--header-h); height:calc(100vh - var(--header-h));
+        z-index:50; transition:left var(--transition); box-shadow:var(--shadow-md); }
+      #sidebar.open { left:0; }
+      #main { padding:20px 16px 48px; }
+      #glossaryPanel { width:100%; }
+      .header-title .week { display:none; }
+      #searchWrap { max-width:170px; }
+    }
+  
+    /* 這兩個標題原本是 div，改成 heading 是為了讓爬蟲讀得到文件結構；
+       margin 歸零讓視覺與改動前一致（font-size/font-weight 原本就有明確設定）。 */
+    .topic-title { margin:0; }
+    .hook-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
+</style>
+
+<header id="header">
+  <button id="hamburger" aria-label="Menu" onclick="toggleSidebar()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div class="header-title">
+    <span class="zh-only">🛠️ 技術人發文平台</span>
+    <span class="en-only">🛠️ Tech Publishing</span>
+    <span class="week">W6-7</span>
+  </div>
+  <div id="searchWrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchBox" placeholder="搜尋平台… / Search…" oninput="handleSearch(this.value)">
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn glossary-btn" onclick="openGlossary()">📖 <span class="zh-only">術語</span><span class="en-only">Glossary</span></button>
+    <button class="icon-btn" onclick="toggleLang()" id="langBtn">🌐 EN</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</header>
+
+<div id="layout">
+  <nav id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 6</div>
+      <a class="nav-item" href="#overview" onclick="closeSidebar()"><span class="icon">🏠</span><span class="zh-only">單元總覽</span><span class="en-only">Overview</span></a>
+      <a class="nav-item" href="#topic-chain" onclick="closeSidebar()"><span class="icon">⛓️</span><span class="zh-only">Launch 鏈路總圖</span><span class="en-only">Launch Chain</span></a>
+      <a class="nav-item" href="#topic-hn" onclick="closeSidebar()"><span class="icon">🟠</span>Hacker News</a>
+      <a class="nav-item" href="#topic-ph" onclick="closeSidebar()"><span class="icon">🐱</span>Product Hunt</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 7</div>
+      <a class="nav-item" href="#topic-reddit" onclick="closeSidebar()"><span class="icon">🤖</span>Reddit</a>
+      <a class="nav-item" href="#topic-devto" onclick="closeSidebar()"><span class="icon">📝</span>dev.to / Medium</a>
+      <a class="nav-item" href="#topic-substack" onclick="closeSidebar()"><span class="icon">📧</span>Substack</a>
+      <a class="nav-item" href="#topic-bip" onclick="closeSidebar()"><span class="icon">🔨</span>Build in Public</a>
+      <a class="nav-item" href="#topic-github" onclick="closeSidebar()"><span class="icon">⭐</span>GitHub</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <a class="nav-item" href="#practice" onclick="closeSidebar()"><span class="icon">✏️</span><span class="zh-only">實作練習</span><span class="en-only">Practice</span></a>
+      <button class="nav-item" onclick="openGlossary()"><span class="icon">📖</span><span class="zh-only">術語速查</span><span class="en-only">Glossary</span></button>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section id="overview">
+      <div class="hero">
+        <div class="crumb"><a href="/projects/marketing/"><span class="zh-only">← 行銷專欄 Marketing</span><span class="en-only">← Marketing Column</span></a> <span class="zh-only">· 行銷學習地圖 W6-7</span><span class="en-only">· Marketing Roadmap W6-7</span></div>
+        <h1><span class="zh-only">技術人發文平台：文化與禁忌</span><span class="en-only">Tech Publishing Platforms: Culture & Taboos</span></h1>
+        <p class="zh-only">每個平台的反 spam 免疫系統不同，但原理相同——社群先於促銷。學會各平台的語言，你的產品才有資格被看見。</p>
+        <p class="en-only">Every platform has a different anti-spam immune system, but the principle is the same — community before promotion.</p>
+        <div class="hero-goals">
+          <strong class="zh-only">🎯 學完你能做到</strong>
+          <strong class="en-only">🎯 Learning Goals</strong>
+          <span class="zh-only">① 為產品規劃完整的 Show HN 貼文與 PH launch campaign ② 說出各平台的三大禁忌 ③ 設計 canonical URL 跨發策略 ④ 評估 build in public 的透明度取捨</span>
+          <span class="en-only">① Plan a full Show HN post and PH launch campaign ② Name each platform's top taboos ③ Design a canonical URL cross-posting strategy ④ Weigh build-in-public transparency tradeoffs</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Launch Chain -->
+    <section class="topic-section" id="topic-chain">
+      <div class="topic-card open" id="card-chain">
+        <div class="topic-header" onclick="toggleCard('card-chain')">
+          <div class="topic-icon">⛓️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">標準 Launch 鏈路（大圖景）</span><span class="en-only">The Standard Launch Chain</span></h2>
+            <div class="topic-subtitle zh-only">先看整條路，再學每一站</div>
+            <div class="topic-subtitle en-only">See the whole road before each stop</div>
+            <div class="topic-tags"><span class="tag tag-orange"><span class="zh-only">總覽 Map</span><span class="en-only">Map</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <div class="pipeline">
+              <div class="pipeline-step"><span class="zh-only">1. 自家 blog</span><span class="en-only">1. Own blog</span><br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">canonical 源頭</span><span class="en-only">Canonical source</span></span></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step">2. dev.to / Hashnode<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">跨發吃分發</span><span class="en-only">Syndicate for reach</span></span></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step">3. X build in public<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">日常蓄能</span><span class="en-only">Build momentum daily</span></span></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step">4. GitHub README<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">landing page 就緒</span><span class="en-only">Landing page ready</span></span></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step">5. HN / PH / Reddit<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">同窗口引爆</span><span class="en-only">Launch in one window</span></span></div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step">6. IH postmortem<br><span style="font-weight:400;font-size:.7rem"><span class="zh-only">回收長尾</span><span class="en-only">Capture the long tail</span></span></div>
+            </div>
+            <ul class="bullet-list">
+              <li class="zh-only"><strong>共同禁忌（全平台通用）</strong>：假互動（vote ring / 買星 / 小號）、行銷語言、launch 日才開始行銷</li>
+              <li class="en-only"><strong>Universal taboos</strong>: fake engagement (vote rings / bought stars / sockpuppets), marketing speak, starting marketing on launch day</li>
+              <li class="zh-only"><strong>2025-26 三大變化</strong>：PH hunter 機制失效（self-hunt 成主流）、Reddit 官方 90/10 條文退役但 spam filter 更嚴、頭部 build in public 帳號收斂營收透明度</li>
+              <li class="en-only"><strong>Three 2025-26 shifts</strong>: PH hunters lost their edge (self-hunt is mainstream), Reddit's official 90/10 rule retired but spam filters tightened, top build-in-public accounts pulled back revenue transparency</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HN -->
+    <section class="topic-section" id="topic-hn">
+      <div class="topic-card" id="card-hn">
+        <div class="topic-header" onclick="toggleCard('card-hn')">
+          <div class="topic-icon">🟠</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">Hacker News</div>
+            <div class="topic-subtitle zh-only">求知好奇心是唯一貨幣 · 一句行銷話就出局</div>
+            <div class="topic-subtitle en-only">Intellectual curiosity is the only currency</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 6</span><span class="tag tag-red"><span class="zh-only">高風險高報酬 High stakes</span><span class="en-only">High stakes</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>📜 <span class="zh-only">規則與文化</span><span class="en-only">Rules & Culture</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>Show HN 硬門檻</strong>：必須可實際試用——landing page、waitlist、募資頁全部不合格；盡量不用註冊就能試</li>
+                <li class="en-only"><strong>Show HN hard requirement</strong>: must be tryable — landing pages, waitlists, crowdfunding pages don't qualify; ideally no sign-up needed</li>
+                <li class="zh-only">標題規則（官方）：不可全大寫、驚嘆號、自誇詞；有效標題＝事實陳述 + 引發技術好奇</li>
+                <li class="en-only">Title rules (official): no all-caps, exclamation points, superlatives; effective = factual + technically curious</li>
+                <li class="zh-only">帳號要像「人」：不用公司名、不叫朋友灌 booster comments（投票環偵測會懲罰）</li>
+                <li class="en-only">Be a person: no company-name accounts, no friend-boosted comments (vote-ring detection punishes)</li>
+                <li class="zh-only"><strong>回覆每一則留言含負評</strong>——創辦人在 thread 的態度被當作產品的一部分</li>
+                <li class="en-only"><strong>Reply to every comment, including negative ones</strong> — your thread demeanor is judged as part of the product</li>
+                <li class="zh-only">長期經營勝過單次 launch：每天一則基於實際經驗的冷靜留言</li>
+                <li class="en-only">Long-term presence beats one launch: one calm, experience-based comment per day compounds</li>
+              </ul>
+              <div class="ban-box"><span class="zh-only"><strong>絕對禁忌</strong>：vote ring（拉票互投）、行銷語言（"revolutionary"、"game-changing"）、公司帳號發文、短期重複提交。</span><span class="en-only"><strong>Absolute taboos</strong>: vote rings, marketing superlatives, company accounts, rapid resubmission.</span></div>
+              <div class="case-box"><strong class="zh-only">案例：</strong><strong class="en-only">Case: </strong><span class="zh-only">五年後二度 Show HN 才上首頁——改變在於加入創辦故事與 code examples、把框架從 launch 改成 lesson。launch day 帶來約 468 個 active users。</span><span class="en-only">A second Show HN five years later hit the front page — by adding the founding story and code examples, reframing from launch to lesson. ~468 active users on launch day.</span> <a href="https://www.indiehackers.com/post/front-page-of-hn-the-full-postmortem-traffic-lessons-surprises-cbe9e0a7f6" target="_blank" rel="noopener">Postmortem ↗</a></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://news.ycombinator.com/showhn.html" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Show HN Guidelines</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://news.ycombinator.com/newsguidelines.html" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Hacker News Guidelines</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://newsletter.marclou.com/p/how-to-launch-a-startup-on-hacker-news" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">How to launch on HN — Marc Lou</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://syften.com/blog/hacker-news-marketing/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">HN Posting Guide — Syften</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- PH -->
+    <section class="topic-section" id="topic-ph">
+      <div class="topic-card" id="card-ph">
+        <div class="topic-header" onclick="toggleCard('card-ph')">
+          <div class="topic-icon">🐱</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">Product Hunt</div>
+            <div class="topic-subtitle zh-only">launch 是 campaign，不是 event · self-hunt 已是主流</div>
+            <div class="topic-subtitle en-only">A launch is a campaign, not an event · Self-hunt is mainstream</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 6</span><span class="tag tag-blue"><span class="zh-only">30 天準備 30-day prep</span><span class="en-only">30-day prep</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🚀 <span class="zh-only">2025-26 機制現況 + 準備清單</span><span class="en-only">Current Mechanics + Prep List</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>Hunter 機制已弱化</strong>：官方明講找第三方 hunter 無可見優勢；79% featured 是 self-hunted——自己 hunt 自己即可</li>
+                <li class="en-only"><strong>Hunters have lost their edge</strong>: officially no visible advantage; 79% of featured products are self-hunted</li>
+                <li class="zh-only">演算法重 <strong>engagement quality（留言深度）</strong>&gt; 純 upvote；前 4 小時 velocity 權重極高</li>
+                <li class="en-only">Algorithm favors <strong>engagement quality (comment depth)</strong> over raw upvotes; first-4-hour velocity is critical</li>
+                <li class="zh-only">時間：12:01 AM PT 開跑吃滿 24 小時；週二至四流量大競爭烈、週末門檻低曝光少</li>
+                <li class="en-only">Timing: start at 12:01 AM PT for the full 24h; Tue-Thu = high traffic & competition, weekends = lower bar & exposure</li>
+              </ul>
+              <ol class="step-list" style="margin-top:10px">
+                <li><div class="step-num">1</div><div class="zh-only">提前 30 天上 Coming Soon 頁蓄積 followers（launch 日收 email 通知）</div><div class="en-only">30 days out: Coming Soon page to accumulate followers</div></li>
+                <li><div class="step-num">2</div><div class="zh-only">準備短影片（#1 得主幾乎都有）+ 預寫 maker's first comment（70% 冠軍有）</div><div class="en-only">Prepare a short video + pre-write the maker's first comment</div></li>
+                <li><div class="step-num">3</div><div class="zh-only">Launch day：15 分鐘內回覆每則留言；請人「留 thoughtful feedback」而非「幫我 upvote」（直接討票違規）</div><div class="en-only">Launch day: reply within 15 min; ask for "thoughtful feedback," never upvotes (against rules)</div></li>
+                <li><div class="step-num">4</div><div class="zh-only">會後 nurture：感謝、回訪、把留言者轉化為早期用戶</div><div class="en-only">Post-launch nurture: thank, follow up, convert commenters to early users</div></li>
+              </ol>
+              <div class="warning-box"><span class="zh-only">常見失敗：launch 早上才開始行銷、產品與 PH 社群不對頻、頁面 3 秒看不懂、沒影片、選錯日子。</span><span class="en-only">Common failures: marketing starts on launch morning, product-community mismatch, page unclear in 3 seconds, no video, wrong day.</span></div>
+              <div class="case-box"><strong class="zh-only">案例：</strong><strong class="en-only">Case: </strong><span class="zh-only">分階段社群動員與時區規劃，連續 3 天守住 Top 5。</span><span class="en-only">Staged community mobilization + timezone planning held Top 5 for 3 straight days.</span> <a href="https://www.mindtheproduct.com/a-case-study-product-hunt-launch-strategy-how-we-made-it-to-the-top-5-products-3-days-running/" target="_blank" rel="noopener">Mind the Product ↗</a></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://www.producthunt.com/launch" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Product Hunt Launch Guide</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.producthunt.com/launch/preparing-for-launch" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Preparing for your launch</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://github.com/fmerian/awesome-product-hunt/blob/main/product-hunt-launch-guide.md" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">awesome-product-hunt launch guide</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.demandcurve.com/playbooks/product-hunt-launch" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">PH launch playbook — Demand Curve</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reddit -->
+    <section class="topic-section" id="topic-reddit">
+      <div class="topic-card" id="card-reddit">
+        <div class="topic-header" onclick="toggleCard('card-reddit')">
+          <div class="topic-icon">🤖</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">Reddit</div>
+            <div class="topic-subtitle zh-only">每個 subreddit 是獨立國家 · journey post 勝過產品介紹</div>
+            <div class="topic-subtitle en-only">Every subreddit is its own country · Journey posts beat product intros</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 7</span><span class="tag tag-red"><span class="zh-only">Shadowban 風險</span><span class="en-only">Shadowban risk</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🗺️ <span class="zh-only">生存規則</span><span class="en-only">Survival Rules</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>9:1 rule 現況</strong>：官方 90/10 wiki 已下架，改為「genuine participant」原則性判斷；但 spam filter 實務仍看 promotional ratio，老手採 95:5</li>
+                <li class="en-only"><strong>9:1 rule today</strong>: the official 90/10 wiki is retired, replaced by "genuine participant" judgment; spam filters still measure promotional ratio — veterans use 95:5</li>
+                <li class="zh-only">促銷友善區：r/SideProject（30 萬+）、r/EntrepreneurRideAlong（journey 敘事）、r/somethingimade（自製作品）；<strong>r/InternetIsBeautiful 不允許需註冊的產品</strong>；發文前必讀 sidebar rules</li>
+                <li class="en-only">Promo-friendly: r/SideProject (300K+), r/EntrepreneurRideAlong, r/somethingimade; <strong>r/InternetIsBeautiful bans sign-up-required products</strong>; always read sidebar rules</li>
+                <li class="zh-only"><strong>Shadowban 機制</strong>：短時間跨 sub 貼同連結、低 karma 帶連結、高促銷比例 → 貼文只有自己看得到；用 logged-out 視窗自檢</li>
+                <li class="en-only"><strong>Shadowbans</strong>: same link across subs quickly, low-karma link posts, high promo ratio → your posts become invisible; self-check in a logged-out window</li>
+                <li class="zh-only">成功格式：誠實 journey post（「做了 X、學到 Y、搞砸了 Z」）&gt;&gt; 產品介紹；留言區才是主戰場（利益揭露前提下答題帶工具）</li>
+                <li class="en-only">Winning format: honest journey posts ("built X, learned Y, botched Z") &gt;&gt; product intros; comments are the real battlefield (answer questions, disclose affiliation)</li>
+                <li class="zh-only">新帳號先 2-4 週純參與累積 karma 再促銷</li>
+                <li class="en-only">New accounts: 2-4 weeks of pure participation before any promotion</li>
+              </ul>
+              <div class="ban-box"><span class="zh-only"><strong>絕對禁忌</strong>：多帳號互推（永 ban）、同連結轟炸多個 sub、假裝路人推自家產品（被 mod 公開處刑）。</span><span class="en-only"><strong>Absolute taboos</strong>: multi-account promotion (permanent ban), link-bombing subs, astroturfing your own product (public mod shaming).</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://karmaguy.io/en/blog/reddit-self-promotion-rules" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Reddit Self-Promotion Rules 2026 — KarmaGuy</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://vadimkravcenko.com/qa/self-promotion-on-reddit-the-right-way/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Self-Promotion the Right Way — Vadim Kravcenko</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://thehiveindex.com/topics/self-promotion/platform/reddit/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">自推友善 subreddit 清單 — Hive Index</span><span class="en-only">Self-promo-friendly subreddits — Hive Index</span></span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- dev.to / Medium -->
+    <section class="topic-section" id="topic-devto">
+      <div class="topic-card" id="card-devto">
+        <div class="topic-header" onclick="toggleCard('card-devto')">
+          <div class="topic-icon">📝</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">dev.to / Hashnode / Medium</div>
+            <div class="topic-subtitle zh-only">Canonical URL 是跨發策略的命脈</div>
+            <div class="topic-subtitle en-only">Canonical URLs are the lifeline of cross-posting</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 7</span><span class="tag tag-blue"><span class="zh-only">SEO 關鍵</span><span class="en-only">SEO critical</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🔗 <span class="zh-only">跨發策略</span><span class="en-only">Cross-posting Strategy</span></summary>
+            <div class="sub-content">
+              <div class="pipeline">
+                <div class="pipeline-step zh-only">自家 blog 先發<br><span style="font-weight:400;font-size:.7rem">SEO 權重歸自己</span></div>
+                <div class="pipeline-step en-only">Own blog first<br><span style="font-weight:400;font-size:.7rem">SEO credit stays home</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">dev.to<br><span style="font-weight:400;font-size:.7rem">canonical_url</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Hashnode<br><span style="font-weight:400;font-size:.7rem">originalArticleURL</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">Medium<br><span style="font-weight:400;font-size:.7rem">canonical link</span></div>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>不設 canonical 的代價</strong>：Google 會把平台版本排在你的原站之上</li>
+                <li class="en-only"><strong>Without canonical</strong>: Google ranks the platform copy above your own site</li>
+                <li class="zh-only">dev.to 設定：Rich editor 齒輪填 Canonical URL；markdown editor 在 front matter 加 <code>canonical_url:</code></li>
+                <li class="en-only">dev.to: gear icon in rich editor, or <code>canonical_url:</code> in markdown front matter</li>
+                <li class="zh-only">內容公式：技術含量是主菜、產品是配菜——「How I built X」與踩坑文表現最好；含 code snippets 與 diagrams 的文互動率是純文字 2 倍（Hashnode 數據）</li>
+                <li class="en-only">Content formula: tech substance is the main course, product is the side — "How I built X" and pitfall posts win; code + diagrams get 2x engagement (Hashnode data)</li>
+                <li class="zh-only"><strong>Medium 2025-26</strong>：Partner Program 連續改版（獎勵帶新流量的作者）；社群共識＝當分發管道可以、當收入來源不行；AI 量產文無法進分潤</li>
+                <li class="en-only"><strong>Medium 2025-26</strong>: Partner Program repeatedly revamped; consensus = fine as distribution, not as income; AI-mass-produced posts are excluded from payouts</li>
+              </ul>
+              <div class="case-box"><strong class="zh-only">案例：</strong><strong class="en-only">Case: </strong><span class="zh-only">Draft.dev 客戶技術文登上 HN，單日 5 個 demo requests；referral 流量數週內成長 3 倍。</span><span class="en-only">A Draft.dev client's technical post hit HN: 5 demo requests in one day; referral traffic tripled within weeks.</span> <a href="https://draft.dev/case-studies" target="_blank" rel="noopener">Case studies ↗</a></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://dev.to/p/editor_guide" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">DEV Editor Guide（canonical_url 說明）</span><span class="en-only">DEV Editor Guide (canonical_url)</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://brianmorrison.me/blog/how-i-cross-post-to-hashnode-and-devto" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Cross-post workflow — Brian Morrison</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://medium.com/blog/partner-program-update-starting-february-17-were-rewarding-stories-that-bring-in-new-members-3e84d2eb6e68" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Medium Partner Program update</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Substack -->
+    <section class="topic-section" id="topic-substack">
+      <div class="topic-card" id="card-ss">
+        <div class="topic-header" onclick="toggleCard('card-ss')">
+          <div class="topic-icon">📧</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">Substack</div>
+            <div class="topic-subtitle zh-only">有內建成長迴路的社交網路 · 40% 新訂閱來自站內</div>
+            <div class="topic-subtitle en-only">A social network with built-in growth loops · 40% of new subs come from within</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 7</span><span class="tag tag-blue">Owned audience</span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>📈 <span class="zh-only">成長引擎</span><span class="en-only">Growth Engines</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>Recommendation network 是最強迴路</strong>：主動推薦別人的作者被回推機率 3 倍；實作＝找 10-15 個規模相近、主題互補的刊，先讀對方最近三期再私訊提互推</li>
+                <li class="en-only"><strong>Recommendations are the strongest loop</strong>: authors who recommend others are 3x more likely to be recommended back; find 10-15 similar-size complementary newsletters</li>
+                <li class="zh-only"><strong>Notes = 平台內 Twitter</strong>：有創作者 70% 新訂閱來自 Notes（每天 20-30 分鐘）</li>
+                <li class="en-only"><strong>Notes = in-platform Twitter</strong>: some creators get 70% of new subs from Notes (20-30 min/day)</li>
+                <li class="zh-only">免費訂閱者先行：paid conversion 跟著 free list 成長走，不要太早鎖 paywall</li>
+                <li class="en-only">Free subscribers first: paid conversion follows free list growth; don't paywall too early</li>
+                <li class="zh-only">CTA 工程：文內、email header/footer 放 subscribe/share 鈕；Substack 連結進所有 social bio 與 email 簽名檔</li>
+                <li class="en-only">CTA engineering: subscribe/share buttons in-post and in email header/footer; link in every bio and signature</li>
+              </ul>
+              <div class="case-box"><strong class="zh-only">案例：</strong><strong class="en-only">Case: </strong><span class="zh-only">Amy Suto 公開拆解把個人品牌 Substack 經營到 $180,000+ ARR 的過程。</span><span class="en-only">Amy Suto's public breakdown of growing her Substack to $180,000+ ARR.</span> <a href="https://www.amysuto.com/desk-of-amy-suto/how-to-grow-a-substack-for-your-business-or-personal-brand" target="_blank" rel="noopener">amysuto.com ↗</a></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://substack.com/resources" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Substack Creator Resources</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://substack.com/grow" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title">Substack Grow — crash course</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://buildtolaunch.substack.com/p/how-to-grow-substack-from-zero-in-2026" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">0 → 4,500 subscribers in 2026</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Build in Public -->
+    <section class="topic-section" id="topic-bip">
+      <div class="topic-card" id="card-bip">
+        <div class="topic-header" onclick="toggleCard('card-bip')">
+          <div class="topic-icon">🔨</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">Build in Public <span style="font-weight:400;font-size:.85rem">(Indie Hackers + X)</span></div>
+            <div class="topic-subtitle zh-only">透明度是貨幣，但 radical transparency 正在退潮</div>
+            <div class="topic-subtitle en-only">Transparency is currency, but radical transparency is receding</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 7</span><span class="tag tag-orange"><span class="zh-only">2025-26 轉折 Shift</span><span class="en-only">2025-26 shift</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🔄 <span class="zh-only">模式與轉折</span><span class="en-only">Patterns & the Shift</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only">IH 的貨幣是 transparency：$1K MRR 是最受重視門檻；附 timeline + channel breakdown + lessons 的 milestone 文互動是純數字的 3-5 倍</li>
+                <li class="en-only">IH's currency is transparency: $1K MRR is the most celebrated milestone; posts with timeline + channel breakdown + lessons get 3-5x engagement</li>
+                <li class="zh-only">Marc Lou 公式（170K followers）：「1. Launch tiny startups 2. Share results 3. Repeat」</li>
+                <li class="en-only">Marc Lou's formula (170K followers): "1. Launch tiny startups 2. Share results 3. Repeat"</li>
+                <li class="zh-only">賣鏟子策略：build in public 的終局常是「教別人 build」本身變成產品（ShipFast 等）</li>
+                <li class="en-only">Selling shovels: the endgame is often "teaching others to build" becoming the product (ShipFast etc.)</li>
+                <li class="zh-only">內容門檻：對不是你的人也有趣才有傳播力——數據截圖、決策思路、失敗自嘲 &gt;&gt; 流水帳進度</li>
+                <li class="en-only">Content bar: must interest strangers — data screenshots, decision reasoning, failure humor &gt;&gt; progress logs</li>
+                <li class="zh-only">鐵三角：X 養受眾 → PH/HN launch 收割 → IH 深度 postmortem 回流</li>
+                <li class="en-only">The triangle: X builds audience → PH/HN launches harvest → IH postmortems recycle</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only"><strong>2025-26 轉折</strong>：頭部 indie hackers（levelsio、Danny Postma 等）已停止公開營收——安全風險與抄襲者是主因。「radical transparency」退潮，轉向「selective transparency」。分享營收前先權衡。</span><span class="en-only"><strong>2025-26 shift</strong>: top indie hackers (levelsio, Danny Postma…) stopped sharing revenue — security and copycats. Radical transparency is giving way to selective transparency. Weigh before you share.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://www.indiehackers.com/post/what-is-building-in-public-explained-simply-6541c681e0" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">What Is Building in Public — Indie Hackers</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://x.com/marc_louvion/status/1919409762653065670" target="_blank" rel="noopener"><span class="link-tag link-community">Primary</span><span class="link-title"><span class="zh-only">Marc Lou 的成長公式原文（X）</span><span class="en-only">Marc Lou's growth formula (X)</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.indiehackers.com/post/lifestyle/is-this-the-end-of-build-in-public-heres-why-top-indie-hackers-are-suddenly-disappearing-IhSJQBnXNuNwSuNTuz4t" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Is this the end of Build in Public? — IH</span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://opentweet.io/blog/build-in-public-twitter-guide-saas-founders" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">Build in Public on X guide — OpenTweet</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- GitHub -->
+    <section class="topic-section" id="topic-github">
+      <div class="topic-card" id="card-gh">
+        <div class="topic-header" onclick="toggleCard('card-gh')">
+          <div class="topic-icon">⭐</div>
+          <div class="topic-title-wrap">
+            <div class="topic-title">GitHub</div>
+            <div class="topic-subtitle zh-only">README = landing page · 四套獨立 discovery 機制</div>
+            <div class="topic-subtitle en-only">README = landing page · Four independent discovery systems</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 7</span><span class="tag tag-blue"><span class="zh-only">開發者信任 Dev trust</span><span class="en-only">Dev trust</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>⭐ <span class="zh-only">四套機制與槓桿</span><span class="en-only">Mechanics & Levers</span></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th>Discovery</th><th class="zh-only">排序邏輯</th><th class="en-only">Ranking Logic</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Trending</strong></td><td class="zh-only">star velocity（星數/時間）——集中一天引爆比分散累積有效</td><td class="en-only">Star velocity — concentrated bursts beat slow accumulation</td></tr>
+                    <tr><td><strong>Topics</strong></td><td class="zh-only">tag 策略</td><td class="en-only">Tag strategy</td></tr>
+                    <tr><td><strong>Search</strong></td><td class="zh-only">README 內容 + star 總數</td><td class="en-only">README content + total stars</td></tr>
+                    <tr><td><strong>Explore</strong></td><td class="zh-only">個人化訊號</td><td class="en-only">Personalization signals</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>README = landing page</strong>：demo GIF、quick start、badges、清楚 value prop——轉換效率是簡陋 README 的 3-5 倍</li>
+                <li class="en-only"><strong>README = landing page</strong>: demo GIF, quick start, badges, clear value prop — 3-5x conversion vs a bare README</li>
+                <li class="zh-only"><strong>Awesome lists 潛規則</strong>：請朋友或早期用戶代為提交 PR——很多 maintainer 拒收自薦、歡迎第三方推薦</li>
+                <li class="en-only"><strong>Awesome list etiquette</strong>: have a friend or early user submit the PR — many maintainers reject self-nominations but welcome third-party ones</li>
+              </ul>
+              <div class="ban-box"><span class="zh-only"><strong>禁忌</strong>：買星、star-for-star 互刷——GitHub 會清除，且開發者受眾抓包後信譽歸零。</span><span class="en-only"><strong>Taboos</strong>: bought stars, star-for-star schemes — GitHub purges them, and dev audiences never forgive fakes.</span></div>
+              <div class="case-box"><strong class="zh-only">案例：</strong><strong class="en-only">Case: </strong><span class="zh-only">一週內 3,500+ GitHub stars 的完整實戰（README 優化 + 分發時機協同）。</span><span class="en-only">3,500+ stars in one week (README optimization + coordinated distribution timing).</span> <a href="https://medium.com/free-code-camp/how-to-get-up-to-3500-github-stars-in-one-week-339102b62a8f" target="_blank" rel="noopener">freeCodeCamp ↗</a></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://github.com/matiassingers/awesome-readme" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">awesome-readme（README 範例精選）</span><span class="en-only">awesome-readme (curated README examples)</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.star-history.com/blog/playbook-for-more-github-stars/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">GitHub Stars Playbook — Star History</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Practice -->
+    <section class="topic-section" id="practice">
+      <div class="topic-card open" id="card-practice">
+        <div class="topic-header" onclick="toggleCard('card-practice')">
+          <div class="topic-icon">✏️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">實作練習</span><span class="en-only">Practice Exercises</span></h2>
+            <div class="topic-subtitle zh-only">用捕夢網生成器當 launch 素材</div>
+            <div class="topic-subtitle en-only">Use the dreamcatcher generator as launch material</div>
+            <div class="topic-tags"><span class="tag tag-green"><span class="zh-only">動手做 Hands-on</span><span class="en-only">Hands-on</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <div class="practice-box">
+              <strong class="zh-only">練習 1（W6）：Show HN 草稿</strong>
+              <strong class="en-only">Exercise 1 (W6): Show HN Draft</strong>
+              <span class="zh-only">為捕夢網生成器寫 Show HN 草稿：標題（事實陳述+技術好奇，聚焦 canvas 生成演算法或 SVG 雷切輸出）+ first comment（創辦故事、技術決策、已知限制）。對照官方 guidelines 自檢。</span>
+              <span class="en-only">Draft a Show HN for the dreamcatcher generator: title (factual + technically curious) + first comment (founding story, technical decisions, known limitations). Self-check against official guidelines.</span>
+            </div>
+            <div class="practice-box">
+              <strong class="zh-only">練習 2（W6）：PH launch 30 天計畫</strong>
+              <strong class="en-only">Exercise 2 (W6): 30-Day PH Launch Plan</strong>
+              <span class="zh-only">列出 launch 前 30 天的週計畫表：Coming Soon 頁、影片腳本、maker's first comment 草稿、launch day 時間表（誰在哪個時段顧留言）。</span>
+              <span class="en-only">Draft the 30-day plan: Coming Soon page, video script, maker's first comment, launch-day hour-by-hour schedule.</span>
+            </div>
+            <div class="practice-box">
+              <strong class="zh-only">練習 3（W7）：README 重寫 + canonical 跨發鏈</strong>
+              <strong class="en-only">Exercise 3 (W7): README Rewrite + Canonical Chain</strong>
+              <span class="zh-only">①把 dreamcatcher repo 的 README 依 landing page 標準重寫大綱（demo GIF、quick start、SVG 雷切賣點）。②設計跨發鏈：mattye.dev 文章 → dev.to → Medium，標出每站 canonical 設定位置。</span>
+              <span class="en-only">① Outline a landing-page-grade README for the dreamcatcher repo. ② Design the cross-post chain: mattye.dev → dev.to → Medium, marking each canonical setting.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="glossaryOverlay" onclick="closeGlossary()"></div>
+<div id="glossaryPanel">
+  <div class="gp-header"><span>📖</span>
+    <h2><span class="zh-only">術語速查</span><span class="en-only">Glossary</span></h2>
+    <button class="gp-close" onclick="closeGlossary()">✕</button>
+  </div>
+  <input type="text" id="gpSearch" placeholder="搜尋術語… / Search…" oninput="filterGlossary(this.value)">
+  <div id="gpList"></div>
+</div>
+
+<footer>
+  <span class="zh-only">行銷專欄 · <a href="/projects/marketing/">回到列表</a> · Matt Ye — <a href="https://mattye.dev">mattye.dev</a></span>
+  <span class="en-only">Marketing Column · <a href="/projects/marketing/">Back to list</a> · Matt Ye — <a href="https://mattye.dev">mattye.dev</a></span>
+</footer>
+
+<script>
+const GLOSSARY = [
+  { term:"Show HN", zh:"Hacker News 的產品展示格式。硬門檻：必須可實際試用（landing page/waitlist 不合格），盡量免註冊。", en:"HN's product showcase format. Must be tryable — landing pages and waitlists don't qualify." },
+  { term:"Vote Ring 投票環", zh:"拉票互投行為。HN 有自動偵測，會懲罰貼文排名甚至封號。", en:"Coordinated voting. HN auto-detects and punishes ranking or bans accounts." },
+  { term:"Self-hunt", zh:"在 Product Hunt 自己提交自己的產品。2025-26 已是主流：79% featured 產品是 self-hunted，官方確認第三方 hunter 無可見優勢。", en:"Submitting your own product on PH. Now mainstream: 79% of featured products are self-hunted." },
+  { term:"Coming Soon 頁", zh:"PH 的預告頁，提前 30 天上線蓄積 followers——launch 日這些人會收到 email 通知。", en:"PH's teaser page. Launch 30 days early to accumulate followers who get notified on launch day." },
+  { term:"Maker's First Comment", zh:"Launch 時 maker 的第一則留言（創辦故事+技術決策+已知限制）。70% 的 Day/Week/Month 冠軍都有。", en:"The maker's opening comment at launch. 70% of winners have one." },
+  { term:"9:1 Rule / 90-10 法則", zh:"Reddit 傳統自推比例：90% 純參與、10% 促銷。官方條文已下架改為原則判斷，但 spam filter 實務仍看比例，老手採 95:5。", en:"Reddit's traditional promo ratio. The official wiki is retired, but spam filters still measure it; veterans use 95:5." },
+  { term:"Shadowban", zh:"貼文只有自己看得到的隱形封鎖。觸發：跨 sub 轟炸同連結、低 karma 帶連結、高促銷比例。用登出視窗自檢。", en:"Invisible ban — only you see your posts. Check with a logged-out window." },
+  { term:"Karma", zh:"Reddit 的帳號信譽點數。新帳號先 2-4 週純參與累積 karma 再促銷。", en:"Reddit's reputation points. New accounts need 2-4 weeks of pure participation first." },
+  { term:"Journey Post", zh:"「做了 X、學到 Y、搞砸了 Z」的誠實歷程文——Reddit 與 IH 上遠勝產品介紹的內容格式。", en:"Honest 'built X, learned Y, botched Z' posts — far outperform product intros on Reddit and IH." },
+  { term:"Canonical URL", zh:"告訴搜尋引擎「正版在哪」的標籤。跨發到 dev.to/Hashnode/Medium 時必設，否則 Google 把平台版排在你原站之上。", en:"Tells search engines where the original lives. Essential when cross-posting, or Google ranks the platform copy above your site." },
+  { term:"Recommendation Network", zh:"Substack 的互推機制：訂閱 A 刊時看到 A 推薦的 B 刊一鍵加訂。主動推薦別人的作者被回推機率 3 倍。", en:"Substack's cross-promotion system. Authors who recommend others are 3x more likely to be recommended back." },
+  { term:"Substack Notes", zh:"Substack 平台內的短內容發現層（類 Twitter）。有創作者 70% 新訂閱來自 Notes。", en:"Substack's short-form discovery layer. Some creators get 70% of new subs from it." },
+  { term:"Build in Public", zh:"公開分享進度、營收、失敗的經營方式。2025-26 轉折：頭部帳號因安全與抄襲風險轉向 selective transparency。", en:"Publicly sharing progress, revenue, and failures. Since 2025-26, top accounts shifted to selective transparency." },
+  { term:"Selling Shovels 賣鏟子", zh:"build in public 的常見終局：「教別人怎麼 build」本身變成產品（課程、boilerplate、模板）。", en:"The common endgame: teaching others to build becomes the product itself (courses, boilerplates)." },
+  { term:"Star Velocity", zh:"GitHub Trending 的排序核心：單位時間內的星數成長。集中一天引爆（配合 HN/Reddit）比分散累積有效。", en:"GitHub Trending's core metric: stars per unit time. Concentrated bursts beat slow accumulation." },
+  { term:"Awesome List", zh:"GitHub 上的精選資源清單（大型清單本身有 10 萬+ 星）。潛規則：請第三方代為提交 PR，自薦常被拒。", en:"Curated resource lists on GitHub. Etiquette: have a third party submit the PR — self-nominations are often rejected." },
+  { term:"Postmortem 事後檢討", zh:"launch 後的完整復盤文（流量數據、決策、教訓）。IH 上成功或失敗的 postmortem 都是高互動內容。", en:"A full launch retrospective. Both success and failure postmortems perform well on IH." },
+  { term:"Engagement Quality", zh:"PH 演算法重視的留言深度指標——thoughtful feedback 權重高於純 upvote。", en:"PH's comment-depth metric — thoughtful feedback outweighs raw upvotes." },
+];
+function renderGlossary(filter) {
+  const list = document.getElementById('gpList');
+  const q = (filter || '').toLowerCase();
+  list.innerHTML = '';
+  GLOSSARY.forEach(item => {
+    if (q && !item.term.toLowerCase().includes(q) && !item.zh.toLowerCase().includes(q) && !item.en.toLowerCase().includes(q)) return;
+    const div = document.createElement('div');
+    div.className = 'gp-item';
+    div.innerHTML = '<div class="gp-term" onclick="this.parentElement.classList.toggle(\'open\')">' + escapeHtml(item.term) +
+      ' <span style="color:var(--muted);font-size:.8rem">›</span></div><div class="gp-def"><div class="zh">' +
+      escapeHtml(item.zh) + '</div><div class="en">' + escapeHtml(item.en) + '</div></div>';
+    list.appendChild(div);
+  });
+  if (!list.children.length) list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:.875rem">找不到術語 / No match</div>';
+}
+function filterGlossary(v){ renderGlossary(v); }
+function openGlossary(){ document.getElementById('glossaryOverlay').classList.add('open'); document.getElementById('glossaryPanel').classList.add('open'); renderGlossary(''); }
+function closeGlossary(){ document.getElementById('glossaryOverlay').classList.remove('open'); document.getElementById('glossaryPanel').classList.remove('open'); }
+function toggleCard(id){ document.getElementById(id).classList.toggle('open'); }
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar(){ if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open'); }
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  try { localStorage.setItem('oms_theme', html.dataset.theme); } catch(e) {}
+}
+function toggleLang(){
+  const html = document.documentElement;
+  const isZh = html.dataset.lang === 'zh';
+  html.dataset.lang = isZh ? 'en' : 'zh';
+  document.getElementById('langBtn').textContent = isZh ? '🌐 中' : '🌐 EN';
+  document.title = isZh ? 'Tech Publishing Platforms | Marketing Column · Matt Ye' : '技術人發文平台 — Tech Publishing | Marketing Column · Matt Ye';
+  document.getElementById('searchBox').placeholder = isZh ? 'Search…' : '搜尋平台… / Search…';
+  try { localStorage.setItem('oms_lang', html.dataset.lang); } catch(e) {}
+}
+let searchTimer;
+function handleSearch(val){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const q = val.trim().toLowerCase();
+    document.querySelectorAll('.topic-section').forEach(sec => {
+      sec.classList.toggle('hidden-by-search', q && !sec.textContent.toLowerCase().includes(q));
+    });
+  }, 200);
+}
+const navItems = document.querySelectorAll('.nav-item[href]');
+function updateActiveNav(){
+  const y = window.scrollY + 90;
+  let active = '';
+  ['overview','topic-chain','topic-hn','topic-ph','topic-reddit','topic-devto','topic-substack','topic-bip','topic-github','practice'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= y) active = '#' + id;
+  });
+  navItems.forEach(a => a.classList.toggle('active', a.getAttribute('href') === active));
+}
+window.addEventListener('scroll', updateActiveNav, { passive:true });
+updateActiveNav();
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGlossary(); });
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+(function init(){
+  try {
+    const t = localStorage.getItem('oms_theme'), l = localStorage.getItem('oms_lang');
+    if (t) { document.documentElement.dataset.theme = t; document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙'; }
+    if (l) { document.documentElement.dataset.lang = l; document.getElementById('langBtn').textContent = l === 'en' ? '🌐 中' : '🌐 EN'; }
+  } catch(e) {}
+})();
+</script>

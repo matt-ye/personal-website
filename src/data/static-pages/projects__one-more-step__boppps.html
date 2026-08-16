@@ -1,0 +1,1210 @@
+<!-- 由 scripts/extract-static-pages.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #f7f8fa;
+      --color-text: #111111;
+      --color-text-muted: #666666;
+      --color-border: #e8e8e8;
+      --color-accent: #5b4fff;
+      --color-accent-hover: #3d31e0;
+      --color-tag-bg: #f0f4f8;
+
+      --card-bg: #ffffff;
+      --card-border: #e8e8e8;
+      --card-shadow: 0 1px 4px rgba(0,0,0,.06);
+      --card-shadow-hover: 0 8px 24px rgba(0,0,0,.1);
+
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', Consolas, monospace;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+
+      /* BOPPPS letter accent colors (adjusted for light bg) */
+      --B: #6d5ce8;
+      --O: #0d9488;
+      --P1: #d97706;
+      --P2: #059669;
+      --P3: #db2777;
+      --S: #2563eb;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      line-height: 1.75;
+      min-height: 100vh;
+    }
+
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { color: var(--color-accent-hover); text-decoration: underline; }
+
+    /* ── LAYOUT ── */
+    .wrapper { max-width: 860px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 1.5rem); }
+
+    /* ── SITE NAV ── */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0.75rem 0;
+    }
+    .site-nav .wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+    .back-link:hover { color: var(--color-accent); text-decoration: none; }
+
+    .page-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+    .page-nav-link {
+      color: var(--color-text-muted);
+      font-size: 0.78rem;
+      text-decoration: none;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-sm);
+      transition: color 0.15s, background 0.15s;
+    }
+    .page-nav-link:hover { color: var(--color-text); background: var(--color-surface); text-decoration: none; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 4rem 0 2.5rem;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(91,79,255,0.08);
+      border: 1px solid rgba(91,79,255,0.2);
+      color: var(--color-accent);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border-radius: 99px;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .hero h1 span { color: var(--color-accent); }
+    .hero p {
+      font-size: 1rem;
+      color: var(--color-text-muted);
+      max-width: 560px;
+      margin: 0 auto 2rem;
+      line-height: 1.7;
+    }
+    .hero-tags { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+    .hero-tag {
+      background: var(--color-tag-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 99px;
+    }
+
+    /* ── SECTION ── */
+    section { padding: 3rem 0; border-top: 1px solid var(--color-border); }
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: 0.4rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      margin-top: 1.25rem;
+      color: var(--color-text);
+    }
+    .lead {
+      color: var(--color-text-muted);
+      margin-bottom: 1.75rem;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    /* ── BOPPPS ACRONYM ── */
+    .boppps-grid { display: grid; gap: 0.75rem; }
+
+    .boppps-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: 3rem 1fr;
+      gap: 1rem;
+      align-items: start;
+      box-shadow: var(--card-shadow);
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .boppps-card:hover {
+      box-shadow: var(--card-shadow-hover);
+      border-color: var(--color-accent);
+    }
+
+    .boppps-letter {
+      width: 3rem;
+      height: 3rem;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .boppps-card h3 { margin-top: 0; }
+    .boppps-card p { color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.65; margin-top: 0.3rem; }
+    .boppps-card ul {
+      margin-top: 0.6rem;
+      padding-left: 1.25rem;
+      color: var(--color-text-muted);
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+    .boppps-card ul li { margin-bottom: 0.3rem; }
+
+    .boppps-meta { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+
+    .chip {
+      background: var(--color-tag-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-family: var(--font-sans);
+    }
+    .chip.highlight {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+      background: rgba(91,79,255,0.07);
+      font-weight: 600;
+    }
+
+    /* Letter badge colors (light bg friendly) */
+    .letter-B { background: rgba(109,92,232,0.1); color: var(--B); }
+    .letter-O { background: rgba(13,148,136,0.1); color: var(--O); }
+    .letter-P1 { background: rgba(217,119,6,0.1); color: var(--P1); }
+    .letter-P2 { background: rgba(5,150,105,0.1); color: var(--P2); }
+    .letter-P3 { background: rgba(219,39,119,0.1); color: var(--P3); }
+    .letter-S { background: rgba(37,99,235,0.1); color: var(--S); }
+
+    /* ── FRAMEWORK DETAILS (expandable) ── */
+    .frameworks-section { margin-top: 1.75rem; }
+    .frameworks-heading {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-muted);
+      margin-bottom: 0.6rem;
+    }
+    .fw-detail {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--card-bg);
+      margin-bottom: 0.5rem;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+    }
+    .fw-detail summary {
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .fw-detail summary::-webkit-details-marker { display: none; }
+    .fw-detail summary:hover { background: var(--color-surface); }
+    .fw-detail[open] > summary { border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
+    .fw-arrow { font-size: 0.7rem; color: var(--color-text-muted); transition: transform 0.2s; margin-left: auto; }
+    .fw-detail[open] .fw-arrow { transform: rotate(90deg); }
+    .fw-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(91,79,255,0.08);
+      color: var(--color-accent);
+      border: 1px solid rgba(91,79,255,0.15);
+      flex-shrink: 0;
+    }
+    .fw-body {
+      padding: 1rem 1.25rem;
+      font-size: 0.87rem;
+      color: var(--color-text-muted);
+      line-height: 1.75;
+    }
+    .fw-body h4 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin: 1rem 0 0.5rem;
+    }
+    .fw-body h4:first-child { margin-top: 0; }
+    .fw-rows { display: flex; flex-direction: column; gap: 0.4rem; }
+    .fw-row {
+      display: grid;
+      grid-template-columns: 10rem 1fr;
+      gap: 0.75rem;
+      align-items: baseline;
+      font-size: 0.85rem;
+    }
+    .fw-row-key {
+      font-weight: 600;
+      color: var(--color-text);
+      font-size: 0.85rem;
+    }
+    .fw-row-key em { font-style: normal; color: var(--color-accent); }
+    .fw-levels { display: flex; flex-direction: column; gap: 0.3rem; }
+    .fw-level {
+      display: grid;
+      grid-template-columns: 1.4rem 9rem 1fr;
+      gap: 0.5rem;
+      align-items: baseline;
+      font-size: 0.84rem;
+    }
+    .fw-lv-num { font-weight: 700; color: var(--color-accent); font-family: var(--font-mono); font-size: 0.75rem; }
+    .fw-lv-name { font-weight: 600; color: var(--color-text); }
+    .fw-lv-desc { color: var(--color-text-muted); }
+    .fw-example {
+      background: rgba(91,79,255,0.05);
+      border: 1px solid rgba(91,79,255,0.14);
+      border-radius: 6px;
+      padding: 0.65rem 0.9rem;
+      margin-top: 0.85rem;
+      font-size: 0.83rem;
+      line-height: 1.65;
+    }
+    .fw-example strong { color: var(--color-accent); }
+    .fw-source { font-size: 0.75rem; color: var(--color-text-muted); margin-top: 0.5rem; font-style: italic; }
+    @media (max-width: 600px) {
+      .fw-row { grid-template-columns: 1fr; gap: 0.15rem; }
+      .fw-level { grid-template-columns: 1.4rem 1fr; }
+      .fw-lv-desc { grid-column: 2; }
+    }
+
+    /* ── TIME TABLE ── */
+    .time-table-wrap { overflow-x: auto; margin-top: 1.5rem; -webkit-overflow-scrolling: touch; }
+    table {
+      width: 100%;
+      min-width: 540px;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    thead th {
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+      text-align: left;
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--color-border);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+    tbody td:last-child { white-space: normal; min-width: 80px; }
+    tbody tr:hover td { background: var(--color-surface); }
+    tbody td:first-child { color: var(--color-text); font-weight: 500; }
+    .td-highlight { color: var(--color-accent) !important; font-weight: 600 !important; }
+
+    /* ── CALLOUT ── */
+    .callout {
+      background: rgba(91,79,255,0.05);
+      border: 1px solid rgba(91,79,255,0.18);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      font-size: 0.88rem;
+      color: var(--color-text-muted);
+      line-height: 1.7;
+      margin: 1.5rem 0;
+    }
+    .callout strong { color: var(--color-accent); }
+    .callout.amber {
+      background: rgba(217,119,6,0.05);
+      border-color: rgba(217,119,6,0.2);
+    }
+    .callout.amber strong { color: var(--P1); }
+    .callout.teal {
+      background: rgba(13,148,136,0.05);
+      border-color: rgba(13,148,136,0.2);
+    }
+    .callout.teal strong { color: var(--O); }
+
+    /* ── TIMELINE ── */
+    .timeline { position: relative; padding-left: 1.5rem; margin-top: 1.5rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      bottom: 0.5rem;
+      width: 1px;
+      background: var(--color-border);
+    }
+    .tl-item { position: relative; margin-bottom: 1.5rem; }
+    .tl-dot {
+      position: absolute;
+      left: -1.875rem;
+      top: 0.35rem;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      border: 2px solid var(--color-bg);
+      outline: 1px solid var(--color-border);
+    }
+    .tl-year {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.2rem;
+      font-family: var(--font-mono);
+    }
+    .tl-text { font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.65; }
+
+    /* ── EXAMPLE APPLICATION ── */
+    .example-block {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-top: 1.5rem;
+      box-shadow: var(--card-shadow);
+    }
+    .example-header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0.75rem 1.25rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      letter-spacing: 0.04em;
+    }
+    .example-row {
+      display: grid;
+      grid-template-columns: 8.5rem 1fr;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .example-row:last-child { border-bottom: none; }
+    .example-label {
+      background: var(--color-surface);
+      padding: 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .example-label-sub {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--color-text-muted);
+    }
+    .example-content {
+      padding: 0.9rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      line-height: 1.65;
+    }
+    .example-content strong { color: var(--color-text); }
+    .example-content ul {
+      margin-top: 0.4rem;
+      padding-left: 1.2rem;
+    }
+    .example-content ul li { margin-bottom: 0.25rem; }
+
+    /* ── TOOLS GRID ── */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .tool-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      box-shadow: var(--card-shadow);
+      transition: box-shadow 0.2s;
+    }
+    .tool-card:hover { box-shadow: var(--card-shadow-hover); }
+    .tool-phase {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .tool-tools { font-size: 0.82rem; color: var(--color-text-muted); line-height: 1.6; }
+
+    /* ── REFERENCES ── */
+    .ref-list { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .ref-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      color: var(--color-text-muted);
+      box-shadow: var(--card-shadow);
+      line-height: 1.6;
+    }
+    .ref-title { color: var(--color-text); font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-meta { color: var(--color-text-muted); font-size: 0.75rem; margin-top: 0.2rem; }
+    .ref-item a { color: var(--color-accent); font-size: 0.78rem; font-weight: 500; }
+    .ref-item a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--color-border);
+      padding: 2rem 0 3rem;
+      text-align: center;
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+      margin-top: 2rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .example-row { grid-template-columns: 7rem 1fr; }
+    }
+    @media (max-width: 600px) {
+      .boppps-card { grid-template-columns: 2.5rem 1fr; gap: 0.75rem; }
+      .example-row { grid-template-columns: 1fr; }
+      .example-label {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .tools-grid { grid-template-columns: 1fr; }
+      .page-nav-links { display: none; }
+    }
+</style>
+
+<!-- SITE NAV -->
+<nav class="site-nav">
+  <div class="wrapper">
+    <a class="back-link" href="/projects/one-more-step/">← One More Step</a>
+    <div class="page-nav-links">
+      <a class="page-nav-link" href="#boppps">模型</a>
+      <a class="page-nav-link" href="#timing">時間</a>
+      <a class="page-nav-link" href="#isw">ISW</a>
+      <a class="page-nav-link" href="#online">線上工具</a>
+      <a class="page-nav-link" href="#example">課程範例</a>
+      <a class="page-nav-link" href="#references">文獻</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="wrapper">
+  <div class="hero">
+    <div class="hero-badge">教學設計手冊</div>
+    <h1>用 <span>BOPPPS</span> 設計<br>有效的工作坊與課程</h1>
+    <p>基於 ISW（教學技能工作坊）的學習者中心教學框架，適用於各年齡層的線上課程與工作坊設計。</p>
+    <div class="hero-tags">
+      <span class="hero-tag">ISW · 1979 起源於 UBC</span>
+      <span class="hero-tag">建構主義學習理論</span>
+      <span class="hero-tag">50% 參與式學習</span>
+      <span class="hero-tag">44 項研究 Meta-analysis 驗證</span>
+    </div>
+  </div>
+</div>
+
+<!-- BOPPPS -->
+<div class="wrapper">
+  <section id="boppps">
+    <div class="section-label">核心模型</div>
+    <h2>BOPPPS 六大模組</h2>
+    <p class="lead">BOPPPS 是一個閉環教學設計框架：前測確認起點 → 參與式學習推進 → 後測驗收，每個模組相互呼應。</p>
+
+    <div class="boppps-grid">
+
+      <div class="boppps-card">
+        <div class="boppps-letter letter-B">B</div>
+        <div>
+          <h3>Bridge-in　暖身 / 導言</h3>
+          <p>吸引注意、建立動機、讓學習者知道「為什麼這堂課對我重要」。</p>
+          <ul>
+            <li>有趣圖片、驚人數據、新聞事件</li>
+            <li>爭議問題、認知落差、個人經驗分享</li>
+            <li>簡短影片（建議嵌入，勿跳外部連結）</li>
+            <li>課程回顧（第 2 堂以後）</li>
+          </ul>
+          <div class="boppps-meta">
+            <span class="chip">~10% 時間</span>
+            <span class="chip">情意課程可更長</span>
+            <span class="chip">不要喧賓奪主</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="boppps-card">
+        <div class="boppps-letter letter-O">O</div>
+        <div>
+          <h3>Objective　學習目標</h3>
+          <p>明確告知學習者「這堂課結束後你能做到什麼」。用可觀察、可衡量的行為動詞描述。</p>
+          <ul>
+            <li><strong>SMART：</strong>具體、可量化、可實現、切實、有期限</li>
+            <li><strong>ABCD：</strong>Audience + Behavior + Condition + Degree</li>
+            <li>技能目標參考 Simpson 層次（知覺→準備→引導→機械化→複合→適應→獨創）</li>
+            <li>情意目標參考 Bloom 情意領域（接受→反應→重視→組織→品格）</li>
+          </ul>
+
+          <div class="frameworks-section">
+            <p class="frameworks-heading">框架詳解</p>
+
+            <!-- SMART -->
+            <details class="fw-detail">
+              <summary>
+                <span class="fw-label">SMART</span>
+                目標設定原則
+                <span class="fw-arrow">▶</span>
+              </summary>
+              <div class="fw-body">
+                <p>源自管理學（Doran, 1981），後廣泛用於教育目標設計。五個維度確保目標對學習者有可操作性，而非停留在「學生能了解…」的模糊陳述。</p>
+                <div class="fw-rows" style="margin-top:0.75rem;">
+                  <div class="fw-row">
+                    <span class="fw-row-key"><em>S</em>pecific 具體</span>
+                    <span>清楚說明「誰在哪個情境下做什麼」，避免「了解」「認識」等無法觀察的動詞。</span>
+                  </div>
+                  <div class="fw-row">
+                    <span class="fw-row-key"><em>M</em>easurable 可量化</span>
+                    <span>設定可觀察的指標，如「至少說出三個例子」或「完成率達 80%」。</span>
+                  </div>
+                  <div class="fw-row">
+                    <span class="fw-row-key"><em>A</em>chievable 可實現</span>
+                    <span>目標難度應落在 Vygotsky 的最近發展區（ZPD）內：夠挑戰，但可達成；太難讓人放棄，太易則無學習效益。</span>
+                  </div>
+                  <div class="fw-row">
+                    <span class="fw-row-key"><em>R</em>elevant 切實相關</span>
+                    <span>與整體課程學習成果（Course Learning Outcomes）或學習者的真實需求對齊。</span>
+                  </div>
+                  <div class="fw-row">
+                    <span class="fw-row-key"><em>T</em>ime-bound 有期限</span>
+                    <span>明確指出「在本節課結束前」或「本週內」，幫助設計評量時間點。</span>
+                  </div>
+                </div>
+                <div class="fw-source">Doran, G. T. (1981). There's a S.M.A.R.T. way to write management's goals and objectives. <em>Management Review, 70</em>(11), 35–36.</div>
+              </div>
+            </details>
+
+            <!-- ABCD -->
+            <details class="fw-detail">
+              <summary>
+                <span class="fw-label">ABCD</span>
+                行為目標四要素（Robert Mager, 1962）
+                <span class="fw-arrow">▶</span>
+              </summary>
+              <div class="fw-body">
+                <p>由 Robert F. Mager 在《Preparing Instructional Objectives》（1962）提出，要求每條目標都應包含四個成分，讓評量者能清楚判斷「學生有沒有達到目標」。</p>
+                <div class="fw-rows" style="margin-top:0.75rem;">
+                  <div class="fw-row">
+                    <span class="fw-row-key"><em>A</em>udience 對象</span>
+                    <span>具體指出學習者是誰，如「國小五年級學生」「初入職護理師」。</span>
+                  </div>
+                  <div class="fw-row">
+                    <span class="fw-row-key"><em>B</em>ehavior 行為</span>
+                    <span>使用可觀察的行動動詞（描述、計算、示範、分析）。<strong style="color:var(--color-text);">禁用「了解」「知道」「欣賞」</strong>等無法觀察的內隱動詞。</span>
+                  </div>
+                  <div class="fw-row">
+                    <span class="fw-row-key"><em>C</em>ondition 條件</span>
+                    <span>學習者在什麼資源或限制下執行？如「在不看筆記的情況下」「使用 AI 工具協助」「給定資料集」。</span>
+                  </div>
+                  <div class="fw-row">
+                    <span class="fw-row-key"><em>D</em>egree 程度</span>
+                    <span>達成標準是什麼？如「正確率 90% 以上」「在 5 分鐘內」「無需提示即可完成」。</span>
+                  </div>
+                </div>
+                <div class="fw-example">
+                  <strong>完整範例：</strong>「在課程結束後，<strong>國小五年級學生（A）</strong>能夠不看筆記<strong>（C）</strong>，<strong>說出 AI agent 的兩個實際應用場景（B）</strong>，至少舉出一個課堂以外的生活例子<strong>（D）</strong>。」
+                </div>
+                <div class="fw-source">Mager, R. F. (1962). <em>Preparing instructional objectives</em>. Fearon Publishers.</div>
+              </div>
+            </details>
+
+            <!-- Simpson -->
+            <details class="fw-detail">
+              <summary>
+                <span class="fw-label">Simpson</span>
+                技能（心理動作）目標層次
+                <span class="fw-arrow">▶</span>
+              </summary>
+              <div class="fw-body">
+                <p>Elizabeth Jane Simpson（1966）延伸 Bloom 的分類系統，專門描述<strong style="color:var(--color-text);">動作技能的習得歷程</strong>——從觀察模仿到自動化，最終能獨創新動作。適用於實驗操作、樂器演奏、手術技能、體育運動等領域的目標撰寫。</p>
+                <div class="fw-levels" style="margin-top:0.75rem;">
+                  <div class="fw-level">
+                    <span class="fw-lv-num">1</span>
+                    <span class="fw-lv-name">知覺 Perception</span>
+                    <span class="fw-lv-desc">透過感官察覺動作線索（如觀看示範、聆聽節拍、感受力道）。</span>
+                  </div>
+                  <div class="fw-level">
+                    <span class="fw-lv-num">2</span>
+                    <span class="fw-lv-name">準備 Set</span>
+                    <span class="fw-lv-desc">身心預備就緒：正確姿勢、心理期待、情緒準備。</span>
+                  </div>
+                  <div class="fw-level">
+                    <span class="fw-lv-num">3</span>
+                    <span class="fw-lv-name">引導反應 Guided Response</span>
+                    <span class="fw-lv-desc">在指導下練習，允許犯錯與修正，靠模仿和試誤學習。</span>
+                  </div>
+                  <div class="fw-level">
+                    <span class="fw-lv-num">4</span>
+                    <span class="fw-lv-name">機械化 Mechanism</span>
+                    <span class="fw-lv-desc">動作漸趨自動化，不需刻意思考每個步驟，執行有一定信心。</span>
+                  </div>
+                  <div class="fw-level">
+                    <span class="fw-lv-num">5</span>
+                    <span class="fw-lv-name">複合外顯反應 Complex Overt Response</span>
+                    <span class="fw-lv-desc">熟練、迅速、流暢，整合多個子動作，幾乎不費力。</span>
+                  </div>
+                  <div class="fw-level">
+                    <span class="fw-lv-num">6</span>
+                    <span class="fw-lv-name">適應 Adaptation</span>
+                    <span class="fw-lv-desc">能修改習得的動作以因應新情境或特殊條件。</span>
+                  </div>
+                  <div class="fw-level">
+                    <span class="fw-lv-num">7</span>
+                    <span class="fw-lv-name">獨創 Origination</span>
+                    <span class="fw-lv-desc">創造全新動作模式，融合舊技能解決未曾遭遇的問題。</span>
+                  </div>
+                </div>
+                <div class="fw-example">
+                  <strong>教學設計意義：</strong>撰寫技能類目標時，先確認學習者目前在哪個層次，再設定本節課期望達到哪個層次。初學者的一堂課往往只能從「知覺」推進到「引導反應」，不必一次跳到「機械化」。
+                </div>
+                <div class="fw-source">Simpson, E. J. (1966). The classification of educational objectives: Psychomotor domain. <em>Illinois Journal of Home Economics, 10</em>(4), 110–144.</div>
+              </div>
+            </details>
+
+            <!-- Bloom Affective -->
+            <details class="fw-detail">
+              <summary>
+                <span class="fw-label">Bloom 情意</span>
+                情意目標層次（Krathwohl et al., 1964）
+                <span class="fw-arrow">▶</span>
+              </summary>
+              <div class="fw-body">
+                <p>由 Krathwohl、Bloom 與 Masia 於《Taxonomy of Educational Objectives, Handbook II: Affective Domain》（1964）提出。描述<strong style="color:var(--color-text);">態度、價值觀、情感的內化歷程</strong>，從被動接受到形成穩定的人格特質。情意目標通常較難評量，但在品格教育、醫學倫理、環境教育中至關重要。</p>
+                <div class="fw-levels" style="margin-top:0.75rem;">
+                  <div class="fw-level">
+                    <span class="fw-lv-num">1</span>
+                    <span class="fw-lv-name">接受 Receiving</span>
+                    <span class="fw-lv-desc">願意留意、不抗拒；被動開放，意識到某事物的存在。</span>
+                  </div>
+                  <div class="fw-level">
+                    <span class="fw-lv-num">2</span>
+                    <span class="fw-lv-name">反應 Responding</span>
+                    <span class="fw-lv-desc">主動參與、願意回應；不只是旁觀，而是投入互動。</span>
+                  </div>
+                  <div class="fw-level">
+                    <span class="fw-lv-num">3</span>
+                    <span class="fw-lv-name">重視 Valuing</span>
+                    <span class="fw-lv-desc">認為此事值得投入，自發行動，而非僅因外部要求。</span>
+                  </div>
+                  <div class="fw-level">
+                    <span class="fw-lv-num">4</span>
+                    <span class="fw-lv-name">組織 Organization</span>
+                    <span class="fw-lv-desc">將多種價值整合為一套個人系統，能處理不同價值間的衝突與優先順序。</span>
+                  </div>
+                  <div class="fw-level">
+                    <span class="fw-lv-num">5</span>
+                    <span class="fw-lv-name">品格 Characterization</span>
+                    <span class="fw-lv-desc">價值觀完全內化為人格特質，行為一致且可預測，無需外部監督。</span>
+                  </div>
+                </div>
+                <div class="fw-example">
+                  <strong>教學設計意義：</strong>一節 40 分鐘課很難超越「反應」層次，但透過多次課程積累、反思作業、真實情境，可逐步推進學習者到「重視」甚至「組織」層次。Bridge-in 的吸引設計，本質上是在催化第一層「接受」。
+                </div>
+                <div class="fw-source">Krathwohl, D. R., Bloom, B. S., & Masia, B. B. (1964). <em>Taxonomy of educational objectives: Handbook II: Affective domain</em>. David McKay.</div>
+              </div>
+            </details>
+          </div>
+
+          <div class="boppps-meta">
+            <span class="chip">&lt;5% 時間</span>
+            <span class="chip">1–3 個目標</span>
+            <span class="chip">學生中心</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="boppps-card">
+        <div class="boppps-letter letter-P1">P</div>
+        <div>
+          <h3>Pre-assessment　前測</h3>
+          <p>診斷學習者的起點，讓講師即時校準深度與節奏。<strong>不是考試</strong>，是讀取先備知識。</p>
+          <ul>
+            <li>舉手投票 / Mentimeter / Zoom Poll</li>
+            <li>3–5 題選擇題（不計分）</li>
+            <li>Think-Pair-Share 暖身討論</li>
+            <li>課前問卷（上課時秀出統計結果）</li>
+          </ul>
+          <div class="boppps-meta">
+            <span class="chip">~10% 時間</span>
+            <span class="chip">不計分</span>
+            <span class="chip">要有教學意圖</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="boppps-card">
+        <div class="boppps-letter letter-P2">P</div>
+        <div>
+          <h3>Participatory Learning　參與式學習</h3>
+          <p>課程的核心。學習者主動操作、討論、實作——講師是引導者，不是舞台主角。</p>
+          <ul>
+            <li>分組問題解決 / 案例分析</li>
+            <li>Think-Pair-Share / 角色扮演 / 模擬</li>
+            <li>同儕教學、協作建模</li>
+            <li>辯論、結構化討論</li>
+            <li>翻轉課堂：課前看影片，課中做練習</li>
+          </ul>
+          <div class="boppps-meta">
+            <span class="chip highlight">★ 50% 時間</span>
+            <span class="chip">不可壓縮</span>
+            <span class="chip">參與 ≠ 聽課</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="boppps-card">
+        <div class="boppps-letter letter-P3">P</div>
+        <div>
+          <h3>Post-assessment　後測</h3>
+          <p>確認目標是否達成，關閉學習回饋迴圈。通常是形成性評量（促進學習），不是總結性評量（打分數）。</p>
+          <ul>
+            <li>Minute Paper：「最重要的一件事是什麼？還有什麼不清楚？」</li>
+            <li>Exit Ticket（Google Form / Mentimeter）</li>
+            <li>應用挑戰：用今天學到的解一道新問題</li>
+            <li>自評 Rubric 對照學習目標</li>
+          </ul>
+          <div class="boppps-meta">
+            <span class="chip">~10% 時間</span>
+            <span class="chip">呼應 Objective</span>
+            <span class="chip">餵回下一節 Bridge-in</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="boppps-card">
+        <div class="boppps-letter letter-S">S</div>
+        <div>
+          <h3>Summary　總結</h3>
+          <p>鞏固學習、提供收尾感，並連接到下一個學習段落。<strong>讓學習者自己說</strong>比講師複誦更有效。</p>
+          <ul>
+            <li>3-2-1：3 件學到的事、2 個連結、1 個疑問</li>
+            <li>學習者兩人一組互相總結</li>
+            <li>「So what?」討論：你接下來會怎麼做？</li>
+            <li>預告下一堂課的 Bridge-in</li>
+          </ul>
+          <div class="boppps-meta">
+            <span class="chip">~10% 時間</span>
+            <span class="chip">學習者主導</span>
+            <span class="chip">鋪墊下一堂</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="callout" style="margin-top:1.5rem;">
+      <strong>巢狀 BOPPPS（Nested BOPPPS）：</strong>長工作坊可在宏觀層（整場）與微觀層（每個模組）各跑一套 BOPPPS，一個模組的 Summary 即是下一個模組的 Bridge-in。適合 90 分鐘以上的課程設計。
+    </div>
+  </section>
+
+  <!-- TIMING -->
+  <section id="timing">
+    <div class="section-label">時間配置</div>
+    <h2>建議時間分配</h2>
+    <p class="lead">50% 的參與式學習時間是不可壓縮的核心原則，其他模組依此為基準調整。</p>
+
+    <div class="time-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>模組</th>
+            <th>比例</th>
+            <th>30 分鐘</th>
+            <th>60 分鐘</th>
+            <th>90 分鐘</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Bridge-in</td>
+            <td>~10%</td>
+            <td>3 min</td>
+            <td>6 min</td>
+            <td>9 min</td>
+            <td>情意課程可延長</td>
+          </tr>
+          <tr>
+            <td>Objective</td>
+            <td>&lt;5%</td>
+            <td>1 min</td>
+            <td>2 min</td>
+            <td>2 min</td>
+            <td>愈短愈好</td>
+          </tr>
+          <tr>
+            <td>Pre-assessment</td>
+            <td>~10%</td>
+            <td>3 min</td>
+            <td>6 min</td>
+            <td>9 min</td>
+            <td>即時回饋給講師</td>
+          </tr>
+          <tr>
+            <td class="td-highlight">Participatory Learning</td>
+            <td class="td-highlight">★ 50%</td>
+            <td class="td-highlight">15 min</td>
+            <td class="td-highlight">30 min</td>
+            <td class="td-highlight">45 min</td>
+            <td>不可壓縮</td>
+          </tr>
+          <tr>
+            <td>Post-assessment</td>
+            <td>~10%</td>
+            <td>3 min</td>
+            <td>6 min</td>
+            <td>9 min</td>
+            <td>關閉回饋迴圈</td>
+          </tr>
+          <tr>
+            <td>Summary</td>
+            <td>~10%</td>
+            <td>3 min</td>
+            <td>5 min</td>
+            <td>9 min</td>
+            <td>學習者主導更佳</td>
+          </tr>
+          <tr>
+            <td>Buffer</td>
+            <td>~5%</td>
+            <td>2 min</td>
+            <td>5 min</td>
+            <td>7 min</td>
+            <td>換場、問答</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout amber" style="margin-top:1rem;">
+      <strong>10–20 分鐘微課程做法：</strong>只設 1 個目標、Bridge-in 壓縮到一個問題（1 min）、Pre-assessment 用舉手（1 min）、Participatory 做一個 Think-Pair-Share（8–10 min）、Post-assessment 用一個 chat 問題（1 min）、Summary 30 秒一句話。
+    </div>
+  </section>
+
+  <!-- ISW -->
+  <section id="isw">
+    <div class="section-label">背景脈絡</div>
+    <h2>什麼是 ISW？</h2>
+    <p class="lead">Instructional Skills Workshop（教學技能工作坊）是 BOPPPS 的誕生母體，也是全球最長期運作的高等教育教師培訓計畫之一。</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-year">1978</div>
+        <div class="tl-text">Douglas Kerr 在英屬哥倫比亞（BC）省開始規劃，回應社區大學教師「有學科專業、但沒有教學訓練」的現實需求。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-year">1979</div>
+        <div class="tl-text">第一場 ISW 於 8 月在 UBC 由 Doug Kerr 與 Peter Renner 共同主持。BOPPPS 作為核心教案框架正式確立。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-year">1982–2006</div>
+        <div class="tl-text">ISW Handbook 歷經多次改版（1982、1989、1993、2003、2006）。Pattison & Russell（2006）版本為目前學術引用最廣的版本。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-year">現在</div>
+        <div class="tl-text">已在 7 個加拿大省份、10 個美國州、34+ 個國家推行。亞洲（尤其台灣、中國）高教社群活躍採用。ISW Network（iswnetwork.ca）負責全球協調。</div>
+      </div>
+    </div>
+
+    <h3>ISW 的格式</h3>
+    <p style="color:var(--color-text-muted); font-size:0.9rem; margin-top:0.5rem; line-height:1.7;">
+      傳統 ISW 是 <strong style="color:var(--color-text);">24 小時密集工作坊</strong>（通常 3 天），每組約 1 位 Facilitator 對 5 位學員。
+      學員設計並實施 <strong style="color:var(--color-text);">3 次 Mini-lesson</strong>，每次後都收到同儕和 Facilitator 的言語、書面、影像回饋。
+      整個 ISW 本身就是一個大型 BOPPPS——設計→實施→回饋→重新設計的閉環。
+    </p>
+
+    <div class="callout teal" style="margin-top:1.25rem;">
+      <strong>理論根基：</strong>建構主義（學習者主動建構知識）＋成人學習理論 Andragogy（Knowles）——自主導向、與先備經驗連結、問題中心、立即應用。這些原則同樣適用於國小高年級學童：從自身經驗出發、做中學、即時看到成果。
+    </div>
+  </section>
+
+  <!-- ONLINE -->
+  <section id="online">
+    <div class="section-label">數位應用</div>
+    <h2>線上教學工具對應</h2>
+    <p class="lead">BOPPPS 的邏輯與工具無關，可直接對應同步（Zoom / Meet）或非同步（LMS）場景。</p>
+
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-phase" style="color:var(--B)">Bridge-in</div>
+        <div class="tool-tools">短影片、Zoom Poll「請問你有沒有試過…」、聊天室投問題、meme / 數據圖</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-phase" style="color:var(--O)">Objective</div>
+        <div class="tool-tools">投影片一句話、共享頁面、口頭陳述 + 聊天室文字留存</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-phase" style="color:var(--P1)">Pre-assessment</div>
+        <div class="tool-tools">Mentimeter、Slido、Zoom Poll、Google Form（課前發送，課中秀結果）</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-phase" style="color:var(--P2)">Participatory</div>
+        <div class="tool-tools">Zoom 分組討論室、Miro / Jamboard、Padlet、協作 Google Docs</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-phase" style="color:var(--P3)">Post-assessment</div>
+        <div class="tool-tools">聊天室水瀑（Chat Waterfall）、Mentimeter Exit Ticket、Google Form、一句話總結投票</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-phase" style="color:var(--S)">Summary</div>
+        <div class="tool-tools">學員在聊天室打總結、共筆文件、兩人互相告知「你學到什麼」、下堂課預告</div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:1.5rem;">
+      <strong>線上設計 5 個原則：</strong>①Bridge-in 要更吸睛（競爭更多干擾）②前測秀統計創造社會認同感 ③參與式學習要明確鷹架（不然學員會靜音潛水）④後測要在模組內完成（不要課後再發問卷）⑤Summary 加上「接下來你會做什麼」延伸學習動機。
+    </div>
+  </section>
+
+  <!-- EXAMPLE -->
+  <section id="example">
+    <div class="section-label">實戰範例</div>
+    <h2>應用於國小 AI Agent 課程設計</h2>
+    <p class="lead">以下是一堂 40 分鐘「國小四、五年級 AI Agent 初體驗」的 BOPPPS 設計範例，目標是讓學生第一次有意識地使用 AI agent 完成真實任務。</p>
+
+    <div class="example-block">
+      <div class="example-header">範例課程：40 min「我的 AI 小幫手——和 AI Agent 說話的第一堂課」　｜　適合：國小 4–5 年級</div>
+
+      <div class="example-row">
+        <div class="example-label" style="color:var(--B)">Bridge-in<span class="example-label-sub">~4 min</span></div>
+        <div class="example-content">
+          播放一段 15 秒短片：AI agent 用中文回答一道小學生的問題（例如「為什麼天空是藍色的？」）。<br><br>
+          接著老師問：「<strong>你覺得剛才在說話的是人還是電腦？</strong>」——用 Mentimeter 或舉手投票，秀出結果引發討論。<br><br>
+          「今天我們就要來跟這個 AI 小幫手說說話！」
+        </div>
+      </div>
+
+      <div class="example-row">
+        <div class="example-label" style="color:var(--O)">Objective<span class="example-label-sub">&lt;2 min</span></div>
+        <div class="example-content">
+          「這 40 分鐘結束後，你能夠：<br>
+          ① <strong>說出 AI agent 是什麼</strong>、它能幫你做哪些事<br>
+          ② <strong>自己輸入一個問題</strong>，讓 AI 幫你完成一個小任務<br>
+          ③ <strong>判斷 AI 的回答</strong>是不是有用、要怎麼問得更好」
+        </div>
+      </div>
+
+      <div class="example-row">
+        <div class="example-label" style="color:var(--P1)">Pre-assess<span class="example-label-sub">~4 min</span></div>
+        <div class="example-content">
+          舉手投票（或白板貼紙）：<br>
+          「你有用過 AI 嗎？」（用過 ／ 沒有 ／ 不確定）<br>
+          「你覺得 AI 可以幫你做什麼？」——學生在小白板或便利貼寫下一個答案，老師快速掃視找代表作答。<br><br>
+          老師據此判斷：是否需要補充「AI 是什麼」的基礎解釋。
+        </div>
+      </div>
+
+      <div class="example-row">
+        <div class="example-label" style="color:var(--P2)">Participatory<span class="example-label-sub">★ 20 min</span></div>
+        <div class="example-content">
+          <strong>5 min — 老師示範：</strong>老師在大螢幕上操作 AI agent，輸入一個任務卡問題（例如「幫我想三個有趣的班遊活動」）。學生大聲喊出他們想問的下一句，老師照著輸入，觀察 AI 如何回應。<br><br>
+          <strong>10 min — 分組實作：</strong>每組 2–3 人，共用一台平板或電腦，從「任務卡」中選一張：
+          <ul>
+            <li>🎂 「幫我想一個生日派對遊戲」</li>
+            <li>🌿 「用簡單的話解釋光合作用」</li>
+            <li>🐶 「狗狗為什麼會搖尾巴？」</li>
+            <li>✏️ 「幫我想一個作文的開頭」</li>
+          </ul>
+          輸入問題 → 看 AI 回答 → 討論「這個答案有沒有用？要怎麼問得更清楚？」<br><br>
+          <strong>5 min — 全班分享：</strong>2–3 組各說「你們問了什麼、AI 說了什麼、你們覺得有幫助嗎？」
+        </div>
+      </div>
+
+      <div class="example-row">
+        <div class="example-label" style="color:var(--P3)">Post-assess<span class="example-label-sub">~5 min</span></div>
+        <div class="example-content">
+          每人完成一張「<strong>我的 AI 任務卡</strong>」（紙本或 Google 表單）：<br>
+          ・我問 AI 的問題是：＿＿＿＿<br>
+          ・AI 的回答讓我（有 ／ 沒有）達到目的<br>
+          ・下次我想改問：＿＿＿＿<br><br>
+          Mentimeter 快速票選：「用 AI 就像⋯⋯？」（查字典 ／ 問朋友 ／ 問老師 ／ 查 Google）——用圖像化結果帶出討論。
+        </div>
+      </div>
+
+      <div class="example-row">
+        <div class="example-label" style="color:var(--S)">Summary<span class="example-label-sub">~3 min</span></div>
+        <div class="example-content">
+          邀請 2–3 位學生說「今天你學到什麼」，老師補充一句話收尾：<br><br>
+          「<strong>AI agent 像一個超級助手——你問得愈清楚，它幫你愈好。</strong>它不會每次都對，但它永遠不會生氣、不會累，而且等你來問。」<br><br>
+          預告：「下次我們要學怎麼問出更棒的問題——讓 AI 幫你做更難的事！」
+        </div>
+      </div>
+    </div>
+
+    <div class="callout amber" style="margin-top:1.25rem;">
+      <strong>為什麼 BOPPPS 特別適合這個年齡層：</strong>
+      Bridge-in 用影片和投票立刻抓住注意力，降低「科技恐懼」；Pre-assessment 快速找出哪些學生已有 AI 使用經驗，讓老師即時調整；50% 的參與時間讓學生<strong>真正摸到 AI</strong>，而非只看示範；「我的 AI 任務卡」後測把抽象的「學了嗎」轉化為具體行動，帶出教室繼續用。
+    </div>
+  </section>
+
+  <!-- REFERENCES -->
+  <section id="references">
+    <div class="section-label">延伸閱讀</div>
+    <h2>關鍵文獻 & 資源</h2>
+    <p class="lead">以下為 BOPPPS / ISW 的主要學術與實務參考，按重要性排序。</p>
+
+    <div class="ref-list">
+
+      <div class="ref-item">
+        <div class="ref-title">ISW Handbook for Participants（最核心一手資料）</div>
+        <div class="ref-meta">Pattison, P., & Russell, D. (2006). Instructional Skills Workshop International Advisory Committee / UBC CTLT.</div>
+        <a href="https://books.google.com/books/about/Instructional_Skills_Workshop_ISW_Handbo.html?id=3BHXPQAACAAJ" target="_blank" rel="noopener noreferrer">Google Books →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-title">BOPPPS Systematic Review（最廣範圍、2024 最新）</div>
+        <div class="ref-meta">Frontiers in Education, 2024. DOI: 10.3389/feduc.2024.1467225</div>
+        <a href="https://www.frontiersin.org/journals/education/articles/10.3389/feduc.2024.1467225/full" target="_blank" rel="noopener noreferrer">全文 →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-title">Blended Learning + BOPPPS Meta-analysis（44 篇研究）</div>
+        <div class="ref-meta">PMC11344447, 2024. 結論：顯著優於傳統講課，特別在知識、技能、自主學習三面向。</div>
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11344447/" target="_blank" rel="noopener noreferrer">PMC 全文 →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-title">BOPPPS + OBE 在高等教育（Nature 旗下期刊）</div>
+        <div class="ref-meta">Humanities and Social Sciences Communications (2024). DOI: 10.1038/s41599-024-03519-y</div>
+        <a href="https://www.nature.com/articles/s41599-024-03519-y" target="_blank" rel="noopener noreferrer">全文 →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-title">BOPPPS 在護理教育 Meta-analysis（20+ RCT 研究）</div>
+        <div class="ref-meta">Frontiers in Medicine, 2024. PMC11111886.</div>
+        <a href="https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2024.1319711/full" target="_blank" rel="noopener noreferrer">全文 →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-title">BOPPPS 在商業溝通課程</div>
+        <div class="ref-meta">Zhang et al. (2023). SHS Web of Conferences, ICHESS 2023. 非 STEM 領域應用案例。</div>
+        <a href="https://www.shs-conferences.org/articles/shsconf/pdf/2023/28/shsconf_ichess2023_04029.pdf" target="_blank" rel="noopener noreferrer">PDF →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-title">U of Saskatchewan BOPPPS 實務指南</div>
+        <div class="ref-meta">含各模組詳細說明、設計工具和範本，適合教師直接使用。</div>
+        <a href="https://libguides.usask.ca/boppps" target="_blank" rel="noopener noreferrer">開啟 →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-title">McMaster University BOPPPS 框架</div>
+        <div class="ref-meta">含教案模板下載，可直接套用。</div>
+        <a href="https://mi.mcmaster.ca/lesson-planning/lesson-planning-boppps/" target="_blank" rel="noopener noreferrer">開啟 →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-title">SJSU eCampus — BOPPPS 線上教學系列文</div>
+        <div class="ref-meta">詳細說明每個模組如何應用在線上課程設計（2019）。第 1 篇（Bridge-In）已被站方移除，這裡直接從第 2 篇進去，站內可再往 Part 3、4 走。</div>
+        <a href="https://blogs.sjsu.edu/ecampus/2019/10/10/lesson-design-using-the-boppps-model-part-2-intended-learning-outcomes/" target="_blank" rel="noopener noreferrer">系列文章 →</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-title">ISW Network 官方網站（2025-08 存檔）</div>
+        <div class="ref-meta">全球 ISW 活動查詢、Facilitator 認證資訊。官方站 iswnetwork.ca 自 2026-08 起源站無回應（網域仍有效，應為主機問題），這裡先接 Internet Archive 的 2025-08 快照；官方站恢復後可改回。</div>
+        <a href="https://web.archive.org/web/20250805022923/https://www.iswnetwork.ca/" target="_blank" rel="noopener noreferrer">iswnetwork.ca（存檔）→</a>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-title">Waterloo CTE — ISW / FDW</div>
+        <div class="ref-meta">現行可用的權威說明：24 小時 ISW、40 小時 FDW 引導員認證（完成後發國際認可證書）與線上版 ISW 的差異。</div>
+        <a href="https://uwaterloo.ca/centre-for-teaching-excellence/workshops-and-events/signature-events/instructional-skills-workshop" target="_blank" rel="noopener noreferrer">uwaterloo.ca →</a>
+      </div>
+
+    </div>
+  </section>
+
+</div><!-- /.wrapper -->
+
+<footer>
+  <div class="wrapper">
+    <p>整理自 ISW 文獻與學術 Meta-analysis · 基於 BOPPPS 教學設計框架</p>
+    <p style="margin-top:0.5rem;">最後更新：2026-06-11 · <a href="/projects/one-more-step/">← One More Step</a></p>
+  </div>
+</footer>

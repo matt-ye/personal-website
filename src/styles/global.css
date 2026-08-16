@@ -1,13 +1,26 @@
 /* ===== Light Theme (Default) ===== */
 :root {
+  color-scheme: light;
   --color-bg: #ffffff;
   --color-surface: #f7f8fa;
   --color-text: #111111;
   --color-text-muted: #666666;
   --color-border: #e8e8e8;
-  --color-accent: #5b4fff;
-  --color-accent-hover: #3d31e0;
+  --color-accent: #1d4ed8;
+  --color-accent-hover: #1e40af;
+  /* accent 當底色時的前景字色。深淺兩色主題需要相反的明度：
+     淺色主題是深藍底配白字，深色主題是淺藍底配深字（見 dark theme）。 */
+  --color-accent-fg: #ffffff;
+  --color-accent-grad2: #0891b2;   /* 漸層第二色（排行榜長條） */
   --color-tag-bg: #f0f4f8;
+
+  /* 語意色。這四個原本散落在 .protect-* 與內容的 style="color:#…" 裡，
+     兩處都寫死淺色版——深色主題下對比只剩 3.x，淺色主題下綠與橙也不足 4.5。
+     收成 token 之後，兩個主題各給一組達標值，內容端只寫語意不寫顏色。 */
+  --color-good:   #047857;   /* 白底 5.48:1 */
+  --color-warn:   #b45309;   /* 白底 5.02:1 */
+  --color-danger: #b91c1c;   /* 白底 6.47:1 */
+  --color-neutral:#4b5563;   /* 白底 7.56:1 */
 
   --card-bg: #ffffff;
   --card-border: #e8e8e8;
@@ -32,22 +45,32 @@
 
 /* ===== Dark Theme ===== */
 [data-theme="dark"] {
+  color-scheme: dark;
   --color-bg: #0b0d18;
   --color-surface: #11142a;
   --color-text: #eef1ff;
   --color-text-muted: #8b93bf;
   --color-border: rgba(255,255,255,.08);
-  --color-accent: #8b6cff;
-  --color-accent-hover: #a589ff;
+  /* 深色主題用亮藍：在 #0b0d18 上對比 10.7:1，遠優於原本紫色的 5.2:1。
+     但亮底不能再配白字，所以 accent-fg 改為深色（對比 10.4:1）。 */
+  --color-accent: #93c5fd;
+  --color-accent-hover: #bfdbfe;
+  --color-accent-fg: #0b1220;
+  --color-accent-grad2: #22d3ee;
   --color-tag-bg: rgba(255,255,255,.06);
+
+  --color-good:   #6ee7b7;   /* #0b0d18 上 12.70:1 */
+  --color-warn:   #fcd34d;   /* 13.42:1 */
+  --color-danger: #fca5a5;   /* 10.20:1 */
+  --color-neutral:#9aa3c4;   /* 7.75:1 */
 
   --card-bg: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
   --card-border: rgba(255,255,255,.08);
   --card-shadow: none;
-  --card-shadow-hover: 0 18px 40px -20px rgba(139,108,255,.35);
+  --card-shadow-hover: 0 18px 40px -20px rgba(59,130,246,.38);
 
-  --grad-1: linear-gradient(135deg, #8b6cff 0%, #14e0ff 100%);
-  --grad-2: linear-gradient(135deg, #ff5dd9 0%, #8b6cff 100%);
+  --grad-1: linear-gradient(135deg, #60a5fa 0%, #22d3ee 100%);
+  --grad-2: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
 }
 
 /* ===== Reset ===== */
@@ -193,32 +216,34 @@ nav a[aria-current="page"] {
   transition: background 0.2s, border-color 0.2s, color 0.2s;
   flex-shrink: 0;
 }
+/* 已遷移的頁面會把切換鈕渲染成 <a>（讓爬蟲看得到中↔英之間的連結），
+   未遷移的仍是 <button>。兩者要長得一模一樣，所以這裡補掉 <a> 的預設底線。 */
+a.lang-toggle { text-decoration: none; }
 .lang-toggle:hover { color: var(--color-text); border-color: var(--color-accent); }
 
-/* Language show/hide — default (no JS) shows zh; data-lang flips it */
+/* Language show/hide — default (no JS) shows zh; data-lang flips it.
+   <T> 的 en 區塊在 HTML 裡帶 hidden 屬性（給不套 CSS 的爬蟲判讀），
+   而 [hidden] 只是瀏覽器預設樣式，下面這條作者規則特異性較高會蓋過它，
+   所以切到英文時顯示正常；hidden 屬性本身由 Header 的 syncLangHidden 對調。 */
 .lang-en { display: none; }
 [data-lang="en"] .lang-zh { display: none; }
 [data-lang="en"] .lang-en { display: inline; }
 
 @media (max-width: 640px) {
-  .nav-right {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 8px;
-  }
-  .lang-toggle,
-  .theme-toggle {
-    order: 1;
-  }
-  nav {
-    order: 2;
-    width: 100%;
-    gap: 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  nav::-webkit-scrollbar { display: none; }
+  /* 英文標籤（Speeches/Coaching/Projects）比中文寬得多，一行塞不下會把
+     主題切換鈕擠出畫面。允許換行，讓 nav 在放不下時自己掉到第二行：
+     中文仍是一行，英文自動變兩行，兩種語言都不會產生水平捲動。 */
+  header .container { flex-wrap: wrap; row-gap: 2px; }
+  .nav-right { gap: 12px; margin-left: auto; }
+  nav { gap: 14px; }
+  /* 觸控目標：上下各撐 11px 讓 hit area 達 44px（WCAG 2.5.5），
+     再用等量負 margin 抵銷，所以 header 的視覺高度不變。 */
+  nav a { padding: 11px 2px; margin: -11px -2px; }
+}
+@media (max-width: 400px) {
+  nav { gap: 10px; }
+  nav a { font-size: 0.78rem; }
+  .nav-right { gap: 10px; }
 }
 
 /* ===== Footer ===== */
@@ -289,6 +314,38 @@ footer .container {
 }
 .section-cta:hover { text-decoration: underline; }
 
+/* ===== Home: Projects nav ===== */
+.home-projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.5rem;
+  margin-top: var(--spacing-sm);
+}
+.home-project {
+  display: block;
+  /* min-width:0 讓格線項目可以收窄，不然 min-content 會撐爆版面（org-row 同一個坑） */
+  min-width: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.home-project:hover { border-color: var(--color-accent); transform: translateX(3px); text-decoration: none; }
+.home-project-title { display: block; font-weight: 650; font-size: 0.92rem; color: var(--color-text); }
+.home-project-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;          /* 描述長度不一，統一裁成兩行讓卡片等高 */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+  line-height: 1.6;
+}
+
 /* ===== Post Card ===== */
 .post-list { list-style: none; display: flex; flex-direction: column; gap: var(--spacing-lg); }
 
@@ -345,6 +402,103 @@ footer .container {
   color: var(--color-text-muted);
   font-size: 0.85rem;
   flex-wrap: wrap;
+}
+
+/* ===== /about/ 作者頁 ===== */
+.about-header { margin-bottom: var(--spacing-xl); }
+.about-role {
+  color: var(--color-accent);
+  font-weight: 600;
+  margin: var(--spacing-xs) 0 var(--spacing-md);
+}
+.about-tagline p { margin: 0.15em 0; color: var(--color-text-muted); }
+
+.about-section { margin-bottom: var(--spacing-xl); }
+.about-section > h2 {
+  font-size: 1.15rem;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.about-roles, .about-awards, .about-strengths, .about-profiles {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.about-role-item, .about-award {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+.about-role-icon { font-size: 1.2rem; line-height: 1.4; }
+/* h3 但視覺上維持內文大小——heading 是給爬蟲與螢幕閱讀器的結構宣告，
+   不代表這裡需要一個放大的標題（同 .post-card-heading 的處理）。 */
+.about-role-title { font-weight: 600; font-size: 1rem; margin: 0; }
+.about-role-org, .about-award-meta { color: var(--color-text-muted); font-size: 0.9rem; }
+.about-period { font-variant-numeric: tabular-nums; }
+.about-role-desc { margin: 0.3em 0 0; font-size: 0.9rem; line-height: 1.7; }
+
+.about-award-year {
+  flex: 0 0 3.2em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent);
+}
+.about-award-name { font-weight: 600; }
+.about-award-host { color: var(--color-text-muted); }
+
+.about-strengths {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-md);
+}
+.about-strength {
+  padding: var(--spacing-md);
+  background: var(--color-tag-bg);
+  border-radius: 6px;
+}
+.about-strength-icon { font-size: 1.4rem; }
+.about-strength-title { font-size: 1rem; margin: 0.3em 0; }
+.about-strength p { margin: 0; font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.7; }
+
+.about-profiles-note { color: var(--color-text-muted); font-size: 0.9rem; }
+.about-profiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+.about-profiles a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+  padding: 0.4em 0.8em;
+  background: var(--color-tag-bg);
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+.about-profile-value { color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+
+/* 作者署名。比其他 meta 略深一階，讓「誰寫的」在一排灰字裡讀得出來——
+   這是 meta 列裡唯一需要被主動注意的資訊。 */
+.post-author {
+  color: var(--color-text);
+  font-weight: 600;
+}
+.post-author:hover { color: var(--color-accent); }
+
+/* YMYL 免責聲明。放在文章之後、樣式明顯弱於正文——它需要被看見，
+   但不該搶走內容的視覺權重。 */
+.post-disclaimer {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md);
+  border-left: 3px solid var(--color-border);
+  background: var(--color-tag-bg);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  border-radius: 0 4px 4px 0;
 }
 
 .back-link {
@@ -430,6 +584,24 @@ footer .container {
 .prose tr:last-child td { border-bottom: none; }
 .prose tbody tr:hover { background: var(--color-surface); }
 
+/* 出處註記：緊接在數據圖表之後，說明數字從哪來。
+   刻意做得小而不搶戲——它的作用是讓讀者「查得到」，不是強調。
+   YMYL 主題（財經、醫療、法律）的數據一律要有這個。 */
+.source-note {
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  margin: -0.5rem 0 1.75rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--color-border);
+}
+.source-note a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.source-note a:hover { color: var(--color-accent); }
+
 /* Prose visual components */
 .callout {
   background: var(--color-surface);
@@ -492,10 +664,10 @@ footer .container {
   font-size: 0.82rem;
   text-align: right;
 }
-.protect-good  { color: #059669; font-weight: 600; }
-.protect-mid   { color: #d97706; font-weight: 600; }
-.protect-bad   { color: #dc2626; font-weight: 600; }
-.protect-mixed { color: #6b7280; font-weight: 600; }
+.protect-good  { color: var(--color-good);    font-weight: 600; }
+.protect-mid   { color: var(--color-warn);    font-weight: 600; }
+.protect-bad   { color: var(--color-danger);  font-weight: 600; }
+.protect-mixed { color: var(--color-neutral); font-weight: 600; }
 
 /* Funding comparison grid (3-col) */
 .funding-grid {
@@ -580,7 +752,7 @@ footer .container {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--color-accent-fg);
   font-size: 0.7rem;
   font-weight: 700;
   white-space: nowrap;
@@ -1801,7 +1973,7 @@ footer .container {
 .chip.active {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: #fff;
+  color: var(--color-accent-fg);
   font-weight: 600;
 }
 
@@ -1868,6 +2040,9 @@ footer .container {
   margin-bottom: 12px;
 }
 @media (max-width: 480px) { .charts-grid { grid-template-columns: 1fr; } }
+/* min-width:0：canvas 的固有尺寸會讓 track 縮不下去，圖在窄視窗被裁掉
+   （org-row 同一個坑）；歸零後 Chart.js 才能跟著容器縮放 */
+.charts-grid > *, .bento-grid > * { min-width: 0; }
 
 .chart-card {
   background: var(--card-bg);
@@ -1999,6 +2174,9 @@ footer .container {
   display: flex;
   align-items: center;
   gap: 12px;
+  /* grid/flex item 的預設 min-width:auto 會讓 .org-name-zh 的 nowrap min-content
+     （長機構名可達 ~280px）把 track 撐破容器；歸零才讓 .org-name 的省略號生效 */
+  min-width: 0;
   padding: 12px 16px;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -2062,7 +2240,7 @@ footer .container {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--color-accent), #14e0ff);
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-grad2));
   width: 0%;
   min-width: 0px;
   transition: width 1.2s cubic-bezier(.2,.8,.2,1), min-width 1.2s cubic-bezier(.2,.8,.2,1);
@@ -2265,7 +2443,7 @@ footer .container {
   padding: 10px 28px;
   border-radius: 999px;
   background: var(--color-accent);
-  color: #fff;
+  color: var(--color-accent-fg);
   font-weight: 600;
   font-size: 0.9rem;
   border: none;
@@ -2433,7 +2611,7 @@ footer .container {
   gap: 8px;
   padding: 10px 22px;
   background: var(--color-accent);
-  color: #fff;
+  color: var(--color-accent-fg);
   font-weight: 600;
   font-size: 0.9rem;
   border-radius: 999px;
@@ -2441,6 +2619,17 @@ footer .container {
   transition: opacity 0.2s, transform 0.2s;
 }
 .hero-cta:hover { opacity: 0.88; transform: translateY(-1px); text-decoration: none; color: #fff; }
+
+/* 贊助版 hero CTA — 金黃漸層（與 telaaurealab.com 贊助按鈕同色系的跨站識別） */
+.hero-cta-sponsor {
+  background: linear-gradient(135deg, #fbbf24, #d97706);
+  color: #451a03;
+  border: none;
+  font-family: inherit;
+  line-height: 1.75; /* 對齊 <a> 版 .hero-cta 的繼承行高，兩顆按鈕等高 */
+  cursor: pointer;
+}
+.hero-cta-sponsor:hover { opacity: 1; color: #451a03; filter: brightness(1.07); }
 
 .hero-actions {
   display: flex;
@@ -2678,11 +2867,14 @@ footer .container {
 .fw-card-body { flex: 1; min-width: 0; }
 .fw-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .fw-name { font-size: 1rem; font-weight: 700; }
-.fw-intl-badge { font-size: 0.72rem; font-weight: 600; color: #fff; background: var(--color-accent); padding: 2px 8px; border-radius: 999px; }
+.fw-intl-badge { font-size: 0.72rem; font-weight: 600; color: var(--color-accent-fg); background: var(--color-accent); padding: 2px 8px; border-radius: 999px; }
 .fw-venues { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .fw-venue-tag { font-size: 0.82rem; font-weight: 600; background: var(--color-surface); border: 1px solid var(--color-border); padding: 3px 10px; border-radius: 999px; }
 .fw-venue-arrow { font-size: 0.9rem; color: var(--color-accent); font-weight: 700; }
 .fw-topic { font-size: 0.82rem; color: var(--color-text-muted); font-style: italic; }
+.fw-notes-link { font-size: 0.82rem; font-weight: 600; color: var(--color-accent); align-self: center; }
+.fw-notes-link:hover { text-decoration: underline; }
+.fw-video-row { margin-top: 4px; margin-bottom: 0; }
 
 /* Testimonials Carousel */
 .testi-carousel { position: relative; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 40px 48px 32px; box-shadow: var(--card-shadow); overflow: hidden; }
@@ -2787,3 +2979,98 @@ footer .container {
 .johari tbody tr:last-child th { border-bottom: none; }
 .johari .j-desc { display: inline-block; margin-top: 0.2rem; color: var(--color-text-muted); font-size: 0.85em; line-height: 1.5; text-transform: none; }
 .johari-cap { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.4rem; }
+
+/* 卡片標題的 heading 外殼：只提供語意，不參與排版。
+   display:contents 讓這個元素不產生盒子，子元素直接成為父層的 flex/grid 子元素
+   ——因此把卡片標題包進 h2/h3 之後，版面與原本完全一致。
+   margin/font-size/font-weight 一併歸零，避免瀏覽器的 heading 預設值滲進來。
+
+   用途：清單項的標題本來就是標題，只是原本寫成 <a>／<span>／<div>。
+   包上 heading 後，爬蟲與螢幕閱讀器才看得出這份清單的結構。 */
+.post-card-heading,
+.card-heading {
+  display: contents;
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+/* ===== 文章圖解元件的夜間配色 =====
+ *
+ * 這些圖解（三表卡片、三表關聯圖、杜邦樹、護城河徽章）原本只寫了淺色版：
+ * 背景寫死成 #eff6ff 這類淺色，前景卻用 var(--color-text)。
+ * 主題一翻，前景變成近白色、背景不動——白字印在淺藍底上，等於看不見。
+ *
+ * 寫死的背景配 token 的前景，是這類 bug 的固定成因。
+ * 正確的組合只有兩種：兩邊都用 token，或兩邊都寫死（並補上夜間覆寫）。
+ * 混著用一定會在某個主題下爆掉。
+ *
+ * 這裡的做法：保留原本的語意配色（藍＝損益表、橙＝資產負債表、
+ * 綠＝現金流量表、紫＝ROE 跨表、玫瑰＝市場價格），但改成深底上的
+ * 半透明色調——色相不變，明度反轉。
+ */
+
+/* --- 三張表的總覽卡（07） --- */
+[data-theme="dark"] .stmt-card.is { background: rgba(59,130,246,.12);  border-color: rgba(147,197,253,.32); }
+[data-theme="dark"] .stmt-card.bs { background: rgba(245,158,11,.10);  border-color: rgba(252,211,77,.32); }
+[data-theme="dark"] .stmt-card.cf { background: rgba(16,185,129,.10);  border-color: rgba(110,231,183,.32); }
+
+/* --- 三表關聯圖（07）。標題與內文用 token，所以只需要換底與框 --- */
+[data-theme="dark"] .sflow-stmt.is { border-color: rgba(147,197,253,.34); }
+[data-theme="dark"] .sflow-stmt.bs { border-color: rgba(252,211,77,.34); }
+[data-theme="dark"] .sflow-stmt.cf { border-color: rgba(110,231,183,.34); }
+[data-theme="dark"] .sflow-stmt.is .sflow-stmt-head { background: rgba(59,130,246,.20);  border-bottom-color: rgba(147,197,253,.34); }
+[data-theme="dark"] .sflow-stmt.bs .sflow-stmt-head { background: rgba(245,158,11,.18);  border-bottom-color: rgba(252,211,77,.34); }
+[data-theme="dark"] .sflow-stmt.cf .sflow-stmt-head { background: rgba(16,185,129,.18);  border-bottom-color: rgba(110,231,183,.34); }
+[data-theme="dark"] .sflow-stmt.is .sflow-stmt-body { background: rgba(59,130,246,.07); }
+[data-theme="dark"] .sflow-stmt.bs .sflow-stmt-body { background: rgba(245,158,11,.06); }
+[data-theme="dark"] .sflow-stmt.cf .sflow-stmt-body { background: rgba(16,185,129,.06); }
+
+/* --- 關聯圖的來源／去向徽章與衍生指標籤（07）。這些前景也是寫死的，要一起換 --- */
+[data-theme="dark"] .sflow-chip.is,
+[data-theme="dark"] .sflow-conn-badge.is    { background: rgba(59,130,246,.14);  border-color: rgba(147,197,253,.34); color: #bfdbfe; }
+[data-theme="dark"] .sflow-chip.bs,
+[data-theme="dark"] .sflow-conn-badge.bs    { background: rgba(245,158,11,.14);  border-color: rgba(252,211,77,.34);  color: #fde68a; }
+[data-theme="dark"] .sflow-chip.cf,
+[data-theme="dark"] .sflow-conn-badge.cf    { background: rgba(16,185,129,.14);  border-color: rgba(110,231,183,.34); color: #a7f3d0; }
+[data-theme="dark"] .sflow-chip.cross       { background: rgba(139,92,246,.16);  border-color: rgba(196,181,253,.36); color: #ddd6fe; }
+[data-theme="dark"] .sflow-chip.mkt         { background: rgba(244,63,94,.14);   border-color: rgba(253,164,175,.34); color: #fecdd3; }
+
+/* --- 杜邦樹（07）。整棵樹的前景全部寫死，所以每一層都要對應 --- */
+[data-theme="dark"] .dpt-node          { background: rgba(255,255,255,.045); border-color: rgba(255,255,255,.14); }
+[data-theme="dark"] .dpt-name          { color: var(--color-text); }
+[data-theme="dark"] .dpt-role          { color: var(--color-text-muted); }
+[data-theme="dark"] .dpt-formula       { color: #c3cae8; }
+[data-theme="dark"] .dpt-break         { color: #b6bee0; border-top-color: rgba(255,255,255,.18); }
+[data-theme="dark"] .dpt-node.root     { background: rgba(139,92,246,.16); border-color: rgba(167,139,250,.42); }
+[data-theme="dark"] .dpt-node.root .dpt-name    { color: #ddd6fe; }
+[data-theme="dark"] .dpt-node.root .dpt-formula { color: #c4b5fd; }
+[data-theme="dark"] .dpt-node.mkt      { background: rgba(244,63,94,.14);  border-color: rgba(253,164,175,.40); }
+[data-theme="dark"] .dpt-node.mkt .dpt-name     { color: #fecdd3; }
+[data-theme="dark"] .dpt-node.mkt .dpt-formula  { color: #fda4af; }
+[data-theme="dark"] .dpt-node.is       { background: rgba(59,130,246,.14);  border-color: rgba(147,197,253,.40); }
+[data-theme="dark"] .dpt-node.is .dpt-name      { color: #bfdbfe; }
+[data-theme="dark"] .dpt-node.is .dpt-break     { color: #bfdbfe; border-top-color: rgba(147,197,253,.34); }
+[data-theme="dark"] .dpt-node.bs       { background: rgba(245,158,11,.14);  border-color: rgba(252,211,77,.40); }
+[data-theme="dark"] .dpt-node.bs .dpt-name      { color: #fde68a; }
+[data-theme="dark"] .dpt-node.bs .dpt-break     { color: #fde68a; border-top-color: rgba(252,211,77,.34); }
+
+/* --- 護城河強度徽章（06） --- */
+[data-theme="dark"] .moat-strength.wide   { background: rgba(34,197,94,.16);  color: #86efac; }
+[data-theme="dark"] .moat-strength.narrow { background: rgba(234,179,8,.16);  color: #fde047; }
+[data-theme="dark"] .moat-strength.none   { background: rgba(239,68,68,.16);  color: #fca5a5; }
+
+/* 內容端的語意色。文章裡原本寫 style="color:#dc2626"——行內樣式的優先權
+   高過任何主題規則，所以夜間模式修不掉，只能改成 class。 */
+.num-good   { color: var(--color-good); }
+.num-warn   { color: var(--color-warn); }
+.num-danger { color: var(--color-danger); }
+
+/* PEOP 文氏圖的三個字母。原本寫成行內 style="fill:#6d28d9"——
+   行內樣式的優先權高過主題規則，深色底上 #6d28d9 只有 2.72:1（門檻 3.0）。
+   改成 class 才能給夜間版。E 與 O 原本勉強及格，一併收進來保持一致。 */
+.peop-venn .v-p { fill: #6d28d9; }   /* 白底 7.10:1 */
+.peop-venn .v-e { fill: #0d9488; }   /* 3.74:1 */
+.peop-venn .v-o { fill: #b45309; }   /* 5.02:1 */
+[data-theme="dark"] .peop-venn .v-p { fill: #c4b5fd; }   /* 深底 10.48:1 */
+[data-theme="dark"] .peop-venn .v-e { fill: #5eead4; }   /* 13.08:1 */
+[data-theme="dark"] .peop-venn .v-o { fill: #fcd34d; }   /* 13.42:1 */

@@ -1,0 +1,853 @@
+<!-- 由 scripts/extract-static-pages.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#f8f9fa; --card:#fff; --border:#e5e7eb; --text:#111827; --muted:#6b7280;
+      --light-text:#9ca3af; --accent:#0284c7; --accent-bg:#f0f9ff; --accent-hover:#0369a1;
+      --green:#059669; --green-bg:#d1fae5; --blue:#1d4ed8; --blue-bg:#dbeafe;
+      --orange:#d97706; --orange-bg:#fef3c7; --red:#dc2626; --red-bg:#fee2e2;
+      --sidebar-w:260px; --header-h:58px; --radius:12px; --radius-sm:8px;
+      --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+      --shadow-md:0 4px 12px rgba(0,0,0,.08); --transition:.2s ease;
+      --font:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;
+    }
+    [data-theme="dark"] {
+      --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#f1f5f9; --muted:#94a3b8;
+      --light-text:#64748b; --accent:#38bdf8; --accent-bg:#082f49; --accent-hover:#7dd3fc;
+      --green:#34d399; --green-bg:#064e3b; --blue:#60a5fa; --blue-bg:#1e3a5f;
+      --orange:#fbbf24; --orange-bg:#451a03; --red:#f87171; --red-bg:#450a0a;
+      --shadow:0 1px 3px rgba(0,0,0,.3); --shadow-md:0 4px 12px rgba(0,0,0,.4);
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:var(--font); background:var(--bg); color:var(--text); font-size:15px; line-height:1.6; }
+    #header { position:fixed; top:0; left:0; right:0; height:var(--header-h); background:var(--card);
+      border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; padding:0 20px;
+      z-index:100; box-shadow:var(--shadow); }
+    #hamburger { display:none; background:none; border:none; cursor:pointer; color:var(--text); padding:6px; border-radius:6px; }
+    #hamburger:hover { background:var(--accent-bg); }
+    .header-title { font-weight:700; font-size:1rem; color:var(--accent); white-space:nowrap; flex-shrink:0; }
+    .header-title .week { color:var(--muted); font-weight:400; font-size:.8rem; margin-left:6px; }
+    #searchWrap { flex:1; max-width:360px; position:relative; }
+    #searchBox { width:100%; padding:7px 12px 7px 34px; border:1px solid var(--border); border-radius:20px;
+      background:var(--bg); color:var(--text); font-size:.875rem; outline:none; }
+    #searchBox:focus { border-color:var(--accent); }
+    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.9rem; pointer-events:none; }
+    .header-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
+    .icon-btn { background:none; border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer;
+      color:var(--text); padding:6px 10px; font-size:.8rem; display:flex; align-items:center; gap:4px; white-space:nowrap; }
+    .icon-btn:hover { background:var(--accent-bg); border-color:var(--accent); color:var(--accent); }
+    .glossary-btn { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .glossary-btn:hover { background:var(--accent-hover); border-color:var(--accent-hover); color:#fff; }
+    #layout { display:flex; padding-top:var(--header-h); min-height:100vh; }
+    #sidebar { width:var(--sidebar-w); flex-shrink:0; position:sticky; top:var(--header-h);
+      height:calc(100vh - var(--header-h)); overflow-y:auto; border-right:1px solid var(--border);
+      padding:16px 0; background:var(--card); }
+    .sidebar-section { padding:0 12px; margin-bottom:8px; }
+    .sidebar-label { font-size:.7rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding:8px 4px 4px; }
+    .nav-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:var(--radius-sm);
+      text-decoration:none; color:var(--text); font-size:.875rem; cursor:pointer; border:none; background:none; width:100%; text-align:left; }
+    .nav-item:hover, .nav-item.active { background:var(--accent-bg); color:var(--accent); }
+    .nav-item.active { font-weight:600; }
+    .nav-item .icon { font-size:1rem; flex-shrink:0; width:20px; text-align:center; }
+    .sidebar-divider { height:1px; background:var(--border); margin:8px 12px; }
+    #main { flex:1; padding:32px 24px 64px; max-width:900px; min-width:0; }
+    .hero { background:linear-gradient(135deg,var(--accent) 0%,#4f46e5 100%); border-radius:var(--radius);
+      padding:32px; margin-bottom:28px; color:#fff; }
+    .hero .crumb { font-size:.8rem; opacity:.85; margin-bottom:8px; }
+    .hero .crumb a { color:#fff; }
+    .hero h1 { font-size:1.6rem; font-weight:800; margin-bottom:6px; }
+    .hero p { opacity:.92; font-size:.95rem; margin-bottom:16px; }
+    .hero-goals { background:rgba(255,255,255,.15); border-radius:8px; padding:14px 16px; font-size:.875rem; }
+    .hero-goals strong { display:block; margin-bottom:6px; }
+    .topic-section { margin-bottom:28px; scroll-margin-top:76px; }
+    .topic-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      overflow:hidden; box-shadow:var(--shadow); }
+    .topic-header { display:flex; align-items:center; gap:12px; padding:18px 20px; cursor:pointer; user-select:none; }
+    .topic-header:hover { background:var(--accent-bg); }
+    .topic-icon { font-size:1.5rem; flex-shrink:0; }
+    .topic-title-wrap { flex:1; }
+    .topic-title { font-size:1.05rem; font-weight:700; }
+    .topic-subtitle { font-size:.8rem; color:var(--muted); margin-top:1px; }
+    .topic-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .tag { font-size:.68rem; padding:2px 8px; border-radius:10px; font-weight:600; }
+    .tag-green { background:var(--green-bg); color:var(--green); }
+    .tag-blue { background:var(--blue-bg); color:var(--blue); }
+    .tag-orange { background:var(--orange-bg); color:var(--orange); }
+    .tag-red { background:var(--red-bg); color:var(--red); }
+    .tag-sky { background:var(--accent-bg); color:var(--accent); }
+    .topic-chevron { color:var(--muted); transition:transform var(--transition); font-size:1.1rem; }
+    .topic-card.open .topic-chevron { transform:rotate(180deg); }
+    .topic-body { display:none; border-top:1px solid var(--border); }
+    .topic-card.open .topic-body { display:block; }
+    .sub-section { border-bottom:1px solid var(--border); }
+    .sub-section:last-child { border-bottom:none; }
+    .sub-section summary { list-style:none; padding:12px 20px; cursor:pointer; font-weight:600; font-size:.875rem;
+      color:var(--muted); display:flex; align-items:center; gap:8px; user-select:none; }
+    .sub-section summary::-webkit-details-marker { display:none; }
+    .sub-section summary:hover, .sub-section[open] summary { color:var(--accent); }
+    .sub-section summary::after { content:'›'; margin-left:auto; transition:transform var(--transition); font-size:1.1rem; }
+    .sub-section[open] summary::after { transform:rotate(90deg); }
+    .sub-content { padding:4px 20px 16px; }
+    .sub-content p { margin-bottom:10px; font-size:.9rem; }
+    .bullet-list { list-style:none; display:flex; flex-direction:column; gap:7px; }
+    .bullet-list li { display:flex; align-items:flex-start; gap:8px; font-size:.875rem; }
+    .bullet-list li::before { content:'▸'; color:var(--accent); flex-shrink:0; margin-top:1px; font-size:.8rem; }
+    .warning-box { background:var(--orange-bg); border:1px solid var(--orange); border-radius:var(--radius-sm);
+      padding:12px 14px; display:flex; gap:10px; font-size:.875rem; margin-bottom:8px; }
+    .warning-box::before { content:'⚠️'; flex-shrink:0; }
+    .ban-box { background:var(--red-bg); border:1px solid var(--red); border-radius:var(--radius-sm);
+      padding:12px 14px; display:flex; gap:10px; font-size:.875rem; margin-bottom:8px; }
+    .ban-box::before { content:'🚫'; flex-shrink:0; }
+    .practice-box { background:var(--green-bg); border:1px solid var(--green); border-radius:var(--radius-sm);
+      padding:14px 16px; font-size:.875rem; margin-bottom:8px; }
+    .practice-box strong { color:var(--green); display:block; margin-bottom:6px; }
+    .case-box { background:var(--blue-bg); border:1px solid var(--blue); border-radius:var(--radius-sm);
+      padding:12px 14px; font-size:.85rem; margin:8px 0; }
+    .case-box strong { color:var(--blue); }
+    .case-box a { color:var(--blue); }
+    .type-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; margin:10px 0; }
+    .type-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; }
+    .type-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
+    .type-card p { font-size:.78rem; color:var(--muted); margin:0; }
+    .table-wrap { overflow-x:auto; margin:8px 0; }
+    .data-table { width:100%; border-collapse:collapse; font-size:.84rem; }
+    .data-table th { background:var(--accent-bg); color:var(--accent); font-weight:600; padding:9px 12px;
+      text-align:left; border-bottom:2px solid var(--accent); white-space:nowrap; }
+    .data-table td { padding:8px 12px; border-bottom:1px solid var(--border); }
+    .data-table tr:last-child td { border-bottom:none; }
+    .data-table tr:hover td { background:var(--accent-bg); }
+    .links-grid { display:flex; flex-direction:column; gap:6px; }
+    .link-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:var(--radius-sm);
+      border:1px solid var(--border); text-decoration:none; color:var(--text); font-size:.85rem; }
+    .link-item:hover { border-color:var(--accent); background:var(--accent-bg); color:var(--accent); }
+    .link-tag { font-size:.65rem; padding:1px 6px; border-radius:8px; font-weight:700; flex-shrink:0; }
+    .link-official { background:var(--green-bg); color:var(--green); }
+    .link-community { background:var(--blue-bg); color:var(--blue); }
+    .link-title { flex:1; }
+    .link-arrow { color:var(--muted); flex-shrink:0; }
+    .pipeline { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:12px 0; padding:12px;
+      background:var(--bg); border-radius:var(--radius-sm); }
+    .pipeline-step { background:var(--accent-bg); color:var(--accent); border-radius:6px; padding:6px 12px;
+      font-size:.8rem; font-weight:600; }
+    .pipeline-arrow { color:var(--muted); font-size:1.1rem; }
+    #glossaryOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; cursor:pointer; }
+    #glossaryOverlay.open { display:block; }
+    #glossaryPanel { position:fixed; top:0; right:-380px; width:380px; max-width:94vw; height:100vh;
+      background:var(--card); border-left:1px solid var(--border); z-index:201; display:flex; flex-direction:column;
+      transition:right .3s cubic-bezier(.4,0,.2,1); box-shadow:var(--shadow-md); }
+    #glossaryPanel.open { right:0; }
+    .gp-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .gp-header h2 { font-size:1rem; font-weight:700; flex:1; }
+    .gp-close { background:none; border:none; cursor:pointer; color:var(--muted); font-size:1.2rem; padding:4px; border-radius:4px; }
+    .gp-close:hover { color:var(--text); background:var(--border); }
+    #gpSearch { padding:8px 12px; margin:12px 16px; width:calc(100% - 32px); border:1px solid var(--border);
+      border-radius:8px; background:var(--bg); color:var(--text); font-size:.875rem; outline:none; }
+    #gpSearch:focus { border-color:var(--accent); }
+    #gpList { flex:1; overflow-y:auto; padding:0 16px 16px; }
+    .gp-item { border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:8px; overflow:hidden; }
+    .gp-term { padding:10px 12px; font-weight:600; font-size:.875rem; cursor:pointer; display:flex;
+      align-items:center; justify-content:space-between; }
+    .gp-term:hover { background:var(--accent-bg); color:var(--accent); }
+    .gp-def { display:none; padding:0 12px 10px; font-size:.82rem; color:var(--muted); line-height:1.5;
+      border-top:1px solid var(--border); background:var(--bg); }
+    .gp-item.open .gp-def { display:block; }
+    .gp-def .zh { margin-bottom:4px; padding-top:8px; }
+    .gp-def .en { color:var(--light-text); font-style:italic; }
+    .hidden-by-search { display:none !important; }
+    footer { text-align:center; padding:20px; color:var(--muted); font-size:.78rem; border-top:1px solid var(--border); margin-top:20px; }
+    footer a { color:var(--accent); }
+    [data-lang="zh"] .en-only { display:none; }
+    [data-lang="en"] .zh-only { display:none; }
+    @media (max-width:768px) {
+      #hamburger { display:flex; }
+      #sidebar { position:fixed; left:-100%; top:var(--header-h); height:calc(100vh - var(--header-h));
+        z-index:50; transition:left var(--transition); box-shadow:var(--shadow-md); }
+      #sidebar.open { left:0; }
+      #main { padding:20px 16px 48px; }
+      #glossaryPanel { width:100%; }
+      .header-title .week { display:none; }
+      #searchWrap { max-width:170px; }
+    }
+  
+    /* 這兩個標題原本是 div，改成 heading 是為了讓爬蟲讀得到文件結構；
+       margin 歸零讓視覺與改動前一致（font-size/font-weight 原本就有明確設定）。 */
+    .topic-title { margin:0; }
+    .hook-card h3 { font-size:.82rem; font-weight:700; color:var(--accent); margin:0 0 4px; }
+</style>
+
+<header id="header">
+  <button id="hamburger" aria-label="Menu" onclick="toggleSidebar()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div class="header-title">
+    <span class="zh-only">🎭 不露臉 Pipeline</span>
+    <span class="en-only">🎭 Faceless Pipeline</span>
+    <span class="week">W11-12</span>
+  </div>
+  <div id="searchWrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchBox" placeholder="搜尋… / Search…" oninput="handleSearch(this.value)">
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn glossary-btn" onclick="openGlossary()">📖 <span class="zh-only">術語</span><span class="en-only">Glossary</span></button>
+    <button class="icon-btn" onclick="toggleLang()" id="langBtn">🌐 EN</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</header>
+
+<div id="layout">
+  <nav id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 11 · <span class="zh-only">工具鏈</span><span class="en-only">Toolchain</span></div>
+      <a class="nav-item" href="#overview" onclick="closeSidebar()"><span class="icon">🏠</span><span class="zh-only">單元總覽</span><span class="en-only">Overview</span></a>
+      <a class="nav-item" href="#topic-types" onclick="closeSidebar()"><span class="icon">🎬</span><span class="zh-only">五種 Faceless 類型</span><span class="en-only">5 Faceless Types</span></a>
+      <a class="nav-item" href="#topic-tts" onclick="closeSidebar()"><span class="icon">🗣️</span><span class="zh-only">AI 語音（中文選型）</span><span class="en-only">AI Voice (Chinese)</span></a>
+      <a class="nav-item" href="#topic-visuals" onclick="closeSidebar()"><span class="icon">🖼️</span><span class="zh-only">畫面來源</span><span class="en-only">Visual Sources</span></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Week 12 · <span class="zh-only">自動化與合規</span><span class="en-only">Automation</span></div>
+      <a class="nav-item" href="#topic-automation" onclick="closeSidebar()"><span class="icon">⚙️</span><span class="zh-only">n8n 自動化管線</span><span class="en-only">n8n Automation</span></a>
+      <a class="nav-item" href="#topic-policy" onclick="closeSidebar()"><span class="icon">⚖️</span><span class="zh-only">平台 AI 政策紅線</span><span class="en-only">AI Policy Red Lines</span></a>
+      <a class="nav-item" href="#topic-process" onclick="closeSidebar()"><span class="icon">🧶</span><span class="zh-only">手作 Process Video</span><span class="en-only">Process Video</span></a>
+      <a class="nav-item" href="#topic-cases" onclick="closeSidebar()"><span class="icon">🏆</span><span class="zh-only">成功案例</span><span class="en-only">Success Cases</span></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label"><span class="zh-only">附錄</span><span class="en-only">Appendix</span></div>
+      <a class="nav-item" href="#topic-budget" onclick="closeSidebar()"><span class="icon">💰</span><span class="zh-only">免費/低成本方案</span><span class="en-only">Budget Stack</span></a>
+      <a class="nav-item" href="#topic-blueprint" onclick="closeSidebar()"><span class="icon">🛠️</span><span class="zh-only">自動化工程藍圖</span><span class="en-only">Automation Blueprint</span></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <a class="nav-item" href="#practice" onclick="closeSidebar()"><span class="icon">✏️</span><span class="zh-only">實作練習</span><span class="en-only">Practice</span></a>
+      <button class="nav-item" onclick="openGlossary()"><span class="icon">📖</span><span class="zh-only">術語速查</span><span class="en-only">Glossary</span></button>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section id="overview">
+      <div class="hero">
+        <div class="crumb"><a href="/projects/marketing/"><span class="zh-only">← 行銷專欄 Marketing</span><span class="en-only">← Marketing Column</span></a> <span class="zh-only">· 行銷學習地圖 W11-12 · Q1 完結</span><span class="en-only">· Marketing Roadmap W11-12 · Q1 Finale</span></div>
+        <h1><span class="zh-only">不露臉短影音 Pipeline</span><span class="en-only">The Faceless Video Pipeline</span></h1>
+        <p class="zh-only">YouTube 前 1000 大頻道超過 40% 從不露臉。學會工具鏈與合規紅線——以及為什麼手作 process video 是你最安全的路線。</p>
+        <p class="en-only">Over 40% of YouTube's top 1000 channels never show a face. Learn the toolchain, the compliance red lines — and why process video is your safest route.</p>
+        <div class="hero-goals">
+          <strong class="zh-only">🎯 學完你能做到</strong>
+          <strong class="en-only">🎯 Learning Goals</strong>
+          <span class="zh-only">① 為自己選定 faceless 類型並組出「腳本→語音→畫面」工具鏈 ② 說出 YouTube/TikTok AI 政策的兩層差異（揭露 vs 變現）③ 設計一條合規的手作 process video 生產線</span>
+          <span class="en-only">① Pick your faceless type and assemble a script→voice→visuals toolchain ② Explain the two policy layers (disclosure vs monetization) ③ Design a compliant process-video pipeline</span>
+        </div>
+        <p style="margin-top:12px;font-size:.78rem;opacity:.8" class="zh-only">⚠️ 時效敏感（研究於 2026-07）：Sora 消費端已於 2026-04 關閉；YouTube inauthentic content 政策 2025-07-15 生效；TikTok C2PA 自動偵測 2025-01 起。</p>
+        <p style="margin-top:12px;font-size:.78rem;opacity:.8" class="en-only">⚠️ Time-sensitive (researched 2026-07): Sora consumer app closed 2026-04; YouTube's inauthentic content policy live since 2025-07-15; TikTok C2PA auto-detection since 2025-01.</p>
+      </div>
+    </section>
+
+    <!-- W11: Types -->
+    <section class="topic-section" id="topic-types">
+      <div class="topic-card open" id="card-types">
+        <div class="topic-header" onclick="toggleCard('card-types')">
+          <div class="topic-icon">🎬</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">五種 Faceless 頻道類型</span><span class="en-only">Five Faceless Channel Types</span></h2>
+            <div class="topic-subtitle zh-only">不露臉 ≠ 沒特色——聲音與視覺風格仍是品牌資產</div>
+            <div class="topic-subtitle en-only">Faceless ≠ featureless — voice and visual style are still brand assets</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 11</span><span class="tag tag-sky"><span class="zh-only">類型學 Typology</span><span class="en-only">Typology</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <div class="type-grid">
+              <div class="type-card"><h3>1. <span class="zh-only">螢幕錄製教學</span><span class="en-only">Screen Recording</span></h3><p class="zh-only">軟體/AI 工具 demo——螢幕即畫面，零成本。SaaS 首選。</p><p class="en-only">Software/AI demos — the screen is the footage. Zero cost; SaaS favorite.</p></div>
+              <div class="type-card"><h3>2. <span class="zh-only">AI 旁白＋素材</span><span class="en-only">AI Narration + Footage</span></h3><p class="zh-only">腳本→AI 配音→stock/AI 畫面。歷史、財經、科普解說最常見。</p><p class="en-only">Script → AI voice → stock/AI visuals. History, finance, science explainer staple.</p></div>
+              <div class="type-card"><h3>3. <span class="zh-only">動畫解說</span><span class="en-only">Animated Explainer</span></h3><p class="zh-only">The Infographics Show 模式，可建角色 IP。</p><p class="en-only">The Infographics Show model; can build a character IP.</p></div>
+              <div class="type-card"><h3>4. Kinetic Typography</h3><p class="zh-only">文字動態＋B-roll＋配樂。金句、勵志、語錄類；B2B LinkedIn 影片也適用。</p><p class="en-only">Animated text + B-roll + music. Quotes and motivation; also fits B2B LinkedIn video.</p></div>
+              <div class="type-card"><h3>5. <span class="zh-only">ASMR / 過程影片</span><span class="en-only">ASMR / Process Video</span></h3><p class="zh-only">手作、烹飪、陶藝——拍手與作品即可。<strong>手作工藝類最相關</strong>，詳見 W12。</p><p class="en-only">Crafts, cooking, pottery — just hands and the work. <strong>Most relevant for makers</strong>; see W12.</p></div>
+            </div>
+            <ul class="bullet-list">
+              <li class="zh-only">統計：YouTube 前 1000 大頻道<strong>超過 40% 從不露臉</strong>；faceless 內容佔 2025 新創作者變現項目約 38%</li>
+              <li class="en-only">Stats: <strong>40%+ of YouTube's top 1000 channels are faceless</strong>; ~38% of new creator monetization in 2025</li>
+            </ul>
+            <div class="warning-box"><span class="zh-only">誤區：選 niche 只看 CPM 不看能否持續產出（財經 CPM 高但競爭極烈）；「faceless = 零個人特色」——聲音、視覺風格、敘事口吻仍需一致的品牌識別。</span><span class="en-only">Pitfalls: picking a niche on CPM alone (finance pays but is brutal); treating faceless as featureless — voice, visual style, and narrative tone still need consistent branding.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- W11: TTS -->
+    <section class="topic-section" id="topic-tts">
+      <div class="topic-card" id="card-tts">
+        <div class="topic-header" onclick="toggleCard('card-tts')">
+          <div class="topic-icon">🗣️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">AI 語音：中文品質是選型重點</span><span class="en-only">AI Voice: Chinese Quality Drives Selection</span></h2>
+            <div class="topic-subtitle zh-only">別用英文評測結論選中文工具</div>
+            <div class="topic-subtitle en-only">Never pick Chinese TTS from English benchmarks</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 11</span><span class="tag tag-blue">TTS</span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🎙️ <span class="zh-only">四家對照與選型邏輯</span><span class="en-only">Four Providers & Selection Logic</span></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th class="zh-only">工具</th><th class="en-only">Tool</th><th class="zh-only">強項</th><th class="en-only">Strength</th><th class="zh-only">中文表現 / 注意</th><th class="en-only">Chinese / Caveat</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>ElevenLabs</strong></td><td class="zh-only">整體品質最高（v3 停頓/呼吸/語調最自然）</td><td class="en-only">Highest overall quality (v3)</td><td class="zh-only">中文可直接用；輕聲偏軟、捲舌音偏硬；最貴（~$0.30/千字元）</td><td class="en-only">Usable Chinese; priciest (~$0.30/1K chars)</td></tr>
+                    <tr><td><strong>MiniMax TTS</strong></td><td class="zh-only">亞洲語言首選（2025-26 多篇評測）</td><td class="en-only">Top pick for Asian languages</td><td class="zh-only"><strong>國語與粵語特別強</strong>；300+ 聲音</td><td class="en-only"><strong>Mandarin & Cantonese standout</strong></td></tr>
+                    <tr><td><strong>Azure / Google TTS</strong></td><td class="zh-only">穩定、便宜（~$30/百萬字元）、企業級</td><td class="en-only">Stable, cheap, enterprise-grade</td><td class="zh-only">有 zh-TW 台灣腔 voices；適合批量</td><td class="en-only">zh-TW voices available; best for batch</td></tr>
+                    <tr><td><strong>OpenAI TTS</strong></td><td class="zh-only">便宜清晰（~$15/百萬字元）</td><td class="en-only">Cheap and clear</td><td class="zh-only">情緒深度不如 ElevenLabs</td><td class="en-only">Less emotional depth</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>選型邏輯</strong>：品牌主聲音用 ElevenLabs/MiniMax（品質）；批量旁白用 Azure/Google（成本差可達 10 倍）</li>
+                <li class="en-only"><strong>Selection logic</strong>: brand voice = ElevenLabs/MiniMax (quality); batch narration = Azure/Google (up to 10x cheaper)</li>
+                <li class="zh-only">先用各家免費額度、<strong>以自己的中文腳本實測</strong>再決定</li>
+                <li class="en-only">Test with <strong>your own Chinese scripts</strong> on free tiers before committing</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：用英文評測結論選中文工具（斷句、多音字、輕聲差異巨大）；不做斷句與多音字校正就合成（「行」「得」「了」常唸錯）。</span><span class="en-only">Pitfalls: choosing from English benchmarks (phrasing, polyphones, neutral tones differ hugely); synthesizing without polyphone correction (行/得/了 are commonly misread).</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://www.speechmatics.com/company/articles-and-news/best-tts-apis-in-2025-top-12-text-to-speech-services-for-developers" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">12 家 TTS API 比較 — Speechmatics</span><span class="en-only">12 TTS APIs compared — Speechmatics</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://ttsforfree.com/en/blogs/google-vs-azure-vs-elevenlabs-tts-comparison/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Google vs Azure vs ElevenLabs 實測</span><span class="en-only">Google vs Azure vs ElevenLabs — hands-on</span></span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- W11: Visuals -->
+    <section class="topic-section" id="topic-visuals">
+      <div class="topic-card" id="card-visuals">
+        <div class="topic-header" onclick="toggleCard('card-visuals')">
+          <div class="topic-icon">🖼️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">畫面來源：Stock 打底、AI 補特殊鏡頭</span><span class="en-only">Visual Sources: Stock as Base, AI for the Impossible</span></h2>
+            <div class="topic-subtitle zh-only">⚠️ Sora 已關閉消費端（2026-04）</div>
+            <div class="topic-subtitle en-only">⚠️ Sora consumer app discontinued (2026-04)</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 11</span><span class="tag tag-orange"><span class="zh-only">時效敏感 Time-sensitive</span><span class="en-only">Time-sensitive</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🎞️ <span class="zh-only">四種來源</span><span class="en-only">Four Sources</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>Stock 素材</strong>：免費 Pexels/Pixabay；付費 Storyblocks（$30/月起）、Artgrid（較不撞片）——勝在真實感（微表情、真實景深）</li>
+                <li class="en-only"><strong>Stock</strong>: free Pexels/Pixabay; paid Storyblocks, Artgrid — wins on realism (micro-expressions, real depth)</li>
+                <li class="zh-only"><strong>AI 影片生成 2026 現況</strong>：<strong>Sora 消費端已關（2026-04-26），API 2026-09-24 終止</strong>；現役＝Runway Gen-4/4.5（品牌一致性，$95/月級距）、Kling 3.0（人物動作與 lip-sync，最長 180 秒）、Pika（$35/月無限生成，性價比）</li>
+                <li class="en-only"><strong>AI video in 2026</strong>: <strong>Sora consumer closed (2026-04-26), API ends 2026-09-24</strong>; active = Runway Gen-4/4.5, Kling 3.0, Pika</li>
+                <li class="zh-only"><strong>Screen recording</strong>：OBS 免費——教學類零成本畫面</li>
+                <li class="en-only"><strong>Screen recording</strong>: OBS is free — zero-cost tutorial footage</li>
+                <li class="zh-only"><strong>模板</strong>：Canva（快速）；After Effects 模板市場（品質高、需技能）</li>
+                <li class="en-only"><strong>Templates</strong>: Canva (fast); After Effects marketplaces (high quality, needs skill)</li>
+                <li class="zh-only"><strong>最佳策略：stock 打底、AI 只補拍不到的鏡頭</strong>（超現實、抽象、特定情境）</li>
+                <li class="en-only"><strong>Best strategy: stock as the base, AI only for unfilmable shots</strong></li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：全 AI 畫面＋AI 旁白（觸發 YouTube inauthentic content 審查，見 W12）；workflow 綁死單一供應商——曾綁 Sora 的流程 2026 全數重寫；「免費」素材沒確認商用授權（尤其音樂）。</span><span class="en-only">Pitfalls: all-AI visuals + AI narration (triggers YouTube's inauthentic content review); vendor lock-in (Sora-bound workflows were all rewritten in 2026); unverified commercial licenses on "free" assets.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">Sora 關閉官方說明 — OpenAI</span><span class="en-only">Sora shutdown — official notice — OpenAI</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://mstudio.ai/insights/best-ai-video-generator-2026" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Runway/Kling/Pika 比較 2026 — M Studio</span><span class="en-only">Runway vs Kling vs Pika 2026 — M Studio</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.visla.us/blog/guides/ai-generated-video-clips-vs-stock-footage-a-practical-guide-for-business-videos/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">AI vs Stock Footage 實務指南 — Visla</span><span class="en-only">AI vs stock footage — a practical guide — Visla</span></span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- W12: Automation -->
+    <section class="topic-section" id="topic-automation">
+      <div class="topic-card" id="card-automation">
+        <div class="topic-header" onclick="toggleCard('card-automation')">
+          <div class="topic-icon">⚙️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">n8n 自動化管線</span><span class="en-only">The n8n Automation Pipeline</span></h2>
+            <div class="topic-subtitle zh-only">自動化「產」、人工把關「選題與終審」</div>
+            <div class="topic-subtitle en-only">Automate production; humans own topics and final review</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 12</span><span class="tag tag-sky"><span class="zh-only">Matt 技術可直接上手</span><span class="en-only">Matt can build this</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🔗 <span class="zh-only">全自動流程與現實</span><span class="en-only">The Full-Auto Flow & Reality</span></summary>
+            <div class="sub-content">
+              <div class="pipeline">
+                <div class="pipeline-step zh-only">選題<br><span style="font-weight:400;font-size:.7rem">Google Sheet</span></div>
+                <div class="pipeline-step en-only">Topics<br><span style="font-weight:400;font-size:.7rem">Google Sheet</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">腳本分鏡<br><span style="font-weight:400;font-size:.7rem">LLM</span></div>
+                <div class="pipeline-step en-only">Script<br><span style="font-weight:400;font-size:.7rem">LLM</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">生圖/生片<br><span style="font-weight:400;font-size:.7rem">Flux / Kling</span></div>
+                <div class="pipeline-step en-only">Visuals<br><span style="font-weight:400;font-size:.7rem">Flux / Kling</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">配音<br><span style="font-weight:400;font-size:.7rem">ElevenLabs</span></div>
+                <div class="pipeline-step en-only">Voice<br><span style="font-weight:400;font-size:.7rem">ElevenLabs</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">合成<br><span style="font-weight:400;font-size:.7rem">Creatomate</span></div>
+                <div class="pipeline-step en-only">Render<br><span style="font-weight:400;font-size:.7rem">Creatomate</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">🧑 人工終審<br><span style="font-weight:400;font-size:.7rem">必要節點</span></div>
+                <div class="pipeline-step en-only">🧑 Human Review<br><span style="font-weight:400;font-size:.7rem">mandatory</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">多平台發布</div>
+                <div class="pipeline-step en-only">Publish</div>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only">n8n 官方模板庫有現成 workflow 可直接匯入；可自架省訂閱費、資料自主</li>
+                <li class="en-only">n8n's official template library has ready workflows; self-hosting saves fees and keeps data yours</li>
+                <li class="zh-only">一站式替代：Revid.ai（連結轉影片）、Creatify（UGC 風廣告）、HeyGen（最擬真 avatar、175+ 語言 lip-sync）</li>
+                <li class="en-only">One-stop alternatives: Revid.ai, Creatify, HeyGen (most realistic avatars, 175+ language lip-sync)</li>
+                <li class="zh-only">規模現實：可做到每日 2-3 支，但<strong>全自動 ≠ 免審</strong></li>
+                <li class="en-only">Scale reality: 2-3 videos/day is achievable, but <strong>full-auto ≠ review-free</strong></li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：100% 無人審直發（量產低質被判 inauthentic）；低估 API 成本疊加（LLM＋生圖＋生片＋TTS＋合成，單支成本比想像高數倍）；workflow 綁死單一供應商。</span><span class="en-only">Pitfalls: zero-review auto-publishing (flagged as inauthentic); underestimating stacked API costs (several times higher per video than expected); single-vendor lock-in.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://n8n.io/workflows/6014-create-faceless-videos-with-gemini-elevenlabs-leonardo-ai-and-shotstack/" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">n8n faceless 影片 workflow 模板</span><span class="en-only">n8n faceless video workflow template</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://n8n.io/workflows/3442-fully-automated-ai-video-generation-and-multi-platform-publishing/" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">n8n 全自動生成＋多平台發布模板</span><span class="en-only">Fully automated generation + multi-platform publishing</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://creatify.ai/compare/heygen" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">Creatify vs HeyGen 比較</span><span class="en-only">Creatify vs HeyGen</span></span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- W12: Policy -->
+    <section class="topic-section" id="topic-policy">
+      <div class="topic-card" id="card-policy">
+        <div class="topic-header" onclick="toggleCard('card-policy')">
+          <div class="topic-icon">⚖️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">平台 AI 政策紅線（避免 demonetize）</span><span class="en-only">Platform AI Policy Red Lines</span></h2>
+            <div class="topic-subtitle zh-only">兩層規範別混淆：揭露義務 ≠ 變現資格</div>
+            <div class="topic-subtitle en-only">Two layers, don't conflate: disclosure ≠ monetization eligibility</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 12</span><span class="tag tag-red"><span class="zh-only">合規 Compliance</span><span class="en-only">Compliance</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>📋 <span class="zh-only">YouTube 兩層 + TikTok C2PA</span><span class="en-only">YouTube's Two Layers + TikTok C2PA</span></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th class="zh-only">規範</th><th class="en-only">Rule</th><th class="zh-only">內容</th><th class="en-only">What it says</th><th class="zh-only">違反後果</th><th class="en-only">Consequence</th></tr></thead>
+                  <tbody>
+                    <tr><td class="zh-only"><strong>YouTube 揭露義務</strong></td><td class="en-only"><strong>YouTube disclosure</strong></td><td class="zh-only">上傳時用 altered/synthetic 開關揭露「可能誤導以為真實」的 AI 內容</td><td class="en-only">Flag AI content that could be mistaken for real via the altered/synthetic toggle</td><td class="zh-only">平台強制加不可移除標籤</td><td class="en-only">Forced, non-removable label</td></tr>
+                    <tr><td class="zh-only"><strong>YouTube 變現資格（2025-07-15）</strong></td><td class="en-only"><strong>YouTube monetization (2025-07-15)</strong></td><td class="zh-only">「inauthentic content」：大量重複、無原創觀點的 AI 影片被拒於 YPP。<strong>AI 本身不違規，低原創性才違規</strong></td><td class="en-only">"Inauthentic content": mass-produced, no-original-perspective AI videos barred from YPP. <strong>AI isn't the violation — low originality is</strong></td><td class="zh-only">無法變現 / 被移出 YPP</td><td class="en-only">Demonetized / removed from YPP</td></tr>
+                    <tr><td><strong><span class="zh-only">TikTok（2025-01 起）</span><span class="en-only">TikTok (from 2025-01)</span></strong></td><td class="zh-only">擬真 AI 內容須加 AI label；<strong>C2PA Content Credentials 自動偵測</strong>，自動標記不可移除</td><td class="en-only">Realistic AI content needs the AI label; <strong>C2PA auto-detection</strong>, auto-labels can't be removed</td><td class="zh-only">移除＋降觸及＋記 strike（2025 下半年移除 5 萬+ 支）</td><td class="en-only">Removal + reach penalty + strike (50K+ videos removed in H2 2025)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>重要豁免</strong>：AI 寫腳本/caption/hashtag/字幕等「工作流 AI」不需標記——規範對象是<strong>畫面與聲音本身</strong></li>
+                <li class="en-only"><strong>Key exemption</strong>: workflow AI (scripts, captions, hashtags, subtitles) needs no label — the rules target <strong>visuals and audio</strong></li>
+                <li class="zh-only">合規三步：真實素材優先 → 擬真 AI 元素主動標 → 每支有原創觀點/加工（旁白觀點、剪輯敘事）</li>
+                <li class="en-only">Three-step compliance: real footage first → proactively label realistic AI → ensure original perspective in every video</li>
+              </ul>
+              <div class="ban-box"><span class="zh-only">最危險的誤解：「用 AI 就會被 demonetize」（錯——懲罰的是低原創量產）；把揭露標籤和變現資格混為一談；用了 AI 畫面不標記，被 C2PA metadata 自動抓到 → 強制標籤＋strike。</span><span class="en-only">Most dangerous misconceptions: "using AI gets you demonetized" (wrong — low-originality mass production does); conflating disclosure with monetization; skipping labels and getting caught by C2PA metadata → forced label + strike.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://support.google.com/youtube/answer/14328491" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">YouTube altered/synthetic content 揭露</span><span class="en-only">YouTube altered/synthetic content disclosure</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://newsroom.tiktok.com/en-us/new-labels-for-disclosing-ai-generated-content" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">TikTok AI 標籤 — Newsroom</span><span class="en-only">TikTok AI labels — Newsroom</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://influencermarketinghub.com/youtube-inauthentic-content/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">YouTube Inauthentic Content 解析 — IMH</span><span class="en-only">YouTube inauthentic content explained — IMH</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://influencermarketinghub.com/ai-disclosure-rules/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">各平台 AI 揭露規則總表 — IMH</span><span class="en-only">AI disclosure rules across platforms — IMH</span></span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- W12: Process Video -->
+    <section class="topic-section" id="topic-process">
+      <div class="topic-card" id="card-process">
+        <div class="topic-header" onclick="toggleCard('card-process')">
+          <div class="topic-icon">🧶</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">手作 Process Video：最安全的 Faceless 路線</span><span class="en-only">Process Video: The Safest Faceless Route</span></h2>
+            <div class="topic-subtitle zh-only">零合規風險 + 真實性是賣點 + 影片即產品展示</div>
+            <div class="topic-subtitle en-only">Zero compliance risk + authenticity as the selling point</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 12</span><span class="tag tag-sky"><span class="zh-only">Matt 主場 Home turf</span><span class="en-only">Home turf</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🎧 <span class="zh-only">ASMR 手法與結構</span><span class="en-only">ASMR Techniques & Structure</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>天生 faceless</strong>：拍手、材料、工具、成品——不需 AI 畫面、不碰政策紅線、真實性反而是賣點</li>
+                <li class="en-only"><strong>Naturally faceless</strong>: hands, materials, tools, the finished piece — no AI visuals, no policy risk, authenticity sells</li>
+                <li class="zh-only"><strong>聲音是主角</strong>：保留原始環境音（切割/揉捏/刷塗聲）並投資收音；ASMR 觀眾為聲音而來</li>
+                <li class="en-only"><strong>Sound is the star</strong>: keep the original audio (cutting, kneading, brushing) and invest in recording — ASMR viewers come for the sound</li>
+                <li class="zh-only">視覺手法：慢動作、重複性動作、特寫鏡頭營造 hypnotic 效果</li>
+                <li class="en-only">Visual technique: slow motion, repetitive motion, close-ups for the hypnotic effect</li>
+                <li class="zh-only"><strong>結構套 W8 框架</strong>：hook 用最戲劇性瞬間（脫模/上釉/成品 reveal）放開頭 1-2 秒 → 倒敘過程 → payoff 成品展示</li>
+                <li class="en-only"><strong>Apply the W8 framework</strong>: hook with the most dramatic moment (demolding, glazing, the reveal) → rewind through the process → payoff with the finished piece</li>
+                <li class="zh-only">Hashtag 生態：#satisfying #asmr #process #handmade ＋ 利基 tag；變現直接——影片即產品展示 → 導流商店</li>
+                <li class="en-only">Hashtags: #satisfying #asmr #process #handmade + niche tags; monetization is direct — the video IS the product demo</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">誤區：配樂蓋掉製作過程的原始聲音；按時間順序平鋪直敘（開頭 3 秒是準備材料 → 被滑走，高潮要前置）；過度加速整段影片——satisfying 的價值在節奏感，關鍵動作原速或慢放。</span><span class="en-only">Pitfalls: music burying the process audio; chronological order (3 seconds of prep = swiped away — front-load the climax); over-speeding everything — satisfying content lives on rhythm; keep key motions real-time or slowed.</span></div>
+              <div class="case-box"><strong class="zh-only">參考帳號：</strong><strong class="en-only">Reference: </strong><span class="zh-only">@saygeceramics（TikTok 陶藝 ASMR）——只拍手與作品，手作類 faceless 的直接範本。</span><span class="en-only">@saygeceramics (TikTok pottery ASMR) — hands and work only; the direct template for maker faceless content.</span> <a href="https://www.tiktok.com/@saygeceramics" target="_blank" rel="noopener">TikTok ↗</a></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://www.imagine.art/blogs/how-to-create-asmr-videos" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title">How to Create ASMR Videos — ImagineArt</span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- W12: Cases -->
+    <section class="topic-section" id="topic-cases">
+      <div class="topic-card" id="card-cases">
+        <div class="topic-header" onclick="toggleCard('card-cases')">
+          <div class="topic-icon">🏆</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">成功案例：一致性是共同因子</span><span class="en-only">Success Cases: Consistency Is the Common Factor</span></h2>
+            <div class="topic-subtitle zh-only">觀眾訂閱的是「可預期的體驗」，不是人</div>
+            <div class="topic-subtitle en-only">Audiences subscribe to a predictable experience, not a person</div>
+            <div class="topic-tags"><span class="tag tag-green">Week 12</span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th class="zh-only">頻道</th><th class="en-only">Channel</th><th class="zh-only">模式</th><th class="en-only">Model</th><th class="zh-only">成績</th><th class="en-only">Results</th></tr></thead>
+                <tbody>
+                  <tr><td><a href="https://www.youtube.com/@LofiGirl" target="_blank" rel="noopener"><strong>Lofi Girl</strong></a></td><td class="zh-only">單一動畫角色 IP ＋ 音樂直播——無限重複格式</td><td class="en-only">One animated character IP + music streams</td><td class="zh-only">1500 萬+ 訂閱，估計月收 $20K-45K</td><td class="en-only">15M+ subs, est. $20K-45K/mo</td></tr>
+                  <tr><td><a href="https://www.youtube.com/@TheInfographicsShow" target="_blank" rel="noopener"><strong>The Infographics Show</strong></a></td><td class="zh-only">純動畫＋旁白，歷史到科學</td><td class="en-only">Pure animation + narration</td><td class="zh-only">1500 萬訂閱</td><td class="en-only">15M subs</td></tr>
+                  <tr><td><strong>Cal AI</strong></td><td class="zh-only">純 faceless 解說影片（無創辦人出鏡、無網紅）</td><td class="en-only">Pure faceless explainers (no founder, no influencers)</td><td class="zh-only">34 天做到 $1.5M MRR</td><td class="en-only">$1.5M MRR in 34 days</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ul class="bullet-list">
+              <li class="zh-only"><strong>共同成功因子：格式、語調、主題、品質的極度一致性</strong>——觀眾訂閱的是可預期的體驗</li>
+              <li class="en-only"><strong>Common factor: extreme consistency</strong> in format, tone, topic, and quality</li>
+              <li class="zh-only">搭配 trending sounds 的 faceless 影片分享率高 52%</li>
+              <li class="en-only">Faceless videos with trending sounds see 52% higher share rates</li>
+            </ul>
+            <div class="warning-box"><span class="zh-only">誤區：模仿案例的表面格式而非一致性系統（發 10 支就換風格）；以為 faceless = 匿名亂做——聲音與視覺風格是可累積的品牌資產。</span><span class="en-only">Pitfalls: copying the surface format instead of the consistency system (restyling after 10 videos); treating faceless as anonymous chaos — voice and visual style are compounding brand assets.</span></div>
+            <div class="links-grid">
+              <a class="link-item" href="https://vidpros.com/top-faceless-youtube-channels/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">12 個成功 faceless 頻道 — Vidpros</span><span class="en-only">12 successful faceless channels — Vidpros</span></span><span class="link-arrow">↗</span></a>
+              <a class="link-item" href="https://outlierkit.com/resources/faceless-youtube-channels/" target="_blank" rel="noopener"><span class="link-tag link-community">Community</span><span class="link-title"><span class="zh-only">100 個 faceless niche + CPM 數據 — OutlierKit</span><span class="en-only">100 faceless niches with CPM data — OutlierKit</span></span><span class="link-arrow">↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Appendix A: Budget Stack -->
+    <section class="topic-section" id="topic-budget">
+      <div class="topic-card" id="card-budget">
+        <div class="topic-header" onclick="toggleCard('card-budget')">
+          <div class="topic-icon">💰</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">附錄 A：免費/低成本實戰方案</span><span class="en-only">Appendix A: The Free / Low-Cost Stack</span></h2>
+            <div class="topic-subtitle zh-only">$0/月可完整起步——工具價格查證於 2026-07</div>
+            <div class="topic-subtitle en-only">A complete $0/month starting stack — prices verified 2026-07</div>
+            <div class="topic-tags"><span class="tag tag-green"><span class="zh-only">實戰 Practical</span><span class="en-only">Practical</span></span><span class="tag tag-orange"><span class="zh-only">價格時效敏感 Prices change</span><span class="en-only">Prices change</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🏦 <span class="zh-only">第一原則：你的自有資產就是內容機器</span><span class="en-only">First Principle: Your Own Assets Are the Content Machine</span></summary>
+            <div class="sub-content">
+              <p class="zh-only">開始比價工具之前，先盤點你已經擁有的畫面來源——多數品牌不需要買 AI 生成，<strong>自己的產品/數據/過程本身就是無限素材</strong>：</p>
+              <p class="en-only">Before pricing tools, inventory the footage you already own — most brands don't need AI generation; <strong>your own product, data, or process is infinite material</strong>:</p>
+              <ul class="bullet-list">
+                <li class="zh-only">數位工具/SaaS → 產品操作畫面、生成過程動畫（螢幕錄製，$0）</li>
+                <li class="en-only">Digital tools/SaaS → product screens, generation animations (screen recording, $0)</li>
+                <li class="zh-only">手作/實體 → 製作過程（process video，$0 + 手機）</li>
+                <li class="en-only">Handmade/physical → the making process ($0 + a phone)</li>
+                <li class="zh-only">數據型公司（金融/分析）→ 數據視覺化動畫、圖表生長過程（螢幕錄製儀表板，$0）</li>
+                <li class="en-only">Data companies (finance/analytics) → data-viz animations, growing charts ($0)</li>
+                <li class="zh-only">知識型 → 螢幕上的手寫/白板/簡報動畫</li>
+                <li class="en-only">Knowledge brands → on-screen writing, whiteboards, slide animations</li>
+              </ul>
+              <p class="zh-only" style="font-size:.85rem;color:var(--muted)">影片結尾 CTA 直接導流自家網站——影片即產品展示，轉換路徑最短。</p>
+              <p class="en-only" style="font-size:.85rem;color:var(--muted)">End-of-video CTAs route straight to your site — the video IS the product demo.</p>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>📱 <span class="zh-only">帳號準備（全部免費）</span><span class="en-only">Accounts (All Free)</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only">TikTok Business（免費，送商用音樂庫）、Instagram 專業帳號、YouTube 頻道——短影音鐵三角</li>
+                <li class="en-only">TikTok Business (free, incl. Commercial Music Library), IG professional account, YouTube channel — the video trio</li>
+                <li class="zh-only">Pinterest Business（免費，送 Pinterest Trends 關鍵字工具）——視覺/電商/手作類必開</li>
+                <li class="en-only">Pinterest Business (free, incl. Pinterest Trends) — essential for visual/e-commerce/handmade</li>
+                <li class="zh-only">X / LinkedIn——B2B、金融、開發者受眾的主場（參考 W3-5 單元的平台選擇公式）</li>
+                <li class="en-only">X / LinkedIn — home turf for B2B, finance, and developer audiences (see the W3-5 unit)</li>
+                <li class="zh-only"><strong>平台組合依受眾決定</strong>：手作＝Pinterest+IG+TikTok；量化/金融＝X+YouTube+LinkedIn；SaaS＝X+YouTube+PH 生態</li>
+                <li class="en-only"><strong>Mix by audience</strong>: handmade = Pinterest+IG+TikTok; finance = X+YouTube+LinkedIn; SaaS = X+YouTube+PH ecosystem</li>
+              </ul>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>🧾 <span class="zh-only">各步驟比價表（2026-07 查證）</span><span class="en-only">Step-by-Step Price Table (verified 2026-07)</span></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th class="zh-only">步驟</th><th class="en-only">Step</th><th class="zh-only">$0 免費方案</th><th class="en-only">$0 Option</th><th class="zh-only">低成本升級</th><th class="en-only">Paid Upgrade</th></tr></thead>
+                  <tbody>
+                    <tr><td class="zh-only"><strong>素材</strong></td><td class="en-only"><strong>Footage</strong></td><td class="zh-only">OBS（完全免費開源）＋手機</td><td class="en-only">OBS (fully free) + phone</td><td>—</td></tr>
+                    <tr><td class="zh-only"><strong>腳本/caption</strong></td><td class="en-only"><strong>Scripts</strong></td><td class="zh-only">LLM 助手（多數人已有訂閱）</td><td class="en-only">Your LLM assistant</td><td>—</td></tr>
+                    <tr><td class="zh-only"><strong>配音</strong></td><td class="en-only"><strong>Voice</strong></td><td class="zh-only">Azure TTS F0：每月 50 萬字免費（約 10 小時音訊，zh-TW 腔可用）</td><td class="en-only">Azure TTS F0: 500K chars/mo free</td><td class="zh-only">ElevenLabs Starter <strong>$6/月</strong>（30K credits，<strong>含商用權</strong>——免費版不含）</td><td class="en-only">ElevenLabs Starter $6/mo (incl. commercial license)</td></tr>
+                    <tr><td class="zh-only"><strong>剪輯＋字幕</strong></td><td class="en-only"><strong>Editing</strong></td><td class="zh-only">Clipchamp（Windows 內建，1080p 官方確認無浮水印）或 DaVinci Resolve（4K 免費）；CapCut 免費版手動剪輯無浮水印但自動字幕限約 10 分/專案</td><td class="en-only">Clipchamp (1080p, no watermark) or DaVinci Resolve (4K free)</td><td class="zh-only">CapCut Standard <strong>$9.99/月</strong>（無限自動字幕）</td><td class="en-only">CapCut Standard $9.99/mo</td></tr>
+                    <tr><td class="zh-only"><strong>音樂</strong></td><td class="en-only"><strong>Music</strong></td><td class="zh-only">平台內建 trending sounds（app 內免費）＋ Pixabay（商用免費免標注）；YouTube Audio Library 只保證 YouTube 內使用</td><td class="en-only">In-app trending sounds + Pixabay (free commercial)</td><td>—</td></tr>
+                    <tr><td class="zh-only"><strong>封面</strong></td><td class="en-only"><strong>Covers</strong></td><td class="zh-only">Canva 免費版（做圖無浮水印；只有影片輸出限 720p）或自製 SVG/HTML 模板</td><td class="en-only">Canva free tier or DIY SVG/HTML templates</td><td>—</td></tr>
+                    <tr><td class="zh-only"><strong>排程</strong></td><td class="en-only"><strong>Scheduling</strong></td><td class="zh-only">Metricool 免費（1 品牌、50 則/月）或平台原生發布</td><td class="en-only">Metricool free (50 posts/mo) or native</td><td class="zh-only">Buffer $6/頻道/月</td><td class="en-only">Buffer $6/channel/mo</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="warning-box"><span class="zh-only">最值得花的第一筆錢：ElevenLabs Starter $6/月——若走 AI 旁白路線，商用授權與音質是專業感關鍵。純 process video + trending sounds 路線則 $0 到底。</span><span class="en-only">First dollar best spent: ElevenLabs Starter at $6/mo if you narrate. Pure process video + trending sounds stays at $0.</span></div>
+              <div class="warning-box"><span class="zh-only">價格時效：本表查證於 2026-07。CapCut 2025 已改制一次（大量免費功能移入付費），任何免費方案都可能再變——生產線不要押在單一工具的免費層上。</span><span class="en-only">Prices verified 2026-07. CapCut already restructured once in 2025 — never bet your pipeline on any single tool's free tier.</span></div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Appendix B: Automation Blueprint -->
+    <section class="topic-section" id="topic-blueprint">
+      <div class="topic-card" id="card-blueprint">
+        <div class="topic-header" onclick="toggleCard('card-blueprint')">
+          <div class="topic-icon">🛠️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">附錄 B：全自動化工程藍圖</span><span class="en-only">Appendix B: The Full-Automation Engineering Blueprint</span></h2>
+            <div class="topic-subtitle zh-only">從手動生產線到 n8n 自動工廠，需要哪些工程</div>
+            <div class="topic-subtitle en-only">The engineering path from manual pipeline to n8n factory</div>
+            <div class="topic-tags"><span class="tag tag-sky"><span class="zh-only">工程 Engineering</span><span class="en-only">Engineering</span></span><span class="tag tag-green"><span class="zh-only">可自架 Self-hostable</span><span class="en-only">Self-hostable</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <details class="sub-section" open>
+            <summary>🏗️ <span class="zh-only">四階段演進（不要一步到位）</span><span class="en-only">Four Evolution Stages (Don't Skip)</span></summary>
+            <div class="sub-content">
+              <div class="pipeline">
+                <div class="pipeline-step zh-only">Stage 0<br><span style="font-weight:400;font-size:.7rem">全手動跑通</span></div>
+                <div class="pipeline-step en-only">Stage 0<br><span style="font-weight:400;font-size:.7rem">Manual end-to-end</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">Stage 1<br><span style="font-weight:400;font-size:.7rem">半自動：腳本+配音</span></div>
+                <div class="pipeline-step en-only">Stage 1<br><span style="font-weight:400;font-size:.7rem">Semi: script+voice</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">Stage 2<br><span style="font-weight:400;font-size:.7rem">自動合成+人工終審</span></div>
+                <div class="pipeline-step en-only">Stage 2<br><span style="font-weight:400;font-size:.7rem">Auto-render + review</span></div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step zh-only">Stage 3<br><span style="font-weight:400;font-size:.7rem">排程發布+數據回饋</span></div>
+                <div class="pipeline-step en-only">Stage 3<br><span style="font-weight:400;font-size:.7rem">Publish + feedback loop</span></div>
+              </div>
+              <p class="zh-only" style="font-size:.85rem">先手動跑 10-20 支確認格式有效（W8-10 的節奏表），再自動化——<strong>自動化一條沒驗證的生產線只會更快地量產失敗</strong>。</p>
+              <p class="en-only" style="font-size:.85rem">Run 10-20 videos manually first to validate the format — <strong>automating an unvalidated pipeline just mass-produces failure faster</strong>.</p>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>⚙️ <span class="zh-only">n8n 節點分解與工程需求</span><span class="en-only">n8n Node Breakdown & Engineering Needs</span></summary>
+            <div class="sub-content">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th class="zh-only">節點</th><th class="en-only">Node</th><th class="zh-only">技術</th><th class="en-only">Tech</th><th class="zh-only">工程難度</th><th class="en-only">Effort</th></tr></thead>
+                  <tbody>
+                    <tr><td class="zh-only">① 選題佇列</td><td class="en-only">① Topic queue</td><td class="zh-only">Google Sheet / Notion DB + n8n trigger（定時或 webhook）</td><td class="en-only">Sheet/Notion + n8n trigger</td><td class="zh-only">低——現成節點</td><td class="en-only">Low</td></tr>
+                    <tr><td class="zh-only">② 腳本生成</td><td class="en-only">② Script gen</td><td class="zh-only">LLM API（帶 W8 四段式框架的 system prompt + 品牌語氣範本 + 禁用語清單）</td><td class="en-only">LLM API with the W8 framework prompt + brand voice + banned-word list</td><td class="zh-only">中——prompt 工程是成敗關鍵</td><td class="en-only">Medium — prompt quality decides everything</td></tr>
+                    <tr><td class="zh-only">③ 配音</td><td class="en-only">③ Voice</td><td class="zh-only">TTS API（ElevenLabs/Azure）；中文需前置斷句與多音字修正步驟</td><td class="en-only">TTS API; Chinese needs polyphone pre-correction</td><td class="zh-only">低-中——多音字修正表要自建</td><td class="en-only">Low-Med</td></tr>
+                    <tr><td class="zh-only">④ 畫面</td><td class="en-only">④ Visuals</td><td class="zh-only">三選一：(a) 預錄素材庫輪播（最穩）(b) 自製網頁動畫 + headless browser 錄製（最獨特）(c) AI 生成 API（最貴+需標記）</td><td class="en-only">(a) pre-recorded library (b) web animation + headless recording (c) AI gen API</td><td class="zh-only">(b) 是差異化所在：中-高</td><td class="en-only">(b) is the differentiator: Med-High</td></tr>
+                    <tr><td class="zh-only">⑤ 合成渲染</td><td class="en-only">⑤ Render</td><td class="zh-only">Creatomate/Shotstack API（模板化，~$40/月起）或自架 FFmpeg/Remotion（免費但要寫程式）</td><td class="en-only">Creatomate/Shotstack API or self-hosted FFmpeg/Remotion</td><td class="zh-only">API 低／自架中-高</td><td class="en-only">API low / self-hosted Med-High</td></tr>
+                    <tr><td class="zh-only">⑥ 🧑 人工終審</td><td class="en-only">⑥ 🧑 Human review</td><td class="zh-only">n8n 審核節點：成品傳 LINE/Slack/Email，按鈕核准才進下一步</td><td class="en-only">n8n approval node: preview to LINE/Slack, button-gated</td><td class="zh-only">低——<strong>必要節點，不可省</strong>（W12 政策紅線）</td><td class="en-only">Low — <strong>mandatory</strong></td></tr>
+                    <tr><td class="zh-only">⑦ 多平台發布</td><td class="en-only">⑦ Publish</td><td class="zh-only">YouTube API 直發；TikTok/IG 官方 API 限制多——常見解法是 Metricool/Buffer API 或排程工具中轉</td><td class="en-only">YouTube API direct; TikTok/IG APIs are restrictive — route via scheduler APIs</td><td class="zh-only">中——平台 API 審核是隱藏成本</td><td class="en-only">Medium — platform API approval is the hidden cost</td></tr>
+                    <tr><td class="zh-only">⑧ 數據回饋</td><td class="en-only">⑧ Feedback</td><td class="zh-only">定時抓各平台成效 → 回寫選題表（哪類 hook 有效）→ 影響②的 prompt</td><td class="en-only">Scheduled metrics pull → back to the topic sheet → informs ②</td><td class="zh-only">中——做到這步才是「系統」</td><td class="en-only">Medium — this closes the loop</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+          <details class="sub-section">
+            <summary>💸 <span class="zh-only">成本結構與 MVP 建議</span><span class="en-only">Cost Structure & MVP Scope</span></summary>
+            <div class="sub-content">
+              <ul class="bullet-list">
+                <li class="zh-only"><strong>固定成本</strong>：n8n 自架 $0（VPS 約 $5/月）或 n8n cloud $24/月起；渲染 API ~$40/月起（自架 FFmpeg 則 $0）</li>
+                <li class="en-only"><strong>Fixed</strong>: n8n self-hosted $0 (VPS ~$5/mo) or cloud from $24/mo; render API ~$40/mo (or $0 self-hosted FFmpeg)</li>
+                <li class="zh-only"><strong>變動成本（每支）</strong>：LLM 腳本 ~$0.01-0.05 + TTS ~$0.1-0.5 + 渲染 ~$0.2-0.5——<strong>單支約 $0.3-1</strong>，但別忘了 API 成本疊加的教訓（W12 誤區）</li>
+                <li class="en-only"><strong>Variable per video</strong>: LLM + TTS + render ≈ <strong>$0.3-1/video</strong> — remember the cost-stacking pitfall</li>
+                <li class="zh-only"><strong>MVP 建議範圍</strong>：Stage 1 半自動（選題表 → LLM 腳本 → TTS 配音自動化，畫面與剪輯仍手動）——工程一個週末可完成，先讓「每支省 30 分鐘」發生</li>
+                <li class="en-only"><strong>MVP scope</strong>: Stage 1 semi-auto (topics → script → voice), visuals and editing stay manual — a weekend of engineering that saves 30 min/video immediately</li>
+                <li class="zh-only"><strong>差異化機會</strong>：④(b) 自製網頁動畫＋headless 錄製——通用工具做不到你的品牌專屬畫面，這是自動化管線裡最值得投資的自研組件</li>
+                <li class="en-only"><strong>The differentiator</strong>: ④(b) custom web animations + headless recording — generic tools can't produce your brand-unique visuals</li>
+              </ul>
+              <div class="warning-box"><span class="zh-only">工程紅線回顧（呼應本單元政策節）：⑥人工終審不可自動化掉；全 AI 畫面+旁白需主動標記；每支保有原創觀點——自動化的是「產」，不是「判斷」。</span><span class="en-only">Engineering red lines: never automate away ⑥ human review; label realistic AI elements; keep original perspective — automate production, not judgment.</span></div>
+              <div class="links-grid">
+                <a class="link-item" href="https://n8n.io/workflows/6014-create-faceless-videos-with-gemini-elevenlabs-leonardo-ai-and-shotstack/" target="_blank" rel="noopener"><span class="link-tag link-official">Official</span><span class="link-title"><span class="zh-only">n8n faceless workflow 模板（可作起點）</span><span class="en-only">n8n faceless workflow template (a starting point)</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.creatomate.com/" target="_blank" rel="noopener"><span class="link-tag link-community">Tool</span><span class="link-title"><span class="zh-only">Creatomate（模板化渲染 API）</span><span class="en-only">Creatomate (templated rendering API)</span></span><span class="link-arrow">↗</span></a>
+                <a class="link-item" href="https://www.remotion.dev/" target="_blank" rel="noopener"><span class="link-tag link-community">Tool</span><span class="link-title"><span class="zh-only">Remotion（用 React 寫影片，自架渲染）</span><span class="en-only">Remotion (write video in React, self-hosted rendering)</span></span><span class="link-arrow">↗</span></a>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Practice -->
+    <section class="topic-section" id="practice">
+      <div class="topic-card open" id="card-practice">
+        <div class="topic-header" onclick="toggleCard('card-practice')">
+          <div class="topic-icon">✏️</div>
+          <div class="topic-title-wrap">
+            <h2 class="topic-title"><span class="zh-only">實作練習（Q1 畢業製作）</span><span class="en-only">Practice (Q1 Capstone)</span></h2>
+            <div class="topic-subtitle zh-only">整合 W1-12 所學，為捕夢網建一條生產線</div>
+            <div class="topic-subtitle en-only">Integrate W1-12 into a real pipeline for the dreamcatcher</div>
+            <div class="topic-tags"><span class="tag tag-green"><span class="zh-only">動手做 Hands-on</span><span class="en-only">Hands-on</span></span><span class="tag tag-sky"><span class="zh-only">Q1 完結</span><span class="en-only">Q1 Finale</span></span></div>
+          </div>
+          <span class="topic-chevron">▾</span>
+        </div>
+        <div class="topic-body">
+          <div class="sub-content" style="padding-top:16px">
+            <div class="practice-box">
+              <strong class="zh-only">練習 1（W11）：中文 TTS 實測</strong>
+              <strong class="en-only">Exercise 1 (W11): Chinese TTS Bake-off</strong>
+              <span class="zh-only">用各家免費額度，以同一段捕夢網中文腳本（100 字）實測 ElevenLabs / MiniMax / Azure zh-TW，做一張「品質 × 價格」比較表，選出你的品牌主聲音與批量用聲音。</span>
+              <span class="en-only">Test the same 100-character Chinese script on ElevenLabs / MiniMax / Azure zh-TW free tiers; build a quality × price table; pick your brand voice and batch voice.</span>
+            </div>
+            <div class="practice-box">
+              <strong class="zh-only">練習 2（W12）：Process Video 生產線設計</strong>
+              <strong class="en-only">Exercise 2 (W12): Process Video Pipeline Design</strong>
+              <span class="zh-only">為捕夢網設計 3 支 process video 的分鏡與收音計畫：①雷切機切割 SVG 圖案（聲音是主角）②編織過程縮時＋關鍵步驟原速 ③成品在光下的 reveal。每支套 W8 四段式框架標出 hook。</span>
+              <span class="en-only">Design storyboards + sound plans for 3 process videos: ① laser cutting the SVG (sound as the star) ② weaving timelapse + key steps real-time ③ the finished piece in light. Mark the hook per the W8 framework.</span>
+            </div>
+            <div class="practice-box">
+              <strong class="zh-only">練習 3（W12）：自動化邊界決策</strong>
+              <strong class="en-only">Exercise 3 (W12): Automation Boundary Decision</strong>
+              <span class="zh-only">列出你的影片工作流每個環節（選題/腳本/拍攝/剪輯/字幕/排程/發布），標注哪些交給 n8n 自動化、哪些必須人工——並寫下理由（成本？品質？合規？）。</span>
+              <span class="en-only">List every step of your video workflow and mark what goes to n8n vs. what stays human — with reasons (cost? quality? compliance?).</span>
+            </div>
+            <p style="font-size:.82rem;color:var(--muted)" class="zh-only">🎓 Q1（W1-12）到此完課。Q2 進入內容系統與自然流量（SEO/AEO、電子報、內容日曆、社群經營）——依 README 規則，展開 Q2 前需先做新鮮度研究。</p>
+            <p style="font-size:.82rem;color:var(--muted)" class="en-only">🎓 Q1 (W1-12) complete. Q2 covers content systems and organic traffic — per the README, a freshness research pass precedes Q2 expansion.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="glossaryOverlay" onclick="closeGlossary()"></div>
+<div id="glossaryPanel">
+  <div class="gp-header"><span>📖</span>
+    <h2><span class="zh-only">術語速查</span><span class="en-only">Glossary</span></h2>
+    <button class="gp-close" onclick="closeGlossary()">✕</button>
+  </div>
+  <input type="text" id="gpSearch" placeholder="搜尋術語… / Search…" oninput="filterGlossary(this.value)">
+  <div id="gpList"></div>
+</div>
+
+<footer>
+  <span class="zh-only">行銷專欄 · <a href="/projects/marketing/">回到列表</a> · Matt Ye — <a href="https://mattye.dev">mattye.dev</a></span>
+  <span class="en-only">Marketing Column · <a href="/projects/marketing/">Back to list</a> · Matt Ye — <a href="https://mattye.dev">mattye.dev</a></span>
+</footer>
+
+<script>
+const GLOSSARY = [
+  { term:"Faceless Content 不露臉內容", zh:"不出鏡的影音內容。YouTube 前 1000 大頻道超過 40% 從不露臉；聲音與視覺風格仍是可累積的品牌資產。", en:"Video content without showing a face. 40%+ of YouTube's top 1000 channels are faceless." },
+  { term:"Process Video 過程影片", zh:"記錄製作過程的影片（手作/烹飪/陶藝）。天生 faceless、零合規風險、影片即產品展示——手作類最安全路線。", en:"Videos documenting a making process. Naturally faceless, zero compliance risk; the video IS the product demo." },
+  { term:"TTS — Text-to-Speech", zh:"文字轉語音。中文選型重點：斷句、多音字（行/得/了）、輕聲表現——別用英文評測結論選中文工具。", en:"Text-to-speech. For Chinese: phrasing, polyphones, and neutral tones matter — never pick from English benchmarks." },
+  { term:"Polyphone 多音字", zh:"一字多音（行 háng/xíng）。TTS 合成前必須校正，否則旁白出現明顯錯讀。", en:"Characters with multiple readings. Must be corrected before synthesis or narration will misread." },
+  { term:"Lip-sync 對嘴同步", zh:"AI 讓虛擬人像嘴型對上語音。Kling 3.0 支援多語 lip-sync；HeyGen 支援 175+ 語言。", en:"AI matching avatar mouth movement to audio. Kling 3.0 and HeyGen (175+ languages) lead here." },
+  { term:"Stock Footage 素材庫影片", zh:"預拍的授權影片素材（Pexels/Storyblocks）。勝在真實感；最佳策略＝stock 打底、AI 補拍不到的鏡頭。", en:"Pre-shot licensed footage. Wins on realism; best used as the base with AI filling unfilmable shots." },
+  { term:"C2PA Content Credentials", zh:"內容來源與編輯歷程的加密元數據標準。TikTok 2025-01 起自動偵測 AI 生成內容並強制標記（不可移除）。", en:"A cryptographic provenance standard. TikTok auto-detects AI content via C2PA and force-labels it." },
+  { term:"Inauthentic Content", zh:"YouTube 2025-07-15 政策（原 repetitious content）：大量重複、無原創觀點的內容被拒於變現。AI 本身不違規，低原創性才違規。", en:"YouTube's 2025-07-15 policy: mass-produced, no-original-perspective content is barred from monetization. AI isn't the violation — low originality is." },
+  { term:"YPP — YouTube Partner Program", zh:"YouTube 變現資格計畫（廣告分潤等）。inauthentic content 政策的執行對象。", en:"YouTube's monetization program — where the inauthentic content policy bites." },
+  { term:"Demonetization 取消變現", zh:"影片或頻道失去廣告分潤資格。faceless 頻道最大風險來自 inauthentic content 判定，而非 AI 使用本身。", en:"Losing ad revenue eligibility. For faceless channels the risk is the inauthentic ruling, not AI use itself." },
+  { term:"AI Disclosure 揭露義務", zh:"上傳時主動標示擬真 AI 內容。與變現資格是兩層不同規範——工作流 AI（腳本/字幕）不需揭露。", en:"Proactively labeling realistic AI content at upload. Separate from monetization rules; workflow AI needs no disclosure." },
+  { term:"Workflow AI 工作流 AI", zh:"用於腳本、caption、hashtag、字幕的 AI——平台豁免不需標記。規範對象是畫面與聲音本身。", en:"AI for scripts, captions, hashtags, subtitles — exempt from labeling. The rules target visuals and audio." },
+  { term:"n8n", zh:"開源自動化工作流工具，可自架。官方模板庫有現成的 faceless 影片全自動管線可匯入。", en:"An open-source, self-hostable automation tool with ready-made faceless video pipeline templates." },
+  { term:"Avatar Video 虛擬人像影片", zh:"AI 生成的擬真講者影片（HeyGen/Creatify）。適合多語言市場；屬擬真 AI 內容，需標記。", en:"AI-generated realistic presenter videos. Great for multilingual markets; counts as realistic AI content — label it." },
+  { term:"ASMR", zh:"自發性知覺經絡反應——由聲音觸發的舒適感。手作 process video 的核心手法：保留原始環境音、投資收音。", en:"Autonomous sensory meridian response. The core of process video: keep original audio, invest in sound recording." },
+  { term:"Satisfying Content 療癒系內容", zh:"以節奏感與完成感取悅觀眾的內容（切割、脫模、上釉）。價值在節奏——關鍵動作原速或慢放，勿過度加速。", en:"Content pleasing through rhythm and completion. Keep key motions real-time or slowed — never over-speed." },
+  { term:"Hypnotic Effect 催眠效果", zh:"慢動作＋重複性動作＋特寫營造的入迷感，satisfying/ASMR 內容的視覺核心。", en:"The mesmerizing feel from slow motion + repetition + close-ups; the visual core of satisfying content." },
+  { term:"CPM — Cost Per Mille", zh:"每千次曝光收益。選 faceless niche 的常見指標——但只看 CPM 不看持續產出能力是最常見的選題錯誤。", en:"Revenue per 1,000 impressions. A common niche metric — but picking on CPM alone is the classic mistake." },
+  { term:"Vendor Lock-in 供應商綁定", zh:"工作流依賴單一工具的風險。教訓：綁 Sora 的管線在 2026 全數重寫——關鍵節點保持可替換。", en:"Pipeline dependence on one tool. Lesson: Sora-bound pipelines were all rewritten in 2026 — keep nodes swappable." },
+  { term:"Trending Sounds 流行音訊", zh:"平台上正在流行的聲音/音樂。搭配 trending sounds 的 faceless 影片分享率高 52%。", en:"Currently trending audio. Faceless videos using trending sounds see 52% higher share rates." },
+];
+function renderGlossary(filter) {
+  const list = document.getElementById('gpList');
+  const q = (filter || '').toLowerCase();
+  list.innerHTML = '';
+  GLOSSARY.forEach(item => {
+    if (q && !item.term.toLowerCase().includes(q) && !item.zh.toLowerCase().includes(q) && !item.en.toLowerCase().includes(q)) return;
+    const div = document.createElement('div');
+    div.className = 'gp-item';
+    div.innerHTML = '<div class="gp-term" onclick="this.parentElement.classList.toggle(\'open\')">' + escapeHtml(item.term) +
+      ' <span style="color:var(--muted);font-size:.8rem">›</span></div><div class="gp-def"><div class="zh">' +
+      escapeHtml(item.zh) + '</div><div class="en">' + escapeHtml(item.en) + '</div></div>';
+    list.appendChild(div);
+  });
+  if (!list.children.length) list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:.875rem">找不到術語 / No match</div>';
+}
+function filterGlossary(v){ renderGlossary(v); }
+function openGlossary(){ document.getElementById('glossaryOverlay').classList.add('open'); document.getElementById('glossaryPanel').classList.add('open'); renderGlossary(''); }
+function closeGlossary(){ document.getElementById('glossaryOverlay').classList.remove('open'); document.getElementById('glossaryPanel').classList.remove('open'); }
+function toggleCard(id){ document.getElementById(id).classList.toggle('open'); }
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar(){ if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open'); }
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.dataset.theme === 'dark';
+  html.dataset.theme = isDark ? 'light' : 'dark';
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  try { localStorage.setItem('oms_theme', html.dataset.theme); } catch(e) {}
+}
+function toggleLang(){
+  const html = document.documentElement;
+  const isZh = html.dataset.lang === 'zh';
+  html.dataset.lang = isZh ? 'en' : 'zh';
+  document.getElementById('langBtn').textContent = isZh ? '🌐 中' : '🌐 EN';
+  document.title = isZh ? 'The Faceless Video Pipeline | Marketing Column · Matt Ye' : '不露臉短影音 Pipeline — Faceless Video | Marketing Column · Matt Ye';
+  document.getElementById('searchBox').placeholder = isZh ? 'Search…' : '搜尋… / Search…';
+  try { localStorage.setItem('oms_lang', html.dataset.lang); } catch(e) {}
+}
+let searchTimer;
+function handleSearch(val){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const q = val.trim().toLowerCase();
+    document.querySelectorAll('.topic-section').forEach(sec => {
+      sec.classList.toggle('hidden-by-search', q && !sec.textContent.toLowerCase().includes(q));
+    });
+  }, 200);
+}
+const navItems = document.querySelectorAll('.nav-item[href]');
+function updateActiveNav(){
+  const y = window.scrollY + 90;
+  let active = '';
+  ['overview','topic-types','topic-tts','topic-visuals','topic-automation','topic-policy','topic-process','topic-cases','topic-budget','topic-blueprint','practice'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= y) active = '#' + id;
+  });
+  navItems.forEach(a => a.classList.toggle('active', a.getAttribute('href') === active));
+}
+window.addEventListener('scroll', updateActiveNav, { passive:true });
+updateActiveNav();
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGlossary(); });
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+(function init(){
+  try {
+    const t = localStorage.getItem('oms_theme'), l = localStorage.getItem('oms_lang');
+    if (t) { document.documentElement.dataset.theme = t; document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙'; }
+    if (l) { document.documentElement.dataset.lang = l; document.getElementById('langBtn').textContent = l === 'en' ? '🌐 中' : '🌐 EN'; }
+  } catch(e) {}
+})();
+</script>

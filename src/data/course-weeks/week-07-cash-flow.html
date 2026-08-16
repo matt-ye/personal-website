@@ -1,0 +1,575 @@
+<!-- 由 scripts/extract-course-weeks.mjs 從 public/ 的手刻頁轉出，內容未改動。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --plus:#1F8A5F; --minus:#B4552D; --base:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --plus:#35A878; --minus:#E08054; --base:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 偵探對帳遊戲 */
+  .game{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .game h3{margin-top:0}
+  .bridge{margin:1rem 0 .4rem}
+  svg.chart{width:100%;height:auto;display:block}
+  .gcard{margin:.8rem 0;padding:1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .gcard .gq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .gcard .gname{font-size:1.15rem;font-weight:900;margin:.35rem 0 .1rem}
+  .gcard .ghint{font-size:.87rem;color:var(--ink-2)}
+  .gbtns{display:flex;gap:.6rem;justify-content:center;margin-top:.9rem;flex-wrap:wrap}
+  .gbtns button{font:inherit;font-size:.95rem;font-weight:800;padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink-2)}
+  .gbtns button[data-c="plus"]:not(:disabled):hover{border-color:var(--plus);color:var(--plus)}
+  .gbtns button[data-c="minus"]:not(:disabled):hover{border-color:var(--minus);color:var(--minus)}
+  .gbtns button:disabled{cursor:default;opacity:.55}
+  .gbtns button.correct{opacity:1;color:#fff}
+  .gbtns button.correct[data-c="plus"]{background:var(--plus);border-color:var(--plus)}
+  .gbtns button.correct[data-c="minus"]{background:var(--minus);border-color:var(--minus)}
+  .gbtns button.wrong{opacity:1;background:var(--ink-3);border-color:var(--ink-3);color:#fff}
+  .gfeed{margin-top:.9rem;padding:.75rem 1rem;border-radius:9px;font-size:.9rem;display:none;text-align:left}
+  .gfeed.show{display:block}
+  .gfeed.good{background:color-mix(in srgb,var(--plus) 12%,transparent)}
+  .gfeed.bad{background:color-mix(in srgb,var(--minus) 12%,transparent)}
+  .gfeed b{color:var(--pine)}
+  .gnav{display:flex;justify-content:space-between;align-items:center;margin-top:.9rem}
+  .gscore{font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .gnav button{font:inherit;font-size:.9rem;font-weight:700;padding:.5rem 1.2rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--pine);background:var(--pine);color:var(--on-pine)}
+  .gnav button:disabled{opacity:.4;cursor:not-allowed}
+  .gdone{display:none;margin-top:1rem;padding:1rem 1.2rem;background:var(--pine-soft);border-radius:10px;font-size:.95rem}
+  .gdone.show{display:block}
+  .gdone b{color:var(--pine)}
+  .mantra{margin-top:.7rem;text-align:center;font-size:.85rem;color:var(--ink-3)}
+  .mantra b{color:var(--coin)}
+
+  .formula{margin:1.1rem 0;padding:.9rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto;font-size:1.05rem;text-align:center;font-weight:700}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.92rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:right;padding:.45rem .8rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .8rem;text-align:right;border-bottom:1px solid var(--line-soft)}
+  table.data th:first-child,table.data td:first-child{text-align:left}
+  table.data td.hi{font-weight:800;color:var(--pine)}
+  table.data td.pos{color:var(--plus);font-weight:700} table.data td.neg{color:var(--minus);font-weight:700}
+  table.data tr.sum td{font-weight:800;border-top:1.5px solid var(--line)}
+  table.data tr:last-child td{border-bottom:none}
+  table.data .cat{font-weight:700}
+  table.data td.l,table.data th.l{text-align:left}
+  .combo{font-family:ui-monospace,Menlo,monospace;font-weight:800;letter-spacing:.1em;white-space:nowrap}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 07</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q1 共同地基 · Week 07</p>
+  <h1>現金流量表深讀</h1>
+  <p class="lead" style="margin-top:.5rem">「最誠實的一張表」——本週你會親手編出一張現金流量表，多數投資人一輩子沒做過這件事。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-04-accounting/">第 4</a>–<a href="/projects/family-investing-course/week-06-balance-sheet/">6 週</a></span><span class="chip">52 週 · 第 7 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>投資人靠 FCF 估值（Q2 DCF 的直接輸入）、操盤手用 OCF/淨利比驗證盈餘品質（Q3）、財務長的資金調度就是在管理這張表（Q4）。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週分享「好債 vs 壞債」時對方卡住的點——「要付利息的有多少？」有沒有變成反射。先用自己的話再講一次。
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先當一次偵探</p>
+  <p class="q">飲料店第二個月：淨利 <strong>71,667</strong>，但現金只多了 <strong>60,000</strong>。少掉的 11,667 是被誰動了手腳？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">被客戶欠著</button>
+    <button data-g="b">變成存貨堆著</button>
+    <button data-g="c">折舊吃掉的</button>
+    <button data-g="d">好幾筆加減的淨結果</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:2.6rem">區塊 ① ／ 講義 · 約 2 小時</p>
+
+  <div class="prose">
+  <h2>1. 為什麼需要第三張表</h2>
+  <p>第 4 週的飲料店已經示範過：第 2 個月<strong>淨利 71,667、現金卻只多 60,000</strong>。損益表（應計制）與現金是兩本帳，現金流量表就是那座橋——它回答：「<strong>淨利跟現金的差距，去哪了？</strong>」</p>
+
+  <h2>2. 三大活動：現金的三個閘門</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th class="l">活動</th><th class="l">內容</th><th>飲料店第 1 個月</th></tr></thead>
+      <tbody>
+        <tr><td class="cat">營業活動（OCF）</td><td class="l">本業收付：賣貨收現、付原料、付房租薪水</td><td class="num pos">+60,000</td></tr>
+        <tr><td class="cat">投資活動</td><td class="l">買賣長期資產：設備、廠房、金融資產</td><td class="num neg">−200,000</td></tr>
+        <tr><td class="cat">融資活動</td><td class="l">跟資金提供者的往來：借還款、增資、發股利</td><td class="num pos">+500,000</td></tr>
+        <tr class="sum"><td>當期現金淨變動</td><td class="l"></td><td class="num hi">+360,000</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>三者加總＝當期現金淨變動＝第 1 個月月底現金 360,000。<strong>期末現金回到資產負債表的現金科目</strong>——三表勾稽的第三條線，你自己的帳就能驗證。</p>
+
+  <h2>3. 間接法：從淨利「調整」回現金</h2>
+  <p>實務上 99% 的公司用間接法編 OCF：從淨利出發，<strong>①加回非現金費用</strong>（折舊、攤銷——記過費用但沒付錢）<strong>②調整營運資金變動</strong>（方向心法：<strong>資產增加吃現金、負債增加省現金</strong>）<strong>③剔除非營業項目</strong>（處分資產利得等，挪去投資活動）。</p>
+  <p>與其背，不如親手編一次——下面這個對帳遊戲用的全是你第 4 週記的分錄：</p>
+  </div>
+
+  <!-- 間接法偵探 -->
+  <div class="game" id="game">
+    <h3>間接法偵探：編出你的第一張現金流量表</h3>
+    <p class="muted" style="margin:.2rem 0 0">從淨利 71,667 出發，逐筆判斷：這件事讓現金<strong>比帳面多</strong>（加回）還是<strong>比帳面少</strong>（扣掉）？答完五題，橋會剛好搭到現金增加的 60,000。</p>
+    <div class="bridge">
+      <svg class="chart" id="chart" viewBox="0 0 720 300" role="img" aria-label="從淨利調整到營業現金流的橋型圖"></svg>
+    </div>
+    <div class="gcard" id="gcard">
+      <div class="gq" id="g-progress">第 1 筆 / 5</div>
+      <div class="gname" id="g-name"></div>
+      <div class="ghint" id="g-hint"></div>
+      <div class="gbtns" id="g-btns">
+        <button data-c="plus">＋ 加回現金</button>
+        <button data-c="minus">− 從現金扣掉</button>
+      </div>
+      <div class="gfeed" id="g-feed"></div>
+    </div>
+    <div class="gnav">
+      <span class="gscore" id="g-score">答對 0 / 0</span>
+      <button id="g-next" disabled>下一筆 →</button>
+    </div>
+    <div class="gdone" id="g-done"></div>
+    <p class="mantra">心法：<b>資產增加吃現金、負債增加省現金</b>；折舊是記了費用但沒付錢，加回來。</p>
+  </div>
+
+  <div class="prose">
+  <h2>4. 八種現金流組合：判讀公司的人生階段</h2>
+  <p>三大活動的正負號組合是快速定位工具（依序：營業／投資／融資）：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th class="l">組合</th><th class="l">典型身分</th><th class="l">解讀</th></tr></thead>
+      <tbody>
+        <tr><td class="combo" style="color:var(--plus)">＋／−／−</td><td class="cat">成熟金牛</td><td class="l">本業賺錢、持續投資、還債配息——最理想</td></tr>
+        <tr><td class="combo">＋／−／＋</td><td class="cat">成長期</td><td class="l">本業賺但不夠擴張，再借／增資加碼——看擴張的報酬率</td></tr>
+        <tr><td class="combo">＋／＋／−</td><td class="cat">轉型／收縮</td><td class="l">賣資產＋還債——瘦身中，問為什麼</td></tr>
+        <tr><td class="combo">−／−／＋</td><td class="cat">燒錢新創</td><td class="l">本業虧、還在投資、靠融資續命——看跑道還剩幾個月</td></tr>
+        <tr><td class="combo" style="color:var(--minus)">−／＋／＋</td><td class="cat">警訊</td><td class="l">本業失血、變賣資產、四處借錢——距離出事通常不遠</td></tr>
+        <tr><td class="combo" style="color:var(--minus)">−／＋／−</td><td class="cat">大警訊</td><td class="l">本業虧還在還債，靠賣資產撐——倒數計時</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p class="muted">其餘兩種組合罕見。練習時把追蹤公司近 5 年的組合寫出來，看它「人生階段」有沒有移動。</p>
+
+  <h2>5. FCF 與 CapEx 的兩張臉</h2>
+  <div class="formula"><span class="fx">FCF ＝ OCF − CapEx</span></div>
+  <p>FCF 是估值之王（Q2 的 DCF 直接折現它），但判讀 CapEx 要分兩種：<strong>維持性</strong>（不花機器就壞、店就舊——真實的營運成本）與<strong>擴張性</strong>（蓋新廠、開新店——是投資未來，不是成本）。</p>
+  <p>財報不會幫你分，粗略作法：拿 CapEx 跟<strong>折舊</strong>比——CapEx ≈ 折舊，大致是維持；CapEx 遠大於折舊，在擴張（回想專欄 #7 的台積電：FCF 被壓低是因為巨額擴張性 CapEx，不是本業惡化）。</p>
+  <div class="example">
+    <span class="tag">盈餘品質速檢</span>
+    <p>長期 <strong>OCF ÷ 淨利 ≥ 0.8–1</strong> 算健康（獲利有現金支撐）；長期 &lt; 0.8，獲利是「紙上富貴」的成分高——這是下週紅旗清單的主力指標。</p>
+  </div>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「OCF 為正＝公司沒問題」</p><p>OCF 可以靠「拖欠供應商貨款」「狂收預收款」暫時做大；要看組成，不只看總數。</p></div>
+  <div class="myth"><p class="say">「FCF 負＝爛公司」</p><p>高速擴張期的好公司 FCF 常年為負（早期亞馬遜、擴產期台積電）；問題不是負，是「投下去的錢報酬率如何」（ROIC，Q2 深化）。</p></div>
+  <div class="myth"><p class="say">「折舊加回來，所以折舊不重要」</p><p>間接法加回折舊只是會計調整；設備真的會壞、真的要換，<strong>長期而言維持性 CapEx 是真成本</strong>——這就是 Buffett 批評 EBITDA 的原因（「難道牙仙會幫忙付 CapEx？」）。</p></div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插</p>
+  <div class="prose">
+  <h2>讀什麼、抓什麼</h2>
+  <div class="readitem">
+    <span class="t num">40 分</span>
+    <div class="body"><b>《財報就像一本故事書》現金流量表章節</b>
+      <p>MJ 的「現金是血液」框架。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">50 分</span>
+    <div class="body"><b><a class="srclink" href="https://mops.twse.com.tw/mops/web/index" target="_blank" rel="noopener">公開資訊觀測站 實戰 ↗</a></b>
+      <p>下載追蹤公司最新年度「合併現金流量表」逐行讀。用間接法骨架把每一行歸類：非現金調整？營運資金變動？找出：折舊攤銷金額（跟 CapEx 比大小）、「取得不動產、廠房及設備」（＝CapEx 主體）。</p></div>
+  </div>
+  <div class="readitem">
+    <span class="t num">10 分</span>
+    <div class="body"><b><a class="srclink" href="/writing/family-investing-07-financial-statements/">專欄 #7「為什麼有獲利的公司也可能倒閉」段落重讀 ↗</a></b>
+      <p>應計制與現金的落差——你現在能自己編表證明它。</p></div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>三線表＋人生階段判讀</h2>
+  <h3>任務 A｜五年三線表（40 分鐘）</h3>
+  <ol class="tasks">
+    <li>對追蹤公司整理近 5 年：<strong>淨利、OCF、FCF</strong>（FCF＝OCF−「取得不動產、廠房及設備」，簡化版可接受）</li>
+    <li>畫成三條線（試算表折線圖）</li>
+    <li>計算每年 <strong>OCF÷淨利</strong>，標出 &lt; 0.8 的年份</li>
+    <li>寫 150 字：三線的形狀說了什麼故事？背離年份的原因（查該年報的營運資金變動明細）？</li>
+  </ol>
+  <h3>任務 B｜人生階段（10 分鐘）</h3>
+  <p>寫出該公司近 5 年每年的「三活動正負組合」，判斷它在八種組合的哪一格、有沒有移動。</p>
+  <div class="verify">✅ <b>本週工具驗證：</b>飲料店第 2 個月間接法應勾稽出 OCF ＝ <b class="num">60,000</b>（現金 360,000 → 420,000 分毫不差）——上面的偵探遊戲就是驗證器。</div>
+
+  <h3>自我檢核</h3>
+  <ul class="checks" data-key="w7-practice">
+    <li><label><input type="checkbox"><span>三線表完成且 OCF/淨利比標記完成</span></label></li>
+    <li><label><input type="checkbox"><span>能說出公司目前的現金流組合與階段</span></label></li>
+    <li><label><input type="checkbox"><span>快問快答全對（見下）</span></label></li>
+  </ul>
+
+  <p class="qalabel">任務 C｜快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 應收帳款大增，在間接法裡是加還是減？為什麼？</summary>
+      <div class="ans"><p>→ <strong>減</strong>——損益表已認列收入（推高淨利），但現金沒進來，所以從淨利往現金調整時要扣掉。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 一家公司 OCF 很漂亮，但主因是「應付帳款大增」——該高興嗎？</summary>
+      <div class="ans"><p>→ <strong>半喜半憂</strong>——現金確實留住了，但這是「拖著不付錢」擠出來的一次性效果，不可持續；供應商也可能因此縮短給你的帳期。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> CapEx 連續三年只有折舊的一半，代表什麼？短期獲利會怎樣？長期呢？</summary>
+      <div class="ans"><p>→ 投資不足（低於資產耗損速度）。<strong>短期</strong>：折舊仍高但現金流出少，獲利與 FCF 都好看；<strong>長期</strong>：設備老化、競爭力下滑——是「吃老本」的財務特徵，資本密集業尤其危險。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>當一次偵探</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂——這是檢驗學習最快的方法（費曼學習法）。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（回到飲料店）</p>
+    <p>「上次我們的店帳面賺 71,667，但現金只多 6 萬。今天來當偵探，把差額一筆筆找回來。」（打開上面的偵探遊戲，一筆筆對：「5 萬被客戶欠著、5 千變成珍珠堆在倉庫、我們欠供應商 1 萬先不用付、客人先付了 3 萬訂金……」）</p>
+  </div>
+  <div class="script">
+    <p class="who">核心比喻：血液循環</p>
+    <p>「損益表是成績單、資產負債表是健檢報告，現金流量表是<strong>血液循環</strong>。成績再好、體格再壯，血液不流就會出事——公司倒閉從來不是因為虧損，是因為<strong>付不出下個月的薪水</strong>。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動：三個水龍頭</p>
+    <p>「公司的現金有三個水龍頭：做生意賺的、買賣家當的、跟銀行股東拿的。哪一個水龍頭的水最健康？」——引導：第一個，自己賺的。靠第三個活著的公司，水龍頭隨時會被關。</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「這太專業了吧」</b><br>「家裡也一樣：薪水（營業）、賣車換現金（投資）、跟銀行借（融資）。月底錢變多，要看是哪個水龍頭來的。」</p>
+    <p class="qa"><b>「那看公司只看現金流就好？」</b><br>「三張表是三個角度，單看任何一張都會被騙——下週教你怎麼三張一起對，抓出說謊的公司。」</p>
+  </div>
+  <p class="muted">本腳本可搭配專欄 <a class="srclink" href="/writing/family-investing-07-financial-statements/">#7《財務報表三表》</a>服用。</p>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w7-final">
+    <li><label><input type="checkbox"><span>能不看講義用間接法編出飲料店第 2 個月 OCF（勾稽 60,000）</span></label></li>
+    <li><label><input type="checkbox"><span>能背出調整方向心法（資產增吃現金、負債增省現金）</span></label></li>
+    <li><label><input type="checkbox"><span>三線表＋人生階段判讀完成</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記下對方聽不懂的點（下週單元開頭回補）</span></label></li>
+    <li><label><input type="checkbox"><span>本週心得記一行（下週回顧用）</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 08：三表勾稽與財報品質紅旗</b>——三張表你都會讀了，下週把它們接起來互相查核：淨利→保留盈餘、期末現金→資產負債表、OCF vs 淨利……然後建立你的第一份「財報紅旗清單」，抓出說謊的公司。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-06-balance-sheet/">上一週：資產負債表深讀</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "d"
+      ? "答對了——前三個選項都有份，還有兩筆反方向的（欠供應商的、客人預付的）在幫忙。差額要一筆筆對帳才找得回來，這正是「間接法」在做的事。往下當偵探吧。"
+      : "有猜中一部分——但真相是好幾筆加減的淨結果：客戶欠 5 萬、存貨吃 5 千、折舊其實要加回 3,333，還有欠供應商與客人預付的兩筆在幫忙。往下當偵探，一筆筆對帳。";
+  });
+
+  /* ---------- 間接法偵探 ---------- */
+  var NI = 71667, OCF = 60000;
+  var STEPS = [
+    {name:"折舊費用 3,333", hint:"上月記了折舊費用，但錢一毛都沒付出去", ans:"plus", amt:3333,
+     why:"折舊是「非現金費用」——帳面扣了、現金沒少，所以往現金調整時加回來。"},
+    {name:"應收帳款增加 50,000", hint:"企業客戶月結，貨交了、錢還沒收到", ans:"minus", amt:-50000,
+     why:"收入已認列（推高淨利），現金卻沒進來——資產增加吃現金，扣掉。"},
+    {name:"存貨增加 5,000", hint:"倉庫的原料從 2 萬變 2.5 萬", ans:"minus", amt:-5000,
+     why:"錢變成珍珠和茶葉堆在倉庫——資產增加吃現金，扣掉。"},
+    {name:"應付帳款增加 10,000", hint:"欠供應商的貨款從 5 萬變 6 萬", ans:"plus", amt:10000,
+     why:"成本已入帳、錢還沒付出去——負債增加省現金，加回。"},
+    {name:"預收收入增加 30,000", hint:"客人預付的團購訂金，貨還沒做", ans:"plus", amt:30000,
+     why:"錢先進口袋、收入還不能認——負債增加省現金，加回。（W4 的老朋友又立功了）"}
+  ];
+  var qi = 0, score = 0, answered = 0, running = NI;
+  var revealed = []; // 已答的步驟
+  var gName=document.getElementById("g-name"), gHint=document.getElementById("g-hint"),
+      gProg=document.getElementById("g-progress"), gBtns=document.getElementById("g-btns"),
+      gFeed=document.getElementById("g-feed"), gScore=document.getElementById("g-score"),
+      gNext=document.getElementById("g-next"), gDone=document.getElementById("g-done"),
+      gCard=document.getElementById("gcard");
+  var svg = document.getElementById("chart");
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function fmt(n){ return n.toLocaleString("zh-TW"); }
+
+  function drawBridge(){
+    var W=720, H=300, L=16, R=16, T=26, B=44;
+    var iw=W-L-R, ih=H-T-B;
+    var maxV = 90000; // 頂 75,000 出頭，留頭部空間
+    var cols = 2 + STEPS.length; // 淨利 + 5步 + OCF
+    var gap=10, bw=(iw-gap*(cols-1))/cols;
+    var y=function(v){ return T + ih*(1 - v/maxV); };
+    var plus=css("--plus"), minus=css("--minus"), base=css("--base"), ink3=css("--ink-3"), faint=css("--line-soft");
+    var g="";
+    g += '<line x1="'+L+'" y1="'+y(0)+'" x2="'+(W-R)+'" y2="'+y(0)+'" stroke="'+faint+'" stroke-width="1"/>';
+    // OCF 目標虛線
+    var complete = revealed.length === STEPS.length;
+    g += '<line x1="'+L+'" y1="'+y(OCF)+'" x2="'+(W-R)+'" y2="'+y(OCF)+'" stroke="'+ink3+'" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.55"/>';
+    if (!complete) g += '<text x="'+(W-R)+'" y="'+(y(OCF)-6)+'" text-anchor="end" font-size="10.5" fill="'+ink3+'" font-family="ui-monospace,Menlo,monospace">目標：現金增加 60,000</text>';
+    // 淨利柱
+    function bar(i, from, to, col, lab, amtLab){
+      var x = L + i*(bw+gap);
+      var top=y(Math.max(from,to)), hh=Math.max(Math.abs(y(from)-y(to)),2);
+      g += '<rect x="'+x.toFixed(1)+'" y="'+top.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hh.toFixed(1)+'" rx="3" fill="'+col+'"/>';
+      if (amtLab) g += '<text x="'+(x+bw/2).toFixed(1)+'" y="'+(top-6).toFixed(1)+'" text-anchor="middle" font-size="10.5" font-weight="700" fill="'+col+'" font-family="ui-monospace,Menlo,monospace">'+amtLab+'</text>';
+      g += '<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-28).toFixed(1)+'" text-anchor="middle" font-size="10.5" fill="'+ink3+'">'+lab[0]+'</text>';
+      if (lab[1]) g += '<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-14).toFixed(1)+'" text-anchor="middle" font-size="10.5" fill="'+ink3+'">'+lab[1]+'</text>';
+    }
+    bar(0, 0, NI, base, ["淨利",""], fmt(NI));
+    var run = NI;
+    revealed.forEach(function(s, i){
+      var from = run, to = run + s.amt;
+      bar(i+1, from, to, s.amt>0?plus:minus, s.lab, (s.amt>0?"+":"−")+fmt(Math.abs(s.amt)));
+      run = to;
+    });
+    // 未答的位置畫淡問號
+    for (var i=revealed.length; i<STEPS.length; i++){
+      var x = L + (i+1)*(bw+gap);
+      g += '<rect x="'+x.toFixed(1)+'" y="'+(y(run)-14).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="28" rx="3" fill="'+faint+'"/>';
+      g += '<text x="'+(x+bw/2).toFixed(1)+'" y="'+(y(run)+4).toFixed(1)+'" text-anchor="middle" font-size="13" font-weight="800" fill="'+ink3+'">?</text>';
+    }
+    // OCF 柱（全答完才實心）
+    if (revealed.length === STEPS.length){
+      bar(cols-1, 0, OCF, css("--pine"), ["OCF",""], fmt(OCF));
+      g += '<text x="'+(L+(cols-1)*(bw+gap)+bw/2).toFixed(1)+'" y="'+(y(OCF)-20).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+css("--ok")+'">勾稽 ✓</text>';
+    } else {
+      var x2 = L + (cols-1)*(bw+gap);
+      g += '<rect x="'+x2.toFixed(1)+'" y="'+y(OCF).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(y(0)-y(OCF)).toFixed(1)+'" rx="3" fill="none" stroke="'+ink3+'" stroke-dasharray="4 3"/>';
+      g += '<text x="'+(x2+bw/2).toFixed(1)+'" y="'+(H-28).toFixed(1)+'" text-anchor="middle" font-size="10.5" fill="'+ink3+'">OCF</text>';
+    }
+    svg.innerHTML = g;
+  }
+
+  var SHORT = [["＋折舊",""],["−應收","增加"],["−存貨","增加"],["＋應付","增加"],["＋預收","增加"]];
+  function showQ(){
+    var q = STEPS[qi];
+    gProg.textContent = "第 " + (qi+1) + " 筆 / " + STEPS.length;
+    gName.textContent = q.name;
+    gHint.textContent = q.hint;
+    gFeed.className = "gfeed"; gFeed.innerHTML = "";
+    gNext.disabled = true;
+    gBtns.querySelectorAll("button").forEach(function(b){ b.disabled=false; b.className=""; });
+  }
+  gBtns.addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn || btn.disabled) return;
+    var q = STEPS[qi];
+    var right = btn.dataset.c === q.ans;
+    answered++;
+    if (right) score++;
+    gBtns.querySelectorAll("button").forEach(function(b){
+      b.disabled = true;
+      if (b.dataset.c === q.ans) b.classList.add("correct");
+      else if (b === btn && !right) b.classList.add("wrong");
+    });
+    running += q.amt;
+    revealed.push({amt:q.amt, lab:SHORT[qi]});
+    drawBridge();
+    gFeed.className = "gfeed show " + (right ? "good" : "bad");
+    gFeed.innerHTML = (right ? "✓ 答對。" : "✗ 方向相反——") + q.why + " <b>目前累計：" + fmt(running) + "</b>";
+    gScore.textContent = "答對 " + score + " / " + answered;
+    gNext.disabled = false;
+    if (qi === STEPS.length-1) gNext.textContent = "看結果";
+  });
+  gNext.addEventListener("click", function(){
+    if (qi < STEPS.length-1){ qi++; showQ(); return; }
+    gCard.style.display = "none";
+    gNext.style.display = "none";
+    gDone.classList.add("show");
+    var msg = score === 5 ? "五筆全對——方向心法已經長在你身上了。"
+            : "方向錯的那幾筆再默念一次心法：資產增加吃現金、負債增加省現金。";
+    gDone.innerHTML = "<b>對帳完成：71,667 " + (OCF-NI>=0?"+":"−") + " 調整 ＝ OCF 60,000</b>，與現金變動（360,000 → 420,000）<b>分毫不差</b>。你剛剛編完人生第一張現金流量表。（答對 " + score + " / 5）" + msg +
+      '　<button style="font:inherit;font-size:.85rem;font-weight:700;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--pine);background:transparent;color:var(--pine)" id="g-retry">再玩一次</button>';
+    document.getElementById("g-retry").addEventListener("click", function(){
+      qi=0; score=0; answered=0; running=NI; revealed=[];
+      gScore.textContent = "答對 0 / 0";
+      gDone.classList.remove("show");
+      gCard.style.display = "";
+      gNext.style.display = ""; gNext.textContent = "下一筆 →";
+      drawBridge(); showQ();
+    });
+  });
+  new MutationObserver(drawBridge).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
+  drawBridge(); showQ();
+
+  /* ---------- 檢核持久化 ---------- */
+  document.querySelectorAll(".checks").forEach(function(ul){
+    var key = "fic-w07-" + ul.dataset.key;
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    var boxes = ul.querySelectorAll("input");
+    boxes.forEach(function(b, i){
+      if (saved[i]) b.checked = true;
+      b.addEventListener("change", function(){
+        var st = Array.prototype.map.call(boxes, function(x){ return x.checked; });
+        try { localStorage.setItem(key, JSON.stringify(st)); } catch(e){}
+        if (ul.dataset.key === "w7-final"){
+          document.getElementById("checkdone").textContent = st.every(Boolean) ? "🎓 第 7 週完成——三張表都會讀了。下週見：三表勾稽與紅旗清單。" : "";
+        }
+      });
+    });
+    if (ul.dataset.key === "w7-final" && saved.length && saved.every(Boolean)){
+      document.getElementById("checkdone").textContent = "🎓 第 7 週完成——三張表都會讀了。下週見：三表勾稽與紅旗清單。";
+    }
+  });
+})();
+</script>
