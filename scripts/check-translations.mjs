@@ -37,13 +37,16 @@ for (const file of readdirSync(DIR).filter((f) => f.endsWith('.mjs'))) {
   /* INCOMPLETE 宣告「這份還在翻」。漏譯會列出來但不算失敗——
      「還沒做完」和「做錯了」是兩件事，報成同一種的話，真正的錯誤
      會被埋在一長串未完成清單裡看不見。stale／untranslated 仍然算失敗。 */
-  const { MAP, KEEP = [], INCOMPLETE = false } = await import(`file://${join(DIR, file)}`);
+  /* ADDED 宣告「這幾條原文頁沒有，是英文版刻意新增的」（例如譯文來源標示）。
+     不宣告的話會被當成「原文改過、翻譯已過期」——那是完全不同的問題，
+     混在一起會讓真正過期的條目被忽略。 */
+  const { MAP, KEEP = [], ADDED = [], INCOMPLETE = false } = await import(`file://${join(DIR, file)}`);
   const found = extractStrings(page);
   const all = new Set([...found.text, ...found.attr, ...found.data]);
   const keys = new Set(Object.keys(MAP));
 
   const missing = [...all].filter((s) => !keys.has(s));
-  const stale = [...keys].filter((s) => !all.has(s));
+  const stale = [...keys].filter((s) => !all.has(s) && !ADDED.includes(s));
   /* 空字串是刻意的（片段重新分配時把某一段清空），不算沒翻。
      KEEP 裡的詞先挖掉再判斷——挖完還有中文，就是清單沒涵蓋到的東西。 */
   const untranslated = Object.entries(MAP).filter(
