@@ -31,15 +31,21 @@ for (const file of readdirSync(DIR).filter((f) => f.endsWith('.mjs'))) {
     continue;
   }
 
-  const { MAP } = await import(`file://${join(DIR, file)}`);
+  /* KEEP 是「英文值裡允許留下的中文」，各檔自己宣告（多半是人名）。
+     不放寬規則、只把例外寫死成清單——清單外的中文照樣報錯，
+     所以真正的漏譯還是擋得住。 */
+  const { MAP, KEEP = [] } = await import(`file://${join(DIR, file)}`);
   const found = extractStrings(page);
   const all = new Set([...found.text, ...found.attr, ...found.data]);
   const keys = new Set(Object.keys(MAP));
 
   const missing = [...all].filter((s) => !keys.has(s));
   const stale = [...keys].filter((s) => !all.has(s));
-  /* 空字串是刻意的（片段重新分配時把某一段清空），不算沒翻 */
-  const untranslated = Object.entries(MAP).filter(([, v]) => v !== '' && CJK.test(v));
+  /* 空字串是刻意的（片段重新分配時把某一段清空），不算沒翻。
+     KEEP 裡的詞先挖掉再判斷——挖完還有中文，就是清單沒涵蓋到的東西。 */
+  const untranslated = Object.entries(MAP).filter(
+    ([, v]) => v !== '' && CJK.test(KEEP.reduce((s, w) => s.split(w).join(''), v)),
+  );
 
   const ok = !missing.length && !stale.length && !untranslated.length;
   if (!ok) bad++;
