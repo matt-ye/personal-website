@@ -92,7 +92,7 @@ export const MAP = {
   '（Present Value）：現在的錢': ' (present value): money today',
   '：每期報酬率': ': the return per period',
   '：期數': ': the number of periods',
-  關鍵在: 'The key is the',
+  關鍵在: 'The key is the ',
   '指數 n': 'exponent n',
   '——利息會再生利息。單利是直線，複利是曲線，時間越長差距越誇張。':
     ' — interest earns interest. Simple interest is a straight line, compounding is a curve, and the longer the horizon the more absurd the gap.',
@@ -148,7 +148,7 @@ export const MAP = {
   '3. 現值（PV）：往現在折': '3. Present value (PV): discounting back',
   '把公式反過來：': 'Turn the formula around:',
   這裡的: 'Here',
-  改叫: 'is called the',
+  改叫: 'is called the ',
   折現率: 'discount rate',
   '（discount rate）：你要求的報酬率越高，未來的錢在你眼中越不值錢。':
     ': the higher the return you demand, the less future money is worth to you.',
@@ -302,13 +302,13 @@ export const MAP = {
   '讓每個人喊一個數字再揭曉。多數人會猜 400–600 萬——低估複利是人類通病，猜錯正好是教學起點。':
     'Have everyone call out a number before you reveal it. Most will say NT$4–6 million. Underestimating compounding is universal, and being wrong is exactly where the lesson starts.',
   揭曉: 'The reveal',
-  '「答案是': '"The answer is',
+  '「答案是': '"The answer is ',
   一千萬: 'ten million',
   '。你們存進去的其實只有 360 萬，另外 640 萬是利滾利長出來的。」':
     '. You only put in NT$3.6 million; the other NT$6.4 million is interest earning interest."',
   '核心比喻：滾雪球': 'The core metaphor: a snowball',
   '「複利像滾雪球——雪球前十年看起來都小小的，因為球小、沾的雪少；但球一大，每滾一圈沾的雪比你當初整顆球還大。所以':
-    '"Compounding is a snowball. For the first ten years it looks tiny, because a small ball picks up little snow. But once it is big, one roll picks up more snow than the whole ball weighed at the start. So',
+    '"Compounding is a snowball. For the first ten years it looks tiny, because a small ball picks up little snow. But once it is big, one roll picks up more snow than the whole ball weighed at the start. So ',
   '雪坡要夠長（時間），比雪多大顆（報酬率）更重要':
     'a long enough slope (time) matters more than how much snow there is (the return)',
   '互動 2：教 72 法則': 'Interaction 2: teach the Rule of 72',

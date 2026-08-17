@@ -21,6 +21,7 @@
  *      71 個 modal 全部打不開——而 ① ② 都是綠的。
  */
 import { applyTranslations, findResidualCjk, findBrokenScripts } from '../../scripts/lib/extract-strings.mjs';
+import { findMissingGaps } from '../../scripts/lib/check-spacing.mjs';
 
 /**
  * @param {string} fragment 中文片段
@@ -51,6 +52,19 @@ export function translateFragment(fragment, table, key) {
     throw new Error(
       `${key}：換成英文後有 ${broken.length} 塊 <script> 解析失敗，譯文可能沒有正確脫逸。` +
         `第 ${broken[0].index} 塊：${broken[0].message}　開頭：${broken[0].head}`,
+    );
+  }
+
+  /* ④ 行內標記邊界的半形空白。
+     中文在 <strong> 前後不留空白、英文要留，而片段式翻譯沒有人負責接縫——
+     每一條單獨看都對，錯的是接縫。Matt 校對 week-01 時發現的，實測全站
+     還有 14 處（含已上線的 atcc-judges 與 quantum）。 */
+  const gaps = findMissingGaps(fragment, html);
+  if (gaps.length) {
+    throw new Error(
+      `${key}：有 ${gaps.length} 處行內標記邊界缺半形空白（中文不需要、英文需要）。` +
+        `第一處 <${gaps[0].tag}> 標記之${gaps[0].side}：…${gaps[0].en}…　` +
+        `請在對照表相鄰那條的英文值頭尾補一個空白。`,
     );
   }
 
