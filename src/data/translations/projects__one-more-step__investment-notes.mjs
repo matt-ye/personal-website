@@ -393,4 +393,285 @@ export const MAP = {
  * 一致（m1–m22、p1–p8、v1–v6、a1–a4、us1–us8、uv1–uv8、uf1–uf7、uk1–uk8）。
  * 值只放 html——modal 標題已在上面的 MAP。
  */
-export const MODALS_EN = {};
+/* note-origin 註記的固定句式（與來源頁三種層級一一對應）：
+     數值門檻／區間為業界慣例 → Numeric thresholds and ranges here are industry conventions
+     論點出自市場常見說法     → The arguments reflect common market claims
+     部分敘述未查得可靠出處   → Some statements have no reliable source found
+   結尾統一：— compiled from June 2026 online commentary; not empirical research.
+   Verify before relying on it. */
+export const MODALS_EN = {
+  m1: {
+    html: `
+      <p>The essence of investing is not "did I make money this time?" but rather:</p>
+      <ul>
+        <li>Can this method be <strong>repeated over the long run</strong>?</li>
+        <li>Can I get <strong>the same return at lower risk</strong>?</li>
+        <li>Is there <strong>a better alternative</strong>?</li>
+      </ul>
+      <div class="highlight">💡 Many people land one lucky win and think they have found a method — but if it cannot be repeated, that profit was luck, not edge.</div>
+      <p>This is the base logic beneath every investment decision, and the antidote to the "one trick works forever" illusion.</p>
+    `,
+  },
+  m2: {
+    html: `
+      <p>Futures are <strong>designed as hedging tools</strong>, letting holders of the underlying lock in costs. But the market widely uses them for speculation, which makes them extremely difficult.</p>
+      <div class="risk">⚠️ Derivatives carry leverage. For beginners without long screen hours and deep experience, this is an unfriendly market.</div>
+      <ul>
+        <li>TAIEX futures: demand highly accurate short-term calls on the index</li>
+        <li>Options: time decay and volatility shifts add extra variables</li>
+        <li>Futures: one slip in money management can blow up the account</li>
+      </ul>
+      <p>Note to self: unless you are a professional or have ample research time, build experience in the stock market first.</p>
+    `,
+  },
+  m3: {
+    html: `
+      <p><strong>Short-term trading (day trading, overnight flips)</strong> is close to a zero-sum card table:</p>
+      <ul>
+        <li>A few strong winners take most of the money</li>
+        <li>When stronger new winners appear, they crowd out the old ones</li>
+        <li>The day-trading and overnight-flip broker branches slowly rotate through new names</li>
+      </ul>
+      <div class="highlight">📊 Mid/long-term investing combines industry research with chart patterns; the candidate pool is wider, the market capacity larger, and you need not watch the tape all day.</div>
+      <p>That does not make it easy — the entry barrier just takes a different form: industry-research skill rather than reaction speed.</p>
+    `,
+  },
+  m4: {
+    html: `
+      <p>"Lower-right stocks" are names in a long downtrend that look cheap on a low base.</p>
+      <div class="risk">⚠️ Without deep knowledge of the company and its industry, you are not qualified to judge that it is "cheap now."</div>
+      <ul>
+        <li>Respect the market's pricing mechanism — bad news is often priced in before it is public</li>
+        <li>"The news gets announced two months later" is common; the chart may have finished falling first</li>
+        <li>Only buy the bottom when you are convinced the market is wrong</li>
+      </ul>
+      <div class="highlight">💡 Real bottom-fishing opportunities rest on deep research, not on a "looks cheap" hunch.</div>
+    `,
+  },
+  m5: {
+    html: `
+      <p>The market is efficient most of the time (news is already in the price), but in some stocks the inefficiency is observable:</p>
+      <ul>
+        <li><strong>Traits of inefficient names:</strong> low volume, no broker coverage, no margin trading, almost no investor-call communication</li>
+        <li>They may only start moving after news comes out at an investor conference</li>
+        <li>Some even post 40–50% YoY revenue growth for three to four straight months before anyone notices and piles in</li>
+      </ul>
+      <div class="highlight">💡 The inefficiency of neglected small caps is an opportunity for those who can research — and a trap for those who cannot.</div>
+      <p>On the US side, the Q&A of earnings calls is a great place to see what analysts actually care about.</p>
+          <p class="note-origin">📎 The arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  m6: {
+    html: `
+      <p>Sector rotation matters a great deal in Taiwan:</p>
+      <ul>
+        <li>A whole group starting to move at once → big money is boarding</li>
+        <li>The leader charging ahead → the rest of the group may follow</li>
+        <li>Watching <strong>turnover value, volume, and price action</strong> reveals where money is focusing</li>
+      </ul>
+      <div class="highlight">📌 Example: when Taiwan's probe-card names spiked, related US stocks played catch-up; when Taiwan's OEMs spiked, CLS caught up too.</div>
+      <p>When an entire supply chain is moving, something significant is happening — dig in.</p>
+    `,
+  },
+  m7: {
+    html: `
+      <p>Before Lunar New Year, margin traders commonly deleverage early for two reasons (this describes the mechanism, not the market's direction):</p>
+      <ul>
+        <li><strong>Avoiding being trapped:</strong> Taiwan's market closes for many days over the holiday; a leveraged position could open straight into a rout if global markets crash in the meantime, so investors cut leverage in advance</li>
+        <li><strong>Funding cost:</strong> margin interest keeps accruing through the closure, raising the cost of carry</li>
+      </ul>
+      <div class="risk">⚠️ Note: formal tests point the other way from "pre-holiday selling" — Yuan &amp; Gupta (2014), studying six Asian markets including Taiwan, found <strong>significantly positive</strong> returns before Lunar New Year, and no empirical support was found for a "post-holiday rebound" either. Margin deleveraging is an observable behavior; do not extrapolate it into a falling market.</div>
+      <a class="source-link" href="https://ideas.repec.org/a/eee/quaeco/v54y2014i4p529-537.html" target="_blank">→ Yuan &amp; Gupta (2014), Chinese Lunar New Year effect in Asian stock markets, QREF 54(4)</a>
+    `,
+  },
+  m8: {
+    html: `
+      <p>Retail investors often read "investment-trust net buying" as a bullish signal, but you have to distinguish:</p>
+      <ul>
+        <li><strong>Passive ETF allocation:</strong> index ETFs buy mechanically when constituents rebalance — that is not active conviction</li>
+        <li><strong>Trust prop desks vs. the buy side:</strong> buying differs in how deliberate it is</li>
+      </ul>
+      <div class="risk">⚠️ Sustained net buying that comes from mechanical ETF allocation says nothing about fundamentals and should not be read as a bullish signal outright.</div>
+      <p>When watching investment trusts, check whether their futures long positions are rising in tandem, and which way their actively managed funds are actually trading.</p>
+      <a class="source-link" href="https://quantpass.org/retail-investor-index/" target="_blank">→ Reading the three institutional investors' indicators (Quantpass, in Chinese)</a>
+    `,
+  },
+  m9: {
+    html: `
+      <p>Foreign investors' influence on Taiwan's market has been fading, because:</p>
+      <ul>
+        <li>Accumulated household wealth has made <strong>domestic capital ever stronger</strong></li>
+        <li>Foreign money moves like an ox cart — once direction is set it plods along — but a slight turn to buying does not mean they have flipped bullish</li>
+      </ul>
+      <div class="highlight">💡 Practical tip: foreign short positions carry more signal than foreign buying — the short book is where they genuinely bet on direction.</div>
+      <p>One or two days of light buying → possibly just a pause before more selling. Curb the enthusiasm.</p>
+    `,
+  },
+  m10: {
+    html: `
+      <p>The "mini-TAIEX retail long/short ratio" used to be a contrarian indicator, retail usually being on the wrong side. Things have changed:</p>
+      <ul>
+        <li>Heavy program trading (quant strategies) now hides in mini-TAIEX futures</li>
+        <li>Well-known foreign banks' quant teams trade it too</li>
+        <li>It can <strong>no longer be treated as a pure retail gauge</strong> for contrarian trades</li>
+      </ul>
+      <div class="risk">⚠️ Read mini-TAIEX data with extra care; the old "retail long = time to sell" logic no longer applies directly.</div>
+      <a class="source-link" href="https://en.macromicro.me/charts/80666/tai-wan-san-hu-zhi-biao-da-pan-rong-zi-wei-chi-lyu" target="_blank">→ MacroMicro: retail indicators and margin maintenance ratio</a>
+          <p class="note-origin">📎 Some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  m11: {
+    html: `
+      <p>Total margin balance is a key gauge of market leverage and retail sentiment. The thresholds below are <strong>personal rules of thumb, and clearly stale</strong> — as of August 2026 the TWSE reports listed-market margin balance around NT$547 billion, far past what was once considered the "high":</p>
+      <ul>
+        <li><strong>Around NT$330 billion</strong> (the old rule of thumb): leverage too high, retail chasing — read as a warning of a relative top</li>
+        <li><strong>NT$220–180 billion</strong>: historically meant a retail exodus and a cleaned-up float, near a relative bottom</li>
+        <li><strong>The lesson:</strong> absolute thresholds decay as the market grows; watching margin balance relative to market cap, or its rate of change, beats memorizing a number</li>
+      </ul>
+      <div class="highlight">📌 Note: in recent years even billion-dollar players use margin, and share pledging is widespread, so margin balance is no longer a purely retail gauge — weight it accordingly. (The thresholds above are personal observations, not empirical research.)</div>
+      <div class="risk">⚠️ The "era of big borrowing": many now pledge shares instead of using margin, so headline margin balance may understate the market's true leverage.</div>
+      <a class="source-link" href="https://www.twse.com.tw/zh/trading/margin/mi-margn.html" target="_blank">→ TWSE: margin trading statistics (in Chinese)</a>
+      <a class="source-link" href="https://fmstudio.blog/market-margin-balance-analysis-2025/" target="_blank">→ A full breakdown of market margin balance (FM Studio, in Chinese)</a>
+    `,
+  },
+  m12: {
+    html: `
+      <p><strong>Margin maintenance ratio</strong> = market value of all margin-bought shares ÷ total market margin balance</p>
+      <p>As prices fall, the ratio falls:</p>
+      <ul>
+        <li>Below a set level → the broker issues a margin call</li>
+        <li>Unable to top up → <strong>forced liquidation</strong></li>
+      </ul>
+      <div class="highlight">💡 When the market-wide maintenance ratio drops to a low (below 150–160%), it signals irrational selling or a wave of forced liquidations — often a relative bottom. Once weak hands are washed out, the base for a rebound is firmer.</div>
+      <a class="source-link" href="https://en.macromicro.me/charts/80666/tai-wan-san-hu-zhi-biao-da-pan-rong-zi-wei-chi-lyu" target="_blank">→ MacroMicro: margin maintenance ratio chart</a>
+          <p class="note-origin">📎 Some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  m13: {
+    html: `
+      <p>Why do foreign short positions carry more signal than foreign net buying?</p>
+      <ul>
+        <li>Foreign buying may be just a one- or two-day "brief repair" before the selling resumes</li>
+        <li>But <strong>shorts carry holding costs and risk</strong> — they represent a genuine directional bet</li>
+        <li>Steadily growing foreign shorts → a relatively credible bearish signal</li>
+      </ul>
+      <div class="highlight">📌 What to actually watch:
+        <br>• Is the foreign net short position in futures still expanding?
+        <br>• Do not over-read one or two days of light foreign buying
+      </div>
+    `,
+  },
+  m14: {
+    html: `
+      <p>A <strong>convertible bond (CB)</strong> is a special bond a company issues, which the holder can convert into common shares under set conditions.</p>
+      <ul>
+        <li><strong>Stock rises:</strong> convert at the agreed price and capture the upside</li>
+        <li><strong>Stock falls:</strong> keep the bond and collect principal and interest at maturity</li>
+      </ul>
+      <div class="highlight">💡 "Attack upward, defend downward" is the CB's core trait: equity upside above, bond floor below.</div>
+      <p>Why issue a CB instead of borrowing from a bank? Usually faster fundraising, possibly lower cost, or a specific need to expand the share base.</p>
+      <a class="source-link" href="https://rich01.com/cb-asset-swap-cbas/" target="_blank">→ CB and CBAS explained (Mr. Market, in Chinese)</a>
+          <p class="note-origin">📎 Some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  m15: {
+    html: `
+      <p>A cash capital increase issues new shares to raise funds — and its timing deserves special attention:</p>
+      <div class="risk">⚠️ A sudden cash raise right after the stock has been ramped hard → very likely "printing shares for cash" at retail's expense, with major holders diluting and cashing out at the top.</div>
+      <p>But there are exceptions:</p>
+      <ul>
+        <li>If the proceeds fund <strong>new plants or capacity expansion</strong>, the short-term dilution can turn into a mid/long-term positive</li>
+        <li>The key is <strong>what the money is for</strong>: building plants vs. topping up liquidity vs. repaying debt are very different animals</li>
+      </ul>
+      <div class="highlight">📌 The test: read the prospectus for the use of proceeds — that matters more than the timing.</div>
+    `,
+  },
+  m16: {
+    html: `
+      <p>A convertible-bond play usually unfolds in three clear phases:</p>
+      <ol style="padding-left:1.2rem; margin:0.5rem 0;">
+        <li style="margin-bottom:0.6rem"><strong>At announcement:</strong> old hands jump in early, driving the first leg</li>
+        <li style="margin-bottom:0.6rem"><strong>Before pricing:</strong> the stock is deliberately pressed, sometimes below prior lows, so the conversion price is set lower (favoring holders) — this stretch is normal</li>
+        <li style="margin-bottom:0.6rem"><strong>After pricing:</strong> the consensus move is to lift the stock toward the conversion price, forming the second leg</li>
+      </ol>
+      <div class="highlight">📌 Past the conversion price: heavy short selling floods in to lock the spread, with arbitrageurs long the stock and short on borrow. Be careful here — in hindsight it sometimes turns out to be only halfway up the hill.</div>
+      <p>CBs issued at lows or during consolidation are usually lower-risk; CBs issued right after a sharp ramp deserve extra caution.</p>
+          <p class="note-origin">📎 The arguments reflect common market claims, and some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  m17: {
+    html: `
+      <p>A <strong>convertible bond asset swap (CBAS)</strong> is a broker splitting a CB it holds and selling the pieces to two different kinds of investors:</p>
+      <ul>
+        <li><strong>The fixed-income leg:</strong> pay principal, collect an agreed coupon — higher yield than a plain corporate bond, but bearing the issuer's credit risk</li>
+        <li><strong>The option leg (CBAS option):</strong> pay a smaller premium for the call on conversion, with leverage</li>
+      </ul>
+      <div class="highlight">💡 For those who want in on a CB play but missed the initial allocation, the CBAS option offers secondary-market entry from day six after issuance.</div>
+      <div class="risk">⚠️ CBAS carries counterparty risk (it is an agreement with the broker, not exchange-listed) — understand the liquidity and early-termination constraints.</div>
+      <a class="source-link" href="https://rich01.com/cb-asset-swap-cbas/" target="_blank">→ CBAS explained in full (Mr. Market, in Chinese)</a>
+    `,
+  },
+  m18: {
+    html: `
+      <p>Disposition stocks are the TWSE/TPEX <strong>market-surveillance warning mechanism</strong>:</p>
+      <ul>
+        <li>A stock moving more than <strong>25%</strong> cumulatively over six trading days may be flagged as an "attention stock"</li>
+        <li>Flagged three days in a row, or repeatedly within a short window → it enters "disposition"</li>
+        <li>During disposition: order matching slows to once every 5 minutes (20 minutes on a second disposition)</li>
+        <li>Trades require <strong>full pre-collection of funds and shares</strong>; margin trading is banned</li>
+      </ul>
+      <div class="highlight">📌 For holders of a runaway stock, entering disposition can read as a "certificate of strength" — big holders will not rush to unload during the disposition window, and if the stock holds up well it may keep climbing afterward, even into a second disposition.</div>
+      <a class="source-link" href="https://www.ctee.com.tw/news/20240508700606-430201" target="_blank">→ Attention and disposition stocks explained (Commercial Times, in Chinese)</a>
+    `,
+  },
+  m19: {
+    html: `
+      <p>With matching intervals stretched way out, a disposition stock trades in a distinctive <strong>liquidity vacuum</strong>:</p>
+      <ul>
+        <li>Ordinary investors find it hard to trade; volume shrivels</li>
+        <li>"Disposition hunters" specialize in this window, trading the spread off the thin liquidity and the fixed band between upper and lower edges</li>
+        <li>If the stock fails to hold during disposition, heavy sell orders land exactly when liquidity is worst, amplifying the damage</li>
+      </ul>
+      <div class="risk">⚠️ For ordinary investors: liquidity is poor during disposition — if you need out fast you may not get a decent price, so size the position accordingly.</div>
+      <div class="highlight">💡 Hold up well → liquidity returns after disposition ends → the stock may resume its climb, even into a second round (the local saying: the more gauntlets it survives, the bigger it gets).</div>
+    `,
+  },
+  m20: {
+    html: `
+      <p>Watching the five-level order book, this is a classic operator-accumulation pattern:</p>
+      <ul>
+        <li><strong>A thick ask wall at a round number:</strong> heavy sell orders parked at a round price (say 100) manufacture the look of resistance</li>
+        <li><strong>Steady small buying on the left (lower bids):</strong> quietly absorbing the loose float</li>
+        <li>Once enough shares are absorbed, the wall gets smashed → momentum chasers pile in</li>
+      </ul>
+      <div class="highlight">💡 The tell: <strong>is there sustained buying below?</strong> Buying underneath = genuine accumulation; no buying = maybe just resistance, and the wall may never break.</div>
+          <p class="note-origin">📎 The arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  m21: {
+    html: `
+      <p>A common move the day after a limit-up lock:</p>
+      <ul>
+        <li>After yesterday's limit-up, large buy orders appear at <strong>bid 3 or bid 4</strong> at the next open</li>
+        <li>It looks like someone is propping the stock, luring others into believing there is support</li>
+        <li>In practice: when <strong>bids 1 and 2 get smashed</strong>, that "wall" retreats downward</li>
+        <li>The goal is a fake "someone wants these shares" impression — so that you rush to buy at bids 1 and 2</li>
+      </ul>
+      <div class="risk">⚠️ Note: if the other side is determined to dump outright, the wall does get filled. Whether the trick works comes down to the relative size of the two sides' capital.</div>
+      <div class="highlight">💡 This is advanced order-book reading — it takes substantial live-tape experience to identify reliably.</div>
+    `,
+  },
+  m22: {
+    html: `
+      <p>How to judge the direction and strength of program trading (algos) intraday:</p>
+      <ul>
+        <li><strong>Place a real buy order</strong> and watch for orders that <strong>instantly chase the price upward</strong> (a buying algo is competing)</li>
+        <li>Or the other side <strong>dumps shares straight into your bid</strong> (a selling algo is distributing)</li>
+        <li>This "probe" reveals which way the algos lean, so you can work with it</li>
+      </ul>
+      <div class="highlight">💡 This is a live-fire test suited to experienced traders. For retail, the value of knowing it is recognition: instant price-chasing or sudden dumping is rarely manual order flow — an algo is probably behind it.</div>
+      <div class="risk">⚠️ The method has real cost (the bid-ask spread) — weigh whether it fits your style.</div>
+          <p class="note-origin">📎 The arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+};
