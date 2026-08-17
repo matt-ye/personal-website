@@ -23,6 +23,8 @@
 export const KEEP = [
   '大戶投', // 永豐金證券的 App 品牌名，官方英文名未確認
   '口袋證券', // 官方英文名未確認
+  '投資先生', // 元大證券 App 品牌名，官方英文名未確認
+  'e點通', // 富邦證券 App 品牌名，官方英文名未確認
 ];
 
 export const ADDED = [];
@@ -672,6 +674,383 @@ export const MODALS_EN = {
       <div class="highlight">💡 This is a live-fire test suited to experienced traders. For retail, the value of knowing it is recognition: instant price-chasing or sudden dumping is rarely manual order flow — an algo is probably behind it.</div>
       <div class="risk">⚠️ The method has real cost (the bid-ask spread) — weigh whether it fits your style.</div>
           <p class="note-origin">📎 The arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  p1: {
+    html: `
+      <p>Buying a company's <strong>common stock</strong> makes you a shareholder, entitled to:</p>
+      <ul>
+        <li>Gains from the share price rising (capital gains)</li>
+        <li>Annual <strong>dividends (cash or stock)</strong></li>
+        <li>Voting at shareholder meetings and preemptive rights in capital raises</li>
+      </ul>
+      <div class="highlight">💡 Taiwan trades in "lots" of 1,000 shares. Odd lots (from a single share) are also available, lowering the entry bar further.</div>
+      <p><strong>Maximum loss:</strong> your invested principal (the stock going to zero). Unlike futures, you cannot lose more than you put in.</p>
+      <p><strong>Transaction tax:</strong> 0.3% on sales of Taiwan stocks, 0.15% for day trades (as of 2025).</p>
+    `,
+  },
+  p2: {
+    html: `
+      <p>An <strong>ETF (exchange-traded fund)</strong> trades on the exchange like a stock but holds a whole basket of assets.</p>
+      <p><strong>Three main types:</strong></p>
+      <ul>
+        <li><strong>Plain-vanilla ETFs:</strong> like 0050 and 0056 — index-tracking, diversified, suited to long-term holding</li>
+        <li><strong>Leveraged ETFs:</strong> amplify the index's return, e.g. 2x products. Held long term, daily resets mean the return ≠ index move × 2</li>
+        <li><strong>Inverse ETFs:</strong> ticker's sixth character is R (e.g. 00632R, commonly called the "inverse-1"); they target the inverse of the index's <strong>single-day</strong> return, profiting when the index falls. The TWSE states plainly that daily compounding makes long-run returns drift — they are not for long-term holding</li>
+      </ul>
+      <div class="risk">⚠️ Leveraged and inverse ETFs are unsuitable for long-term holding: in choppy markets, daily resets create asymmetric decay.</div>
+      <div class="highlight">💡 Thematic ETFs (5G, semiconductors, etc.) construct their baskets very differently — read the index rules, or you may not be buying what you think.</div>
+    `,
+  },
+  p3: {
+    html: `
+      <p><strong>Futures</strong> are contracts where buyer and seller agree to settle a commodity or index at a set price at a future date.</p>
+      <p><strong>Common Taiwan futures products:</strong></p>
+      <ul>
+        <li>TAIEX futures (full-size) and mini-TAIEX futures</li>
+        <li>Single-stock futures, electronics-sector futures, financial-sector futures</li>
+      </ul>
+      <p><strong>Advantages:</strong></p>
+      <ul>
+        <li>Very low transaction cost (roughly 2–10% of trading the stock)</li>
+        <li>Two-way trading — shorting is just as easy</li>
+        <li>Usable for hedging (offsetting portfolio risk)</li>
+      </ul>
+      <div class="risk">⚠️ Risk notes:<br>• Daily settlement — losses beyond your margin trigger a margin call, or forced liquidation<br>• Contracts expire; you cannot hold indefinitely<br>• Keep at least 3–5x the required margin as buffer</div>
+      <div class="highlight">💡 Foreign investors' open interest in TAIEX futures is a key reference, published daily after the close by the Taiwan Futures Exchange.</div>
+          <p class="note-origin">📎 Some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  p4: {
+    html: `
+      <p>Options split into <strong>buyers</strong> and <strong>sellers</strong>, and the two could not be more different:</p>
+      <ul>
+        <li><strong>Buyer:</strong> pays a premium for the <em>right</em> — not the obligation — to buy (call) or sell (put) at a set price by a set time. Maximum loss = the premium; profit theoretically uncapped.</li>
+        <li><strong>Seller:</strong> collects the premium but carries the <em>obligation</em> to deliver if exercised. Posts margin; losses theoretically uncapped.</li>
+      </ul>
+      <div class="highlight">💡 TAIEX weekly options expire every Thursday — well suited to short-term directional trades or volatility strategies, with calls and puts covering both directions.</div>
+      <div class="risk">⚠️ Buyers have capped losses but low win rates; sellers win often but can blow up on a black swan. Neither suits beginners.</div>
+      <p>TAIEX index options are far more liquid than Taiwan's single-stock options.</p>
+          <p class="note-origin">📎 Some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  p5: {
+    html: `
+      <p><strong>Warrants</strong> are derivatives issued by securities firms and listed on the exchange. Holders can only be <strong>buyers</strong>, paying a premium to bet on the underlying rising (call warrants) or falling (put warrants).</p>
+      <p><strong>Versus options:</strong></p>
+      <ul>
+        <li>With options you may take either side; with warrants, buyer only</li>
+        <li>The issuing broker bears the obligation — no seller margin as with options</li>
+        <li>Stock warrants reference individual stocks rather than the index</li>
+      </ul>
+      <div class="highlight">💡 Leverage typically runs 3–6x — higher than margin buying; transaction tax is only 0.1% (vs. 0.3% for stocks).</div>
+      <div class="risk">⚠️ Risks:<br>• Time value decays daily, faster near expiry<br>• Falling implied volatility also deflates the warrant<br>• In thin trading, wide bid-ask spreads raise the real cost</div>
+    `,
+  },
+  p6: {
+    html: `
+      <p>Margin trading means borrowing cash or shares from your broker:</p>
+      <ul>
+        <li><strong>Margin buying (borrowing cash):</strong> put up about 40% yourself and the broker lends the other 60% — roughly 2.5x leverage (the 60% financing cap for listed and OTC shares is set by FSC directive Jin-Guan-Zheng-Tou-Zi No. 10300406141). Margin interest applies — Yuanta Securities Finance, for example, posts 6.25% p.a.; each broker sets its own rate</li>
+        <li><strong>Short selling (borrowing shares):</strong> borrow shares to sell now and buy back cheaper later, pocketing the difference. Requires collateral plus a borrow fee.</li>
+      </ul>
+      <div class="highlight">📌 Key mechanisms:
+        <br>• <strong>Margin calls:</strong> if falling prices push the maintenance ratio below 130%, you must top up or be forcibly liquidated
+        <br>• <strong>Forced short covering:</strong> shorts must be returned ahead of ex-dividend dates and shareholder meetings
+      </div>
+      <div class="risk">⚠️ The core risk of margin is that leverage magnifies losses. Using it properly presumes high conviction in the stock and ample spare capital.</div>
+      <p>Some hot or small-cap names are <strong>closed to margin trading</strong> entirely.</p>
+    `,
+  },
+  p7: {
+    html: `
+      <p>A <strong>bond</strong> is a security in which a government or company borrows from investors, promises periodic interest (the coupon), and repays principal at maturity.</p>
+      <p><strong>Main kinds:</strong></p>
+      <ul>
+        <li><strong>Government bonds:</strong> issued by Taiwan's central government — near-zero default risk, low yield</li>
+        <li><strong>Corporate bonds:</strong> higher yield, with credit (default) risk to bear</li>
+        <li><strong>Convertible bonds (CB):</strong> corporate bonds convertible into stock (see the CB section)</li>
+        <li><strong>Bond ETFs:</strong> like 00679B (US Treasuries), giving ordinary investors a low bar into bonds</li>
+      </ul>
+      <div class="highlight">💡 Bonds move inversely to rates: rates up, bond prices down; rates down, bond prices up.</div>
+      <p>For most investors in Taiwan the easiest access is through <strong>bond ETFs</strong> — low minimums, good liquidity.</p>
+    `,
+  },
+  p8: {
+    html: `
+      <p>A quick side-by-side of each product's core traits:</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead>
+            <tr style="border-bottom:1px solid #3a3d50;">
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Product</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Leverage</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Max loss</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Expiry</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Suits</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#2bbfbf;">Stocks</td>
+              <td style="padding:0.5rem 0.4rem;">None (1x)</td>
+              <td style="padding:0.5rem 0.4rem;">Principal</td>
+              <td style="padding:0.5rem 0.4rem;">None</td>
+              <td style="padding:0.5rem 0.4rem;">Everyone</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#2bbfbf;">ETFs</td>
+              <td style="padding:0.5rem 0.4rem;">1x (plain)</td>
+              <td style="padding:0.5rem 0.4rem;">Principal</td>
+              <td style="padding:0.5rem 0.4rem;">None</td>
+              <td style="padding:0.5rem 0.4rem;">Steady / long-term</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:var(--accent);">Margin</td>
+              <td style="padding:0.5rem 0.4rem;">~2.5x</td>
+              <td style="padding:0.5rem 0.4rem;">Collateral + calls</td>
+              <td style="padding:0.5rem 0.4rem;">6 months</td>
+              <td style="padding:0.5rem 0.4rem;">Experienced</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#e0904a;">Futures</td>
+              <td style="padding:0.5rem 0.4rem;">5–15x</td>
+              <td style="padding:0.5rem 0.4rem;">Theoretically uncapped</td>
+              <td style="padding:0.5rem 0.4rem;">Monthly/quarterly</td>
+              <td style="padding:0.5rem 0.4rem;">Professionals</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#c49dff;">Option buyer</td>
+              <td style="padding:0.5rem 0.4rem;">10x+</td>
+              <td style="padding:0.5rem 0.4rem;">Premium</td>
+              <td style="padding:0.5rem 0.4rem;">Weekly/monthly</td>
+              <td style="padding:0.5rem 0.4rem;">Professionals</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem 0.4rem; color:#f08080;">Warrants</td>
+              <td style="padding:0.5rem 0.4rem;">3–6x</td>
+              <td style="padding:0.5rem 0.4rem;">Premium</td>
+              <td style="padding:0.5rem 0.4rem;">Months to 1 year</td>
+              <td style="padding:0.5rem 0.4rem;">Intermediate</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="risk">⚠️ Higher leverage means bigger potential returns — and losses beyond what you expected. Beginners should start with stocks and plain ETFs.</div>
+    `,
+  },
+  v1: {
+    html: `
+      <p>Two indicators that look alike but serve different purposes:</p>
+      <ul>
+        <li><strong>Volume:</strong> the number of lots traded that day (1 lot = 1,000 shares). It shows how much stock is changing hands and leads price action.</li>
+        <li><strong>Turnover value:</strong> volume × price — the total money flowing through. It better reflects market heat and lets you compare stocks at different prices.</li>
+      </ul>
+      <div class="highlight">📌 When to use which:
+        <br>• Judging a move's strength → <strong>volume</strong> (is it expanding vs. before?)
+        <br>• Judging money heat → <strong>turnover value</strong> (is big money coming in?)
+        <br>• Comparing activity across stocks → <strong>turnover rate</strong> (strips out share-count differences)
+      </div>
+      <p>Volume appears as bars under the candlestick chart — red for up days, green for down days (broker apps vary slightly).</p>
+      <a class="source-link" href="https://www.stockfeel.com.tw/%E4%BB%80%E9%BA%BC%E6%98%AF%E6%88%90%E4%BA%A4%E9%87%8F%EF%BC%9F%E8%A6%81%E6%80%8E%E9%BA%BC%E7%9C%8B%EF%BC%9F/" target="_blank">→ Volume explained in full (StockFeel, in Chinese)</a>
+    `,
+  },
+  v2: {
+    html: `
+      <p><strong>Turnover rate = volume ÷ shares outstanding × 100%</strong></p>
+      <p>Why bother? Volume is an absolute number: 100,000 shares traded means wildly different things for a 1-million-share company versus a 100-million-share one. Turnover rate normalizes that away.</p>
+      <p><strong>Reference bands:</strong></p>
+      <ul>
+        <li><strong>&lt; 1%:</strong> quiet — stable float, little attention</li>
+        <li><strong>1–3%:</strong> normal trading activity</li>
+        <li><strong>3–5%:</strong> relatively active, drawing some attention</li>
+        <li><strong>&gt; 10%:</strong> hot — short-term money focused here, or an operator rotating the float</li>
+        <li><strong>&gt; 20%:</strong> abnormally hot — possibly a pump or a major event</li>
+      </ul>
+      <div class="highlight">💡 Read turnover with price direction:<br>• High turnover + rising → strength confirmed, chasing has a basis<br>• High turnover + falling → distribution signal, be wary<br>• Low turnover + rising → stable float, holders reluctant to sell<br>• Low turnover + falling → volumeless grind lower, or consolidation</div>
+          <p class="note-origin">📎 The arguments reflect common market claims, and some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  v3: {
+    html: `
+      <p>In the stock market, <strong>"chips"</strong> means the ownership picture — just as casino chips represent money, stock-market chips represent who holds how many shares.</p>
+      <div class="highlight">💡 The core logic:
+        <br>• Chips <strong>concentrated</strong> in a few hands (institutions, big holders) → strong control, the stock rises easily
+        <br>• Chips <strong>scattered</strong> across many retail holders → jittery hands, the stock falls easily
+      </div>
+      <p><strong>What chip analysis has going for it:</strong></p>
+      <ul>
+        <li>Real money changed hands — it cannot be faked (unlike news, which can be rumor)</li>
+        <li>Following institutions and big holders piggybacks on their research and information edge</li>
+        <li>Taiwan is one of the few markets that opens ownership data to the general public</li>
+      </ul>
+      <div class="risk">⚠️ Its limits:<br>• Chip data is history — it records trades already made<br>• Institutional flows may be passive (ETF) allocation, not active conviction<br>• Combine with technicals and fundamentals</div>
+      <a class="source-link" href="https://www.fincake.co/blog/chip-analysis" target="_blank">→ A primer on chip analysis (Fincake, in Chinese)</a>
+    `,
+  },
+  v4: {
+    html: `
+      <p>Taiwan's <strong>three institutional investor groups</strong> together account for roughly 40% of the market. After every session, the TWSE and TAIFEX publish their net buy/sell figures.</p>
+      <ul>
+        <li><strong>Foreign investors (FINI):</strong> offshore institutions (the old QFII system was abolished in 2003 in favor of registration). Deep research resources; the biggest influence on large caps such as TSMC and Delta. Their futures open interest is especially worth watching.</li>
+        <li><strong>Investment trusts:</strong> Taiwan's domestic fund houses — steady buyers, but distinguish "active conviction" from "passive ETF allocation" (see the Institutions &amp; the Market section).</li>
+        <li><strong>Dealers:</strong> brokers trading their own book — quick to react, but often market-making or hedging, so their direction carries less signal.</li>
+      </ul>
+      <div class="highlight">📌 Where to look: twse.com.tw → Trading Data → the three institutional investors, or tools like Fincake and CMoney.</div>
+      <p>Their futures open interest is published daily after the close by the <strong>Taiwan Futures Exchange (taifex.com.tw)</strong>.</p>
+      <a class="source-link" href="https://quantpass.org/institutional-investors-tw/" target="_blank">→ The three institutional investors' open interest explained (Quantpass, in Chinese)</a>
+          <p class="note-origin">📎 The arguments reflect common market claims, and some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  v5: {
+    html: `
+      <p>In chip analysis, <strong>"operators"</strong> broadly means deep-pocketed investors who can move a stock — the three institutional groups, plus <strong>big holders</strong> with over a thousand lots.</p>
+      <ul>
+        <li><strong>Thousand-lot holders:</strong> investors holding more than 1,000 lots of a single stock; the TDCC tallies holdings by bracket and publishes the breakdown weekly</li>
+        <li><strong>Director and officer holdings:</strong> insiders — their buying and selling is an important ownership signal</li>
+        <li><strong>Branch-level operators:</strong> watching order flow through specific broker branches lets you track particular operators' movements</li>
+      </ul>
+      <div class="highlight">💡 What to watch:<br>• Thousand-lot holdings rising for days on end → concentrating float, bullish<br>• Falling for days on end → loosening float, caution<br>• Persistence matters more than any single day's change</div>
+      <div class="risk">⚠️ Branch data lags by a day (T+1), and operators may spread across multiple accounts — cross-check from several angles.</div>
+    `,
+  },
+  v6: {
+    html: `
+      <p>Volume leads price. The four volume-price combinations each mean something different:</p>
+      <div style="overflow-x:auto; margin:0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead>
+            <tr style="border-bottom:1px solid #3a3d50;">
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Scenario</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Reading</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Implication</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#3bbf8a;">Rising on expanding volume</td>
+              <td style="padding:0.5rem 0.4rem;">Buyers strong</td>
+              <td style="padding:0.5rem 0.4rem;">Trend confirmed — the strongest signal</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#c9a96e;">Rising on shrinking volume</td>
+              <td style="padding:0.5rem 0.4rem;">Holders reluctant to sell, stable float</td>
+              <td style="padding:0.5rem 0.4rem;">Holding up short term, but watch whether volume follows</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#e06060;">Falling on expanding volume</td>
+              <td style="padding:0.5rem 0.4rem;">Sellers strong, heavy pressure</td>
+              <td style="padding:0.5rem 0.4rem;">Trend reversal or accelerating decline</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem 0.4rem; color:#7a7d8c;">Falling on shrinking volume</td>
+              <td style="padding:0.5rem 0.4rem;">Volumeless grind lower</td>
+              <td style="padding:0.5rem 0.4rem;">Possibly consolidation, or a market on the sidelines</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight">💡 Special cases:<br>• Heavy volume at highs but no new high → distribution, money leaving<br>• Volume spike and rebound mid-decline → possibly a washed-out float, a bottoming signal</div>
+      <p>Always compare a stock's volume to <em>its own history</em> — volume comparisons across different stocks are meaningless.</p>
+          <p class="note-origin">📎 The arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  a1: {
+    html: `
+      <p><strong>SinoPac Securities' 大戶投 app</strong> has some of the most complete chip-analysis features of any broker app in Taiwan.</p>
+      <p><strong>Four core tools:</strong></p>
+      <ul>
+        <li><strong>Price-volume distribution:</strong> shows traded volume by price band, revealing operators' cost zones</li>
+        <li><strong>Big-holder vs. retail buy/sell pressure:</strong> tiers investors by trade size to show which scale of money is flowing which way</li>
+        <li><strong>Capital distribution:</strong> shows which sectors or stocks the day's money is crowding into</li>
+        <li><strong>Capital flows:</strong> watch money moving in or out in real time</li>
+      </ul>
+      <div class="highlight">📱 Where to find them:<br>• Stock page → Chips → big-holder/retail buy-sell pressure<br>• Stock page → Chips → price-volume distribution<br>• Home → capital distribution (market-wide)</div>
+      <div class="risk">⚠️ Some advanced features require a SinoPac brokerage account. Free accounts get basic quotes, but the deeper chip tools need identity verification.</div>
+          <p class="note-origin">📎 Some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  a2: {
+    html: `
+      <p>Important data you can check without opening an account, all free:</p>
+      <ul>
+        <li><strong>Taiwan Stock Exchange, twse.com.tw:</strong><br>→ institutional net buy/sell, margin balances, per-stock data, attention/disposition lists</li>
+        <li><strong>Taipei Exchange, tpex.org.tw:</strong><br>→ the same for OTC stocks, plus credit-trading and ETF statistics</li>
+        <li><strong>Taiwan Futures Exchange, taifex.com.tw:</strong><br>→ institutional futures open interest, options statistics, large-trader positions (the "mini-TAIEX retail long/short ratio" is not a TAIFEX-published figure — it is a folk indicator derived by subtracting institutional positions from total open interest)</li>
+        <li><strong>Market Observation Post System, mops.twse.com.tw:</strong><br>→ company financials, material announcements, ownership structure, monthly revenue</li>
+      </ul>
+      <div class="highlight">📌 Handy third-party aggregators:<br>• <strong>Goodinfo:</strong> free and the most complete — margin, institutions, insiders, all of it<br>• <strong>CMoney:</strong> fundamentals + chips, partly free<br>• <strong>Yahoo Finance Taiwan:</strong> quick margin balances and live quotes</div>
+          <p class="note-origin">📎 Some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  a3: {
+    html: `
+      <p>Advanced tools beyond the typical broker app:</p>
+      <ul>
+        <li><strong>XQ:</strong> Taiwan's most powerful charting + screening + backtesting platform, with direct order routing to 20+ brokers. The fullest feature set, but subscription-based. For intermediate investors and up.</li>
+        <li><strong>MacroMicro:</strong> macro-indicator visualization par excellence — margin maintenance ratio, retail long/short ratio, foreign futures positions, all charted. Partly free.</li>
+        <li><strong>Fincake:</strong> chip-analysis-first — the three institutional groups, branch-level operators, and thousand-lot holders at a glance. Free and paid tiers.</li>
+        <li><strong>StockFeel:</strong> financial education plus per-stock fundamentals — good for the learning stage.</li>
+        <li><strong>TradingView:</strong> the international standard for technical charting, supports Taiwan stocks, powerful drawing tools and a rich community.</li>
+      </ul>
+      <div class="highlight">💡 A beginner's path:<br>① Start with Goodinfo for the basic numbers (free)<br>② Add MacroMicro to understand the macro backdrop (partly free)<br>③ Consider paid Fincake or XQ only when you need deep chip analysis</div>
+    `,
+  },
+  a4: {
+    html: `
+      <p>Taiwan's major broker apps each have their own character — a quick comparison:</p>
+      <div style="overflow-x:auto; margin:0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.76rem; font-family:'Space Mono',monospace;">
+          <thead>
+            <tr style="border-bottom:1px solid #3a3d50;">
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Broker</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">App</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Chip tools</th>
+              <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Notable for</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">SinoPac</td>
+              <td style="padding:0.5rem 0.4rem;">大戶投</td>
+              <td style="padding:0.5rem 0.4rem;">★★★★★</td>
+              <td style="padding:0.5rem 0.4rem;">The most complete chip data</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">Yuanta</td>
+              <td style="padding:0.5rem 0.4rem;">投資先生</td>
+              <td style="padding:0.5rem 0.4rem;">★★★☆☆</td>
+              <td style="padding:0.5rem 0.4rem;">Institutional flows, basic chip data</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">Fubon</td>
+              <td style="padding:0.5rem 0.4rem;">e點通 / AI PRO</td>
+              <td style="padding:0.5rem 0.4rem;">★★★☆☆</td>
+              <td style="padding:0.5rem 0.4rem;">Newer interface, Taiwan + US in one</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">Cathay</td>
+              <td style="padding:0.5rem 0.4rem;">Cathay Securities</td>
+              <td style="padding:0.5rem 0.4rem;">★★☆☆☆</td>
+              <td style="padding:0.5rem 0.4rem;">Friendly to younger users, strong recurring investment plans</td>
+            </tr>
+            <tr style="border-bottom:1px solid #252836;">
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">口袋證券</td>
+              <td style="padding:0.5rem 0.4rem;">口袋證券</td>
+              <td style="padding:0.5rem 0.4rem;">★★★☆☆</td>
+              <td style="padding:0.5rem 0.4rem;">The freshest interface, institutional flows</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem 0.4rem; color:#7dba5a;">Fugle</td>
+              <td style="padding:0.5rem 0.4rem;">Fugle</td>
+              <td style="padding:0.5rem 0.4rem;">★★★☆☆</td>
+              <td style="padding:0.5rem 0.4rem;">API-friendly, a developer favorite</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight">💡 A sensible setup: place orders through your own broker's app, and check chip data on Goodinfo or Fincake — no single app needs to do everything.</div>
+      <div class="risk">⚠️ Ratings reflect public information; apps update constantly — download and try before deciding.</div>
     `,
   },
 };
