@@ -36,6 +36,7 @@ export const MIGRATED_PATHS = [
   '/projects/marketing/social-platforms-2026/',
   '/projects/marketing/tech-publishing/',
   '/projects/marketing/short-video/',
+  '/writing/symbolic-reminder/',
   '/projects/one-more-step/aw32/',
   '/projects/one-more-step/daniels-talk/',
   '/projects/one-more-step/ga4-guide/',

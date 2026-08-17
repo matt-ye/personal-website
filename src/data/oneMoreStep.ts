@@ -27,6 +27,17 @@ export interface OmsDoc {
 
 export const oneMoreStep: OmsDoc[] = [
   {
+    slug: 'symbolic-reminder',
+    title: '我的格言符號象徵',
+    titleEn: 'Symbolic Representation — Personal Maxims',
+    description: '從核心出發，層層構建十二層符號象徵 (symbol)，最終合為一，綜整「才幹」的定義與哲學格言紀錄。中英雙語。',
+    descriptionEn:
+      'Twelve layers of geometry, built from a single core into one symbol of competence — a personal philosophy shaped by OT training, Jung, and the Hero’s Journey.',
+    tags: ['個人哲學', 'Personal Brand'],
+    date: '2026-06-25',
+    url: '/writing/symbolic-reminder/',
+  },
+  {
     slug: 'atcc-judges',
     title: '四位評審教我的事——職能治療師在商業競賽決賽現場的筆記',
     titleEn: 'What Four Judges Taught Me: An OT at a Business Case Finals',
