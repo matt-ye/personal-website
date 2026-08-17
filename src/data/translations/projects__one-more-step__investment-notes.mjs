@@ -523,13 +523,13 @@ export const MODALS_EN = {
   },
   m11: {
     html: `
-      <p>Total margin balance is a key gauge of market leverage and retail sentiment. The thresholds below are <strong>personal rules of thumb, and clearly stale</strong> — as of August 2026 the TWSE reports listed-market margin balance around NT$547 billion, far past what was once considered the "high":</p>
+      <p>Total margin balance is a key gauge of market leverage and retail sentiment. The thresholds below are <strong>rules of thumb passed around the market, and clearly stale</strong> — as of August 2026 the TWSE reports listed-market margin balance around NT$547 billion, far past what was once considered the "high":</p>
       <ul>
         <li><strong>Around NT$330 billion</strong> (the old rule of thumb): leverage too high, retail chasing — read as a warning of a relative top</li>
         <li><strong>NT$220–180 billion</strong>: historically meant a retail exodus and a cleaned-up float, near a relative bottom</li>
         <li><strong>The lesson:</strong> absolute thresholds decay as the market grows; watching margin balance relative to market cap, or its rate of change, beats memorizing a number</li>
       </ul>
-      <div class="highlight">📌 Note: in recent years even billion-dollar players use margin, and share pledging is widespread, so margin balance is no longer a purely retail gauge — weight it accordingly. (The thresholds above are personal observations, not empirical research.)</div>
+      <div class="highlight">📌 Note: in recent years even billion-dollar players use margin, and share pledging is widespread, so margin balance is no longer a purely retail gauge — weight it accordingly. (The thresholds above are common market claims, not empirical research.)</div>
       <div class="risk">⚠️ The "era of big borrowing": many now pledge shares instead of using margin, so headline margin balance may understate the market's true leverage.</div>
       <a class="source-link" href="https://www.twse.com.tw/zh/trading/margin/mi-margn.html" target="_blank">→ TWSE: margin trading statistics (in Chinese)</a>
       <a class="source-link" href="https://fmstudio.blog/market-margin-balance-analysis-2025/" target="_blank">→ A full breakdown of market margin balance (FM Studio, in Chinese)</a>
@@ -1506,7 +1506,7 @@ export const MODALS_EN = {
         <li><strong>Diluted EPS:</strong> net income / weighted-average diluted shares (counting options, convertibles, and other potential dilution)</li>
         <li><strong>Beat/miss dynamics:</strong> the market trades on performance <em>relative to expectations</em>. Beat by $0.05 with guidance cut → the stock often falls; miss by $0.02 with guidance raised → it often rises.</li>
       </ul>
-      <div class="highlight">💡 A quick test: when non-GAAP EPS towers over GAAP EPS, interrogate the SBC share ("50% higher" as a threshold is a personal rule of thumb, not an authoritative line). And examples expire: Salesforce and Palantir were the standard "non-GAAP profitable, GAAP loss-making" teaching cases, but both have been GAAP-profitable for years (Salesforce's GAAP net income positive in each of the last five fiscal years; Palantir profitable every quarter since Q4 2022) — the SBC story today is dilution, not a profit-loss flip.</div>
+      <div class="highlight">💡 A quick test: when non-GAAP EPS towers over GAAP EPS, interrogate the SBC share ("50% higher" as a threshold is a widely repeated rule of thumb, not an authoritative line). And examples expire: Salesforce and Palantir were the standard "non-GAAP profitable, GAAP loss-making" teaching cases, but both have been GAAP-profitable for years (Salesforce's GAAP net income positive in each of the last five fiscal years; Palantir profitable every quarter since Q4 2022) — the SBC story today is dilution, not a profit-loss flip.</div>
       <div class="risk">⚠️ Trap: a "one-time charge" that shows up every year isn't one-time. Dressing results in non-GAAP terms is legal — judging whether the adjustments are reasonable is your job.</div>
           <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
     `,
