@@ -56,15 +56,18 @@ export const MAP = {
   '雷射 / 光學操控': 'Lasers and optical control',
   '精準產生、導引、調變光': 'Generating, steering and modulating light precisely',
   '這些是光基量子硬體的共同基礎': 'The shared foundation of all light-based quantum hardware',
-  '光子': 'Photonic',
+  /* 這五條的原文是「中文詞<small>English</small>」的卡片標題。
+     中文詞照譯會與 <small> 的英文名重複（Photonic<small>Photonic</small>），
+     所以譯成空字串，讓英文名獨自呈現。<small> 裡沒有中文，對照表碰不到它。 */
+  '光子': '',
   '靠光：光子即 qubit': 'Light-based: the photon *is* the qubit',
-  '離子陷阱': 'Trapped ion',
+  '離子陷阱': '',
   '靠光：雷射驅動能階躍遷': 'Light-based: lasers drive the energy-level transitions',
-  '中性原子': 'Neutral atom',
+  '中性原子': '',
   '靠光：光鑷捕捉原子': 'Light-based: optical tweezers hold the atoms',
-  '超導': 'Superconducting',
+  '超導': '',
   '不靠光：微波脈衝': 'Not light: microwave pulses',
-  '拓樸': 'Topological',
+  '拓樸': '',
   '不靠光：拓樸準粒子': 'Not light: topological quasiparticles',
   '五條路線匯流到量子電腦': 'Five routes converging on the quantum computer',
   '具備執行 Shor 演算法所需的容錯量子位元規模（對應卡 ②）':

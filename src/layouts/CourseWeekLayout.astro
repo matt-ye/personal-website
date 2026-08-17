@@ -22,56 +22,79 @@ interface Props {
 import SiteStrip from '../components/SiteStrip.astro';
 
 const { meta } = Astro.props;
+const isEn = Astro.currentLocale === 'en';
 
 const SITE = 'https://mattye.dev';
-const canonical = `${SITE}/projects/family-investing-course/${meta.slug}/`;
+const zhPath = `/projects/family-investing-course/${meta.slug}/`;
+const zhUrl = `${SITE}${zhPath}`;
+const enUrl = `${SITE}/en${zhPath}`;
+const canonical = isEn ? enUrl : zhUrl;
 const ogImage = `${SITE}/og-logo.png`;
+
+/* 有填英文 meta 才算「這週有英文版」——判準與 StaticPageLayout 一致，
+   能從 meta 推導的就不另外維護清單。 */
+const hasEn = Boolean(meta.titleEn && meta.descriptionEn);
+const title = isEn ? (meta.titleEn ?? meta.title) : meta.title;
+const description = isEn ? (meta.descriptionEn ?? meta.description) : meta.description;
+const ogTitle = isEn ? (meta.ogTitleEn ?? meta.ogTitle) : meta.ogTitle;
+const ogDescription = isEn ? (meta.ogDescriptionEn ?? meta.ogDescription) : meta.ogDescription;
+
+/* hreflang 只在兩版都存在時輸出——指向不存在的網址比不輸出更糟 */
+const alternates = hasEn
+  ? [
+      { hreflang: 'zh-TW', href: zhUrl },
+      { hreflang: 'en', href: enUrl },
+      { hreflang: 'x-default', href: zhUrl },
+    ]
+  : [];
 
 /* JSON-LD 預設沿用 og:*；只有極少數頁面另外寫過不同的文案，那時才會有
    ldHeadline / ldDescription（萃取時自動偵測並記錄）。 */
 const articleLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  headline: meta.ldHeadline ?? meta.ogTitle,
-  description: meta.ldDescription ?? meta.ogDescription,
+  headline: isEn ? ogTitle : (meta.ldHeadline ?? meta.ogTitle),
+  description: isEn ? ogDescription : (meta.ldDescription ?? meta.ogDescription),
   url: canonical,
-  inLanguage: 'zh-TW',
+  inLanguage: isEn ? 'en' : 'zh-TW',
   image: ogImage,
   author: { '@id': `${SITE}/#person` },
   publisher: { '@id': `${SITE}/#person` },
   mainEntityOfPage: canonical,
   isPartOf: {
     '@type': 'Course',
-    name: '給家人的投資課 Family Investing Course',
-    url: `${SITE}/projects/family-investing-course/`,
+    /* 英文頁不該寫中英並排的系列名——同 marketing 那批 isPartOf.name 的處理 */
+    name: isEn ? 'Family Investing Course' : '給家人的投資課 Family Investing Course',
+    url: `${SITE}${isEn ? '/en' : ''}/projects/family-investing-course/`,
   },
 };
 ---
 
 <!doctype html>
-<html lang="zh-TW">
+<html lang={isEn ? 'en' : 'zh-TW'}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{meta.title}</title>
+    <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="description" content={meta.description} />
+    <meta name="description" content={description} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
     <meta name="author" content="Ching-Wei Ye" />
     <link rel="canonical" href={canonical} />
 
     <meta property="og:type" content="article" />
-    <meta property="og:title" content={meta.ogTitle} />
-    <meta property="og:description" content={meta.ogDescription} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:site_name" content="葉淨維 Matt Ye" />
-    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:site_name" content={isEn ? 'Matt Ye' : '葉淨維 Matt Ye'} />
+    <meta property="og:locale" content={isEn ? 'en_US' : 'zh_TW'} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={meta.ogTitle} />
-    <meta name="twitter:description" content={meta.ogDescription} />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
     <meta name="twitter:image" content={ogImage} />
 
     {/* 與主站同步主題（同一個 localStorage key），避免閃色。

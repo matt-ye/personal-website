@@ -20,7 +20,7 @@ interface Props {
 
 import { localeHref } from '../lib/i18n';
 import { readI18nDict, escapeHtml } from '../lib/objectLiteral.mjs';
-import { applyTranslations, findResidualCjk, findBrokenScripts } from '../../scripts/lib/extract-strings.mjs';
+import { translateFragment } from '../lib/translateFragment.mjs';
 import { injectLangButton } from '../lib/langButton.mjs';
 
 const { pageKey, localized } = Astro.props;
@@ -134,39 +134,10 @@ const tablePath = Object.keys(tables).find((p) => p.endsWith(`/${pageKey}.mjs`))
 
 let fragment = fragments[path];
 
+/* 三道守衛的細節在 lib/translateFragment.mjs——課程週次頁用的是同一套，
+   複製一份到那邊就是下一次走鐘的起點。 */
 if (isEn && tablePath) {
-  const table = tables[tablePath];
-  const { html, missing } = applyTranslations(fragment, table);
-  if (missing.length) {
-    throw new Error(
-      `${pageKey}：對照表缺 ${missing.length} 條譯文，英文頁會殘留中文。` +
-        `請補進 src/data/translations/${pageKey}.mjs 並重跑 node scripts/check-translations.mjs。` +
-        `前幾條：${missing.slice(0, 3).map((s) => JSON.stringify(s.slice(0, 40))).join('、')}`,
-    );
-  }
-  fragment = html;
-
-  /* 換完再驗一次。上面的 missing 只涵蓋「抽得到的字串」，這一關管的是
-     抽取器的盲區——斷詞若有瑕疵，漏掉的字串不會出現在 missing 裡，
-     只會安靜留在頁面上。實測踩過一次：紀念頁曾有 12 條這樣的字串。 */
-  const residual = findResidualCjk(fragment, table.KEEP ?? []);
-  if (residual.length) {
-    throw new Error(
-      `${pageKey}：英文頁還有 ${residual.length} 處中文，對照表沒涵蓋到（可能是抽取器的盲區）。` +
-        `第一處前後文：…${residual[0]}…`,
-    );
-  }
-
-  /* 換的是原始碼，所以要驗它還能不能跑。
-     實測踩過：英文所有格的撇號打斷單引號字面值，整份 script SyntaxError，
-     modal 全部打不開——而上面每一道檢查都是綠的。 */
-  const broken = findBrokenScripts(fragment);
-  if (broken.length) {
-    throw new Error(
-      `${pageKey}：換成英文後有 ${broken.length} 塊 <script> 解析失敗，譯文可能沒有正確脫逸。` +
-        `第 ${broken[0].index} 塊：${broken[0].message}　開頭：${broken[0].head}`,
-    );
-  }
+  fragment = translateFragment(fragment, tables[tablePath], pageKey);
 }
 
 /* 機制 A／B 專用的兩道處理。機制 C 的頁面不能跑：

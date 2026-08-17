@@ -49,7 +49,23 @@ const REGEX_ALLOWED_BEFORE = /[([{;,:=!&|?+\-*%~^<>]$/;
 const KEYWORD_BEFORE = /\b(return|typeof|instanceof|in|of|new|delete|void|case|do|else|yield|await)$/;
 
 export function scanJsStrings(src) {
+  return walkJs(src).strings;
+}
+
+/**
+ * 同一台斷詞機也回報註解範圍。
+ *
+ * ⚠ 不能用 /\/\*[\s\S]*?\*\//g 之類的正則剝註解：字串裡的 // 會被誤判
+ *   （紀念頁的 base64 圖片就含 //），剝掉之後原始碼直接壞掉。
+ *   comment 與 string 必須由同一次掃描決定，才不會互相打架。
+ */
+export function scanJsComments(src) {
+  return walkJs(src).comments;
+}
+
+function walkJs(src) {
   const out = [];
+  const comments = [];
   let i = 0;
   /* 前一個有意義的字元（跳過空白與註解），給 `/` 的判別用 */
   let prev = '';
@@ -59,13 +75,17 @@ export function scanJsStrings(src) {
     const c = src[i];
 
     if (c === '/' && src[i + 1] === '/') {
+      const start = i;
       i = src.indexOf('\n', i);
       if (i < 0) i = n;
+      comments.push({ start, end: i });
       continue;
     }
     if (c === '/' && src[i + 1] === '*') {
+      const start = i;
       const end = src.indexOf('*/', i + 2);
       i = end < 0 ? n : end + 2;
+      comments.push({ start, end: i });
       continue;
     }
     if (c === '/') {
@@ -95,7 +115,7 @@ export function scanJsStrings(src) {
     if (!/\s/.test(c)) prev = prev.length > 12 ? prev.slice(-12) + c : prev + c;
     i++;
   }
-  return out;
+  return { strings: out, comments };
 }
 
 /* 正則字面值：字元類別 […] 裡的 / 不算結尾 */
@@ -256,8 +276,9 @@ export function applyTranslations(html, { MAP = {}, MODALS_EN = null, KEEP = [] 
 /*
  * 守衛：套用之後還剩下的中文。
  *
- * 排除四種「不是內容」的語境，各有理由：
+ * 排除五種「不是內容」的語境，各有理由：
  *   HTML 註解   建置來源的出處說明，兩種語言的頁面本來就一樣，不是讀者看的字
+ *   JS 註解     同上——課程週次頁的互動計算機裡有大量中文註解
  *   <style>     CSS 規則；字型名稱與選擇器可能含中文，換掉會壞版面
  *   href/src 值 **網址是識別碼，不是文案**。/writing/?series=投資專欄 的中文是
  *               篩選用的資料鍵（英文索引頁自己有顯示對照），翻掉連結就壞了
@@ -296,7 +317,14 @@ export function findBrokenScripts(html) {
 }
 
 export function findResidualCjk(html, KEEP = []) {
-  let probe = html
+  /* JS 註解要用斷詞機找，不能用正則——字串裡的 // 會被誤判（base64 圖片就含 //）。 */
+  let probe = html.replace(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi, (whole, attrs, body) => {
+    if (/\bsrc=/.test(attrs) || /ld\+json/.test(attrs)) return whole;
+    let out = body;
+    for (const c of scanJsComments(body).reverse()) out = out.slice(0, c.start) + out.slice(c.end);
+    return `<script${attrs}>${out}</script>`;
+  });
+  probe = probe
     .replace(/<!--[\s\S]*?-->/g, '')
     .replace(STYLE_BLOCK, '')
     .replace(/\s(?:href|src|action|formaction)="[^"]*"/g, '');
