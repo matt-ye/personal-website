@@ -28,12 +28,14 @@ export interface OmsDoc {
 export const oneMoreStep: OmsDoc[] = [
   {
     slug: 'symbolic-reminder',
-    title: '我的符號：一份個人宣言',
-    titleEn: 'My Symbol: A Personal Declaration',
-    description: '從一個核心出發，層層疊建十二層符號，最終合為一——這不是 LOGO 設計，這是我對「何謂能力」的哲學宣言。中英雙語。',
+    title: '我的格言符號象徵',
+    titleEn: 'Symbolic Representation — Personal Maxims',
+    description: '從核心出發，層層構建十二層符號象徵 (symbol)，最終合為一，綜整「才幹」的定義與哲學格言紀錄。中英雙語。',
+    descriptionEn:
+      'Twelve layers of geometry, built from a single core into one symbol of competence — a personal philosophy shaped by OT training, Jung, and the Hero’s Journey.',
     tags: ['個人哲學', 'Personal Brand'],
     date: '2026-06-25',
-    url: '/writing/symbolic-reminder',
+    url: '/writing/symbolic-reminder/',
   },
   {
     slug: 'atcc-judges',
