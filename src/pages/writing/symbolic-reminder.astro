@@ -97,12 +97,23 @@ const IMG = '/images/symbolic-reminder';
       </div>
     </div>
 
-    <div class="equation" aria-label="Core 加 Circle of Arms 疊合為 Vision">
-      <img src={`${IMG}/Core_Stain_Truth.svg`} alt="Core" class="symbol-img eq-img" />
-      <span class="eq-op">+</span>
-      <img src={`${IMG}/Circle_of_Arms.svg`} alt="Circle of Arms" class="symbol-img eq-img" />
-      <span class="eq-op">=</span>
-      <img src={`${IMG}/Vision_embrace_weakness.svg`} alt="Vision" class="symbol-img eq-img eq-result" />
+    <div class="mini-tree" aria-label="Vision 由 Core 與 Circle of Arms 疊合而成">
+      <div class="mt-parent">
+        <figure class="mt-cell">
+          <img src={`${IMG}/Vision_embrace_weakness.svg`} alt="Vision" class="symbol-img" />
+          <figcaption>Vision</figcaption>
+        </figure>
+      </div>
+      <div class="mt-children">
+        <figure class="mt-cell">
+          <img src={`${IMG}/Core_Stain_Truth.svg`} alt="Core" class="symbol-img" />
+          <figcaption>Core</figcaption>
+        </figure>
+        <figure class="mt-cell">
+          <img src={`${IMG}/Circle_of_Arms.svg`} alt="Circle of Arms" class="symbol-img" />
+          <figcaption>Circle of Arms</figcaption>
+        </figure>
+      </div>
     </div>
 
     <div class="symbol-block">
@@ -138,12 +149,23 @@ const IMG = '/images/symbolic-reminder';
       </div>
     </div>
 
-    <div class="equation" aria-label="Awareness 加 Growth 疊合為 Will">
-      <img src={`${IMG}/Awareness_Intelligence.svg`} alt="Awareness" class="symbol-img eq-img" />
-      <span class="eq-op">+</span>
-      <img src={`${IMG}/Growth_heros_journey.svg`} alt="Growth" class="symbol-img eq-img" />
-      <span class="eq-op">=</span>
-      <img src={`${IMG}/Will_Choice_Aim.svg`} alt="Will" class="symbol-img eq-img eq-result" />
+    <div class="mini-tree" aria-label="Will 由 Awareness 與 Growth 疊合而成">
+      <div class="mt-parent">
+        <figure class="mt-cell">
+          <img src={`${IMG}/Will_Choice_Aim.svg`} alt="Will" class="symbol-img" />
+          <figcaption>Will</figcaption>
+        </figure>
+      </div>
+      <div class="mt-children">
+        <figure class="mt-cell">
+          <img src={`${IMG}/Awareness_Intelligence.svg`} alt="Awareness" class="symbol-img" />
+          <figcaption>Awareness</figcaption>
+        </figure>
+        <figure class="mt-cell">
+          <img src={`${IMG}/Growth_heros_journey.svg`} alt="Growth" class="symbol-img" />
+          <figcaption>Growth</figcaption>
+        </figure>
+      </div>
     </div>
 
     <div class="symbol-block">
@@ -179,12 +201,23 @@ const IMG = '/images/symbolic-reminder';
       </div>
     </div>
 
-    <div class="equation" aria-label="Sword 加 Sheath 疊合為 Meek">
-      <img src={`${IMG}/Power_Sword.svg`} alt="Sword" class="symbol-img eq-img" />
-      <span class="eq-op">+</span>
-      <img src={`${IMG}/Control_Sheath.svg`} alt="Sheath" class="symbol-img eq-img" />
-      <span class="eq-op">=</span>
-      <img src={`${IMG}/Meek_Virtue_control_the_power.svg`} alt="Meek" class="symbol-img eq-img eq-result" />
+    <div class="mini-tree" aria-label="Meek 由 Sword 與 Sheath 疊合而成">
+      <div class="mt-parent">
+        <figure class="mt-cell">
+          <img src={`${IMG}/Meek_Virtue_control_the_power.svg`} alt="Meek" class="symbol-img" />
+          <figcaption>Meek</figcaption>
+        </figure>
+      </div>
+      <div class="mt-children">
+        <figure class="mt-cell">
+          <img src={`${IMG}/Power_Sword.svg`} alt="Sword" class="symbol-img" />
+          <figcaption>Sword</figcaption>
+        </figure>
+        <figure class="mt-cell">
+          <img src={`${IMG}/Control_Sheath.svg`} alt="Sheath" class="symbol-img" />
+          <figcaption>Sheath</figcaption>
+        </figure>
+      </div>
     </div>
 
     <div class="symbol-block">
@@ -220,12 +253,23 @@ const IMG = '/images/symbolic-reminder';
       </div>
     </div>
 
-    <div class="equation" aria-label="Sheath 加 Vision 疊合為 Wisdom Eye">
-      <img src={`${IMG}/Control_Sheath.svg`} alt="Sheath" class="symbol-img eq-img" />
-      <span class="eq-op">+</span>
-      <img src={`${IMG}/Vision_embrace_weakness.svg`} alt="Vision" class="symbol-img eq-img" />
-      <span class="eq-op">=</span>
-      <img src={`${IMG}/Wisdom_eye_Own_the_vision.svg`} alt="Wisdom Eye" class="symbol-img eq-img eq-result" />
+    <div class="mini-tree" aria-label="Wisdom Eye 由 Sheath 與 Vision 疊合而成">
+      <div class="mt-parent">
+        <figure class="mt-cell">
+          <img src={`${IMG}/Wisdom_eye_Own_the_vision.svg`} alt="Wisdom Eye" class="symbol-img" />
+          <figcaption>Wisdom Eye</figcaption>
+        </figure>
+      </div>
+      <div class="mt-children">
+        <figure class="mt-cell">
+          <img src={`${IMG}/Control_Sheath.svg`} alt="Sheath" class="symbol-img" />
+          <figcaption>Sheath</figcaption>
+        </figure>
+        <figure class="mt-cell">
+          <img src={`${IMG}/Vision_embrace_weakness.svg`} alt="Vision" class="symbol-img" />
+          <figcaption>Vision</figcaption>
+        </figure>
+      </div>
     </div>
 
     <hr class="section-divider" />
@@ -467,24 +511,42 @@ const IMG = '/images/symbolic-reminder';
     margin: 0;
   }
 
-  /* ===== 疊合算式 A + B = C ===== */
-  .equation {
+  /* ===== 疊合階層樹（上：結果，下：組成，無運算符） ===== */
+  .mini-tree {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.9rem;
     margin: var(--spacing-md) 0 var(--spacing-lg);
-    padding: 0.9rem 0.6rem;
+    padding: 1rem 0.6rem;
     border: 1px dashed var(--color-border);
     border-radius: 8px;
   }
-  .eq-img  { width: 120px; }
-  .eq-result { width: 150px; }
-  .eq-op {
-    font-size: 1.1rem;
+  .mt-parent,
+  .mt-children {
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.6rem, 3vw, 1.5rem);
+  }
+  .mt-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    width: clamp(88px, 22vw, 150px);
+    padding: 0.5rem 0.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+  }
+  .mt-cell .symbol-img { width: 100%; }
+  .mt-cell figcaption {
+    font-size: 0.62rem;
     font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--color-text-muted);
+    text-align: center;
+    line-height: 1.35;
   }
 
   /* ===== 結尾符號金字塔（無連線，位置即層級） ===== */
@@ -497,19 +559,27 @@ const IMG = '/images/symbolic-reminder';
   .pyr-row {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: stretch;   /* 同排等高，矩形外框對稱 */
     gap: 1rem;
   }
   .pyr-cell {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 0.45rem;
     margin: 0;
-    flex: 0 1 150px;
+    /* 每格同尺寸矩形外框：以「一排最多 4 格」計算統一寬度，
+       所有排共用，排列才對稱；clamp 保持響應式 */
+    width: clamp(64px, calc((100% - 3 * 1rem) / 4), 150px);
+    padding: 0.55rem 0.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
   }
   .pyr-cell .symbol-img { width: 100%; }
-  .pyr-apex { flex-basis: 240px; }
+  .pyr-apex {
+    width: clamp(140px, calc((100% - 1rem) / 2), 240px);
+  }
   .pyr-cell figcaption {
     font-size: 0.68rem;
     font-weight: 600;
@@ -556,12 +626,10 @@ const IMG = '/images/symbolic-reminder';
     .symbol-content { flex-direction: column; align-items: center; gap: 0.75rem; }
     .symbol-std { width: 150px; }
     .symbol-hero-img { max-width: 240px; }
-    .eq-img  { width: 84px; }
-    .eq-result { width: 104px; }
-    .equation { gap: 0.5rem; }
     .pyr-row { gap: 0.5rem; }
-    .pyr-cell { flex-basis: 82px; }
-    .pyr-apex { flex-basis: 150px; }
+    .pyr-cell { width: clamp(60px, calc((100% - 3 * 0.5rem) / 4), 150px); }
+    .pyr-apex { width: clamp(120px, calc((100% - 0.5rem) / 2), 240px); }
     .pyr-cell figcaption { font-size: 0.56rem; letter-spacing: 0.04em; }
+    .mt-cell figcaption { font-size: 0.55rem; }
   }
 </style>
