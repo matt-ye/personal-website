@@ -21,6 +21,7 @@ interface Props {
 import { localeHref } from '../lib/i18n';
 import { readI18nDict, escapeHtml } from '../lib/objectLiteral.mjs';
 import { applyTranslations, findResidualCjk, findBrokenScripts } from '../../scripts/lib/extract-strings.mjs';
+import { injectLangButton } from '../lib/langButton.mjs';
 
 const { pageKey, localized } = Astro.props;
 const isEn = Astro.currentLocale === 'en';
@@ -417,8 +418,14 @@ if (localized) {
     );
   }
   /* 機制 C 沒有頁內語言鈕（這批頁原本就只有中文，沒有雙語 UI）。
-     切換鈕由 StaticPageLayout 補一顆共用的——與其在六份風格各異的片段裡
-     各插一顆，不如放在版面層，樣式與位置一次講清楚。 */
+     片段自己有工具列的（判準見 lib/langButton.mjs）就插進工具列，
+     其餘留給 StaticPageLayout 在頁尾的 SiteStrip 補一條。
+
+     ⚠ 紀念頁近 200KB、七個區塊，頁尾那條實質上找不到——Matt 的回報就是
+       「缺少中英文轉換的按鈕」。長頁面的語言鈕必須在使用者會找的地方。 */
+  if (tablePath) {
+    fragment = injectLangButton(fragment, { href: target, hreflang, isEn });
+  }
 }
 ---
 
