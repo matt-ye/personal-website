@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "matt-agent-kit": {
+      "source": {
+        "source": "github",
+        "repo": "matt-ye/matt-agent-kit"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "agent-kit@matt-agent-kit": true
+  }
+}

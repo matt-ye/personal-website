@@ -48,4 +48,7 @@ scripts/_data_in/
 out/
 
 # local Claude Code config (dev-server launch config, agent state)
-.claude/
+# 例外：settings.json 要進版控——它讓 claude.ai/code 雲端 session 載入
+# matt-agent-kit plugin（雲端只讀 committed 檔案）
+.claude/*
+!.claude/settings.json
