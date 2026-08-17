@@ -183,13 +183,34 @@ export function applyTranslations(html, { MAP = {}, MODALS_EN = null, KEEP = [] 
   };
 
   /* 前後空白原樣保留，只換中間那段——縮排是版面的一部分，
-     尤其 <pre> 與模板字面值裡的換行有意義。 */
-  const swap = (raw) => {
+     尤其 <pre> 與模板字面值裡的換行有意義。
+     escape 依語境而定：對照表的值是**純文字**，塞回原始碼前要照目標語境脫逸。 */
+  const swap = (raw, escape) => {
     const en = lookup(raw);
     if (en === null) return null;
     const lead = raw.slice(0, raw.length - raw.trimStart().length);
     const tail = raw.slice(raw.trimEnd().length);
-    return lead + en + tail;
+    return lead + (escape ? escape(en) : en) + tail;
+  };
+
+  /*
+   * 把譯文塞回 JS 字串字面值。
+   *
+   * ⚠ 對照表的值是純文字，不是原始碼。直接塞進去會被引號打斷——
+   *   實測踩過：'…a pitch's gaps…' 放進單引號字面值，整份 script
+   *   當場 SyntaxError，畫面上 modal 全部打不開。
+   *   HTML 層的檢查（殘留中文、hreflang）全過，只有瀏覽器 console 看得到。
+   *
+   * ⚠ 只脫逸反斜線與**當前的**引號字元，不動 `${`——
+   *   模板字面值裡的 ${count} 是刻意的插值，對照表兩邊都留著它
+   *   （'顯示 ${count} 筆筆記' → 'Showing ${count} notes'），脫逸掉就變字面文字。
+   */
+  const escapeForQuote = (q) => (s) => {
+    const out = s.replace(/\\/g, '\\\\').split(q).join('\\' + q);
+    /* '…' 與 "…" 不能跨行，真換行要寫成 \n。反引號可以跨行，原樣保留——
+       modal 模板的縮排就靠它。
+       （對照表的值一律當純文字看，來源形式由這裡負責，不必在每一條裡自己脫逸。） */
+    return q === '`' ? out : out.replace(/\r\n|\r|\n/g, '\\n');
   };
 
   /* script/style 當分界切片：標記語境只在片段之間改，script 內只改字面值。 */
@@ -212,7 +233,8 @@ export function applyTranslations(html, { MAP = {}, MODALS_EN = null, KEEP = [] 
         return en === null ? whole : `>${en}<`;
       })
       .replace(ATTR, (whole, open, val, close) => {
-        const en = swap(val);
+        /* 屬性值由 " 包住，值裡的 " 會提早關掉屬性 */
+        const en = swap(val, (s) => s.split('"').join('&quot;'));
         return en === null ? whole : open + en + close;
       });
   }
@@ -223,7 +245,7 @@ export function applyTranslations(html, { MAP = {}, MODALS_EN = null, KEEP = [] 
     let s = block;
     for (let k = toks.length - 1; k >= 0; k--) {
       const t = toks[k];
-      const en = swap(t.value);
+      const en = swap(t.value, escapeForQuote(t.quote));
       if (en === null) continue;
       s = s.slice(0, t.start + 1) + en + s.slice(t.end - 1);
     }
@@ -244,6 +266,35 @@ export function applyTranslations(html, { MAP = {}, MODALS_EN = null, KEEP = [] 
  * 回傳每一處的前後文，讓建置期的錯誤訊息能指出是哪一句——只說「有殘留」
  * 而不說在哪，等於把找的工作丟回給人。
  */
+/*
+ * 守衛：換完之後，頁內的 <script> 還解析得動嗎？
+ *
+ * ⚠ 這道守衛是被實際的失敗逼出來的。譯文是**純文字**，塞回原始碼時
+ *   若沒有照目標引號脫逸，一個英文的所有格撇號（a pitch's gaps）
+ *   就會把整份 script 打斷，畫面上所有 modal 打不開。
+ *   而 HTML 層的每一項檢查都會通過——殘留中文 0、hreflang 互指、
+ *   canonical 正確、建置 0 error。只有瀏覽器的 console 看得到。
+ *
+ *   「改完 HTML 就驗 HTML」在這裡不夠：改的是**原始碼**，就要驗它還能不能跑。
+ *
+ * 回傳出錯的區塊索引與訊息；空陣列代表全部可解析。
+ */
+export function findBrokenScripts(html) {
+  const bad = [];
+  let i = 0;
+  for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+    const attrs = m[1];
+    i++;
+    if (/\bsrc=/.test(attrs) || /ld\+json|text\/template/.test(attrs)) continue;
+    try {
+      new Function(m[2]);
+    } catch (e) {
+      bad.push({ index: i, message: e.message, head: m[2].trim().slice(0, 120) });
+    }
+  }
+  return bad;
+}
+
 export function findResidualCjk(html, KEEP = []) {
   let probe = html
     .replace(/<!--[\s\S]*?-->/g, '')

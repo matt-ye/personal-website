@@ -20,7 +20,7 @@ interface Props {
 
 import { localeHref } from '../lib/i18n';
 import { readI18nDict, escapeHtml } from '../lib/objectLiteral.mjs';
-import { applyTranslations, findResidualCjk } from '../../scripts/lib/extract-strings.mjs';
+import { applyTranslations, findResidualCjk, findBrokenScripts } from '../../scripts/lib/extract-strings.mjs';
 
 const { pageKey, localized } = Astro.props;
 const isEn = Astro.currentLocale === 'en';
@@ -153,6 +153,17 @@ if (isEn && tablePath) {
     throw new Error(
       `${pageKey}：英文頁還有 ${residual.length} 處中文，對照表沒涵蓋到（可能是抽取器的盲區）。` +
         `第一處前後文：…${residual[0]}…`,
+    );
+  }
+
+  /* 換的是原始碼，所以要驗它還能不能跑。
+     實測踩過：英文所有格的撇號打斷單引號字面值，整份 script SyntaxError，
+     modal 全部打不開——而上面每一道檢查都是綠的。 */
+  const broken = findBrokenScripts(fragment);
+  if (broken.length) {
+    throw new Error(
+      `${pageKey}：換成英文後有 ${broken.length} 塊 <script> 解析失敗，譯文可能沒有正確脫逸。` +
+        `第 ${broken[0].index} 塊：${broken[0].message}　開頭：${broken[0].head}`,
     );
   }
 }
