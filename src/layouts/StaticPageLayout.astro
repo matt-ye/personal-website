@@ -16,6 +16,7 @@
  */
 import type { StaticPageMeta } from '../data/staticPageMeta';
 import SiteStrip from '../components/SiteStrip.astro';
+import { hasToolbar } from '../lib/langButton.mjs';
 
 interface Props {
   meta: StaticPageMeta;
@@ -81,11 +82,15 @@ const hasEn = Boolean(meta.titleEn && meta.descriptionEn);
  *
  * 判準一樣看片段內容，不維護清單：新頁自帶語言鈕就不會多一顆，
  * 沒有就自動補上。而「少一顆」只有英文讀者會遇到，那正是最少人走的路徑。
+ *
+ * ⚠ 片段自己有工具列的（紀念頁的 sticky 頂欄），語言鈕由 StaticPageContent
+ *   插進那條工具列，這裡就不要再放一條——判準共用 lib/langButton.mjs 的
+ *   hasToolbar，兩邊各寫一份的話症狀是同一頁出現兩顆語言鈕。
  */
 const hasOwnLangBtn = /id="lang(Btn|Toggle)"/.test(fragments[fragPath]);
 const zhPath = new URL(meta.canonical).pathname;
 const langLink =
-  hasEn && !hasOwnLangBtn
+  hasEn && !hasOwnLangBtn && !hasToolbar(fragments[fragPath])
     ? { href: isEn ? zhPath : `/en${zhPath}`, hreflang: isEn ? 'zh-TW' : 'en' }
     : undefined;
 const title = isEn ? (meta.titleEn ?? meta.title) : meta.title;
