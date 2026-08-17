@@ -15,6 +15,17 @@
  */
 import { localeHref } from '../lib/i18n';
 
+interface Props {
+  /** 站台連結要不要出現。預設出現；只為了掛語言鈕而渲染這條時傳 false。 */
+  siteLinks?: boolean;
+  /**
+   * 語言切換連結。給「片段裡沒有自己的語言鈕」的頁用——
+   * 那批頁原本只有中文，沒有雙語 UI，總得有個地方切回去。
+   */
+  lang?: { href: string; hreflang: string };
+}
+
+const { siteLinks = true, lang } = Astro.props;
 const isEn = Astro.currentLocale === 'en';
 const locale = isEn ? 'en' : 'zh';
 
@@ -25,9 +36,14 @@ const LINKS = [
 ];
 ---
 <nav class="site-strip" aria-label={isEn ? 'Site navigation' : '網站導覽'}>
-  {LINKS.map((l) => (
+  {siteLinks && LINKS.map((l) => (
     <a href={localeHref(l.path, locale)}>{isEn ? l.en : l.zh}</a>
   ))}
+  {lang && (
+    <a href={lang.href} hreflang={lang.hreflang} class="lang">
+      {isEn ? '🌐 中文' : '🌐 English'}
+    </a>
+  )}
 </nav>
 
 {/* 刻意用 scoped 而非 is:global：這批手刻頁各自帶完整 CSS，
@@ -47,8 +63,16 @@ const LINKS = [
     border-bottom: 1px solid transparent;
   }
   .site-strip a:hover { color: #111827; border-bottom-color: currentColor; }
+  /* 語言鈕與站台連結性質不同（換的是這一頁的語言，不是換一頁），
+     所以只有它旁邊有分隔線；站台連結全部不見時分隔線也要跟著不見。 */
+  .site-strip a.lang:not(:first-child) {
+    padding-left: 1.25rem;
+    border-left: 1px solid currentColor;
+    border-left-color: #d1d5db;
+  }
   @media (prefers-color-scheme: dark) {
     .site-strip a { color: #9ca3af; }
     .site-strip a:hover { color: #f3f4f6; }
+    .site-strip a.lang:not(:first-child) { border-left-color: #4b5563; }
   }
 </style>

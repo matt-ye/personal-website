@@ -26,6 +26,7 @@ export interface StaticPageMeta {
   canonical: string;
   ogLocale?: string;
   ogImageAlt?: string;
+  ogImageAltEn?: string;
   twitterSite?: string;
   twitterCreator?: string;
   themeColor?: string;
@@ -42,6 +43,17 @@ export interface StaticPageMeta {
   /** <html> 上的 data-* 屬性（各頁自己的主題／語言機制） */
   htmlAttrs?: Record<string, string>;
   jsonLd?: string[];
+  /**
+   * 英文路由要換掉的 JSON-LD 字串值，「中文原字 → English」。
+   *
+   * StaticPageLayout 的 localizeJsonLd 已經自動處理 url／inLanguage／
+   * headline／description／name——那幾個能從既有的英文 meta 推導。
+   * 推導不出來的（jobTitle、系列名之類）放這裡，逐條指定。
+   *
+   * ⚠ 人名不放這裡。schema.org 的 name／alternateName 本來就用來承載
+   *   另一種語言的名字，那不是漏譯。
+   */
+  jsonLdEn?: Record<string, string>;
 }
 
 export const staticPageMeta: StaticPageMeta[] = [
@@ -163,6 +175,10 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "23rd ATCC 全國決賽現場觀察：四位評審的提問如何映照提案的缺口，整理成「評審提問四原型」「五道生死題」「五型專屬死穴」三個可直接使用的工具。",
     "ogTitle": "四位評審教我的事——職能治療師在商業競賽決賽現場的筆記",
     "ogDescription": "23rd ATCC 全國決賽現場觀察：四位評審的提問如何映照提案的缺口，整理成「評審提問四原型」「五道生死題」「五型專屬死穴」三個可直接使用的工具。",
+    "titleEn": "What Four Judges Taught Me | One More Step · Matt Ye",
+    "descriptionEn": "Notes from the 23rd ATCC national final: how four judges' questions expose a pitch's gaps — four archetypes, five life-or-death questions, five weak spots.",
+    "ogTitleEn": "What Four Judges Taught Me — an occupational therapist's notes from the final of a business case competition",
+    "ogDescriptionEn": "Notes from the 23rd ATCC national final: how four judges' questions expose a pitch's gaps, distilled into four archetypes, five life-or-death questions and five type-specific weak spots.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/one-more-step/atcc-judges/",
@@ -206,6 +222,10 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "BOPPPS 六大模組（暖身、目標、前測、參與式學習、後測、總結）與其 ISW 起源，44 項研究驗證的建構主義教學框架。",
     "ogTitle": "BOPPPS × ISW — 教學設計手冊 · One More Step",
     "ogDescription": "結合 ISW 1979 年起源的教學技能工作坊，BOPPPS 六大模組（暖身、目標、前測、參與式學習、後測、總結）為核心，44 項研究驗證的建構主義學習框架，適用線上課程與工作坊設計。",
+    "titleEn": "BOPPPS × ISW — Instructional Design Handbook | One More Step · Matt Ye",
+    "descriptionEn": "The six BOPPPS components — bridge-in, objective, pre-assessment, participatory learning, post-assessment, summary — with their ISW origins and evidence base.",
+    "ogTitleEn": "BOPPPS × ISW — Instructional Design Handbook",
+    "ogDescriptionEn": "Combining the Instructional Skills Workshop (ISW), which began in 1979, with the six BOPPPS components — bridge-in, objective, pre-assessment, participatory learning, post-assessment, summary: a constructivist learning framework validated by 44 studies, for designing online courses and workshops.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/one-more-step/boppps/",
@@ -275,6 +295,10 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "台股筆記與美股估值、財報、指標全方位知識庫。融資、籌碼、法人、選擇權、可轉債等投資概念詳解。",
     "ogTitle": "台股 × 美股投資知識庫",
     "ogDescription": "台股筆記與美股估值、財報、指標全方位知識庫。融資、籌碼、法人、選擇權、可轉債等投資概念詳解。",
+    "titleEn": "Taiwan × US Stock Investing Knowledge Base",
+    "descriptionEn": "Taiwan market notes and a full guide to US valuation, financial statements and metrics, covering margin buying, chip data, institutions, options and convertible bonds.",
+    "ogTitleEn": "Taiwan × US Stock Investing Knowledge Base",
+    "ogDescriptionEn": "Taiwan market notes and a full guide to US valuation, financial statements and metrics, covering margin buying, chip data, institutions, options and convertible bonds.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/one-more-step/investment-notes/",
@@ -291,6 +315,10 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "從創作者經濟到開第一間網路商店：數位產品類型、平台功能全覽、結帳設定，以及互動測驗與行動清單。",
     "ogTitle": "Lemon Squeezy 數位創業學習指南",
     "ogDescription": "從創作者經濟到開第一間網路商店：數位產品類型、平台功能全覽、結帳設定，以及互動測驗與行動清單。",
+    "titleEn": "Lemon Squeezy Digital Business Guide",
+    "descriptionEn": "From the creator economy to your first online store: digital product types, a full tour of the platform, checkout setup, interactive quizzes and an action list.",
+    "ogTitleEn": "Lemon Squeezy Digital Business Guide",
+    "ogDescriptionEn": "From the creator economy to your first online store: digital product types, a full tour of the platform, checkout setup, interactive quizzes and an action list.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/one-more-step/lemon-squeezy/",
@@ -307,6 +335,10 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "矽光子、量子電腦五大硬體路線、光子 EDA 與光互連物理層的技術地圖，以及 Nvidia 逾 65 億美元光子投資版圖與對應台股標的。",
     "ogTitle": "矽光子 × 量子電腦 × PQC — 趨勢與投資地圖",
     "ogDescription": "從 AppWorks AW#32 / AW#33 的 PQC 與矽光子趨勢出發，整理矽光子、量子電腦五大硬體路線、光子 EDA / 光運算、光互連物理層，以及 Nvidia 逾 65 億美元光子投資版圖與對應台股、美股標的。",
+    "titleEn": "Silicon Photonics × Quantum Computing × PQC | One More Step · Matt Ye",
+    "descriptionEn": "A technology map of silicon photonics, the five quantum hardware routes, photonic EDA and optical interconnects, plus Nvidia's $6.5bn+ photonics investments.",
+    "ogTitleEn": "Silicon Photonics × Quantum Computing × PQC — Trends and Investment Map",
+    "ogDescriptionEn": "Starting from the PQC and silicon-photonics threads at AppWorks AW#32 and AW#33: silicon photonics, the five quantum hardware routes, photonic EDA and optical computing, the optical-interconnect physical layer, and Nvidia's over-$6.5bn photonics investments with the matching Taiwan and US listings.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/one-more-step/quantum-photonics-investing/",
@@ -323,11 +355,20 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "李維晏（Miguel）老師紀念網站——彙整十餘年、數百位台大學生的課程回饋與留言，以及她的著作、研究計畫與開放式課程。",
     "ogTitle": "懷念 Miguel 李維晏老師 ・ 教育是分享快樂的志業",
     "ogDescription": "李維晏（Miguel）老師紀念網站——彙整十餘年、數百位台大學生的課程回饋與留言，以及她的著作、研究計畫與開放式課程。",
+    "titleEn": "Remembering Miguel 李維晏 · Teaching is the work of sharing joy",
+    "descriptionEn": "A memorial for 李維晏 (Miguel) — course feedback and messages from several hundred NTU students over more than a decade, with her writing and open courses.",
+    "ogTitleEn": "Remembering Miguel 李維晏 · Teaching is the work of sharing joy",
+    "ogDescriptionEn": "A memorial site for 李維晏 (Miguel) — course feedback and messages from several hundred NTU students over more than a decade, alongside her writing, research and open courses.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/writing/In-Memory-of-Miguel-Li/og-miguel.jpg",
     "canonical": "https://mattye.dev/writing/In-Memory-of-Miguel-Li/",
     "ogLocale": "zh_TW",
     "ogImageAlt": "李維晏（Miguel）老師的照片，與「教育是分享快樂的志業」字樣",
+    "ogImageAltEn": "A photograph of 李維晏 (Miguel), with the words \"Teaching is the work of sharing joy\"",
+    "jsonLdEn": {
+      "教師": "Teacher",
+      "國立臺灣大學寫作教學中心副教授兼中心主任": "Associate Professor and Director, Academic Writing Education Center, National Taiwan University"
+    },
     "jsonLd": [
       "{\"@context\": \"https://schema.org\", \"@type\": \"WebPage\", \"name\": \"懷念 Miguel 李維晏老師 ・ 教育是分享快樂的志業\", \"description\": \"李維晏（Miguel）老師紀念網站——彙整十餘年、數百位台大學生的課程回饋與留言，以及她的著作、研究計畫與開放式課程。\", \"url\": \"https://mattye.dev/writing/In-Memory-of-Miguel-Li/\", \"inLanguage\": \"zh-TW\", \"image\": \"https://mattye.dev/writing/In-Memory-of-Miguel-Li/og-miguel.jpg\", \"about\": {\"@type\": \"Person\", \"name\": \"李維晏 Miguel Li\", \"jobTitle\": \"教師\"}, \"author\": {\"@id\": \"https://mattye.dev/#person\"}, \"publisher\": {\"@id\": \"https://mattye.dev/#person\"}}",
       "{\"@context\": \"https://schema.org\", \"@type\": \"Person\", \"name\": \"李維晏\", \"alternateName\": [\"Wei-Yan Li\", \"Miguel Li\"], \"jobTitle\": \"國立臺灣大學寫作教學中心副教授兼中心主任\", \"affiliation\": {\"@type\": \"CollegeOrUniversity\", \"name\": \"National Taiwan University\"}, \"sameAs\": [\"https://orcid.org/0000-0002-1803-8088\", \"https://scholars.lib.ntu.edu.tw/handle/123456789/718759\"]}"

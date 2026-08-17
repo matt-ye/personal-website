@@ -9,9 +9,19 @@
  *
  *   ✅ Matt 的決定：照譯，並在英文頁標明譯文來源。
  *
- *   遷移時**必須**在留言區顯示這句（已放在 MAP 第一條，直接取用）：
- *       Messages below are translated from the Chinese original
+ *   ✅ 2026-08-17 遷移完成，這句已經上線：
+ *       Messages below are translated from the Chinese original.
  *   少了它，英文讀者會以為那些字是原作者用英文寫的。
+ *
+ *   放法是**接在三個區塊的副標之後**（見 README 的「片段重新分配」），
+ *   不另外插新元素：
+ *       #remembrances  懷念 Miguel 老師的生平側寫與紀念文字。
+ *       #voices        這些是學生願意公開分享的留言與故事…
+ *       #courses       依課程整理學生的回饋…
+ *   三個區塊各自獨立呈現譯文，只標一次會有兩區沒有交代。
+ *
+ *   ⚠ #board 刻意**不標**：那一區是從 Google Sheet 即時抓的中文原文，
+ *     根本沒有經過翻譯，標上去反而是錯的。
  *
  * ⚠ 姓名一律保留原字，不音譯、不編造英文名（同 atcc-judges 的處理）。
  *
@@ -28,14 +38,12 @@ export const KEEP = [
   '葉紫芳', '王道一', '蘇政維', '廖士翔',
 ];
 
-/* 原文頁沒有、英文版刻意新增的條目 */
-export const ADDED = ['以下留言譯自中文原文'];
+/* 原文頁沒有、英文版刻意新增的條目。
+   譯文來源標示不在這裡——它接在三個區塊副標的譯文尾巴（見檔頭），
+   所以不是獨立條目。留一個沒人用的 key 只會讓下一個人以為它有作用。 */
+export const ADDED = [];
 
 export const MAP = {
-  /* 這一句中文頁沒有，是英文版新增的譯文標示。遷移時要一併插進留言區——
-     見檔頭說明，這不是選配。 */
-  '以下留言譯自中文原文': 'Messages below are translated from the Chinese original',
-
   /* ── 導覽與標題 ── */
   '懷念 Miguel': 'Remembering Miguel',
   '李維晏老師': '李維晏',
@@ -52,7 +60,9 @@ export const MAP = {
   '????.03.24 — 2026.05.20（Miguel：才不告訴你哩）':
     '????.03.24 — 2026.05.20 (Miguel: "I\'m not telling you")',
   '「教育是分享快樂的志業。」': '"Teaching is the work of sharing joy."',
-  '104 — 113 學年': 'Academic years 104–113',
+  /* 統計卡的「值」，旁邊那三格是 536+、13——這裡塞不下一整句。
+     說明的部分放到標籤（見下面的 '橫跨'）。 */
+  '104 — 113 學年': '104–113',
 
   /* ── 生平 ── */
   '李維晏（Miguel）是國立臺灣大學寫作教學中心副教授兼中心主任。她是排灣族，個性樂觀、談吐幽默，在共同教育領域開設「小故事，大世界」「框架外的思考：五分鐘英文講台」「工程學術英文寫作與口頭報告」「學術英文論文寫作與發表」「英文寫作基礎」等課程，選課人數動輒五、六百人，是台大學生口耳相傳、在 PTT 上「推爆」的傳奇教師。':
@@ -77,6 +87,38 @@ export const MAP = {
   '代表課程': 'Signature courses',
   '小故事，大世界｜框架外的思考：五分鐘英文講台｜工程學術英文寫作與口頭報告':
     'Small Stories, Big World | Thinking Outside the Box: Five Minutes on the English Stage | Academic English Writing and Oral Presentation for Engineering',
+
+  /*
+   * ── JS 生成的字串（2026-08-17 補）──────────────────────────────
+   *
+   * 這 12 條原本**抽取器看不見**：頁內有一行
+   *   .replace(/[&<>"]/g, m => ({ '&': '&amp;', '"': '&quot;' }[m]))
+   * 正則字面值裡的 " 被舊版的樸素掃描當成字串開頭，之後所有引號配對整批位移，
+   * 於是這些字串既沒被抽出、也不會被對照表的驗證點名。斷詞改成真的逐字掃描
+   * （scripts/lib/extract-strings.mjs 的 scanJsStrings）之後才浮出來。
+   *
+   * ⚠ 其中幾條是**與資料串接的片段**，不是完整句子：
+   *     ['課程', DATA.stats.courses + ' 門']      → 值是數字，單位在英文裡不需要
+   *     pool.length + ' / ' + total + ' 則'      → 同上
+   *     c.count + ' 則學生回饋</span>'            → 尾巴帶著結尾標籤
+   *   單位詞譯成空字串是刻意的（見 README 的片段重新分配說明），
+   *   數字後面會留一個空白，那是無害的。
+   */
+  '懷念 Miguel 老師的生平側寫與紀念文字。':
+    'Profiles and remembrances of Miguel. Messages below are translated from the Chinese original.',
+  '留言則數': 'Messages',
+  '課程': 'Courses',
+  '門': '',
+  /* 統計卡的「標籤」。中文的「學年」在值裡，英文移到標籤——
+     值那一格是大字級，塞不下 "Academic years 104–113"（實測會斷成四行）。 */
+  '橫跨': 'Academic years',
+  '則': '',
+  '學年': ' (academic years)',
+  '則學生回饋</span>': 'student comments</span>',
+  '（沒有符合的留言）': '(No matching messages)',
+  '找不到符合的留言': 'No matching messages',
+  '目前還沒有留言，歡迎成為第一個 ✍️': 'No messages yet — be the first ✍️',
+  '留言載入中斷，請稍後重新整理。': 'Loading was interrupted. Please refresh in a moment.',
 
   /* ── 留言板 UI ── */
   '想對 Miguel 老師說的話，仍在繼續。歡迎在這裡留下你的思念。':
@@ -145,15 +187,18 @@ export const MAP = {
     'More recollections and tributes are being gathered and will be published as they come in.',
 
   /* ── 學生的聲音（區塊文案） ── */
+  /* 譯文來源標示（見檔頭）：接在區塊副標之後。 */
   '這些是學生願意公開分享的留言與故事，不分課程。點一下卡片，換一則來讀。':
-    'Messages and stories students were willing to share publicly, from any course. Click a card for another.',
+    'Messages and stories students were willing to share publicly, from any course. Click a card for another. ' +
+    'Messages below are translated from the Chinese original.',
   '‹ 上一則': '‹ Previous',
   '下一則 ›': 'Next ›',
   '🔀 隨機': '🔀 Random',
   '點卡片或按「下一則」即可閱讀更多留言':
     'Click a card or press Next to read more',
   '依課程整理學生的回饋：每門課先是綜合心得，下方為學生願意公開分享的具名留言。':
-    'Feedback organised by course: a summary of the responses first, then the named messages students were willing to share.',
+    'Feedback organised by course: a summary of the responses first, then the named messages students were willing to share. ' +
+    'Messages below are translated from the Chinese original.',
   '匿名': 'Anonymous',
   '匿名　小故事，大世界': 'Anonymous — Small Stories, Big World',
   '匿名　109-2　PTT/Dcard 課程心得彙整':

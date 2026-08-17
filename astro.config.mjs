@@ -186,14 +186,32 @@ function injectBreadcrumbs() {
           const html = readFileSync(file, 'utf8');
           if (html.includes('"BreadcrumbList"')) { skipped++; continue; }
 
+          /*
+           * 英文頁的根節點是 /en/，不是 /。
+           *
+           * 不分流的話，/en/ 底下每一頁的麵包屑都會是
+           *   首頁 → /            （中文標籤，而且指回中文站）
+           *   Matt Ye → /en/      （多出來的一層，標籤是站名）
+           *   …
+           * 對爬蟲而言，那是在說「這個英文頁的路徑起點是一個中文頁」。
+           * 實測 26 個英文頁全部如此（2026-08-17 發現）。
+           *
+           * 作法：把 en 這一段從層級裡拿掉，改由根節點承擔。
+           */
+          const isEnPage = rel[0] === 'en';
+          const levels = isEnPage ? rel.slice(1) : rel;
+          const items = isEnPage
+            ? [{ name: 'Home', url: `${SITE}/en/` }]
+            : [{ name: '首頁', url: `${SITE}/` }];
+
           /* 逐層組出項目。祖先層若沒有自己的頁面（例如 /projects/marketing/ 有頁、
              但某個中介目錄沒有），就跳過那一層——麵包屑要指向真的點得到的頁面。 */
-          const items = [{ name: '首頁', url: `${SITE}/` }];
-          for (let i = 0; i < rel.length; i++) {
-            const segs = rel.slice(0, i + 1);
-            const label = labelOf(segs);
+          for (let i = 0; i < levels.length; i++) {
+            const segs = levels.slice(0, i + 1);
+            /* labelOf 讀的是磁碟路徑，所以英文頁要把 en 前綴加回去 */
+            const label = labelOf(isEnPage ? ['en', ...segs] : segs);
             if (!label) continue;
-            items.push({ name: label, url: `${SITE}/${segs.join('/')}/` });
+            items.push({ name: label, url: `${SITE}/${(isEnPage ? ['en', ...segs] : segs).join('/')}/` });
           }
           if (items.length < 2) continue;            // 只有首頁就沒有意義
 
