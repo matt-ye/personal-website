@@ -1,0 +1,55 @@
+# IndexNow 自動提交：push 到 main（= Cloudflare Pages 部署）後，
+# 把 sitemap 裡的全部網址提交給 api.indexnow.org。
+# Bing／Yandex／Naver／Seznam 即時收到；ChatGPT Search 靠 Bing 索引，
+# 所以這條對「被 AI 引用」有實際價值。Google 不支援 IndexNow，
+# 走原本的 sitemap 自然抓取，本 workflow 不處理。
+#
+# ponytail: 提交的是整份 sitemap（~90 條），不是 diff 出來的變更頁。
+# 這個量級對 IndexNow 完全無害（濫用門檻是百萬級），換來零映射邏輯
+# ——不用維護「哪個 source 檔對應哪個網址」的規則表。
+# 若未來頁數成長到數千，再改成 diff 制。
+name: IndexNow
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      # Cloudflare Pages 由同一個 push 觸發建置，等它部署完
+      # 再抓 sitemap，拿到的才是這次的新版本
+      - name: Wait for Cloudflare Pages deploy
+        run: sleep 240
+
+      - name: Submit sitemap URLs to IndexNow
+        run: |
+          node --input-type=module -e '
+            const HOST = "mattye.dev";
+            const KEY = "fa0eee755c45a6e7828a93590876a465";
+
+            const keyRes = await fetch(`https://${HOST}/${KEY}.txt`);
+            if (!keyRes.ok) throw new Error(`key file not reachable: ${keyRes.status}`);
+
+            const xml = await (await fetch(`https://${HOST}/sitemap-0.xml`)).text();
+            const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
+            if (urls.length === 0) throw new Error("sitemap empty — abort");
+
+            const res = await fetch("https://api.indexnow.org/indexnow", {
+              method: "POST",
+              headers: { "Content-Type": "application/json; charset=utf-8" },
+              body: JSON.stringify({
+                host: HOST,
+                key: KEY,
+                keyLocation: `https://${HOST}/${KEY}.txt`,
+                urlList: urls,
+              }),
+            });
+            console.log(`submitted ${urls.length} URLs — HTTP ${res.status}`);
+            // 200 = 收到；202 = 收到、key 驗證排程中。其他都算失敗
+            if (res.status !== 200 && res.status !== 202) process.exit(1);
+          '
