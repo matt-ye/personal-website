@@ -34,6 +34,25 @@ export const MAP = {
 
 改動任何一條片段時，要連同前後片段一起看。
 
+## 大模板：MODALS_EN（investment-notes 專用形狀）
+
+investment-notes 的 71 個 modal 是幾百字的 HTML 模板字面值，當 `MAP` 的 key
+不可讀也難 diff，所以改成按 modal key 對照整段英文 HTML：
+
+```js
+export const MODALS_EN = {
+  m1: { html: `...整段英文 HTML...` },
+};
+```
+
+這正好是遷移時 `.en.json` 注入機制（見 aw32 的做法）要吃的形狀。
+`check-translations.mjs` 會從來源頁解析出每個 modal 的模板與 key，
+驗證：每個 key 都有英文、沒有多出來源頁沒有的 key、英文 html 裡沒有殘留中文
+（KEEP 白名單除外）。
+
+查無官方英文名的品牌（如 大戶投、口袋證券）依誠實條款保留中文原字，
+並列入 `KEEP`。
+
 ## 姓名不翻
 
 紀念頁的悼念留言含署名（已公開在頁面上）。**姓名一律原樣保留**，

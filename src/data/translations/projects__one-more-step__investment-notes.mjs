@@ -29,8 +29,7 @@ export const KEEP = [
 
 export const ADDED = [];
 
-/* modal 模板還沒翻完前保持 true */
-export const INCOMPLETE = true;
+export const INCOMPLETE = false;
 
 export const MAP = {
   /* ── header 與分類篩選 ─────────────────────────────── */
@@ -1372,6 +1371,436 @@ export const MODALS_EN = {
       <div class="highlight">💡 When sizing up an M&amp;A target, EV is the number that matters: the acquirer pays the equity premium and assumes all the debt (or pockets the cash).</div>
       <div class="risk">⚠️ "Interest-bearing debt" needs precision: include short- and long-term borrowings, bonds, and finance leases, but exclude operating liabilities like accounts payable. Analysts define EV slightly differently — confirm the definitions match before comparing.</div>
           <p class="note-origin">📎 Some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uf1: {
+    html: `
+      <p>The income statement shows a company's operating results over a period — the financial statement investors read most. US companies report it quarterly (10-Q) and annually (10-K).</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Line</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Term</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">What it is</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>Revenue</strong></td><td style="padding:0.5rem 0.4rem;">Revenue / Net Sales</td><td style="padding:0.5rem 0.4rem;">Total income from products or services sold</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>Cost of goods sold</strong></td><td style="padding:0.5rem 0.4rem;">COGS</td><td style="padding:0.5rem 0.4rem;">Direct production costs — materials plus labor</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>Gross profit</strong></td><td style="padding:0.5rem 0.4rem;">Gross Profit</td><td style="padding:0.5rem 0.4rem;">Revenue − COGS</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>Operating expenses</strong></td><td style="padding:0.5rem 0.4rem;">OpEx (R&D, S&M, G&A)</td><td style="padding:0.5rem 0.4rem;">Research, marketing, and administrative costs</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>Operating income</strong></td><td style="padding:0.5rem 0.4rem;">Operating Income / EBIT</td><td style="padding:0.5rem 0.4rem;">Gross profit − OpEx</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>Pre-tax income</strong></td><td style="padding:0.5rem 0.4rem;">EBT</td><td style="padding:0.5rem 0.4rem;">EBIT ± net interest</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem; color:#e8c84a;"><strong>Net income</strong></td><td style="padding:0.5rem 0.4rem;">Net Income</td><td style="padding:0.5rem 0.4rem;">EBT − income tax</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight">💡 When reading an income statement, focus on <strong>YoY revenue growth</strong> and <strong>margin trends</strong>, not single-quarter absolutes. Consecutive gross-margin declines <strong>may</strong> signal pricing or cost trouble — but can also come from mix shifts or a deliberate trade of margin for share; context decides. Industry ranges (Damodaran, January 2026): software gross margin about 72%, semiconductors about 59%, but computer hardware only about 38% — "tech companies run 60–80%" holds only for software and semis; retail's 25–40% roughly checks out. Compare across industries with care; this is a snapshot as of writing.</div>
+      <a class="source-link" href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/margin.html" target="_blank">→ Damodaran: margins by industry (NYU Stern)</a>
+      <div class="risk">⚠️ GAAP net income can include one-off items (impairments, litigation settlements) — read it against the non-GAAP figures and management's earnings-call commentary.</div>
+    `,
+  },
+  uf2: {
+    html: `
+      <p>The balance sheet shows a company's financial position on a given date. The core identity: <strong>assets = liabilities + equity</strong>.</p>
+      <ul>
+        <li><strong>Assets:</strong>
+          <ul>
+            <li>Current assets: cash and equivalents, accounts receivable (AR), inventory</li>
+            <li>Non-current assets: property, plant &amp; equipment (PP&amp;E), goodwill, intangibles</li>
+          </ul>
+        </li>
+        <li><strong>Liabilities:</strong>
+          <ul>
+            <li>Current liabilities: accounts payable (AP), short-term borrowings, deferred revenue</li>
+            <li>Long-term liabilities: long-term debt, lease liabilities</li>
+          </ul>
+        </li>
+        <li><strong>Equity:</strong> common stock and retained earnings</li>
+      </ul>
+      <p><strong>What to watch:</strong></p>
+      <ul>
+        <li><strong>Cash position:</strong> tech leaders like Apple and Microsoft hold tens of billions — a safety cushion and buyback fuel</li>
+        <li><strong>Goodwill bloat:</strong> heavy acquirers carry outsized goodwill; a future impairment slams net income</li>
+        <li><strong>Days sales outstanding (DSO):</strong> a steadily climbing DSO means weakening collections or channel stuffing — a red flag</li>
+        <li><strong>Deferred revenue:</strong> for SaaS, growing deferred revenue is future recognizable income in the bank — a positive signal</li>
+      </ul>
+      <div class="highlight">💡 Healthy signs: cash &gt; total debt (net cash), current ratio &gt; 1.5, goodwill under 30% of total assets. Apple's long-running cash-plus-buyback stance is an extreme but effective capital-allocation strategy.</div>
+      <div class="risk">⚠️ If goodwill exceeds 100% of shareholders' equity, book value can evaporate the moment the core business turns — many banks hit technical insolvency this way after the 2008 crisis.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uf3: {
+    html: `
+      <p>The cash flow statement is the hardest of the three statements to fake, because cash movements are records of actual transactions. Even a profitable-looking income statement cannot save a company whose cash flow stays negative.</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Section</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Abbr.</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Contents</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>Operating cash flow</strong></td><td style="padding:0.5rem 0.4rem;">OCF</td><td style="padding:0.5rem 0.4rem;">Cash from the core business: net income + non-cash charges (depreciation, SBC) ± working-capital changes</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>Investing cash flow</strong></td><td style="padding:0.5rem 0.4rem;">ICF</td><td style="padding:0.5rem 0.4rem;">CapEx, acquisitions, asset sales — usually negative</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;"><strong>Financing cash flow</strong></td><td style="padding:0.5rem 0.4rem;">FCF</td><td style="padding:0.5rem 0.4rem;">Borrowing, repayment, share issuance, buybacks, dividends</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>OCF vs. net income:</strong> in a healthy company OCF runs at or above net income over time. OCF persistently below net income means receivables or inventory are eating the cash — poor earnings quality.</li>
+        <li><strong>The SBC problem:</strong> tech companies add large stock-based compensation back into OCF; watch whether it dilutes shareholders, and check the conservative "FCF − SBC" view.</li>
+        <li><strong>CapEx intensity:</strong> the old "asset-heavy vs. asset-light" contrast has been overturned by AI data centers — Damodaran's January 2026 net CapEx/revenue: software at a striking 17.8% (internet software 26%), semiconductors 4.4%, airlines 3.6%. "SaaS runs 1–3%" is pre-AI common knowledge; date-stamp it when citing.</li>
+      </ul>
+      <div class="highlight">💡 The formula investors love: free cash flow = OCF − CapEx. Only companies with positive, growing FCF have real freedom to buy back shares, pay dividends, or fund growth.</div>
+      <div class="risk">⚠️ Trap: some companies park maintenance spending under investing activities to flatter OCF, even though it is required to keep the business running. Distinguish growth CapEx from maintenance CapEx as you read.</div>
+    `,
+  },
+  uf4: {
+    html: `
+      <p>Free cash flow (FCF) is the cash a company can actually deploy after capital spending. Harder to manipulate than EPS, it is the core measure of "real earning power" — what Buffett calls owner earnings.</p>
+      <p><strong>Main formulas:</strong></p>
+      <ul>
+        <li>Basic: <strong>FCF = operating cash flow − capital expenditures</strong></li>
+        <li>FCFF (firm-level) = EBIT × (1 − tax rate) + D&amp;A − ΔWorking Capital − CapEx</li>
+      </ul>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Dimension</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Metric</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Healthy benchmark</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">FCF margin</td><td style="padding:0.5rem 0.4rem;">FCF / Revenue</td><td style="padding:0.5rem 0.4rem;">Tech &gt; 20% is excellent; manufacturing &gt; 8% is decent</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;">P/FCF valuation</td><td style="padding:0.5rem 0.4rem;">Market cap / annualized FCF</td><td style="padding:0.5rem 0.4rem;">&lt; 25x fairly reasonable; &gt; 50x needs high growth behind it</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">FCF yield</td><td style="padding:0.5rem 0.4rem;">FCF / Market cap</td><td style="padding:0.5rem 0.4rem;">&gt; 4% suggests an attractive valuation</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;">FCF conversion</td><td style="padding:0.5rem 0.4rem;">FCF / Net income</td><td style="padding:0.5rem 0.4rem;">&gt; 80% marks high earnings quality</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight">💡 In practice: Apple's FCF margin has run 24–28% for years (about 23.7% in FY2025); Microsoft once hit 33% but fell to about 25% in FY2025 as AI CapEx surged (US$64.4 billion) — even the giants' FCF margins get squeezed by investment cycles, so date your citations. Many "profitable-looking" businesses, by contrast, run negative FCF for years.</div>
+      <div class="risk">⚠️ Note: SBC added back to OCF inflates FCF. Some analysts use "FCF − SBC" as the conservative view — especially apt for SBC-heavy growth stocks (early Palantir, Snowflake).</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uf5: {
+    html: `
+      <p>Earnings per share (EPS) is the most quoted number in the financial press, but US companies report both <strong>GAAP EPS</strong> and <strong>non-GAAP (adjusted) EPS</strong> — and the gap can be enormous.</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Aspect</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">GAAP EPS</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Non-GAAP EPS</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">Basis</td><td style="padding:0.5rem 0.4rem;">US GAAP accounting standards</td><td style="padding:0.5rem 0.4rem;">Management-defined, with adjustments disclosed</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;">Common exclusions</td><td style="padding:0.5rem 0.4rem;">Everything included</td><td style="padding:0.5rem 0.4rem;">SBC, restructuring, acquisition amortization, one-offs</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">The number is usually</td><td style="padding:0.5rem 0.4rem;">Lower (conservative)</td><td style="padding:0.5rem 0.4rem;">Higher (optimistic)</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;">Regulation</td><td style="padding:0.5rem 0.4rem;">SEC-mandated</td><td style="padding:0.5rem 0.4rem;">Optional, but adjustments must be itemized</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>Basic EPS:</strong> net income / weighted-average basic shares</li>
+        <li><strong>Diluted EPS:</strong> net income / weighted-average diluted shares (counting options, convertibles, and other potential dilution)</li>
+        <li><strong>Beat/miss dynamics:</strong> the market trades on performance <em>relative to expectations</em>. Beat by $0.05 with guidance cut → the stock often falls; miss by $0.02 with guidance raised → it often rises.</li>
+      </ul>
+      <div class="highlight">💡 A quick test: when non-GAAP EPS towers over GAAP EPS, interrogate the SBC share ("50% higher" as a threshold is a personal rule of thumb, not an authoritative line). And examples expire: Salesforce and Palantir were the standard "non-GAAP profitable, GAAP loss-making" teaching cases, but both have been GAAP-profitable for years (Salesforce's GAAP net income positive in each of the last five fiscal years; Palantir profitable every quarter since Q4 2022) — the SBC story today is dilution, not a profit-loss flip.</div>
+      <div class="risk">⚠️ Trap: a "one-time charge" that shows up every year isn't one-time. Dressing results in non-GAAP terms is legal — judging whether the adjustments are reasonable is your job.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uf6: {
+    html: `
+      <p>The earnings call is the quarterly public session where the CEO and CFO explain results — anyone can listen live or read the transcript free afterward.</p>
+      <p><strong>Structure:</strong></p>
+      <ul>
+        <li><strong>Opening remarks:</strong> the CEO covers highlights, the CFO the financial detail — about 15–20 minutes</li>
+        <li><strong>Q&amp;A session:</strong> institutional analysts ask questions for 30–45 minutes — the meatiest part</li>
+      </ul>
+      <p><strong>What institutional analysts probe:</strong></p>
+      <ul>
+        <li><strong>Guidance:</strong> next-quarter and full-year revenue, EPS, and margin guidance — often moves the stock more than the quarter itself</li>
+        <li><strong>Demand environment:</strong> is customer demand softening? Any deal push-outs?</li>
+        <li><strong>Margin trajectory:</strong> where are gross and operating margins heading, and when does scale kick in?</li>
+        <li><strong>Capital allocation:</strong> is cash going to buybacks, dividends, or M&amp;A?</li>
+        <li><strong>Competition:</strong> how is the company answering rivals — AI entrants included?</li>
+      </ul>
+      <p><strong>Tone signals worth noting:</strong></p>
+      <ul>
+        <li>Confident and specific → positive signal</li>
+        <li>Hedged language ("we expect... broadly...") → rising uncertainty</li>
+        <li>The CFO volunteering "macro headwinds" → possibly previewing a guidance cut</li>
+        <li>Analyst questions getting deflected → what is management avoiding?</li>
+      </ul>
+      <div class="highlight">💡 Free transcripts: Seeking Alpha, The Motley Fool, and company IR sites. Focus on the Q&amp;A and tune out the PR-polished opening — the stock's reaction is the market's honest vote.</div>
+      <div class="risk">⚠️ Management naturally tilts positive, but the stock's reaction is the market's honest vote. A beat with cautious guidance, or worry surfacing in analyst questions, can still send the stock down after the call.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions, and the arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uf7: {
+    html: `
+      <p>Fraud and deterioration usually leave tracks. These are the red flags every investor should know — patterns that showed up before Enron, Wirecard, and Luckin Coffee blew up.</p>
+      <p><strong>Income-statement red flags:</strong></p>
+      <ul>
+        <li><strong>Revenue growing while cash flow shrinks:</strong> possibly aggressive revenue recognition or ballooning receivables (channel stuffing)</li>
+        <li><strong>A steadily widening GAAP vs. non-GAAP gap:</strong> more "one-time charges" every year</li>
+        <li><strong>Gross margin suddenly improving with no good explanation:</strong> possibly a change in cost classification</li>
+      </ul>
+      <p><strong>Balance-sheet red flags:</strong></p>
+      <ul>
+        <li><strong>Receivables growing far faster than revenue:</strong> soaring DSO — possibly fabricated orders</li>
+        <li><strong>Inventory piling up abnormally:</strong> products not selling while the company won't admit it — a big writedown may follow</li>
+        <li><strong>Frequent related-party transactions:</strong> a breeding ground for tunneling</li>
+      </ul>
+      <p><strong>Cash-flow red flags:</strong></p>
+      <ul>
+        <li><strong>OCF persistently below net income:</strong> poor earnings quality — profits are not becoming cash</li>
+        <li><strong>FCF persistently negative with no clear story:</strong> "burning cash for growth" needs an explicit payback timeline</li>
+        <li><strong>Financing cash flow persistently large and positive:</strong> the company runs on share issuance and debt, not on its business</li>
+      </ul>
+      <p><strong>Other warnings:</strong></p>
+      <ul>
+        <li>Auditor changes, or a qualified opinion</li>
+        <li>A CFO departing abruptly with no credible succession plan</li>
+        <li>Heavy insider selling — note: the academic test (Lakonishok &amp; Lee 2001, RFS) found insider <strong>sales have no predictive power</strong> (mostly diversification or 10b5-1 preset plans); the information is in <strong>purchases</strong>. Treating sales as a warning sign is market habit, not an empirical finding</li>
+        <li>Delayed filings (the company must file NT 10-K / NT 10-Q with the SEC)</li>
+      </ul>
+      <div class="highlight">💡 Tools: read the raw 10-K / 10-Q on SEC EDGAR; short-seller reports (Muddy Waters; Hindenburg Research disbanded in January 2025 but its archive remains readable) carry an agenda yet often point at genuine anomalies.</div>
+      <div class="risk">⚠️ Principle: one red flag proves nothing, but several at once compound the risk sharply. When in doubt, trim first and watch — re-evaluate after management explains clearly.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions, and some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uk1: {
+    html: `
+      <p>Return on equity (ROE) measures how much profit a company makes on shareholders' money — one of Buffett's favorite metrics. But the raw number misleads easily; <strong>DuPont analysis</strong> exposes its nature.</p>
+      <p><strong>The three-factor decomposition: ROE = net margin × asset turnover × financial leverage</strong></p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Factor</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Formula</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Meaning</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>Net margin</strong></td><td style="padding:0.5rem 0.4rem;">Net Income / Revenue</td><td style="padding:0.5rem 0.4rem;">Profit per dollar of revenue (earning efficiency)</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>Asset turnover</strong></td><td style="padding:0.5rem 0.4rem;">Revenue / Total Assets</td><td style="padding:0.5rem 0.4rem;">Revenue per dollar of assets (operating efficiency)</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;"><strong>Financial leverage</strong></td><td style="padding:0.5rem 0.4rem;">Total Assets / Equity</td><td style="padding:0.5rem 0.4rem;">How much leverage amplifies the return (capital structure)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The decomposition reveals where a high ROE comes from:</p>
+      <ul>
+        <li>From <strong>high margins</strong> (Apple, luxury goods) → a competitive moat, the most durable kind</li>
+        <li>From <strong>high turnover</strong> (Walmart) → the thin-margin, high-volume model</li>
+        <li>From <strong>high leverage</strong> (banks, some retail) → needs a risk assessment</li>
+      </ul>
+      <p><strong>Convention:</strong> ROE &gt; 15% is generally considered excellent; tech leaders (Apple, Microsoft) often exceed 30%.</p>
+      <div class="highlight">💡 The screen commonly attributed to Buffett — "10 straight years of ROE &gt; 15% with low leverage" — <strong>is not Buffett's own words</strong>. Berkshire's annual-report acquisition criteria say only "good returns on equity while employing little or no debt," with no percentage and no year count; the numbers are secondhand interpretation. Coca-Cola, a long-time Berkshire holding, has run ROE around 38–43% in recent years.</div>
+      <a class="source-link" href="https://www.berkshirehathaway.com/letters/letters.html" target="_blank">→ Berkshire Hathaway shareholder letters (the acquisition criteria in the original)</a>
+      <div class="risk">⚠️ Note: heavy buybacks shrink equity (the denominator) and inflate ROE. Apple's sky-high ROE partly reflects years of buybacks driving book equity toward zero — read it alongside ROIC.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uk2: {
+    html: `
+      <p>ROE bends easily to capital structure; ROA and ROIC offer more neutral views of how efficiently capital is actually deployed.</p>
+      <ul>
+        <li><strong>ROA (return on assets):</strong> net income / total assets. Strips out financing differences, but gets distorted by non-core assets (big cash piles, investments).</li>
+        <li><strong>ROIC (return on invested capital):</strong> NOPAT / invested capital
+          <ul>
+            <li>NOPAT = EBIT × (1 − tax rate)</li>
+            <li>Invested capital = equity + interest-bearing debt − cash</li>
+            <li>The truest read on core-business capital efficiency — harder to compute, most meaningful</li>
+          </ul>
+        </li>
+      </ul>
+      <p><strong>ROIC vs. WACC — the comparison that matters most:</strong></p>
+      <ul>
+        <li>ROIC &gt; WACC → the company <strong>creates value</strong>: every dollar of capital earns an excess return</li>
+        <li>ROIC &lt; WACC → the company <strong>destroys value</strong>: even with book profits, shareholders are losing</li>
+        <li>WACC floats with industry and rates — Damodaran's January 2026 measurements: the all-market average is just 6.96%, software about 9.3–10.7%, semiconductors about 10.6%. "8–12% generally, 10–15% for tech" is a high-rate-era band; applying it today sets the discount rate too high and systematically undervalues</li>
+      </ul>
+      <p><strong>Convention:</strong> ROIC &gt; 15% marks a quality business; &gt; 20% marks an elite moat (Microsoft and Visa run above 25% long term). Asset-light platforms hold a natural ROIC advantage.</p>
+      <div class="highlight">💡 McKinsey's research finds long-run stock performance correlates far more with ROIC than with EPS growth. Finding businesses that sustain high ROIC is the heart of value investing.</div>
+      <div class="risk">⚠️ ROA's limit: cash-rich companies (Berkshire Hathaway) look worse than they are, since cash counts as assets but earns no operating return. ROIC excludes cash and fixes this — better for judging the business itself.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uk3: {
+    html: `
+      <p>Profit margins measure how well revenue turns into profit. The three margins reflect different layers of cost control — compare <strong>against industry peers</strong> and <strong>along the trend</strong> to draw meaningful conclusions.</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Metric</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Formula</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">What it captures</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>Gross margin</strong></td><td style="padding:0.5rem 0.4rem;">(Revenue − COGS) / Revenue</td><td style="padding:0.5rem 0.4rem;">The product's own profitability — pricing power and cost structure</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>Operating margin</strong></td><td style="padding:0.5rem 0.4rem;">Operating Income / Revenue</td><td style="padding:0.5rem 0.4rem;">Real operating efficiency after R&D, marketing, and admin</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>Net margin</strong></td><td style="padding:0.5rem 0.4rem;">Net Income / Revenue</td><td style="padding:0.5rem 0.4rem;">The final take after interest and taxes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Typical margins by industry:</strong></p>
+      <ul>
+        <li><strong>Software / SaaS:</strong> gross margin 65–85% (Damodaran January 2026 industry average about 72% — consistent); the industry's aggregate operating margin is about 41% — but the giants drag that up and the median is far lower, so "15–35% (at maturity)" remains a reasonable band for a typical company; state the basis when citing</li>
+        <li><strong>Semiconductors (fabless):</strong> gross margin 50–70%; NVIDIA has topped 70% in recent years</li>
+        <li><strong>E-commerce / retail:</strong> gross margin 20–40%, net margin 2–5%</li>
+        <li><strong>Airlines:</strong> gross margin only 15–25%, acutely sensitive to fuel and rates</li>
+      </ul>
+      <p>How the three relate: gross margin sets the ceiling, and each layer down subtracts more cost. <strong>High gross but low operating margin</strong> = weak expense control; <strong>good operating but poor net margin</strong> = usually heavy interest or tax problems.</p>
+      <div class="highlight">💡 The core read: the direction of gross margin matters more than the level. Three straight quarters of decline mean weakening pricing power or rising input costs — find out why.</div>
+      <div class="risk">⚠️ Trap: cutting R&amp;D lifts near-term margins while sacrificing long-term competitiveness. Track the absolute spend of each expense line, not just the ratios.</div>
+          <p class="note-origin">📎 The arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uk4: {
+    html: `
+      <p>Debt management is central to judging financial risk — and in a rate-hike environment, pressure on leveraged companies amplifies sharply. Assess it across <strong>debt structure, net debt level, and interest-paying ability</strong>.</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Metric</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Formula</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Healthy reference</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>D/E ratio</strong></td><td style="padding:0.5rem 0.4rem;">Total Debt / Equity</td><td style="padding:0.5rem 0.4rem;">&lt; 1.0 for most companies; financials are the exception</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>Net debt</strong></td><td style="padding:0.5rem 0.4rem;">Total Debt − Cash</td><td style="padding:0.5rem 0.4rem;">Negative (net cash) means cash exceeds debt — extremely safe</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>Net Debt/EBITDA</strong></td><td style="padding:0.5rem 0.4rem;">Net Debt / EBITDA</td><td style="padding:0.5rem 0.4rem;">&lt; 2.0x solid; &gt; 4.0x elevated risk</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;"><strong>Interest coverage</strong></td><td style="padding:0.5rem 0.4rem;">EBIT / Interest Expense</td><td style="padding:0.5rem 0.4rem;">&gt; 3x acceptable; &gt; 5x solid; &lt; 1.5x dangerous</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>Fixed vs. floating:</strong> in a hiking cycle, floating-rate debt raises interest costs immediately</li>
+        <li><strong>Maturity profile:</strong> a near-term debt maturity wall brings refinancing risk</li>
+        <li><strong>Industry differences:</strong> asset-heavy sectors (telecom, utilities, REITs) run naturally high debt — D/E above 2 can be normal; an asset-light tech company above 1 deserves scrutiny.</li>
+      </ul>
+      <div class="highlight">💡 A quality signal: net-cash companies (cash &gt; total debt) have superb downside defense and room for counter-cyclical M&amp;A. Meta and Alphabet both qualify.</div>
+      <div class="risk">⚠️ Warning: in the 2022–2023 hiking cycle, companies above 5x Net Debt/EBITDA (including some LBO targets) faced severe strain — forced asset sales and even bankruptcy filings.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions, the arguments reflect common market claims, and some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uk5: {
+    html: `
+      <p>Liquidity ratios measure whether a company can pay debts coming due within roughly 12 months — the first line of defense against a <strong>liquidity crisis</strong>.</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Metric</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Formula</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Notes</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>Current ratio</strong></td><td style="padding:0.5rem 0.4rem;">Current assets / Current liabilities</td><td style="padding:0.5rem 0.4rem;">Short-term coverage including inventory; &gt; 1.5 usually safe</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>Quick ratio</strong></td><td style="padding:0.5rem 0.4rem;">(Current assets − Inventory) / Current liabilities</td><td style="padding:0.5rem 0.4rem;">Excludes less-liquid inventory; &gt; 1.0 is sturdier</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;"><strong>Cash ratio</strong></td><td style="padding:0.5rem 0.4rem;">(Cash + Short-term investments) / Current liabilities</td><td style="padding:0.5rem 0.4rem;">The most conservative — only immediately deployable cash counts</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>Manufacturing / retail:</strong> inventory takes time to become cash — the quick ratio tells you more than the current ratio</li>
+        <li><strong>SaaS / tech:</strong> inventory is near zero; check whether deferred revenue sits in current liabilities (it requires no cash outlay, so it understates true liquidity)</li>
+        <li><strong>Special cases:</strong> Amazon and Walmart often run current ratios below 1 because they collect fast and pay slow (negative cash conversion cycle) — a business-model strength, not a risk.</li>
+      </ul>
+      <div class="highlight">💡 Practical tip: for retailers and manufacturers, track days inventory outstanding (DIO) too. Slowing inventory turns plus a falling current ratio is a double warning that the product itself may be losing.</div>
+      <div class="risk">⚠️ Trap: a current ratio above 2 that is mostly inventory — with writedown risk (say, a semiconductor glut) — is far less liquid than the number suggests.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions, and the arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uk6: {
+    html: `
+      <p>Traditional financial metrics often explain little about fast-growing SaaS and tech companies. These four SaaS metrics are the institutional toolkit for the category.</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Metric</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Full name</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Definition and healthy benchmark</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem; color:#ba68c8;"><strong>ARR</strong></td><td style="padding:0.5rem 0.4rem;">Annual Recurring Revenue</td><td style="padding:0.5rem 0.4rem;">Annualized subscription revenue — the scale of the recurring business; YoY growth &gt; 30% is excellent</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem; color:#ba68c8;"><strong>NRR / NDR</strong></td><td style="padding:0.5rem 0.4rem;">Net Revenue Retention</td><td style="padding:0.5rem 0.4rem;">Revenue retained from existing customers (upsell included); &gt; 120% superb, &gt; 110% good, &lt; 100% churning</td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem; color:#ba68c8;"><strong>CAC</strong></td><td style="padding:0.5rem 0.4rem;">Customer Acquisition Cost</td><td style="padding:0.5rem 0.4rem;">Average cost to win one new customer (S&M included)</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem; color:#ba68c8;"><strong>LTV</strong></td><td style="padding:0.5rem 0.4rem;">Customer Lifetime Value</td><td style="padding:0.5rem 0.4rem;">Gross profit a customer contributes over their lifetime; LTV/CAC &gt; 3x healthy, &gt; 5x excellent</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Other common SaaS metrics:</strong></p>
+      <ul>
+        <li><strong>Churn rate:</strong> annual churn &lt; 5% is healthy; enterprise SaaS usually &lt; 3%</li>
+        <li><strong>Magic Number:</strong> = (this quarter's recurring revenue − last quarter's) × 4 ÷ <strong>the prior quarter's</strong> S&M spend (the ×4 annualizes the single-quarter increment; the common "new ARR × 4" formulation is wrong — ARR is already annualized, so multiplying by 4 annualizes twice and inflates the figure roughly fourfold). &gt; 0.75 marks good sales efficiency — a VC-circle convention (generally traced to a 2005 Scale Venture Partners analysis), not an authoritative definition</li>
+        <li><strong>CAC payback period:</strong> months to recoup acquisition cost; &lt; 18 healthy, &lt; 12 excellent</li>
+        <li><strong>RPO (Remaining Performance Obligations):</strong> contracted revenue not yet recognized — forward visibility</li>
+      </ul>
+      <div class="highlight">💡 Why NRR &gt; 100% matters: even with zero new customers, expanding existing subscriptions alone grows revenue — real net-expansion power. But the numbers decay: Snowflake ran above 130% for years, yet its official FY2026 figure is down to 125% — date any benchmark NRR you cite, and note Snowflake's is a consumption-based measure not directly comparable with subscription-ARR definitions.</div>
+      <div class="risk">⚠️ Note: ARR and NRR are self-disclosed non-GAAP metrics and definitions vary. Check each company's investor-relations page for the calculation basis before comparing across companies.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions, and the arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uk7: {
+    html: `
+      <p>The Rule of 40 is the SaaS world's favorite one-glance health check. The logic: growth and profitability trade off, and when the two sum to 40% or more, the company is in healthy shape.</p>
+      <p><strong>Formula: revenue growth rate (%) + profit margin (%) ≥ 40%</strong></p>
+      <p>The profit margin can be measured several ways: FCF margin (strictest), operating margin (GAAP), or EBITDA margin (loosest).</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Scenario</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Growth</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">FCF margin</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Score</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">Early hyper-growth SaaS</td><td style="padding:0.5rem 0.4rem;">60%</td><td style="padding:0.5rem 0.4rem;">−15%</td><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>45% ✓</strong></td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;">Mature and profitable</td><td style="padding:0.5rem 0.4rem;">15%</td><td style="padding:0.5rem 0.4rem;">28%</td><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>43% ✓</strong></td></tr>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;">Troubled company</td><td style="padding:0.5rem 0.4rem;">20%</td><td style="padding:0.5rem 0.4rem;">−25%</td><td style="padding:0.5rem 0.4rem; color:#e06060;"><strong>−5% ✗</strong></td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;">Elite (Rule of 60+)</td><td style="padding:0.5rem 0.4rem;">40%</td><td style="padding:0.5rem 0.4rem;">30%</td><td style="padding:0.5rem 0.4rem; color:#81c784;"><strong>70% ✓✓</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Rule of 40 scores correlate loosely with EV/Revenue multiples, but <strong>the absolute multiples swing hard with the cycle</strong>: ">50% earns 15–20x" was 2021 bubble-peak pricing — the BVP Nasdaq Emerging Cloud Index's constituents averaged only about 8.2x revenue as of August 2026. Judging cheap or dear by a fixed multiple misfires systematically; check the index's current level. Also note provenance: the Rule of 40 comes from Brad Feld's 2015 post (he credits a late-stage investor), the original scoping it to "SaaS companies at or above $50 million in revenue," and with Profit measured variously as EBITDA, operating income, or FCF — scores are not comparable across data sources.</p>
+      <a class="source-link" href="https://feld.com/archives/2015/02/rule-40-healthy-saas-company/" target="_blank">→ Brad Feld (2015), The Rule of 40% For a Healthy SaaS Company</a>
+      <a class="source-link" href="https://cloudindex.bvp.com/" target="_blank">→ BVP Nasdaq Emerging Cloud Index (current revenue multiples)</a>
+      <div class="highlight">💡 Recent shift: since 2022 the market has favored "quality of earnings," making the FCF version of the rule weightier than the EBITDA version. Some investors even screen with "Rule of 40 (FCF) × EV/Revenue" as a quick valuation sanity check.</div>
+      <div class="risk">⚠️ Limits: the Rule of 40 is a screen, not analysis. A company can lift its score short term by cutting R&amp;D or sales spend at the cost of long-term competitiveness. Read it with NRR and ARR growth.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uk8: {
+    html: `
+      <p>For manufacturing, retail, and industrials, <strong>operating-efficiency metrics</strong> reveal more about real competitiveness than margins do. Three of them combine into the <strong>cash conversion cycle (CCC)</strong>.</p>
+      <div style="overflow-x:auto; margin: 0.8rem 0;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; font-family:'Space Mono',monospace;">
+          <thead><tr style="border-bottom:1px solid #3a3d50;">
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Metric</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Formula</th>
+            <th style="padding:0.5rem 0.4rem; text-align:left; color:var(--muted);">Lower is better?</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #252836;"><td style="padding:0.5rem 0.4rem;"><strong>DIO (days inventory outstanding)</strong></td><td style="padding:0.5rem 0.4rem;">Inventory / COGS × 365</td><td style="padding:0.5rem 0.4rem;">Yes (but too low signals supply risk)</td></tr>
+            <tr style="border-bottom:1px solid #252836; background:rgba(255,255,255,0.02);"><td style="padding:0.5rem 0.4rem;"><strong>DSO (days sales outstanding)</strong></td><td style="padding:0.5rem 0.4rem;">Accounts receivable / Revenue × 365</td><td style="padding:0.5rem 0.4rem;">Yes (faster collections)</td></tr>
+            <tr><td style="padding:0.5rem 0.4rem;"><strong>DPO (days payable outstanding)</strong></td><td style="padding:0.5rem 0.4rem;">Accounts payable / COGS × 365</td><td style="padding:0.5rem 0.4rem;">No (higher means paying later, keeping cash)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Cash conversion cycle (CCC) = DIO + DSO − DPO</strong></p>
+      <p>The lower the CCC — even negative — the faster cash cycles through. A <strong>negative CCC</strong> is a formidable business-model moat: collect first, pay later, hold no stock.</p>
+      <ul>
+        <li><strong>Amazon (e-commerce + AWS):</strong> CCC long negative (−20 to −30 days) — customers pay first, suppliers wait</li>
+        <li><strong>Walmart:</strong> CCC around −10 to 5 days — a powerful model</li>
+        <li><strong>Typical manufacturing:</strong> CCC around 40–80 days, demanding heavy working capital</li>
+        <li><strong>Semiconductor equipment makers:</strong> DIO can reach 120–180 days on long production cycles</li>
+      </ul>
+      <p><strong>Inventory turnover = COGS / average inventory</strong>: healthy retail runs 6–12x a year; autos 8–10x; luxury 2–4x (scarcity by design).</p>
+      <div class="highlight">💡 The macro read: DIO is a leading cycle indicator. When semiconductor and electronics makers' DIO climbs sharply, demand decline and price cuts usually follow (as in the 2022 semiconductor inventory digestion).</div>
+      <div class="risk">⚠️ Note: DPO past 120 days can damage supplier relationships — real financial strain for smaller vendors. Big buyers who squeeze too hard have faced retaliatory supply cuts in tight markets, as happened during the 2021 chip shortage.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions, and the arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
     `,
   },
 };
