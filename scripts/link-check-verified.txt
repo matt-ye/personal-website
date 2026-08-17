@@ -188,3 +188,13 @@ https://www.producthunt.com/launch/preparing-for-launch
 # TSMC 研究網頁對腳本時而 200 時而 403，瀏覽器 UA 實打 200，
 # title 為「Heterogeneous Integration of a Compact Universal Photonic Engine」。
 https://research.tsmc.com/page/on-chip-interconnect/14.html
+
+# 2026-08-17：GitHub 的 blob 網址對 CI 機房 IP 一律回 **404**（不是 403），
+# 三次重試皆同，換瀏覽器 UA 也一樣；raw.githubusercontent 則直接回 429
+# Too Many Requests。決定性證據是 GitHub API：
+#   GET /repos/fmerian/awesome-product-hunt          → 200，default_branch = main
+#   GET /repos/fmerian/awesome-product-hunt/contents → 根目錄確實有
+#                                                      product-hunt-launch-guide.md
+# 檔案就在預設分支的根目錄，所以 blob/main/<檔名> 是有效網址。
+# 又一個「非 2xx ≠ 失效」的例子，成因與 support.google.com 那批相同。
+https://github.com/fmerian/awesome-product-hunt/blob/main/product-hunt-launch-guide.md
