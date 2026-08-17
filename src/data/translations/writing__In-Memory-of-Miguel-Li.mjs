@@ -78,6 +78,35 @@ export const MAP = {
   '小故事，大世界｜框架外的思考：五分鐘英文講台｜工程學術英文寫作與口頭報告':
     'Small Stories, Big World | Thinking Outside the Box: Five Minutes on the English Stage | Academic English Writing and Oral Presentation for Engineering',
 
+  /*
+   * ── JS 生成的字串（2026-08-17 補）──────────────────────────────
+   *
+   * 這 12 條原本**抽取器看不見**：頁內有一行
+   *   .replace(/[&<>"]/g, m => ({ '&': '&amp;', '"': '&quot;' }[m]))
+   * 正則字面值裡的 " 被舊版的樸素掃描當成字串開頭，之後所有引號配對整批位移，
+   * 於是這些字串既沒被抽出、也不會被對照表的驗證點名。斷詞改成真的逐字掃描
+   * （scripts/lib/extract-strings.mjs 的 scanJsStrings）之後才浮出來。
+   *
+   * ⚠ 其中幾條是**與資料串接的片段**，不是完整句子：
+   *     ['課程', DATA.stats.courses + ' 門']      → 值是數字，單位在英文裡不需要
+   *     pool.length + ' / ' + total + ' 則'      → 同上
+   *     c.count + ' 則學生回饋</span>'            → 尾巴帶著結尾標籤
+   *   單位詞譯成空字串是刻意的（見 README 的片段重新分配說明），
+   *   數字後面會留一個空白，那是無害的。
+   */
+  '懷念 Miguel 老師的生平側寫與紀念文字。': 'Profiles and remembrances of Miguel.',
+  '留言則數': 'Messages',
+  '課程': 'Courses',
+  '門': '',
+  '橫跨': 'Spanning',
+  '則': '',
+  '學年': ' (academic years)',
+  '則學生回饋</span>': 'student comments</span>',
+  '（沒有符合的留言）': '(No matching messages)',
+  '找不到符合的留言': 'No matching messages',
+  '目前還沒有留言，歡迎成為第一個 ✍️': 'No messages yet — be the first ✍️',
+  '留言載入中斷，請稍後重新整理。': 'Loading was interrupted. Please refresh in a moment.',
+
   /* ── 留言板 UI ── */
   '想對 Miguel 老師說的話，仍在繼續。歡迎在這裡留下你的思念。':
     'People are still finding things to say to Miguel. You are welcome to leave yours here.',
