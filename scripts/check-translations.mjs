@@ -22,11 +22,16 @@ const DIR = join(ROOT, 'src/data/translations');
 const CJK = /[一-鿿]/;
 let bad = 0;
 
+/* 對照表服務兩族來源頁：手刻頁與課程週次頁。用檔名找，不維護對照清單——
+   static-pages 的 key 一律含 __（由路徑轉出），course-weeks 的 key 是週次 slug，
+   兩者不會撞名。 */
+const SOURCES = ['src/data/static-pages', 'src/data/course-weeks'];
+
 for (const file of readdirSync(DIR).filter((f) => f.endsWith('.mjs'))) {
   const key = file.replace(/\.mjs$/, '');
-  const page = join(ROOT, 'src/data/static-pages', `${key}.html`);
-  if (!existsSync(page)) {
-    console.log(`  ✘ ${key}：找不到來源頁 ${key}.html`);
+  const page = SOURCES.map((d) => join(ROOT, d, `${key}.html`)).find(existsSync);
+  if (!page) {
+    console.log(`  ✘ ${key}：${SOURCES.join(' 與 ')} 都找不到 ${key}.html`);
     bad++;
     continue;
   }

@@ -15,6 +15,13 @@ export interface CourseWeekMeta {
   description: string;
   ogTitle: string;
   ogDescription: string;
+  /* 英文版 meta。有填才會產出 /en/ 網址——CourseWeekLayout 與 [...lang] 路由
+     都讀這四個欄位判斷「這週準備好了沒」，不另外維護清單。
+     判準與 staticPageMeta 一致。 */
+  titleEn?: string;
+  descriptionEn?: string;
+  ogTitleEn?: string;
+  ogDescriptionEn?: string;
   /** JSON-LD 與 og:* 不同時才填 */
   ldHeadline?: string;
   ldDescription?: string;
@@ -26,7 +33,11 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "title": "第 1 週：複利與貨幣時間價值｜給家人的投資課 · Matt Ye",
     "description": "52 週投資課第 1 週：複利與折現的核心觀念、FV/PV/年金公式、72 法則，附互動複利計算機與費曼學習法分享腳本。",
     "ogTitle": "第 1 週：複利與貨幣時間價值 — 給家人的投資課",
-    "ogDescription": "複利與折現、FV/PV/年金、72 法則——附互動複利計算機與費曼學習法分享腳本。"
+    "ogDescription": "複利與折現、FV/PV/年金、72 法則——附互動複利計算機與費曼學習法分享腳本。",
+    "titleEn": "Week 1: Compounding and the Time Value of Money | Family Investing Course · Matt Ye",
+    "descriptionEn": "Week 1 of 52: the core ideas behind compounding and present value, the FV/PV/annuity formulas and the Rule of 72, with an interactive compounding calculator.",
+    "ogTitleEn": "Week 1: Compounding and the Time Value of Money",
+    "ogDescriptionEn": "Compounding and present value, FV/PV/annuities, the Rule of 72 — an interactive calculator plus a Feynman-technique script for teaching it.",
   },
   {
     "slug": "week-02-inflation",
