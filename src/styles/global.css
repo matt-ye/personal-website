@@ -120,8 +120,11 @@ main {
   padding: var(--spacing-lg) 0 var(--spacing-xl);
 }
 
-/* ===== Header ===== */
-header {
+/* ===== Header =====
+   限定 body > header（網站主導覽列）。不能寫裸 header——
+   文章內的 <header>（manifesto-header、post-page-header 等）
+   會一起變 sticky，蓋在主導覽列上。 */
+body > header {
   border-bottom: 1px solid var(--color-border);
   padding: var(--spacing-sm) 0;
   position: sticky;
@@ -131,7 +134,7 @@ header {
   transition: background-color 0.2s, border-color 0.2s;
 }
 
-[data-theme="dark"] header {
+[data-theme="dark"] body > header {
   background: rgba(11,13,24,.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
