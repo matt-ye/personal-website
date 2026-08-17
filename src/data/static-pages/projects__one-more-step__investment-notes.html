@@ -312,6 +312,15 @@
     border-top: 1px solid var(--border);
     margin-top: 3rem;
   }
+  .note-origin {
+    color: #8b93a7; font-size: 0.8rem; line-height: 1.6;
+    margin-top: 0.7rem; padding-top: 0.55rem; border-top: 1px dashed #252836;
+  }
+  .provenance {
+    max-width: 900px; margin: 0.9rem auto 0; padding: 0.7rem 1rem;
+    background: rgba(139,147,167,0.08); border: 1px solid #252836; border-radius: 10px;
+    color: #8b93a7; font-size: 0.84rem; line-height: 1.7;
+  }
 </style>
 
 <header>
@@ -338,6 +347,7 @@
 </header>
 
 <main>
+  <div class="provenance">📌 <strong>內容來源說明：</strong>本頁論點彙整自 2026 年 6 月的網路資料與市場常見觀點，並於 2026 年 8 月逐條查證修訂——可查證的事實已附官方出處；各種數值門檻多為<strong>業界慣例或常見說法，非實證結論</strong>，且會隨市場環境變動；查無可靠出處的敘述在各卡片中另有標註。本頁為學習筆記，非投資建議。</div>
   <p class="result-count" id="count"></p>
 
   <div class="cards-grid" id="grid">
@@ -400,10 +410,10 @@
 
     <div class="card cat-concept" data-cat="concept" onclick="openModal('m7')">
       <div class="card-header">
-        <div class="card-title">農曆春節前的融資降倉賣壓</div>
+        <div class="card-title">農曆春節前的融資降倉行為</div>
         <span class="card-tag tag-concept">基本概念</span>
       </div>
-      <p class="card-summary">過節前投資人降槓桿避免休市被殺，加上融資利息成本，構成特定賣壓。</p>
+      <p class="card-summary">過節前融資戶常降槓桿避免休市風險——但學術檢定顯示年前報酬顯著為正，機制與大盤方向要分開看。</p>
       <p class="card-expand">點擊展開 →</p>
     </div>
 
@@ -440,7 +450,7 @@
 
     <div class="card cat-indicator" data-cat="indicator" onclick="openModal('m11')">
       <div class="card-header">
-        <div class="card-title">融資水位：3,300億是高點，2,200億以下是底部訊號</div>
+        <div class="card-title">融資水位：絕對金額門檻會過期，要看相對水位</div>
         <span class="card-tag tag-indicator">指標</span>
       </div>
       <p class="card-summary">融資餘額是觀察市場槓桿和散戶情緒的重要指標，但近年大戶也用融資，需綜合判斷。</p>
@@ -1127,6 +1137,7 @@ const MODALS = {
       </ul>
       <div class="highlight">💡 冷門小股的市場無效率，對有研究能力的人是機會，對沒有研究能力的人是陷阱。</div>
       <p>美股方面，財報電話會議的 Q&A 環節是很好觀察分析師重點關注議題的地方。</p>
+          <p class="note-origin">📎 論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   m6: {
@@ -1145,14 +1156,15 @@ const MODALS = {
   },
   m7: {
     cat: 'concept', tag: '基本概念', tagClass: 'tag-concept',
-    title: '農曆春節前的融資降倉賣壓',
+    title: '農曆春節前的融資降倉行為',
     html: `
-      <p>每年春節前，市場通常出現一定程度的賣壓，主要來自兩個原因：</p>
+      <p>春節前，融資戶常見兩個提前降槓桿的動機（這是機制描述，不代表大盤方向）：</p>
       <ul>
         <li><strong>避免被關廁所：</strong>過年期間台股休市多天，若持有融資部位，萬一國際市場暴跌，開盤就是殺尾，所以投資人提前降槓桿</li>
         <li><strong>資金成本：</strong>融資需要付利息，休市期間依然計算，持倉成本增加</li>
       </ul>
-      <div class="highlight">📅 春節前通常是台股的短期壓力時段，但過完節若基本面沒問題，往往有機會回升。</div>
+      <div class="risk">⚠️ 注意：學術檢定的方向與「年前賣壓」相反——Yuan &amp; Gupta（2014）對含台灣在內六個亞洲市場的研究發現，農曆年前報酬<strong>顯著為正</strong>；「年後回升」亦查無實證支持。融資降倉是可觀察的行為，但別把它推論成大盤會跌。</div>
+      <a class="source-link" href="https://ideas.repec.org/a/eee/quaeco/v54y2014i4p529-537.html" target="_blank">→ Yuan &amp; Gupta (2014), Chinese Lunar New Year effect in Asian stock markets, QREF 54(4)</a>
     `
   },
   m8: {
@@ -1194,20 +1206,22 @@ const MODALS = {
       </ul>
       <div class="risk">⚠️ 解讀小台數據時需更謹慎，不能直接套用「散戶做多=賣點」的舊邏輯。</div>
       <a class="source-link" href="https://en.macromicro.me/charts/80666/tai-wan-san-hu-zhi-biao-da-pan-rong-zi-wei-chi-lyu" target="_blank">→ MacroMicro 散戶指標與融資維持率</a>
+          <p class="note-origin">📎 部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   m11: {
     cat: 'indicator', tag: '指標', tagClass: 'tag-indicator',
-    title: '融資水位：3,300億是高點，2,200億以下是底部訊號',
+    title: '融資水位：絕對金額門檻會過期，要看相對水位',
     html: `
-      <p>大盤融資餘額是觀察市場槓桿與散戶情緒的重要指標：</p>
+      <p>大盤融資餘額是觀察市場槓桿與散戶情緒的重要指標。以下門檻是<strong>個人經驗值、且已明顯過期</strong>——2026/8 證交所公布的上市融資餘額約 5,470 億，早已超過當年認知的「高點」：</p>
       <ul>
-        <li><strong>3,300 億左右</strong>：市場槓桿過高、散戶追高，通常是相對高點的警訊</li>
+        <li><strong>3,300 億左右</strong>（過去的經驗值）：市場槓桿過高、散戶追高，被視為相對高點的警訊</li>
         <li><strong>2,200~1,800 億</strong>：過去代表散戶大逃亡、籌碼乾淨，接近相對低點</li>
-        <li><strong>現在參考標準：2,800~3,000 億</strong>附近洗乾淨才算</li>
+        <li><strong>教訓：</strong>絕對金額門檻會隨市場規模失效，改看「融資餘額相對大盤市值的比例」或增減速度，比記一個數字可靠</li>
       </ul>
-      <div class="highlight">📌 注意：近年資產近百億的大戶也會使用融資，加上質押盛行，融資已不完全是純散戶指標，參考權重略降。</div>
+      <div class="highlight">📌 注意：近年資產近百億的大戶也會使用融資，加上質押盛行，融資已不完全是純散戶指標，參考權重略降。（以上門檻為個人觀察，非實證研究）</div>
       <div class="risk">⚠️「大借錢時代」：很多人用股票質押而非融資，因此大盤融資餘額可能低估了市場實際的槓桿水位。</div>
+      <a class="source-link" href="https://www.twse.com.tw/zh/trading/margin/mi-margn.html" target="_blank">→ 證交所：信用交易統計（融資融券餘額）</a>
       <a class="source-link" href="https://fmstudio.blog/market-margin-balance-analysis-2025/" target="_blank">→ 大盤融資餘額全解析（理財研究室）</a>
     `
   },
@@ -1223,6 +1237,7 @@ const MODALS = {
       </ul>
       <div class="highlight">💡 當大盤整體融資維持率降至低點（150~160% 以下），代表市場出現不理性賣壓或斷頭潮，往往是相對低點。籌碼被洗乾淨後，反彈的基礎更穩固。</div>
       <a class="source-link" href="https://en.macromicro.me/charts/80666/tai-wan-san-hu-zhi-biao-da-pan-rong-zi-wei-chi-lyu" target="_blank">→ MacroMicro 融資維持率圖表</a>
+          <p class="note-origin">📎 部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   m13: {
@@ -1253,6 +1268,7 @@ const MODALS = {
       <div class="highlight">💡「進可攻退可守」是可轉債的核心特性：上有股票潛力、下有債券保底。</div>
       <p>公司為何發 CB 而非直接借銀行？通常是融資速度快、成本可能較低，或有特定股本擴張需求。</p>
       <a class="source-link" href="https://rich01.com/cb-asset-swap-cbas/" target="_blank">→ 可轉債 CBAS 詳細說明（Mr.Market 市場先生）</a>
+          <p class="note-origin">📎 部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   m15: {
@@ -1281,6 +1297,7 @@ const MODALS = {
       </ol>
       <div class="highlight">📌 過了轉換價之後：大量融券湧入鎖住價差，有人套利（做多現股+空融券）。此時要小心，因為有時候回頭看只是「半山腰」。</div>
       <p>低檔或盤整時發的可轉債通常風險較低，急拉之後才發的可轉債要特別謹慎。</p>
+          <p class="note-origin">📎 論點出自市場常見說法；部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   m17: {
@@ -1337,6 +1354,7 @@ const MODALS = {
         <li>吃夠籌碼後，敲破整數牆 → 追多的「動能仔」蜂擁追價</li>
       </ul>
       <div class="highlight">💡 判斷關鍵：<strong>左側是否有持續補買</strong>。有補買 = 真的在吃貨；沒有補買 = 可能只是阻力，不一定會敲破。</div>
+          <p class="note-origin">📎 論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   m21: {
@@ -1366,6 +1384,7 @@ const MODALS = {
       </ul>
       <div class="highlight">💡 這是一種實盤測試法，適合有一定經驗的投資人。對於散戶而言，認識這個手法的意義在於：看到瞬間追價或大量拋售，往往不是正常的人工單，背後可能是程式。</div>
       <div class="risk">⚠️ 本方法有一定成本（買賣價差），需謹慎評估是否適合自己的操作風格。</div>
+          <p class="note-origin">📎 論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   }
 };
@@ -1438,7 +1457,7 @@ const MODALS_EXTRA = {
       <ul>
         <li><strong>原型 ETF：</strong>如 0050、0056，追蹤指數，風險分散，適合長期持有</li>
         <li><strong>槓桿型 ETF：</strong>放大追蹤指數的報酬，如正 2（2 倍）。長期持有因「每日重置」效應，報酬≠指數漲幅×2</li>
-        <li><strong>反向型 ETF：</strong>如 R1（-1 倍），指數跌時獲利，通常用來短期避險</li>
+        <li><strong>反向型 ETF：</strong>證券代號第六碼為 R（如 00632R，市場慣稱「反1」），以<strong>單日</strong>反向一倍報酬為目標，指數跌時獲利。證交所明示每日複利下長期報酬會偏離、不適合長期持有</li>
       </ul>
       <div class="risk">⚠️ 槓反型 ETF 不適合長期持有，震盪市場中會因每日重置而產生「漲跌不對稱損耗」。</div>
       <div class="highlight">💡 主題型 ETF（如 5G ETF、半導體 ETF）的成分股編法各不同，需特別了解其指數規則，避免「買的跟想的不一樣」。</div>
@@ -1462,6 +1481,7 @@ const MODALS_EXTRA = {
       </ul>
       <div class="risk">⚠️ 風險提醒：<br>• 每日結算，虧損超過保證金需補繳（追繳），否則強制砍倉<br>• 有到期日，不能無限期持有<br>• 建議資金至少是保證金的 3~5 倍，才有緩衝空間</div>
       <div class="highlight">💡 台指期外資未平倉多空是很重要的參考指標，台灣期交所每日盤後公布。</div>
+          <p class="note-origin">📎 部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   p4: {
@@ -1476,6 +1496,7 @@ const MODALS_EXTRA = {
       <div class="highlight">💡 台指選擇權（週選）：每週四到期，特別適合短線方向交易或波動率策略。同時提供 Call 和 Put，可做多空兩方。</div>
       <div class="risk">⚠️ 買方雖然損失有限，但勝率低；賣方勝率高，但遇到黑天鵝事件可能爆損。兩者都不適合新手。</div>
       <p>台股上常見的台指選擇權（TXOQ）流動性遠好於個股選擇權。</p>
+          <p class="note-origin">📎 部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   p5: {
@@ -1499,7 +1520,7 @@ const MODALS_EXTRA = {
     html: `
       <p>信用交易是向券商借錢或借股票進行交易：</p>
       <ul>
-        <li><strong>融資（借錢買股）：</strong>自備約 40% 保證金，券商借剩下 60%，等於 ~2.5 倍槓桿。要付融資利息（年利率約 6~7%）</li>
+        <li><strong>融資（借錢買股）：</strong>自備約 40% 保證金，券商借剩下 60%，等於 ~2.5 倍槓桿（上市上櫃最高融資比率六成，金管證投字第10300406141號）。要付融資利息——例如元大證金公告年利率 6.25%，各券商不同，以各家公告為準</li>
         <li><strong>融券（借股放空）：</strong>先借券賣出，等股價跌後再買回還券，賺取價差。需繳保證金與融券費。</li>
       </ul>
       <div class="highlight">📌 重要機制：
@@ -1625,6 +1646,7 @@ const MODALS_EXTRA = {
         <li><strong>&gt; 20%：</strong>異常熱門，可能是炒作或重大事件</li>
       </ul>
       <div class="highlight">💡 換手率結合股價方向判讀：<br>• 放量（高換手）+上漲 → 強勢確認，追漲有依據<br>• 放量（高換手）+下跌 → 出貨訊號，要警惕<br>• 縮量（低換手）+上漲 → 籌碼穩，惜售<br>• 縮量（低換手）+下跌 → 無量陰跌，或盤整</div>
+          <p class="note-origin">📎 論點出自市場常見說法；部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   v3: {
@@ -1652,13 +1674,14 @@ const MODALS_EXTRA = {
     html: `
       <p>台灣股市的<strong>三大法人</strong>合計資金佔台股約四成，每個交易日盤後，台灣證交所和期交所都會公布他們的買賣超數據。</p>
       <ul>
-        <li><strong>外資（QFII）：</strong>境外法人，通常有大量研究資源，對大型權值股（台積電、台達電等）影響最大。外資的期貨未平倉多空部位尤其值得觀察。</li>
+        <li><strong>外資（FINI）：</strong>境外機構投資人（舊稱 QFII 制度已於 2003 年取消，改採登記制），通常有大量研究資源，對大型權值股（台積電、台達電等）影響最大。外資的期貨未平倉多空部位尤其值得觀察。</li>
         <li><strong>投信：</strong>台灣本土基金公司，買盤穩定，但需區分「主動看好」vs「ETF 被動配置」（見法人與市場章節）。</li>
         <li><strong>自營商：</strong>券商自有資金操盤，反應靈敏，但有時是為了造市或避險，方向性參考價值較低。</li>
       </ul>
       <div class="highlight">📌 查詢方式：台灣證券交易所官網 (twse.com.tw) → 交易資訊 → 三大法人，或直接用 Fincake、CMoney 等工具。</div>
       <p>三大法人期貨未平倉可在<strong>台灣期貨交易所（taifex.com.tw）</strong>每日盤後查詢。</p>
       <a class="source-link" href="https://quantpass.org/institutional-investors-tw/" target="_blank">→ 三大法人未平倉說明（量化通）</a>
+          <p class="note-origin">📎 論點出自市場常見說法；部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   v5: {
@@ -1715,6 +1738,7 @@ const MODALS_EXTRA = {
       </div>
       <div class="highlight">💡 特別注意：<br>• 「高檔放量後股價不再創高」→ 出貨訊號，資金在流出<br>• 「下跌途中放量止跌反彈」→ 可能是籌碼清洗完、底部訊號</div>
       <p>比較對象：成交量要和「同一標的過去的量」相比，不同個股之間的成交量比較無意義。</p>
+          <p class="note-origin">📎 論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   // ===== APP GUIDE =====
@@ -1732,6 +1756,7 @@ const MODALS_EXTRA = {
       </ul>
       <div class="highlight">📱 查詢路徑：<br>• 個股頁面 → 籌碼 → 大戶/散戶買賣力<br>• 個股頁面 → 籌碼 → 分價量表<br>• 首頁 → 資金分布（大盤整體）</div>
       <div class="risk">⚠️ 部分進階功能需要在永豐開戶後才能使用。免費帳號可查基本行情，但籌碼深度功能需要驗證身份。</div>
+          <p class="note-origin">📎 部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   a2: {
@@ -1742,10 +1767,11 @@ const MODALS_EXTRA = {
       <ul>
         <li><strong>台灣證券交易所 twse.com.tw：</strong><br>→ 三大法人買賣超、融資融券、個股資料、注意/處置股清單</li>
         <li><strong>證券櫃買中心 tpex.org.tw：</strong><br>→ 上櫃股票的三大法人、信用交易、ETF 統計</li>
-        <li><strong>台灣期貨交易所 taifex.com.tw：</strong><br>→ 三大法人期貨未平倉、選擇權統計、小台散戶多空比</li>
+        <li><strong>台灣期貨交易所 taifex.com.tw：</strong><br>→ 三大法人期貨未平倉、選擇權統計、大額交易人未沖銷部位（「小台散戶多空比」不是期交所公布項目，是用全市場未平倉減三大法人自行推算的民間指標）</li>
         <li><strong>公開資訊觀測站 mops.twse.com.tw：</strong><br>→ 公司財報、重大訊息、股東持股結構、月營收</li>
       </ul>
       <div class="highlight">📌 實用快速查詢網站（第三方整合）：<br>• <strong>Goodinfo 台灣股市資訊網：</strong>免費、資料最齊全，融資、法人、董監全有<br>• <strong>CMoney：</strong>基本面 + 籌碼，部分免費<br>• <strong>Yahoo 股市（台灣版）：</strong>資券餘額、即時行情快速查</div>
+          <p class="note-origin">📎 部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   a3: {
@@ -1833,8 +1859,8 @@ const MODALS_US = {
       <p>美股三大指數各有不同的編製邏輯與代表性，投資人必須了解其差異，才能正確解讀市場訊號。</p>
       <ul>
         <li><strong>道瓊工業平均指數（DJIA）：</strong>由 30 檔大型藍籌股組成，採<strong>價格加權</strong>（Price-Weighted）方式計算，股價高的股票影響力更大。歷史最悠久（1896年創立），但成分股少、代表性有限，科技股比重偏低。</li>
-        <li><strong>標普500指數（S&P 500）：</strong>涵蓋 500 家市值最大的上市公司，採<strong>市值加權</strong>（Market-Cap Weighted），覆蓋美股總市值約 80%，是機構法人與指數基金最常用的基準指標（Benchmark）。</li>
-        <li><strong>那斯達克綜合指數（NASDAQ Composite）：</strong>涵蓋那斯達克交易所所有上市股票（超過 3,000 檔），科技股、生技股比重極高，波動性大於 S&P 500。另有 <strong>NASDAQ 100</strong>，精選非金融類前 100 大市值公司，是 QQQ ETF 的追蹤標的。</li>
+        <li><strong>標普500指數（S&P 500）：</strong>涵蓋 500 家<strong>由指數委員會依資格條件挑選的龍頭企業</strong>（官方口徑是 leading companies，須通過美國公司認定、公眾流通量、四季正 GAAP 盈餘等條件，不是單純市值前 500 名排序；實際持有約 504 檔股份類別），採<strong>市值加權</strong>（Market-Cap Weighted），覆蓋美股<strong>流通調整後市值</strong>約 80%，是機構法人與指數基金最常用的基準指標（Benchmark）。</li>
+        <li><strong>那斯達克綜合指數（NASDAQ Composite）：</strong>涵蓋那斯達克交易所所有<strong>普通股類</strong>證券（ETF、特別股、權證不計入；目前約 3,300+ 檔），科技股、生技股比重極高，波動性大於 S&P 500。另有 <strong>NASDAQ 100</strong>，精選非金融類前 100 大市值公司，是 QQQ ETF 的追蹤標的。</li>
         <li><strong>Russell 2000：</strong>小型股指數，2,000 家小市值公司，是觀察美國中小企業景氣的重要指標。</li>
       </ul>
       <div class="highlight">💡 實務上，S&P 500 是最具代表性的「美股整體表現」指標。道瓊因價格加權的缺陷，較適合作為歷史比較參考；NASDAQ 走勢主要反映科技產業景氣。三大指數長期年化報酬（含股息再投入）：S&P 500 約 <strong>10%</strong>，NASDAQ 100 約 <strong>14%</strong>（波動極大），道瓊約 <strong>9~10%</strong>。</div>
@@ -1847,10 +1873,10 @@ const MODALS_US = {
     html: `
       <p>美國兩大主要股票交易所在運作機制、上市標準與產業組成上有明顯差異。</p>
       <ul>
-        <li><strong>NYSE（紐約證券交易所）：</strong>成立於 1792 年，全球最大交易所（以市值計）。採<strong>混合式市場</strong>，有實體交易大廳（Floor）及電子交易。傳統由「專門交易商（DMM）」負責維持市場秩序。上市公司多為傳統大型企業，如 JP Morgan、Coca-Cola、Walmart 等。</li>
-        <li><strong>NASDAQ：</strong>1971 年創立，全球首個電子化交易所，<strong>純電子撮合</strong>，無實體交易大廳。由多家「做市商（Market Maker）」競價提供流動性。吸引科技、生技新創企業，如 Apple、Microsoft、Amazon、Meta 均掛牌於此。</li>
+        <li><strong>NYSE（紐約證券交易所）：</strong>成立於 1792 年，全球最大交易所（以市值計）。採<strong>混合式市場</strong>，有實體交易大廳（Floor）及電子交易。傳統由「專門交易商（DMM）」負責維持市場秩序。上市公司多為傳統大型企業，如 JP Morgan、Coca-Cola、Berkshire Hathaway 等（Walmart 已改掛 Nasdaq，老名單別照抄）。</li>
+        <li><strong>NASDAQ：</strong>1971 年創立，官方自述為全球首個<strong>全電子化報價系統</strong>（quotation system，後發展為交易所），<strong>純電子撮合</strong>，無實體交易大廳。由多家「做市商（Market Maker）」競價提供流動性。吸引科技、生技新創企業，如 Apple、Microsoft、Amazon、Meta 均掛牌於此。</li>
         <li><strong>上市門檻：</strong>NYSE 要求更嚴格，最低股東權益達 400 萬美元以上；NASDAQ 分三層（Global Select、Global Market、Capital Market），門檻較低，適合成長型企業。</li>
-        <li><strong>股票代碼慣例：</strong>NYSE 通常 1~3 個英文字母（T、GE、IBM），NASDAQ 通常 4~5 個字母（AAPL、MSFT、GOOGL）。</li>
+        <li><strong>股票代碼慣例：</strong>歷史上 NYSE 偏好 1~3 個字母（T、GE、IBM）、NASDAQ 偏好 4~5 個字母（AAPL、MSFT、GOOGL），但 2008 年 SEC 核准跨市場統一配發後此規則已鬆動——現在 NYSE 有超過三分之一是 4 字母代號（ORCL、DELL、BABA），NASDAQ 也有數百檔 1~3 字母（ZM、ON），代號長度已看不出掛牌市場。</li>
       </ul>
       <div class="highlight">💡 對一般投資人而言，兩個交易所的股票都可透過同一券商帳戶買賣，操作上幾乎無差異。交易所本身不影響股票品質，重點仍是公司基本面。</div>
       <div class="risk">⚠️ 部分公司會在兩所之間轉板，轉板本身不代表公司優劣變化，但可能影響短期流動性。</div>
@@ -1874,6 +1900,7 @@ const MODALS_US = {
       </ul>
       <div class="highlight">💡 台灣投資人建議善用「限價單（Limit Order）」，避免在流動性差的盤前/盤後以市價單造成滑點損失。多數下單可在台灣白天掛好條件單，等待美股開盤自動執行。</div>
       <div class="risk">⚠️ 財報季期間，持倉股票可能在台灣深夜大幅波動。建議提前了解財報公布時間（BMO = 開盤前，AMC = 收盤後），避免過度集中持倉。</div>
+          <p class="note-origin">📎 論點出自市場常見說法；部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   us4: {
@@ -1902,6 +1929,7 @@ const MODALS_US = {
       </ul>
       <div class="highlight">💡 「Buy the rumor, sell the news」在財報季常見：股價提前反映預期，財報公布後即便亮眼也可能下跌。關注「Beat 幅度」與 Guidance 是否超越預期，而非單純看是否 Beat。可用 Earnings Whisper 查財報公布時間。</div>
       <div class="risk">⚠️ 財報公布前後，選擇權（Options）隱含波動率（IV）大幅上升，選擇權賣方需特別注意。即便基本面良好，若 Guidance 低於預期，股價單日下跌 10~20% 並非罕見。</div>
+          <p class="note-origin">📎 部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   us5: {
@@ -1912,13 +1940,14 @@ const MODALS_US = {
       <ul>
         <li><strong>10-K（年度報告）：</strong>每年財政年度結束後 60~90 天內申報。包含：完整財務報表、業務描述、風險因子（Risk Factors）、管理層討論與分析（MD&A）。通常 100~200 頁，是了解公司最全面的文件。</li>
         <li><strong>10-Q（季度報告）：</strong>每季結束後 40~45 天內申報（第四季由 10-K 取代）。財務資訊未經完整審計，但可追蹤公司季度進展。</li>
-        <li><strong>8-K（重大事件即時申報）：</strong>發生重大事件後 4 個工作天內申報。常見觸發：財報公布、合併收購、CEO 更換、股息宣告、訴訟和解等。</li>
+        <li><strong>8-K（重大事件即時申報）：</strong>發生重大事件後 4 個工作天內申報。法定觸發項目如財報公布（Item 2.02）、合併收購（2.01）、CEO 更換（5.02）；股息宣告、訴訟和解等則常以 Item 8.01 自願揭露的形式出現。</li>
         <li><strong>DEF 14A（委託書聲明）：</strong>股東大會前申報，含高管薪酬細節，是公司治理分析重要參考。</li>
         <li><strong>S-1：</strong>IPO 申請書，新股上市前的完整業務說明，包含風險因子、財務歷史。</li>
       </ul>
       <div class="highlight">💡 閱讀建議順序：先看 8-K 掌握最新動態 → 10-K 的 Risk Factors（管理層誠實揭露的風險）→ MD&A 中管理層對業績的解釋 → 財務報表數字。大多數散戶忽略 Risk Factors，但這往往是最誠實的公司自我揭露。</div>
       <div class="risk">⚠️ SEC 文件是法律文件，管理層對財報數字負法律責任，但 MD&A 的前瞻描述仍可能過度樂觀。搭配第三方分析師報告交叉驗證更佳。</div>
       <a class="source-link" href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany" target="_blank">→ SEC EDGAR 公司文件查詢</a>
+          <p class="note-origin">📎 論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   us6: {
@@ -1927,7 +1956,7 @@ const MODALS_US = {
     html: `
       <p>美國聯邦準備系統（Federal Reserve，簡稱 Fed）的貨幣政策是影響美股最重要的總體經濟因素之一，投資人必須了解其運作機制與市場傳導路徑。</p>
       <ul>
-        <li><strong>聯邦基金利率（Federal Funds Rate）：</strong>Fed 設定的目標利率，由聯邦公開市場委員會（FOMC）在每年 8 次例會中決定，每次調整通常為 25 個基點（bps）。</li>
+        <li><strong>聯邦基金利率（Federal Funds Rate）：</strong>Fed 設定的目標利率，由聯邦公開市場委員會（FOMC）在每年 8 次例會中決定。常態下多以 25 個基點（bps）為單位調整，但急速緊縮期不適用——2022 年七次升息裡只有一次是 25bp，其餘是 50bp 與 75bp。</li>
         <li><strong>升息對股市的影響：</strong>
           <ul>
             <li>借貸成本上升 → 企業獲利壓力增加</li>
@@ -1939,9 +1968,11 @@ const MODALS_US = {
         <li><strong>降息對股市的影響：</strong>流動性寬鬆 → 估值擴張 → 科技、成長股受益最大；但若降息因衰退引發，股市可能同步下行。</li>
         <li><strong>重要觀察指標：</strong>CME FedWatch Tool（市場預期升降息機率）、CPI 通膨數據、非農就業人數（NFP）、Fed 官員講話（尤其 Fed Chair）。</li>
       </ul>
-      <div class="highlight">💡 歷史參考：2022 年 Fed 以史上最快速度升息（從 0.25% 升至 5.5%），S&P 500 全年下跌約 19.4%，那斯達克跌逾 33%。2023~2024 年停止升息後，市場強勁反彈。利率預期的轉變往往比實際升降息時點更早影響股市。</div>
+      <div class="highlight">💡 歷史參考：2022 年 Fed 一年內升息七次共 425bp（年初 0~0.25%，年底 4.25~4.50%；上緣 5.50% 是 2023 年 7 月才到），S&P 500 全年下跌約 19.4%，那斯達克跌約 33%。2023 年 7 月停止升息後，市場強勁反彈（2023 年 S&P 500 +24%、那斯達克 +43%）。利率預期的轉變往往比實際升降息時點更早影響股市。</div>
+      <a class="source-link" href="https://www.federalreserve.gov/monetarypolicy/openmarket.htm" target="_blank">→ Fed 官方：歷次目標利率調整（Open Market Operations）</a>
       <div class="risk">⚠️ 「Don't fight the Fed」是華爾街名言，貨幣政策方向與股市長期趨勢高度相關。但市場對 Fed 政策的解讀常過度反應，短期波動不代表長期趨勢改變。</div>
       <a class="source-link" href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank">→ CME FedWatch Tool 利率預期</a>
+          <p class="note-origin">📎 論點出自市場常見說法；部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   us7: {
@@ -1954,14 +1985,16 @@ const MODALS_US = {
           <ul>
             <li>需支付<strong>借券費率（Stock Borrow Rate）</strong>，熱門放空股票費率可高達年化 50%~100%+</li>
             <li>理論最大虧損無限（股價可以無限上漲），風險極高</li>
-            <li>「軋空行情（Short Squeeze）」：做空比例過高時，股價急漲迫使空方回補（如 2021 年 GME 事件）</li>
+            <li>「軋空行情（Short Squeeze）」：做空比例過高時，股價急漲迫使空方回補。2021 年 GME 常被當例子，但 SEC 事後的幕僚報告認為軋空「並非主要推力」，主升段來自正面情緒的買盤——引用此例時要知道官方結論與市場敘事不同</li>
           </ul>
         </li>
         <li><strong>買入賣權（Buy Put Options）：</strong>支付權利金購買「在特定價格賣出股票」的權利。最大損失為權利金，適合定向做空或避險。缺點是有時間價值損耗（Theta Decay）。</li>
         <li><strong>反向 ETF（Inverse ETF）：</strong>追蹤指數反向報酬的 ETF，如 SQQQ（三倍做空 NASDAQ 100）、SH（一倍做空 S&P 500）。操作簡單，但長期持有因<strong>每日複利重置（Daily Rebalancing）</strong>會出現衰耗，不適合長期持有。</li>
       </ul>
       <div class="highlight">💡 散戶最常用的避險方式：持有個股的同時買入對應指數的 Put（如持有科技股時買 QQQ Put），可在市場大跌時減少整體損失。成本即為保險費。可查詢「Short Interest Ratio（Days to Cover）」評估軋空風險大小。</div>
-      <div class="risk">⚠️ 裸放空（Naked Short Selling）在美國大多數情況下屬違法行為。融券放空理論上虧損無上限，新手投資人建議以 Put Options 替代，確保最大損失可控。</div>
+      <div class="risk">⚠️ 裸放空（Naked Short Selling）依 SEC 說明「不必然違法」，受 Regulation SHO 規範的是持續交割失敗與濫用性裸放空。融券放空理論上虧損無上限；新手若要表達看空觀點，買入 Put 的最大損失以權利金為限（權利金本身可能全數歸零）。</div>
+      <a class="source-link" href="https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-51" target="_blank">→ SEC Investor Bulletin: An Introduction to Short Sales</a>
+      <a class="source-link" href="https://www.sec.gov/files/staff-report-equity-options-market-struction-conditions-early-2021.pdf" target="_blank">→ SEC 幕僚報告：2021 年初 GameStop 事件（PDF）</a>
     `
   },
   us8: {
@@ -1978,10 +2011,10 @@ const MODALS_US = {
           </ul>
         </li>
         <li><strong>台積電 ADR（TSM）：</strong>1 ADR = 5 股台灣普通股，在 NYSE 掛牌，是流動性最高的亞洲科技 ADR 之一。</li>
-        <li><strong>ADR 費用：</strong>持有 ADR 需負擔<strong>存託費（Depositary Fee）</strong>，通常每年每 ADR 收取 $0.01~$0.05，由股息中扣除。</li>
+        <li><strong>ADR 費用：</strong>持有 ADR 需負擔<strong>存託費（Depositary Fee）</strong>——SEC 舉例約每 1,000 ADR 收 $20~$50（即每股 $0.02~$0.05），多由股息中扣除。</li>
       </ul>
       <div class="highlight">💡 ADR 價格會因匯率波動與原股市場差異產生溢價或折價（Premium/Discount）。台積電 ADR 與台股之間存在套利空間，但一般散戶難以直接套利，需留意兩市場價差。</div>
-      <div class="risk">⚠️ 投資 ADR 除股票風險外，還需承擔<strong>匯率風險</strong>（原幣對美元）、<strong>地緣政治風險</strong>（如中概股下市風險）及<strong>股息雙重課稅</strong>問題（台灣先扣 21%，美國再課稅）。</div>
+      <div class="risk">⚠️ 投資 ADR 除股票風險外，還需承擔<strong>匯率風險</strong>（原幣對美元）、<strong>地緣政治風險</strong>（如中概股下市風險）及<strong>股息來源國扣繳</strong>問題——以台積電 ADR 為例，台灣對非居住者股利扣繳 21%；美國對外國公司股息原則上不再課稅（非美國來源所得），實際稅負依身分與各國協定而異。</div>
     `
   },
 
@@ -2027,6 +2060,7 @@ const MODALS_US = {
       </ul>
       <div class="highlight">💡 實務上，看 Forward P/E 同時要關注「EPS 預估修正趨勢（Earnings Revision）」：若分析師持續上調預估，Forward P/E 的分母增大使估值看起來更便宜；若持續下調，則相反。</div>
       <div class="risk">⚠️ 財報季期間，若公司下修 Guidance，Forward EPS 預估會被分析師快速調降，導致 Forward P/E 瞬間膨脹，股價也往往同步重挫。這是持倉前需評估的主要風險之一。</div>
+          <p class="note-origin">📎 論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uv3: {
@@ -2037,10 +2071,10 @@ const MODALS_US = {
       <ul>
         <li><strong>計算公式：</strong>P/B = 股價 ÷ 每股帳面價值（Book Value Per Share）</li>
         <li><strong>帳面價值（Book Value）：</strong>= 總資產 − 總負債，即股東權益（Shareholders' Equity）</li>
-        <li><strong>典型數值參考：</strong>
+        <li><strong>典型數值參考（會隨市場週期大幅變動，以下為歷史慣用區間；2026/8 S&P 500 整體 P/B 已達約 6 倍，遠超舊區間——查現值請用下方 Damodaran 資料庫）：</strong>
           <ul>
-            <li>S&P 500 整體 P/B：約 <strong>3.5~4.5 倍</strong>（因科技股佔比高而偏高）</li>
-            <li>銀行股：<strong>0.8~1.5 倍</strong>（低於 1 倍代表市場認為資產品質有疑慮）</li>
+            <li>S&P 500 整體 P/B：歷史常見 <strong>3.5~4.5 倍</strong>（因科技股佔比高而偏高；撰文更新時已約 6 倍）</li>
+            <li>銀行股：<strong>0.8~1.5 倍</strong>（低於 1 倍代表市場認為資產品質有疑慮；2026/1 大型銀行平均約 1.6 倍已略超上緣）</li>
             <li>科技、輕資產公司：<strong>5~20 倍甚至更高</strong>（品牌、IP、人才不列入帳面）</li>
             <li>房地產（REIT）：通常接近 <strong>1~2 倍</strong></li>
           </ul>
@@ -2050,6 +2084,7 @@ const MODALS_US = {
       </ul>
       <div class="highlight">💡 對科技公司使用 P/B 意義有限：Google、Apple 等公司核心價值在於品牌、演算法、生態系，這些無形資產在 GAAP 下幾乎不計入帳面，導致 P/B 虛高卻不代表高估。P/B 最適合「資產可信且流動」的金融業。</div>
       <div class="risk">⚠️ 帳面價值可能受商譽（Goodwill）大量虛增（收購溢價計入），若商譽減損，P/B 會突然大幅上升。評估銀行股時需特別關注不良貸款比率（NPL Ratio）以判斷資產真實品質。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uv4: {
@@ -2059,7 +2094,7 @@ const MODALS_US = {
       <p>EV/EBITDA 是併購（M&A）和機構分析師最廣泛使用的估值倍數之一，透過企業價值（EV）與稅息折舊攤銷前盈餘（EBITDA）的比較，排除了資本結構與會計折舊的影響，更適合跨公司、跨產業比較。</p>
       <ul>
         <li><strong>企業價值（EV）：</strong>EV = 市值（Market Cap）+ 有息負債（Debt）− 現金與約當現金（Cash）。代表「買下整家公司需付出的總代價」，包含承接債務。</li>
-        <li><strong>EBITDA：</strong>稅前息前折舊攤銷前盈餘 = 營業利益（EBIT）+ 折舊（D）+ 攤銷（A），近似於「經營現金流的代理指標」。</li>
+        <li><strong>EBITDA：</strong>稅前息前折舊攤銷前盈餘 = 營業利益（EBIT）+ 折舊（D）+ 攤銷（A）。注意：<strong>它不是現金流的代理指標</strong>——Damodaran 以 MCI 1994 年為例（EBITDA $4,456M vs 實際 FCFF 僅 $498M）警告把 EBITDA 當現金流是「倍數魔術」，因為公司仍要付出真實的資本支出。</li>
         <li><strong>典型數值參考：</strong>
           <ul>
             <li>S&P 500 整體：約 <strong>12~15 倍</strong></li>
@@ -2069,10 +2104,11 @@ const MODALS_US = {
             <li>私募股權（PE）收購基準：通常 <strong>7~12 倍</strong></li>
           </ul>
         </li>
-        <li><strong>優點：</strong>不受資本結構（負債多寡）影響；排除折舊攤銷；對跨國公司排除稅率差異。在 LBO（槓桿收購）分析中極為重要。</li>
+        <li><strong>優點：</strong><strong>較不受</strong>資本結構（負債多寡）影響、可跨槓桿比較（Damodaran 用語是 allows comparisons across different financial leverage，並非完全不受影響——EV 分子仍受稅盾與資本成本影響）；排除折舊攤銷；對跨國公司排除稅率差異。在 LBO（槓桿收購）分析中極為重要。</li>
       </ul>
       <div class="highlight">💡 EV/EBITDA 在 LBO 分析中，PE 基金常以目標公司的 EV/EBITDA 判斷收購價格合理性，並設定目標退出倍數（Exit Multiple）。一般而言，EV/EBITDA 低於行業均值可能代表低估或被併購目標。</div>
       <div class="risk">⚠️ EBITDA 的批評：Warren Buffett 稱 EBITDA 是「垃圾盈餘」，因為它忽略了資本支出（Capex）。對重資產行業（航空、礦業）而言，折舊是真實的經濟成本。重資產公司更建議使用 EV/EBIT 或 EV/FCF。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uv5: {
@@ -2087,15 +2123,16 @@ const MODALS_US = {
             <li>S&P 500 整體：約 <strong>2~3 倍</strong></li>
             <li>高成長 SaaS（ARR 成長 > 30%）：<strong>8~20 倍</strong></li>
             <li>成熟軟體公司：<strong>4~8 倍</strong></li>
-            <li>傳統零售：<strong>0.3~0.8 倍</strong></li>
+            <li>低毛利零售（雜貨等）：<strong>0.3~0.8 倍</strong>（注意「零售」不能一概而論——一般零售 2026/1 產業平均已約 2 倍）</li>
             <li>2021 年泡沫高點時，部分 SaaS 公司 P/S 達 <strong>50~100 倍</strong></li>
           </ul>
         </li>
         <li><strong>使用前提：</strong>公司雖虧損，但毛利率（Gross Margin）結構健康（如 SaaS 毛利率 > 70%），虧損主要來自銷售費用和研發投入，而非商業模式本身的缺陷。</li>
         <li><strong>與 Rule of 40 結合：</strong>SaaS 行業常用：營收成長率（%）+ 自由現金流利潤率（%）≥ 40，可支撐較高 P/S 估值。</li>
       </ul>
-      <div class="highlight">💡 高 P/S 的合理性完全取決於毛利率與成長率。P/S = 10 倍但毛利率 80% 的 SaaS，與 P/S = 2 倍但毛利率 10% 的零售商，前者可能更合理，因未來利潤空間截然不同。</div>
-      <div class="risk">⚠️ P/S 最大危險：無法區分「高成長優質虧損」與「燒錢無底洞」。利率升高時，高 P/S 成長股首當其衝（2022 年 Zoom、DocuSign 等從 P/S 30+ 暴跌至 P/S 3~5 倍），下行風險極大。</div>
+      <div class="highlight">💡 高 P/S 的合理性主要取決於<strong>利潤率、成長率與風險（折現率）</strong>三者——教科書推導其實用淨利率而非毛利率，且漏看風險正是升息時高 P/S 股崩跌的主因。P/S = 10 倍但毛利率 80% 的 SaaS，與 P/S = 2 倍但毛利率 10% 的零售商，前者可能更合理，因未來利潤空間截然不同。</div>
+      <div class="risk">⚠️ P/S 最大危險：無法區分「高成長優質虧損」與「燒錢無底洞」。利率升高時，高 P/S 成長股首當其衝——Zoom 的年度 P/S 從 2020 年約 67 倍一路壓縮到 2023 年約 4 倍、DocuSign 從 2020 年約 29 倍到 2022 年約 4 倍（下修從 2021 年就開始，不是單一年度的事），下行風險極大。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例；論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uv6: {
@@ -2118,6 +2155,7 @@ const MODALS_US = {
       </ul>
       <div class="highlight">💡 PEG 結合了靜態估值（P/E）與動態成長（Growth），是選股時快速篩選「合理成長定價」的有效工具。</div>
       <div class="risk">⚠️ PEG 的局限性：成長率估計高度主觀；對週期性行業（能源、礦業）失效；若公司 EPS 基期極低，成長率可能虛高導致 PEG 看起來極低但實際無意義。成長率的可持續性才是關鍵。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uv7: {
@@ -2139,7 +2177,8 @@ const MODALS_US = {
         <li><strong>適用情境：</strong>現金流穩定可預測的公司（消費必需品、公用事業）；不適合：早期虧損公司、高度不確定性行業、週期性行業的週期底部。</li>
       </ul>
       <div class="highlight">💡 DCF 最大的價值不在於得到「精確數字」，而在於<strong>迫使你思考企業的核心驅動力</strong>：現金流成長動力是什麼？競爭壁壘能維持多久？資本配置效率如何？Warren Buffett 說：「寧要模糊的正確，不要精確的錯誤。」</div>
-      <div class="risk">⚠️ DCF 的致命缺陷：「Garbage in, garbage out」——輸入假設的微小偏差會導致估值大幅偏離。折現率若從 10% 改為 8%，估值可能膨脹 25~30%。切勿將 DCF 結果視為精確真理，應視為合理範圍的參考。</div>
+      <div class="risk">⚠️ DCF 的致命缺陷：「Garbage in, garbage out」——輸入假設的微小偏差會導致估值大幅偏離。以永續成長公式驗算，折現率從 10% 降到 8%，終值在 g=0 時 +25%、g=2% 時 +33%、g=3% 時 +40%——敏感度取決於 (r−g) 的間距，成長假設越高越劇烈。切勿將 DCF 結果視為精確真理，應視為合理範圍的參考。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uv8: {
@@ -2165,6 +2204,7 @@ const MODALS_US = {
       </ul>
       <div class="highlight">💡 在評估潛在收購目標（M&A Target）時，EV 是最關鍵的參考數字，因為收購方不僅需支付股權溢價，還需承接目標公司的全部負債（或享有其現金）。</div>
       <div class="risk">⚠️ EV 中的「有息負債」需精確定義：應包含長短期借款、債券、融資租賃等，但排除應付帳款等營業負債。不同分析師對 EV 構成的定義略有差異，比較時需確認口徑一致。</div>
+          <p class="note-origin">📎 部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
 
@@ -2192,7 +2232,8 @@ const MODALS_US = {
           </tbody>
         </table>
       </div>
-      <div class="highlight">💡 閱讀損益表時要特別注意<strong>營收成長率（YoY Revenue Growth）</strong>和<strong>各利潤率的趨勢變化</strong>，而非只看單季絕對數字。若毛利率連續下滑，代表定價能力或成本控制出現問題。科技公司毛利率通常 60–80%，零售業僅 25–40%，跨產業比較要謹慎。</div>
+      <div class="highlight">💡 閱讀損益表時要特別注意<strong>營收成長率（YoY Revenue Growth）</strong>和<strong>各利潤率的趨勢變化</strong>，而非只看單季絕對數字。毛利率連續下滑<strong>可能</strong>代表定價能力或成本控制出問題，但也可能來自產品組合改變或刻意換市佔，要看脈絡。產業區間（Damodaran 2026/1）：軟體業毛利率約 72%、半導體約 59%、但電腦硬體僅約 38%——「科技公司 60–80%」只對軟體與半導體成立；零售 25–40% 大致相符。跨產業比較要謹慎，此為撰文時概況。</div>
+      <a class="source-link" href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/margin.html" target="_blank">→ Damodaran：產業別利潤率資料庫（NYU Stern）</a>
       <div class="risk">⚠️ GAAP 淨利可能包含一次性項目（impairment、訴訟和解等），建議同時對照 Non-GAAP 數字，以及管理層在 Earnings Call 的說明。</div>
     `
   },
@@ -2225,6 +2266,7 @@ const MODALS_US = {
       </ul>
       <div class="highlight">💡 健康信號：現金 > 總負債（Net Cash 狀態）、流動比率（Current Ratio）> 1.5、商譽佔總資產比例 < 30%。Apple 長期維持大量現金回購，是極端但有效的資本配置策略。</div>
       <div class="risk">⚠️ 若公司商譽佔股東權益超過 100%，一旦核心業務走下坡，帳面淨值可能瞬間蒸發。2008 年金融危機後許多銀行即因此陷入技術破產危機。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uf3: {
@@ -2249,7 +2291,7 @@ const MODALS_US = {
       <ul>
         <li><strong>OCF vs Net Income：</strong>長期健康的公司 OCF 應高於或接近 Net Income。若 OCF 長期低於淨利，代表應收帳款或存貨侵蝕現金，盈利品質差。</li>
         <li><strong>SBC（股票薪酬）問題：</strong>科技公司常大量發放 SBC 回加淨利算 OCF，需警惕這是否稀釋股東，要看「FCF − SBC」的保守口徑。</li>
-        <li><strong>CapEx 強度：</strong>重資產行業（半導體、航空）CapEx 佔營收可達 15–25%；輕資產行業（SaaS）則僅 1–3%。</li>
+        <li><strong>CapEx 強度：</strong>「重資產 vs 輕資產」的傳統對照已被 AI 資料中心推翻——Damodaran 2026/1 的淨 CapEx/營收：軟體業反而高達 17.8%（網路軟體 26%），半導體 4.4%、航空 3.6%。「SaaS 只有 1–3%」是 AI 之前的舊常識，引用時要標時點。</li>
       </ul>
       <div class="highlight">💡 投資人最愛看的公式：Free Cash Flow = OCF − CapEx。FCF 持續為正且成長的公司，才有真正的財務彈性去回購股票、發股利或投資成長。</div>
       <div class="risk">⚠️ 陷阱：有些公司將 CapEx 歸類為投資活動以美化 OCF，實際上卻是維持業務運作必須的花費（maintenance CapEx）。閱讀時要仔細區分 growth CapEx 與 maintenance CapEx。</div>
@@ -2280,8 +2322,9 @@ const MODALS_US = {
           </tbody>
         </table>
       </div>
-      <div class="highlight">💡 實例：Apple 的 FCF Margin 長期維持在 25–30%，Microsoft 約 30–35%，這也是兩者能持續大規模回購股票的底氣。相比之下，許多「看起來獲利」的企業，FCF 卻長期為負。</div>
+      <div class="highlight">💡 實例：Apple 的 FCF Margin 多年落在 24–28%（FY2025 約 23.7%），Microsoft 曾達 33% 但 FY2025 因 AI 資本支出大增（644 億美元）降到約 25%——連巨頭的 FCF Margin 都會被投資週期壓縮，引用時要看年份。相比之下，許多「看起來獲利」的企業，FCF 卻長期為負。</div>
       <div class="risk">⚠️ 注意：SBC（股票薪酬）加回 OCF 會讓 FCF 虛高。部分分析師使用「FCF − SBC」作為更保守的口徑，特別適用於 SBC 佔比高的科技成長股（如 Palantir、Snowflake 早期）。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uf5: {
@@ -2309,8 +2352,9 @@ const MODALS_US = {
         <li><strong>Diluted EPS：</strong>Net Income / Weighted Avg. Diluted Shares（含選擇權、可轉換債等潛在稀釋效果）</li>
         <li><strong>財報 Beat/Miss：</strong>市場更關注「相對預期的表現」，而非數字本身。Beat by $0.05 但 guidance 下修，股價往往下跌；Miss by $0.02 但 guidance 上修，股價反而上漲。</li>
       </ul>
-      <div class="highlight">💡 快速判斷法：若公司 Non-GAAP EPS 比 GAAP EPS 高出 50% 以上，要特別追問 SBC 佔比。Salesforce、Palantir 等公司長年 Non-GAAP 獲利豐厚，但 GAAP 層面卻虧損，關鍵就在鉅額 SBC。</div>
+      <div class="highlight">💡 快速判斷法：若公司 Non-GAAP EPS 明顯高於 GAAP EPS，要特別追問 SBC 佔比（「高 50%」只是個人經驗值，非權威門檻）。注意例子會過期：Salesforce、Palantir 過去常被當「Non-GAAP 賺錢、GAAP 虧損」的教材，但兩家都已 GAAP 轉盈多年（Salesforce 近五個年度 GAAP 淨利全為正、Palantir 自 2022Q4 起連續獲利）——SBC 侵蝕的重點如今是稀釋，不是盈虧翻轉。</div>
       <div class="risk">⚠️ 陷阱：若公司每年「一次性費用」年年都有，就不算「一次性」了。管理層用 Non-GAAP 包裝業績是合法的，但投資人必須自行判斷調整項目是否合理。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uf6: {
@@ -2340,6 +2384,7 @@ const MODALS_US = {
       </ul>
       <div class="highlight">💡 免費 Transcript 可在 Seeking Alpha、The Motley Fool、公司 IR 網站取得。建議重點看 Q&A，自動忽略開場白的 PR 措辭，因為股價反應才是市場的真實投票。</div>
       <div class="risk">⚠️ 管理層天然傾向正面描述，但股價反應才是市場的真實投票。有時業績看似 beat，但 guidance 保守，或分析師提問中透露擔憂，法說會後股價反跌。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例；論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uf7: {
@@ -2369,11 +2414,12 @@ const MODALS_US = {
       <ul>
         <li>審計師更換或出具保留意見（Qualified Opinion）</li>
         <li>CFO / 財務長突然離職，且無合理繼任計畫</li>
-        <li>管理層大規模出售自家股票</li>
+        <li>管理層大規模出售自家股票——注意：學術檢定（Lakonishok &amp; Lee 2001, RFS）發現內部人<strong>賣出沒有預測力</strong>（多為分散配置或 10b5-1 預設計畫），有資訊含量的是<strong>買進</strong>；把賣股當警訊是市場慣性，不是實證結論</li>
         <li>公司推遲財報發布日期（需向 SEC 申請 NT 10-K / NT 10-Q）</li>
       </ul>
-      <div class="highlight">💡 工具提示：可使用 SEC EDGAR 直接查閱 10-K / 10-Q 原始文件；做空機構（如 Hindenburg Research、Muddy Waters）的報告雖有立場，但往往點出真實的財務異常值得參考。</div>
+      <div class="highlight">💡 工具提示：可使用 SEC EDGAR 直接查閱 10-K / 10-Q 原始文件；做空機構（如 Muddy Waters；Hindenburg Research 已於 2025 年 1 月解散，其歷史報告仍可讀）的報告雖有立場，但往往點出真實的財務異常值得參考。</div>
       <div class="risk">⚠️ 重要原則：單一 Red Flag 不一定代表問題，但多個信號同時出現，風險便急劇上升。遇到疑點，寧可先減倉觀察，等管理層給出清楚的解釋後再重新評估。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例；部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
 
@@ -2405,8 +2451,10 @@ const MODALS_US = {
         <li>靠<strong>高槓桿</strong>（銀行、部分零售）→ 需評估風險</li>
       </ul>
       <p><strong>業界參考值：</strong>ROE > 15% 通常被視為優秀；科技龍頭（Apple、Microsoft）常超過 30%。</p>
-      <div class="highlight">💡 巴菲特標準：持續 10 年以上 ROE > 15%，且不依賴過高槓桿，是他判斷「優秀企業」的重要篩選條件之一。波克夏長期持有的可口可樂 ROE 長期超過 40%。</div>
+      <div class="highlight">💡 常被歸給巴菲特的篩選法：「持續 10 年 ROE > 15% 且低槓桿」——注意這個量化版<strong>不是巴菲特本人的話</strong>，Berkshire 年報的併購準則只寫 "good returns on equity while employing little or no debt"，沒有任何百分比與年限，數字是後人的二手詮釋。波克夏長期持有的可口可樂 ROE 近年多在 38–43% 之間波動。</div>
+      <a class="source-link" href="https://www.berkshirehathaway.com/letters/letters.html" target="_blank">→ Berkshire Hathaway 歷年股東信（併購準則原文）</a>
       <div class="risk">⚠️ 注意：若公司大量回購股票，股東權益（分母）會大幅縮小，導致 ROE 虛高。Apple 的超高 ROE 部分來自多年回購使帳面權益趨近於零，需搭配 ROIC 一同觀察。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uk2: {
@@ -2428,11 +2476,12 @@ const MODALS_US = {
       <ul>
         <li>ROIC > WACC → 公司在<strong>創造價值</strong>（value creation），每投入一元資本能獲得超額報酬</li>
         <li>ROIC < WACC → 公司在<strong>銷毀價值</strong>（value destruction），即使帳面獲利，也是在虧損股東</li>
-        <li>WACC 一般企業約 8–12%；科技公司因 Beta 高，WACC 可能達 10–15%</li>
+        <li>WACC 依產業與利率環境浮動——Damodaran 2026/1 實測：全市場平均僅 6.96%、軟體業約 9.3–10.7%、半導體約 10.6%。「一般 8–12%、科技 10–15%」是高利率時期的舊區間，直接套用會把折現率設得過高、系統性低估估值</li>
       </ul>
       <p><strong>業界參考值：</strong>ROIC > 15% 屬優質企業；> 20% 是頂尖護城河的象徵（Microsoft、Visa 長期超過 25%）。輕資產平台型企業天然具備高 ROIC 優勢。</p>
       <div class="highlight">💡 McKinsey 研究顯示：長期股價表現與 ROIC 的相關性，遠高於 EPS 成長率。找到能長期維持高 ROIC 的公司，是價值投資的核心。</div>
       <div class="risk">⚠️ ROA 的局限：現金儲量龐大的公司（如 Berkshire Hathaway）ROA 會被低估，因現金也算資產但不直接產生業務報酬。ROIC 排除現金可解決此問題，更適合評估業務本身的資本效率。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uk3: {
@@ -2456,7 +2505,7 @@ const MODALS_US = {
       </div>
       <p><strong>各行業典型利潤率：</strong></p>
       <ul>
-        <li><strong>軟體 / SaaS：</strong>毛利率 65–85%、營業利潤率 15–35%（成熟期）</li>
+        <li><strong>軟體 / SaaS：</strong>毛利率 65–85%（Damodaran 2026/1 產業平均約 72%，相符）；營業利潤率產業加總值約 41%——但這被巨頭拉高，中位數低得多，「15–35%（成熟期）」當成一般公司的參考區間仍合理，引用時標明口徑</li>
         <li><strong>半導體（Fabless）：</strong>毛利率 50–70%、NVIDIA 近年毛利率突破 70%</li>
         <li><strong>電商 / 零售：</strong>毛利率 20–40%、淨利率 2–5%</li>
         <li><strong>航空業：</strong>毛利率僅 15–25%，且對油價、利率極度敏感</li>
@@ -2464,6 +2513,7 @@ const MODALS_US = {
       <p>三者關係：毛利率是上限，每往下一層都會「扣掉」更多費用。若<strong>毛利率高但營業利潤率低</strong>，代表費用管控差；若<strong>營業利潤率好但淨利率差</strong>，通常是利息負擔重或稅務問題。</p>
       <div class="highlight">💡 核心觀察：毛利率的趨勢方向比絕對數字更重要。若公司毛利率連續 3 季下滑，代表定價能力減弱或投入成本上升，需要深入了解原因。</div>
       <div class="risk">⚠️ 陷阱：若公司削減研發（R&D）支出來提升短期利潤率，看似改善，實則犧牲長期競爭力。務必同時追蹤各項費用的絕對金額，而非只看比率。</div>
+          <p class="note-origin">📎 論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uk4: {
@@ -2493,6 +2543,7 @@ const MODALS_US = {
       </ul>
       <div class="highlight">💡 優質財務信號：擁有「Net Cash（淨現金）」的公司（現金 > 總負債），在景氣下行時有絕佳的防禦性，也有空間進行逆週期併購。Meta、Alphabet 都屬此類。</div>
       <div class="risk">⚠️ 警示：2022–2023 升息周期中，Net Debt/EBITDA > 5x 的高負債企業（如部分私募槓桿收購標的）面臨嚴重財務壓力，甚至被迫資產出售或申請破產保護。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例；論點出自市場常見說法；部分敘述未查得可靠出處——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uk5: {
@@ -2521,6 +2572,7 @@ const MODALS_US = {
       </ul>
       <div class="highlight">💡 實務建議：對零售商和製造商，同時追蹤存貨週轉天數（DIO）。若存貨週轉放緩同時 Current Ratio 下滑，是雙重危險信號，代表產品競爭力可能已出現問題。</div>
       <div class="risk">⚠️ 陷阱：Current Ratio > 2 但存貨佔大多數，且存貨有跌價風險（如半導體庫存過剩）→ 實際流動性遠不如表面數字所呈現的那樣安全。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例；論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uk6: {
@@ -2546,12 +2598,13 @@ const MODALS_US = {
       <p><strong>其他常用 SaaS 指標：</strong></p>
       <ul>
         <li><strong>Churn Rate（流失率）：</strong>年流失率 < 5% 健康，企業級 SaaS 通常 < 3%</li>
-        <li><strong>Magic Number：</strong>= 新增 ARR × 4 / S&M 費用；> 0.75 代表銷售效率良好</li>
+        <li><strong>Magic Number：</strong>=（本季經常性收入 − 上季經常性收入）× 4 ÷ <strong>上一季</strong>的 S&M 費用（×4 是把單季增量年化；常見的「新增 ARR × 4」寫法是錯的——ARR 已年化，再乘 4 等於年化兩次，數字會放大約四倍）。> 0.75 代表銷售效率良好，此門檻是創投圈慣例（一般追溯到 Scale Venture Partners 2005 年的分析），非權威定義</li>
         <li><strong>CAC Payback Period：</strong>多少月能回收獲客成本；< 18 個月為健康，< 12 個月為優秀</li>
         <li><strong>RPO（Remaining Performance Obligations）：</strong>已簽約尚未認列的收入，反映未來可見度</li>
       </ul>
-      <div class="highlight">💡 NRR > 100% 的關鍵意義：即使不開發任何新客戶，現有客戶擴充訂閱即可驅動收入成長，代表公司擁有強大的「Net Expansion（淨擴充）」能力，如 Snowflake、Datadog 長期 NRR 超過 130%。</div>
+      <div class="highlight">💡 NRR > 100% 的關鍵意義：即使不開發任何新客戶，現有客戶擴充訂閱即可驅動收入成長，代表公司擁有強大的「Net Expansion（淨擴充）」能力。注意數字會退坡：Snowflake 曾長期超過 130%，但 FY2026 官方公布已降到 125%——引用標竿公司的 NRR 必須標年份，且 Snowflake 用的是消耗型口徑，與訂閱制 ARR 口徑不可直接比較。</div>
       <div class="risk">⚠️ 注意：ARR 和 NRR 是自行揭露的非 GAAP 指標，各公司定義略有不同。閱讀時需查看公司的 Investor Relations 頁面，確認計算口徑，避免跨公司直接比較的誤差。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例；論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uk7: {
@@ -2577,9 +2630,12 @@ const MODALS_US = {
           </tbody>
         </table>
       </div>
-      <p>研究顯示，Rule of 40 得分與 EV/Revenue 估值倍數呈正相關。得分 > 50% 的公司往往獲得 15–20x Revenue 的估值溢價；得分 < 20% 則通常只得到 4–6x。頂尖如 Veeva、ServiceNow 長期維持 40–60%。</p>
+      <p>Rule of 40 得分與 EV/Revenue 估值倍數大致正相關，但<strong>絕對倍數會隨市場週期大幅變動</strong>：「>50% 拿 15–20x」是 2021 年泡沫高點的水準——BVP Nasdaq Emerging Cloud Index 2026/8 的成分股平均營收倍數只有約 8.2x。用固定倍數判斷貴賤會系統性誤判，要對照當下的指數水位。另注意：Rule of 40 出自 Brad Feld 2015 年的文章（他自承轉述自一位後期投資人），原文限定「營收至少 5,000 萬美元的 SaaS」，且 Profit 用 EBITDA／營業利益／FCF 各家不一，分數不可跨資料源比較。</p>
+      <a class="source-link" href="https://feld.com/archives/2015/02/rule-40-healthy-saas-company/" target="_blank">→ Brad Feld (2015), The Rule of 40% For a Healthy SaaS Company</a>
+      <a class="source-link" href="https://cloudindex.bvp.com/" target="_blank">→ BVP Nasdaq Emerging Cloud Index（現時營收倍數）</a>
       <div class="highlight">💡 最新趨勢：2022 年後市場轉向「盈利品質」，Rule of 40 中的 FCF 口徑比 EBITDA 口徑更受重視。部分投資人甚至提出「Rule of 40（FCF 版）× EV/Revenue」作為估值合理性的快速篩選工具。</div>
       <div class="risk">⚠️ 局限性：Rule of 40 是快速篩選工具，不能替代深度分析。公司可透過削減研發或減少銷售投入，短期內提升得分，但這可能犧牲長期競爭力。需搭配 NRR、ARR 增速一同評估。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   },
   uk8: {
@@ -2612,6 +2668,7 @@ const MODALS_US = {
       <p><strong>庫存週轉率（Inventory Turnover）= COGS / 平均存貨</strong>：零售業健康水準 6–12x / 年；汽車業 8–10x；奢侈品 2–4x（刻意維持稀缺感）。</p>
       <div class="highlight">💡 景氣觀察：庫存週轉天數（DIO）是景氣領先指標之一。當半導體、電子製造商的 DIO 大幅攀升時，往往預示需求下滑和未來的降價壓力（如 2022 年半導體庫存去化週期）。</div>
       <div class="risk">⚠️ 注意：DPO 過高（超過 120 天）可能損害供應商關係，尤其對中小型企業是財務壓力。過度壓迫供應商的大廠，在供應鏈緊張時可能遭遇報復性限供，2021 年晶片荒期間即有類似案例。</div>
+          <p class="note-origin">📎 數值門檻／區間為業界慣例；論點出自市場常見說法——彙整自 2026/6 的網路觀點，非實證研究，參考前請自行驗證。</p>
     `
   }
 };
