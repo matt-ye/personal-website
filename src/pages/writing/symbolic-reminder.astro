@@ -233,15 +233,69 @@ const IMG = '/images/symbolic-reminder';
     <section class="declaration-closing">
       <div class="symbol-label competence-label">Competence</div>
 
-      <div class="equation eq-final" aria-label="Wisdom Eye 加 Meek 疊合為 Competence">
-        <img src={`${IMG}/Wisdom_eye_Own_the_vision.svg`} alt="Wisdom Eye" class="symbol-img eq-img" />
-        <span class="eq-op">+</span>
-        <img src={`${IMG}/Meek_Virtue_control_the_power.svg`} alt="Meek" class="symbol-img eq-img" />
-        <span class="eq-op">=</span>
-      </div>
-
-      <div class="symbol-hero">
-        <img src={`${IMG}/Competence.svg`} alt="Competence — the complete symbol" class="symbol-img symbol-hero-img" />
+      <div class="pyramid" aria-label="符號層級金字塔：Competence 逐層拆解至基本圖形">
+        <div class="pyr-row pyr-row-1">
+          <figure class="pyr-cell pyr-apex">
+            <img src={`${IMG}/Competence.svg`} alt="Competence" class="symbol-img" />
+            <figcaption>Competence</figcaption>
+          </figure>
+        </div>
+        <div class="pyr-row">
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Wisdom_eye_Own_the_vision.svg`} alt="Wisdom Eye" class="symbol-img" />
+            <figcaption>Wisdom Eye · Own the Vision</figcaption>
+          </figure>
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Meek_Virtue_control_the_power.svg`} alt="Meek" class="symbol-img" />
+            <figcaption>Meek · Virtue</figcaption>
+          </figure>
+        </div>
+        <div class="pyr-row">
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Will_Choice_Aim.svg`} alt="Will" class="symbol-img" />
+            <figcaption>Will · Choice · Aim</figcaption>
+          </figure>
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Control_Sheath.svg`} alt="Sheath" class="symbol-img" />
+            <figcaption>Control · Sheath</figcaption>
+          </figure>
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Power_Sword.svg`} alt="Sword" class="symbol-img" />
+            <figcaption>Power · Sword</figcaption>
+          </figure>
+        </div>
+        <div class="pyr-row">
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Awareness_Intelligence.svg`} alt="Awareness" class="symbol-img" />
+            <figcaption>Awareness · Intelligence</figcaption>
+          </figure>
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Growth_heros_journey.svg`} alt="Growth" class="symbol-img" />
+            <figcaption>Growth · Hero's Journey</figcaption>
+          </figure>
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Compass_Navigation.svg`} alt="Compass" class="symbol-img" />
+            <figcaption>Compass · Navigation</figcaption>
+          </figure>
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Mouth_speech.svg`} alt="Mouth" class="symbol-img" />
+            <figcaption>Mouth · Speech</figcaption>
+          </figure>
+        </div>
+        <div class="pyr-row">
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Vision_embrace_weakness.svg`} alt="Vision" class="symbol-img" />
+            <figcaption>Vision · Embrace Weakness</figcaption>
+          </figure>
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Circle_of_Arms.svg`} alt="Circle of Arms" class="symbol-img" />
+            <figcaption>Circle of Arms · Embrace</figcaption>
+          </figure>
+          <figure class="pyr-cell">
+            <img src={`${IMG}/Core_Stain_Truth.svg`} alt="Core" class="symbol-img" />
+            <figcaption>Core · Truth</figcaption>
+          </figure>
+        </div>
       </div>
 
       <p class="declaration-final lang-zh">這就是勝任力。</p>
@@ -432,7 +486,44 @@ const IMG = '/images/symbolic-reminder';
     font-weight: 600;
     color: var(--color-text-muted);
   }
-  .eq-final { border: none; padding-bottom: 0; margin-bottom: 0; }
+
+  /* ===== 結尾符號金字塔（無連線，位置即層級） ===== */
+  .pyramid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin: var(--spacing-md) 0 var(--spacing-lg);
+  }
+  .pyr-row {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .pyr-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    flex: 0 1 150px;
+  }
+  .pyr-cell .symbol-img { width: 100%; }
+  .pyr-apex { flex-basis: 240px; }
+  .pyr-cell figcaption {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .pyr-apex figcaption {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    color: var(--color-accent);
+  }
 
   .declaration-closing { padding-top: var(--spacing-sm); }
   .competence-label {
@@ -468,5 +559,9 @@ const IMG = '/images/symbolic-reminder';
     .eq-img  { width: 84px; }
     .eq-result { width: 104px; }
     .equation { gap: 0.5rem; }
+    .pyr-row { gap: 0.5rem; }
+    .pyr-cell { flex-basis: 82px; }
+    .pyr-apex { flex-basis: 150px; }
+    .pyr-cell figcaption { font-size: 0.56rem; letter-spacing: 0.04em; }
   }
 </style>
