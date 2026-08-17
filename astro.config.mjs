@@ -332,6 +332,121 @@ function verifyRssFeed() {
  * 檢查方式是比對 dist 的實際產出，不是讀原始碼——真正重要的是使用者拿到的
  * HTML 裡有沒有那幾行，不是我們以為它應該有。
  */
+/*
+ * 英文頁的 head 不該原封不動抄中文頁的值。
+ *
+ * ── 判準為什麼是「相同 ＋ 含中文」而不是「含中文」──────────────────
+ * 只看「含中文」會誤判：紀念頁的英文標題是
+ *   "Remembering Miguel 李維晏 · Teaching is the work of sharing joy"
+ * ——人名刻意保留原字（各對照表的 KEEP），那是決定，不是漏譯。
+ *
+ * 只看「與中文頁相同」也會誤判：兩種語言共用一段純英文（產品名之類）是正常的。
+ *
+ * 兩個條件同時成立才是真的漏——**英文頁拿到的就是中文頁那一份**。
+ * 這正是 aw32／daniels-talk／ga4-guide 的症狀：它們填了 titleEn 所以產出了
+ * /en/ 網址，卻沒填 ogTitleEn，於是 StaticPageLayout 回退到中文的 ogTitle，
+ * 英文頁的分享卡整張是中文。三頁上線多時都沒被發現——畫面上看不到，
+ * 只有分享出去或爬蟲讀到才知道。
+ */
+function verifyI18nMeta() {
+  const FIELDS = [
+    [/<title>([^<]*)<\/title>/, 'title'],
+    [/<meta name="description" content="([^"]*)"/, 'description'],
+    [/<meta property="og:title" content="([^"]*)"/, 'og:title'],
+    [/<meta property="og:description" content="([^"]*)"/, 'og:description'],
+    [/<meta property="og:image:alt" content="([^"]*)"/, 'og:image:alt'],
+    [/<meta name="twitter:title" content="([^"]*)"/, 'twitter:title'],
+    [/<meta name="twitter:description" content="([^"]*)"/, 'twitter:description'],
+  ];
+  const CJK = /[一-鿿]/;
+
+  return {
+    name: 'verify-i18n-meta',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        const enRoot = join(root, 'en');
+
+        const pages = [];
+        const walk = (d, rel) => {
+          let entries;
+          try { entries = readdirSync(d); } catch { return; }
+          for (const e of entries) {
+            const full = join(d, e);
+            if (statSync(full).isDirectory()) walk(full, `${rel}/${e}`);
+            else if (e === 'index.html') pages.push(`${rel || ''}/`.replace(/\/+/g, '/'));
+          }
+        };
+        walk(enRoot, '');
+        if (!pages.length) return;
+
+        const headOf = (file) => {
+          try {
+            const html = readFileSync(file, 'utf8');
+            return html.slice(0, html.indexOf('</head>'));
+          } catch { return null; }
+        };
+        /* JSON-LD 的 headline／description／name 走同一個判準 */
+        const ldOf = (file) => {
+          try {
+            const html = readFileSync(file, 'utf8');
+            const out = {};
+            for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+              const node = JSON.parse(m[1]);
+              if (node['@type'] === 'BreadcrumbList') continue; // 麵包屑另有自己的產生邏輯
+              for (const k of ['headline', 'description', 'name']) {
+                /* ⚠ Person 的 name 不驗：人名在兩種語言本來就相同，而 name／
+                   alternateName 正是 schema.org 用來承載名字的欄位。
+                   紀念頁的 "李維晏" 會落在這裡，那是 KEEP 政策，不是漏譯。 */
+                if (k === 'name' && node['@type'] === 'Person') continue;
+                if (typeof node[k] === 'string') (out[k] ??= []).push(node[k]);
+              }
+              if (typeof node.isPartOf?.name === 'string') (out['isPartOf.name'] ??= []).push(node.isPartOf.name);
+            }
+            return out;
+          } catch { return {}; }
+        };
+
+        const problems = [];
+        for (const p of pages) {
+          const rel = p.replace(/^\/|\/$/g, '');
+          const segs = rel ? rel.split('/') : [];
+          const enHead = headOf(join(root, 'en', ...segs, 'index.html'));
+          const zhHead = headOf(join(root, ...segs, 'index.html'));
+          if (enHead === null || zhHead === null) continue; // hreflang 那支負責報缺頁
+
+          for (const [re, name] of FIELDS) {
+            const en = enHead.match(re)?.[1];
+            const zh = zhHead.match(re)?.[1];
+            if (en && zh && en === zh && CJK.test(en)) {
+              problems.push(`/en${p} 的 ${name} 與中文頁相同且含中文：${en.slice(0, 50)}…`);
+            }
+          }
+
+          const enLd = ldOf(join(root, 'en', ...segs, 'index.html'));
+          const zhLd = ldOf(join(root, ...segs, 'index.html'));
+          for (const [k, enVals] of Object.entries(enLd)) {
+            const zhVals = zhLd[k] ?? [];
+            enVals.forEach((v, i) => {
+              if (v === zhVals[i] && CJK.test(v)) {
+                problems.push(`/en${p} 的 JSON-LD ${k} 與中文頁相同且含中文：${v.slice(0, 50)}…`);
+              }
+            });
+          }
+        }
+
+        if (problems.length) {
+          throw new Error(
+            `英文頁的 meta／JSON-LD 直接沿用了中文頁的值（多半是漏填 ogTitleEn／ogDescriptionEn／jsonLdEn）：\n  ` +
+              problems.join('\n  '),
+          );
+        }
+        logger.info(`i18n meta verified: ${pages.length} page(s), no Chinese fallthrough`);
+      },
+    },
+  };
+}
+
 function verifyI18nHreflang() {
   return {
     name: 'verify-i18n-hreflang',
@@ -702,6 +817,7 @@ export default defineConfig({
     injectBreadcrumbs(),
     verifyRssFeed(),
     verifyI18nHreflang(),
+    verifyI18nMeta(),
     verifyNotFoundPage(),
     verifyIconFonts(),
     verifyI18nPrerendered(),
