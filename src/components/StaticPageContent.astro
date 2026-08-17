@@ -20,6 +20,7 @@ interface Props {
 
 import { localeHref } from '../lib/i18n';
 import { readI18nDict, escapeHtml } from '../lib/objectLiteral.mjs';
+import { applyTranslations, findResidualCjk } from '../../scripts/lib/extract-strings.mjs';
 
 const { pageKey, localized } = Astro.props;
 const isEn = Astro.currentLocale === 'en';
@@ -109,8 +110,59 @@ function stripCjkAttrs(html: string) {
   }
 }
 
+/*
+ * ── 機制 C：整頁對照表 ─────────────────────────────────────────────
+ *
+ * 機制 A／B 的頁面自己就是雙語寫的（成對 span 或頁內字典）。這一批不是——
+ * lemon-squeezy、boppps、atcc-judges、quantum、investment-notes、紀念頁
+ * 從頭到尾只有中文，沒有語言鈕、沒有 zh-only、沒有 data-i18n。
+ * 英文版的來源是 src/data/translations/<key>.mjs 的對照表。
+ *
+ * 這一段必須跑在下面剝 zh-only／屬性之前：這些頁的 placeholder 與 title
+ * 是**純中文**（例如 title="深淺色"），stripCjkAttrs 找不到 " / " 會讓建置失敗。
+ * 換完之後那些屬性已經是英文，後面兩步就自然變成 no-op。
+ *
+ * 查不到譯文不補、不猜、不放行——直接讓建置停下來。安靜略過的代價是
+ * 英文頁上出現中文，而那要有人用眼睛看到才會發現。
+ */
+const tables = import.meta.glob('../data/translations/*.mjs', { eager: true }) as Record<
+  string,
+  { MAP?: Record<string, string>; MODALS_EN?: Record<string, { html: string }>; KEEP?: string[] }
+>;
+const tablePath = Object.keys(tables).find((p) => p.endsWith(`/${pageKey}.mjs`));
+
 let fragment = fragments[path];
-if (isEn) {
+
+if (isEn && tablePath) {
+  const table = tables[tablePath];
+  const { html, missing } = applyTranslations(fragment, table);
+  if (missing.length) {
+    throw new Error(
+      `${pageKey}：對照表缺 ${missing.length} 條譯文，英文頁會殘留中文。` +
+        `請補進 src/data/translations/${pageKey}.mjs 並重跑 node scripts/check-translations.mjs。` +
+        `前幾條：${missing.slice(0, 3).map((s) => JSON.stringify(s.slice(0, 40))).join('、')}`,
+    );
+  }
+  fragment = html;
+
+  /* 換完再驗一次。上面的 missing 只涵蓋「抽得到的字串」，這一關管的是
+     抽取器的盲區——斷詞若有瑕疵，漏掉的字串不會出現在 missing 裡，
+     只會安靜留在頁面上。實測踩過一次：紀念頁曾有 12 條這樣的字串。 */
+  const residual = findResidualCjk(fragment, table.KEEP ?? []);
+  if (residual.length) {
+    throw new Error(
+      `${pageKey}：英文頁還有 ${residual.length} 處中文，對照表沒涵蓋到（可能是抽取器的盲區）。` +
+        `第一處前後文：…${residual[0]}…`,
+    );
+  }
+}
+
+/* 機制 A／B 專用的兩道處理。機制 C 的頁面不能跑：
+   ① 它們沒有 zh-only（剝了也是 no-op）
+   ② stripCjkAttrs 會炸——對照表翻完之後屬性裡剩下的中文是**刻意保留的人名**
+      （alt="李維晏 (Miguel)"，見各對照表的 KEEP），不是「忘了寫英文半邊」。
+      那道守衛的前提是「屬性寫成 中文 / English」，對這批頁不成立。 */
+if (isEn && !tablePath) {
   assertNoSameTagNesting(fragment, 'zh-only');
   fragment = fragment.replace(LANG_EL('zh-only'), '');
   fragment = stripCjkAttrs(fragment);
@@ -322,7 +374,7 @@ if (localized) {
       TOGGLE,
       `<a${m[1].replace(/\stype="button"/, '')} href="${target}" hreflang="${hreflang}">${inner}</a>`,
     );
-  } else {
+  } else if (/id="langBtn"/.test(fragment)) {
     /* ── 機制 A：zh-only ＋ id="langBtn" ── */
 
     /* 語言記憶的鍵名各頁不同（marketing 是 oms_lang、ga4-guide 是 ga4_lang），
@@ -345,7 +397,17 @@ if (localized) {
       BTN,
       `<a class="icon-btn" id="langBtn" href="${target}" hreflang="${hreflang}">${isEn ? '🌐 中' : '🌐 EN'}</a>`,
     );
+  } else if (!tablePath) {
+    /* 三種機制都不成立。這裡不能安靜通過——localized 有值代表這頁**應該**
+       有兩個語言網址，卻找不到任何切換方式，讀者會卡在單一語言裡。 */
+    throw new Error(
+      `${pageKey}：傳了 localized 但頁面既沒有頁內字典、沒有 id="langBtn"，` +
+        `也沒有 src/data/translations/${pageKey}.mjs 對照表——不知道要怎麼產生英文版。`,
+    );
   }
+  /* 機制 C 沒有頁內語言鈕（這批頁原本就只有中文，沒有雙語 UI）。
+     切換鈕由 StaticPageLayout 補一顆共用的——與其在六份風格各異的片段裡
+     各插一顆，不如放在版面層，樣式與位置一次講清楚。 */
 }
 ---
 

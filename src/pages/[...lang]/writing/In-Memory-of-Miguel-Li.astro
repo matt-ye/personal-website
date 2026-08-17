@@ -1,0 +1,55 @@
+---
+/*
+ * 李維晏（Miguel）老師紀念頁。
+ *
+ * 單一頁面，不走 /writing/[slug] 的部落格路由——那條路由讀的是
+ * content collection，這一頁是自包含的紀念網站（自己的導覽、生平、
+ * 課程回憶、留言板、著作與資源）。
+ *
+ * ⚠ 留言板（#boardWall）刻意維持瀏覽器端即時抓取：留言從 Google Sheet 來、
+ *   含學生姓名，而這個 repo 是公開的。寫進 HTML 等於把個資永久寫進 git 歷史
+ *   ——網頁可以下架、Sheet 可以改，git 歷史不能。
+ *   其餘區塊（生平、13 門課的回饋、紀念文章、著作）已預渲染，
+ *   由 astro.config 的 verifyI18nPrerendered 在建置期確認沒有變回空的。
+ *
+ *   這也代表**英文頁的留言板仍是中文**：那些是別人寫給逝者的話，
+ *   從 Sheet 即時取得，不在版控也不在翻譯範圍。頁面上另有一句
+ *   "Messages below are translated from the Chinese original"
+ *   說明版控內那批留言的來源（見對照表的 ADDED）。
+ *
+ * ── 為什麼從 pages/writing/ 搬到 pages/[...lang]/writing/ ──────────
+ * 原本這個檔案不在 [...lang] 底下，所以只產得出中文網址。
+ * 英文版由 src/data/translations/ 的整頁對照表翻出（機制 C，
+ * 見 StaticPageContent），語言由網址決定，與站上其他頁一致。
+ */
+import StaticPageLayout from '../../../layouts/StaticPageLayout.astro';
+import StaticPageContent from '../../../components/StaticPageContent.astro';
+import { staticPageMeta } from '../../../data/staticPageMeta';
+
+const KEY = 'writing__In-Memory-of-Miguel-Li';
+
+/* ⚠ KEY 在函式內重寫一次：Astro 會把 getStaticPaths 抽出來獨立執行，
+     看不到 frontmatter 的模組作用域。同 one-more-step/[slug].astro 的處理。 */
+export function getStaticPaths() {
+  const key = 'writing__In-Memory-of-Miguel-Li';
+  const m = staticPageMeta.find((x) => x.key === key);
+  if (!m) throw new Error(`staticPageMeta 裡找不到 ${key}`);
+  /* 中文版一律產生；英文版只在填了英文 meta 時產生——判準與其他
+     [...lang] 路由一致，能從 meta 推導的就不另外維護清單。 */
+  const paths = [{ params: { lang: undefined } }];
+  if (m.titleEn && m.descriptionEn) paths.push({ params: { lang: 'en' } });
+  return paths;
+}
+
+const meta = staticPageMeta.find((m) => m.key === KEY);
+if (!meta) throw new Error(`staticPageMeta 裡找不到 ${KEY}`);
+
+/* 有英文 meta 才傳 localized——傳了 StaticPageContent 才會做語言相關的改寫
+   （站內連結改指英文版）。判準與 getStaticPaths 一致。 */
+const zhPath = new URL(meta.canonical).pathname;
+const localized = meta.titleEn && meta.descriptionEn ? { zhPath, enPath: `/en${zhPath}` } : undefined;
+---
+
+<StaticPageLayout meta={meta}>
+  <StaticPageContent pageKey={KEY} localized={localized} />
+</StaticPageLayout>

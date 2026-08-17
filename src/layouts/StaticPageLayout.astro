@@ -70,6 +70,24 @@ const canonical = isEn ? enHref : meta.canonical;
 /* 有填英文 meta 才算「這頁有英文版」——不另外維護一份清單。
    同 lib/i18n.ts 的判準精神：能推導的就不該讓人記得同步。 */
 const hasEn = Boolean(meta.titleEn && meta.descriptionEn);
+
+/*
+ * 語言切換鈕：補給「有英文版、但片段裡沒有自己的語言鈕」的頁。
+ *
+ * marketing 那批與 aw32／daniels-talk 的片段本來就有一顆（id="langBtn"／
+ * "langToggle"，由 StaticPageContent 改寫成 <a>）。one-more-step 剩下那批
+ * 與紀念頁原本只有中文、沒有雙語 UI，英文版是整頁對照表翻出來的，
+ * 片段裡沒有任何切回另一種語言的入口——版面補一顆。
+ *
+ * 判準一樣看片段內容，不維護清單：新頁自帶語言鈕就不會多一顆，
+ * 沒有就自動補上。而「少一顆」只有英文讀者會遇到，那正是最少人走的路徑。
+ */
+const hasOwnLangBtn = /id="lang(Btn|Toggle)"/.test(fragments[fragPath]);
+const zhPath = new URL(meta.canonical).pathname;
+const langLink =
+  hasEn && !hasOwnLangBtn
+    ? { href: isEn ? zhPath : `/en${zhPath}`, hreflang: isEn ? 'zh-TW' : 'en' }
+    : undefined;
 const title = isEn ? (meta.titleEn ?? meta.title) : meta.title;
 const description = isEn ? (meta.descriptionEn ?? meta.description) : meta.description;
 const ogTitle = isEn ? (meta.ogTitleEn ?? meta.ogTitle) : meta.ogTitle;
@@ -95,7 +113,24 @@ function localizeJsonLd(raw: string): string {
   if (node.mainEntityOfPage) node.mainEntityOfPage = enHref;
   if (node.inLanguage) node.inLanguage = 'en';
   if (node.headline && meta.ogTitleEn) node.headline = meta.ogTitleEn;
+  /* WebPage 用 name 承載標題，Article 用 headline——兩個都要換，
+     不然紀念頁那種 WebPage 節點會留著中文標題。 */
+  if (node['@type'] === 'WebPage' && node.name && meta.ogTitleEn) node.name = meta.ogTitleEn;
   if (node.description && meta.ogDescriptionEn) node.description = meta.ogDescriptionEn;
+
+  /* 推導不出來的字串值逐條換（jobTitle、系列名之類），走整棵樹。
+     人名不在這裡——那是 schema 的 name／alternateName 本來的用途。 */
+  if (meta.jsonLdEn) {
+    const swap = (v: unknown): unknown => {
+      if (typeof v === 'string') return meta.jsonLdEn![v] ?? v;
+      if (Array.isArray(v)) return v.map(swap);
+      if (v && typeof v === 'object') {
+        return Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, swap(x)]));
+      }
+      return v;
+    };
+    node = swap(node) as Record<string, unknown>;
+  }
   return JSON.stringify(node, null, 2);
 }
 const jsonLd = isEn ? meta.jsonLd?.map(localizeJsonLd) : meta.jsonLd;
@@ -138,7 +173,9 @@ const alternates = hasEn
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     {ogLocale && <meta property="og:locale" content={ogLocale} />}
-    {meta.ogImageAlt && <meta property="og:image:alt" content={meta.ogImageAlt} />}
+    {(isEn ? meta.ogImageAltEn ?? meta.ogImageAlt : meta.ogImageAlt) && (
+      <meta property="og:image:alt" content={isEn ? meta.ogImageAltEn ?? meta.ogImageAlt : meta.ogImageAlt} />
+    )}
     {meta.articlePublishedTime && (
       <meta property="article:published_time" content={meta.articlePublishedTime} />
     )}
@@ -169,7 +206,7 @@ const alternates = hasEn
   </head>
   <body>
     <slot />
-        {siteLinks && <SiteStrip />}
+        {(siteLinks || langLink) && <SiteStrip siteLinks={siteLinks} lang={langLink} />}
   </body>
 </html>
 
