@@ -1053,4 +1053,325 @@ export const MODALS_EN = {
       <div class="risk">⚠️ Ratings reflect public information; apps update constantly — download and try before deciding.</div>
     `,
   },
+  us1: {
+    html: `
+      <p>The three major US indexes are built on different logic and represent different things — you must know the differences to read market signals correctly.</p>
+      <ul>
+        <li><strong>Dow Jones Industrial Average (DJIA):</strong> 30 large blue chips, <strong>price-weighted</strong> — higher-priced stocks carry more weight. The oldest index (founded 1896), but with few constituents, limited representativeness, and a light tech weighting.</li>
+        <li><strong>S&P 500:</strong> 500 <strong>leading companies selected by an index committee against eligibility criteria</strong> (the official language is "leading companies" — US-domicile tests, public float, four quarters of positive GAAP earnings; it is not simply the top 500 by market cap, and it actually holds about 504 share classes). <strong>Cap-weighted</strong>, covering roughly 80% of US <strong>float-adjusted</strong> market value — the benchmark of choice for institutions and index funds.</li>
+        <li><strong>Nasdaq Composite:</strong> every <strong>common-stock-class</strong> security on the Nasdaq (ETFs, preferreds, and warrants excluded; currently 3,300+ names), heavily tilted to tech and biotech, more volatile than the S&P 500. The <strong>Nasdaq-100</strong> selects the 100 largest non-financials and is what QQQ tracks.</li>
+        <li><strong>Russell 2000:</strong> the small-cap index — 2,000 smaller companies, a key read on the health of small and mid-sized American business.</li>
+      </ul>
+      <div class="highlight">💡 In practice, the S&P 500 is the most representative "overall US market" gauge. The Dow's price-weighting flaw relegates it to historical comparison; the Nasdaq mostly reflects the tech cycle. Long-run annualized returns (dividends reinvested): S&P 500 about <strong>10%</strong>, Nasdaq-100 about <strong>14%</strong> (with far bigger swings), Dow about <strong>9–10%</strong>.</div>
+      <div class="risk">⚠️ Index highs do not mean every stock is doing well: the S&P 500's top ten constituents often exceed 30% of its value, with the tech giants steering the index — mind the concentration risk.</div>
+    `,
+  },
+  us2: {
+    html: `
+      <p>America's two main stock exchanges differ visibly in mechanics, listing standards, and industry mix.</p>
+      <ul>
+        <li><strong>NYSE (New York Stock Exchange):</strong> founded 1792, the world's largest exchange by market value. A <strong>hybrid market</strong> with a physical trading floor plus electronic trading, traditionally kept orderly by Designated Market Makers (DMMs). Listings skew toward established giants — JP Morgan, Coca-Cola, Berkshire Hathaway (note: Walmart has moved to the Nasdaq, so don't copy old lists).</li>
+        <li><strong>Nasdaq:</strong> founded 1971 — by its own account the world's first <strong>fully electronic quotation system</strong> (later an exchange), <strong>purely electronic matching</strong> with no floor. Multiple competing market makers provide liquidity. It attracts tech and biotech: Apple, Microsoft, Amazon, and Meta all list here.</li>
+        <li><strong>Listing bars:</strong> the NYSE is stricter, requiring shareholders' equity of at least US$4 million; the Nasdaq's three tiers (Global Select, Global Market, Capital Market) set lower bars suited to growth companies.</li>
+        <li><strong>Ticker conventions:</strong> historically the NYSE favored 1–3 letters (T, GE, IBM) and the Nasdaq 4–5 (AAPL, MSFT, GOOGL), but the rule loosened after the SEC approved unified cross-market assignment in 2008 — over a third of NYSE tickers now run four letters (ORCL, DELL, BABA), and the Nasdaq has hundreds of 1–3 letter symbols (ZM, ON). Ticker length no longer tells you the venue.</li>
+      </ul>
+      <div class="highlight">💡 For ordinary investors, stocks on both exchanges trade through the same brokerage account with essentially no operational difference. The venue says nothing about stock quality — fundamentals still decide.</div>
+      <div class="risk">⚠️ Companies do switch exchanges. A transfer by itself signals nothing about quality, though it can affect near-term liquidity.</div>
+    `,
+  },
+  us3: {
+    html: `
+      <p>US trading hours sit awkwardly against Taiwan's time zone — time management and overnight risk deserve real attention.</p>
+      <ul>
+        <li><strong>Regular hours:</strong> 09:30–16:00 Eastern Time, which in Taiwan (UTC+8) means:
+          <ul>
+            <li>Daylight time (mid-March to early November): Taiwan <strong>21:30–04:00</strong></li>
+            <li>Standard time (early November to mid-March): Taiwan <strong>22:30–05:00</strong></li>
+          </ul>
+        </li>
+        <li><strong>Pre-market:</strong> ET 04:00–09:30 — thin liquidity, wide spreads, big jumps after earnings.</li>
+        <li><strong>After-hours:</strong> ET 16:00–20:00 — equally thin, and where major earnings often land.</li>
+        <li><strong>Brokers Taiwan investors commonly use:</strong> sub-brokerage accounts (Yuanta, Fubon, Cathay) cost more but offer Chinese-language support; overseas brokers (Interactive Brokers) are cheaper but English-only, and US estate tax deserves attention.</li>
+      </ul>
+      <div class="highlight">💡 Use <strong>limit orders</strong> — market orders in thin pre/post sessions invite slippage. Most orders can be staged during Taiwan's daytime as conditional orders that execute automatically when the US opens.</div>
+      <div class="risk">⚠️ In earnings season, your holdings can swing hard in Taiwan's dead of night. Know the announcement slots in advance (BMO = before market open, AMC = after market close) and avoid over-concentration.</div>
+          <p class="note-origin">📎 The arguments reflect common market claims, and some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  us4: {
+    html: `
+      <p>Earnings season is one of the biggest catalysts in US equities: for about three weeks after each quarter ends, companies report en masse and volatility expands markedly.</p>
+      <ul>
+        <li><strong>The four seasons:</strong>
+          <ul>
+            <li>Q1 results (Jan–Mar): from mid-April</li>
+            <li>Q2 results (Apr–Jun): from mid-July</li>
+            <li>Q3 results (Jul–Sep): from mid-October</li>
+            <li>Q4 results (Oct–Dec): from mid-January the following year</li>
+          </ul>
+        </li>
+        <li><strong>What matters in a report:</strong>
+          <ul>
+            <li><strong>EPS:</strong> actual vs. the consensus estimate — beat, miss, or in line</li>
+            <li><strong>Revenue:</strong> YoY and QoQ growth against expectations</li>
+            <li><strong>Guidance:</strong> the company's forecast for next quarter or the full year — often moves the stock more than the quarter itself</li>
+            <li><strong>Gross margin:</strong> pricing power and cost control</li>
+          </ul>
+        </li>
+        <li><strong>The mega-cap ripple:</strong> results from Apple, Microsoft, Amazon, Alphabet, and Meta often steer the whole index.</li>
+      </ul>
+      <div class="highlight">💡 "Buy the rumor, sell the news" is routine in earnings season: prices front-run expectations, so even a shiny report can sell off. Watch the size of the beat and whether guidance exceeds expectations — not merely whether it beat. Earnings Whispers lists announcement times.</div>
+      <div class="risk">⚠️ Options implied volatility balloons around announcements — option sellers beware. Even with sound fundamentals, guidance below expectations can knock a stock down 10–20% in a day; it is not rare.</div>
+          <p class="note-origin">📎 Some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  us5: {
+    html: `
+      <p>The SEC requires listed companies to file periodic disclosures — the rawest, most reliable source for fundamental analysis, free on SEC EDGAR.</p>
+      <ul>
+        <li><strong>10-K (annual report):</strong> filed 60–90 days after fiscal year-end. Contains full financial statements, the business description, Risk Factors, and Management's Discussion &amp; Analysis (MD&amp;A). Usually 100–200 pages — the most complete picture of a company.</li>
+        <li><strong>10-Q (quarterly report):</strong> filed 40–45 days after each quarter (the fourth quarter is folded into the 10-K). Unaudited in full, but tracks quarterly progress.</li>
+        <li><strong>8-K (current report):</strong> filed within four business days of a material event. Mandated triggers include earnings releases (Item 2.02), mergers and acquisitions (2.01), and CEO changes (5.02); dividend declarations and litigation settlements often appear as voluntary Item 8.01 disclosures.</li>
+        <li><strong>DEF 14A (proxy statement):</strong> filed before the shareholder meeting, with executive-pay details — a key governance reference.</li>
+        <li><strong>S-1:</strong> the IPO registration — the full business story before listing, with risk factors and financial history.</li>
+      </ul>
+      <div class="highlight">💡 A reading order that works: 8-K for the latest developments → the 10-K's Risk Factors (management's honest disclosures) → MD&amp;A for their explanation of results → then the statements themselves. Most retail investors skip Risk Factors, yet it is often the most honest self-disclosure a company makes.</div>
+      <div class="risk">⚠️ SEC filings are legal documents — management is legally liable for the numbers — but forward-looking MD&amp;A language can still be too optimistic. Cross-check with third-party analyst work.</div>
+      <a class="source-link" href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany" target="_blank">→ SEC EDGAR company filings search</a>
+          <p class="note-origin">📎 The arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  us6: {
+    html: `
+      <p>Federal Reserve monetary policy is one of the most important macro forces on US stocks — investors need the mechanics and the transmission path.</p>
+      <ul>
+        <li><strong>The federal funds rate:</strong> the Fed's target rate, set by the FOMC across eight scheduled meetings a year. In normal times moves come in 25-basis-point steps — but not in a rapid tightening cycle: of 2022's seven hikes, only one was 25bp; the rest were 50bp and 75bp.</li>
+        <li><strong>What hikes do to stocks:</strong>
+          <ul>
+            <li>Borrowing costs rise → pressure on corporate profits</li>
+            <li>The risk-free rate rises → stocks look relatively less attractive (higher DCF discount rates)</li>
+            <li>Growth stocks (high P/E) take the biggest hit, since their distant cash flows shrink most when discounted</li>
+            <li>Financials (banks) usually benefit as deposit-lending spreads widen</li>
+          </ul>
+        </li>
+        <li><strong>What cuts do:</strong> looser liquidity → multiple expansion → tech and growth benefit most; but if the cuts come because of recession, stocks can fall anyway.</li>
+        <li><strong>What to watch:</strong> the CME FedWatch Tool (market-implied odds of moves), CPI inflation, nonfarm payrolls (NFP), and Fed speeches — especially the Chair's.</li>
+      </ul>
+      <div class="highlight">💡 Historical reference: in 2022 the Fed hiked seven times for 425bp in one year (from 0–0.25% in January to 4.25–4.50% by December; the 5.50% upper bound only arrived in July 2023). The S&P 500 fell about 19.4% that year and the Nasdaq about 33%. After hikes stopped in July 2023, markets rebounded hard (2023: S&P 500 +24%, Nasdaq +43%). Shifts in rate expectations tend to move stocks earlier than the actual moves do.</div>
+      <a class="source-link" href="https://www.federalreserve.gov/monetarypolicy/openmarket.htm" target="_blank">→ Fed official record: target-rate changes (Open Market Operations)</a>
+      <div class="risk">⚠️ "Don't fight the Fed," as Wall Street says — policy direction correlates strongly with the market's long-run trend. But markets routinely over-react to Fed readings; short-term swings do not equal a change in trend.</div>
+      <a class="source-link" href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank">→ CME FedWatch Tool rate expectations</a>
+          <p class="note-origin">📎 The arguments reflect common market claims, and some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  us7: {
+    html: `
+      <p>US markets offer several ways to profit from falling prices — or to hedge. Each tool has a different risk profile; choose carefully.</p>
+      <ul>
+        <li><strong>Short selling:</strong> borrow shares from your broker, sell, and buy back cheaper to return them.
+          <ul>
+            <li>You pay a <strong>stock borrow rate</strong> — for heavily shorted names it can run 50%–100%+ annualized</li>
+            <li>Theoretical loss is unlimited (a stock can rise without bound) — extremely high risk</li>
+            <li><strong>Short squeezes:</strong> when short interest is extreme, a surging price forces shorts to cover. GME 2021 is the usual example — but note the SEC's own staff report concluded the squeeze was "not the main driver" of the rally, attributing the main leg to positive-sentiment buying. Cite the example knowing the official conclusion differs from the market narrative</li>
+          </ul>
+        </li>
+        <li><strong>Buying puts:</strong> pay a premium for the right to sell at a set price. Maximum loss is the premium — good for directional shorts or hedging, at the cost of theta decay.</li>
+        <li><strong>Inverse ETFs:</strong> track the inverse of an index — SQQQ (3x short Nasdaq-100), SH (1x short S&P 500). Simple to trade, but <strong>daily rebalancing</strong> erodes long-term returns; not for holding.</li>
+      </ul>
+      <div class="highlight">💡 The most common retail hedge: hold your stocks and buy puts on the corresponding index (QQQ puts against tech holdings) to soften a broad selloff — the cost is simply the insurance premium. Check the short interest ratio (days to cover) to size squeeze risk.</div>
+      <div class="risk">⚠️ Naked short selling is, per the SEC, "not necessarily a violation" — Regulation SHO targets persistent failures to deliver and abusive naked shorting. Conventional short selling has theoretically unlimited loss; for beginners expressing a bearish view, buying a put caps the loss at the premium (which can itself go to zero).</div>
+      <a class="source-link" href="https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-51" target="_blank">→ SEC Investor Bulletin: An Introduction to Short Sales</a>
+      <a class="source-link" href="https://www.sec.gov/files/staff-report-equity-options-market-struction-conditions-early-2021.pdf" target="_blank">→ SEC staff report on the early-2021 GameStop episode (PDF)</a>
+    `,
+  },
+  us8: {
+    html: `
+      <p>American Depositary Receipts (ADRs) let investors trade foreign companies in US dollars on US markets — the main route to TSMC (TSM), Alibaba (BABA), Toyota (TM), and other non-US names.</p>
+      <ul>
+        <li><strong>How they work:</strong> a US depositary bank (BNY Mellon, Citibank) holds the home-market shares and issues corresponding ADRs for US trading. One ADR can represent multiple shares or a fraction of one (ratios vary).</li>
+        <li><strong>ADR levels:</strong>
+          <ul>
+            <li><strong>Level I:</strong> OTC only, minimal filing requirements, weaker liquidity</li>
+            <li><strong>Levels II &amp; III:</strong> listed on the NYSE or Nasdaq with SEC filings (the 20-F annual report) and good liquidity</li>
+          </ul>
+        </li>
+        <li><strong>TSMC's ADR (TSM):</strong> 1 ADR = 5 Taiwan common shares, NYSE-listed — one of the most liquid Asian tech ADRs.</li>
+        <li><strong>Fees:</strong> ADR holders pay a <strong>depositary fee</strong> — the SEC's example is roughly $20–$50 per 1,000 ADRs (i.e. $0.02–$0.05 per share), usually deducted from dividends.</li>
+      </ul>
+      <div class="highlight">💡 ADRs trade at premiums or discounts to the home shares as currencies and the two markets move. A TSMC ADR–Taiwan share arbitrage exists in principle, but retail investors can rarely capture it directly — just watch the spread.</div>
+      <div class="risk">⚠️ Beyond stock risk, ADRs carry <strong>currency risk</strong> (home currency vs. the dollar), <strong>geopolitical risk</strong> (e.g. delisting risk for China ADRs), and <strong>home-country dividend withholding</strong> — for TSMC's ADR, Taiwan withholds 21% on non-resident dividends, while the US generally does not tax foreign companies' dividends again (non-US-source income); actual liability depends on your status and treaties.</div>
+    `,
+  },
+  uv1: {
+    html: `
+      <p>The price-to-earnings ratio (P/E) is the most widely used valuation metric: the price investors pay per dollar of earnings, reflecting the market's growth expectations.</p>
+      <ul>
+        <li><strong>Formula:</strong> P/E = price ÷ earnings per share (EPS)</li>
+        <li><strong>Historical reference points:</strong>
+          <ul>
+            <li>S&P 500 long-run average: about <strong>15–17x</strong></li>
+            <li>S&P 500 last-decade average (the low-rate era): about <strong>20–25x</strong></li>
+            <li>Tech growth names: commonly <strong>30–60x</strong> or higher</li>
+            <li>Traditional industry, utilities: <strong>10–15x</strong></li>
+            <li>Financials: <strong>8–12x</strong></li>
+          </ul>
+        </li>
+        <li><strong>Shiller P/E (CAPE):</strong> uses inflation-adjusted 10-year average earnings to smooth single-year swings; historical mean around <strong>16–17x</strong>, commonly used to judge whether the whole market is stretched.</li>
+        <li><strong>P/E only means something against industry peers</strong> — baselines differ enormously. And if a cyclical trough has crushed EPS, the P/E will look artificially high.</li>
+      </ul>
+      <div class="highlight">💡 P/E's biggest flaws: useless for loss-makers (negative EPS), blind to capital-structure differences, and earnings can be massaged by accounting. Cross-check with EV/EBITDA and P/FCF.</div>
+      <div class="risk">⚠️ For cyclicals (energy, mining), boom-time EPS spikes make the P/E look cheap and bust-time EPS collapses make it look extreme — the classic "P/E trap." Use cycle-averaged earnings (like CAPE) instead.</div>
+    `,
+  },
+  uv2: {
+    html: `
+      <p>P/E splits into trailing and forward variants depending on which EPS you use — each with strengths in different situations.</p>
+      <ul>
+        <li><strong>Trailing P/E (TTM):</strong> actual EPS from the trailing twelve months. Pro: the number is settled fact. Con: backward-looking — it distorts for fast growers and fast decliners alike.</li>
+        <li><strong>Forward P/E:</strong> analyst-estimated EPS for the next 12 months (or next fiscal year). Pro: forward-looking. Con: hostage to analyst estimates, which can miss badly. S&P 500 forward P/E historical mean: about <strong>15–18x</strong>.</li>
+        <li><strong>NTM P/E:</strong> rolling next-twelve-months estimates — the comparison basis institutions use most.</li>
+        <li><strong>Reading the gap:</strong>
+          <ul>
+            <li>Forward far below trailing → the market expects earnings to grow sharply (acceleration signal)</li>
+            <li>Forward far above trailing → the market expects earnings to fall (warning signal)</li>
+          </ul>
+        </li>
+      </ul>
+      <div class="highlight">💡 Alongside forward P/E, watch <strong>earnings revisions</strong>: if analysts keep raising estimates, the growing denominator makes the valuation look ever cheaper; persistent cuts do the opposite.</div>
+      <div class="risk">⚠️ In earnings season, a guidance cut sends analysts slashing forward EPS — the forward P/E balloons instantly and the stock usually slumps with it. Assess this risk before holding through a report.</div>
+          <p class="note-origin">📎 The arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uv3: {
+    html: `
+      <p>The price-to-book ratio (P/B) measures price against net book assets — best suited to industries whose value is their assets: banks, insurance, real estate.</p>
+      <ul>
+        <li><strong>Formula:</strong> P/B = price ÷ book value per share</li>
+        <li><strong>Book value:</strong> total assets − total liabilities, i.e. shareholders' equity</li>
+        <li><strong>Typical reference values (they shift substantially with the cycle — these are historical conventions; as of August 2026 the S&P 500's overall P/B has reached about 6x, far past the old band — check current values in the Damodaran database below):</strong>
+          <ul>
+            <li>S&P 500 overall: historically <strong>3.5–4.5x</strong> (skewed high by the tech weighting; about 6x at the time of this update)</li>
+            <li>Banks: <strong>0.8–1.5x</strong> (below 1x means the market doubts asset quality; large banks averaged about 1.6x in January 2026, slightly above the old band)</li>
+            <li>Tech and asset-light firms: <strong>5–20x or higher</strong> (brands, IP, and talent never hit the books)</li>
+            <li>REITs: usually near <strong>1–2x</strong></li>
+          </ul>
+        </li>
+        <li><strong>What P/B &lt; 1 means:</strong> price below liquidation value — possibly undervaluation (the classic Graham buy signal), or deteriorating asset quality.</li>
+        <li><strong>ROE and P/B:</strong> high-ROE firms deserve high P/B, since their book assets earn more. P/B ÷ ROE ≈ P/E — the three are tied by an identity.</li>
+      </ul>
+      <div class="highlight">💡 P/B says little about tech: Google's and Apple's core value lives in brands, algorithms, and ecosystems that GAAP barely books, so an inflated P/B does not mean overvaluation. P/B works best where assets are credible and liquid — finance.</div>
+      <div class="risk">⚠️ Book value can be bloated by goodwill (acquisition premiums); an impairment makes P/B jump suddenly. For banks, watch the NPL ratio to judge true asset quality.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uv4: {
+    html: `
+      <p>EV/EBITDA is one of the multiples M&amp;A bankers and institutional analysts use most: comparing enterprise value to earnings before interest, taxes, depreciation, and amortization strips out capital-structure and depreciation effects, making cross-company and cross-industry comparison cleaner.</p>
+      <ul>
+        <li><strong>Enterprise value (EV):</strong> EV = market cap + interest-bearing debt − cash and equivalents. The total price of buying the whole company, debts included.</li>
+        <li><strong>EBITDA:</strong> operating income (EBIT) + depreciation + amortization. Note: <strong>it is not a proxy for cash flow</strong> — Damodaran's MCI 1994 example (EBITDA $4,456M vs. actual FCFF of just $498M) warns that treating EBITDA as cash flow is "multiple magic," because real capital spending still has to be paid.</li>
+        <li><strong>Typical reference values:</strong>
+          <ul>
+            <li>S&P 500 overall: about <strong>12–15x</strong></li>
+            <li>Tech SaaS: <strong>20–40x</strong> (growth premium)</li>
+            <li>Traditional manufacturing: <strong>6–10x</strong></li>
+            <li>Telecom: <strong>5–8x</strong></li>
+            <li>Private-equity buyout benchmarks: usually <strong>7–12x</strong></li>
+          </ul>
+        </li>
+        <li><strong>Strengths:</strong> <strong>less affected</strong> by capital structure and comparable across leverage levels (Damodaran's phrasing is "allows comparisons across different financial leverage" — not fully immune, since the EV numerator still reflects tax shields and capital costs); removes D&amp;A; neutralizes tax-rate differences for multinationals. Central to LBO analysis.</li>
+      </ul>
+      <div class="highlight">💡 In LBO work, PE funds judge purchase price against the target's EV/EBITDA and set exit multiples the same way. Generally, EV/EBITDA below the industry mean can mean undervaluation — or a takeover candidate.</div>
+      <div class="risk">⚠️ The EBITDA critique: Warren Buffett has derided EBITDA-based earnings because they ignore CapEx. For asset-heavy industries (airlines, mining), depreciation is a genuine economic cost — prefer EV/EBIT or EV/FCF there.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uv5: {
+    html: `
+      <p>The price-to-sales ratio (P/S) steps in when P/E fails (persistent losses), making it the key alternative for high-growth companies — widely used across SaaS, biotech, and e-commerce.</p>
+      <ul>
+        <li><strong>Formula:</strong> P/S = market cap ÷ annual revenue; or EV/Revenue = EV ÷ annual revenue (more common for comparisons)</li>
+        <li><strong>Typical reference values:</strong>
+          <ul>
+            <li>S&P 500 overall: about <strong>2–3x</strong></li>
+            <li>High-growth SaaS (ARR growth &gt; 30%): <strong>8–20x</strong></li>
+            <li>Mature software firms: <strong>4–8x</strong></li>
+            <li>Low-margin retail (groceries etc.): <strong>0.3–0.8x</strong> (careful — "retail" is not monolithic; general retail's industry average was already about 2x as of January 2026)</li>
+            <li>At the 2021 bubble peak, some SaaS names hit <strong>50–100x</strong></li>
+          </ul>
+        </li>
+        <li><strong>Precondition:</strong> the company loses money but its gross-margin structure is healthy (SaaS gross margin &gt; 70%), with losses coming from sales and R&amp;D spending rather than a broken business model.</li>
+        <li><strong>Pair with the Rule of 40:</strong> the SaaS convention — revenue growth (%) + FCF margin (%) ≥ 40 — supports a higher P/S.</li>
+      </ul>
+      <div class="highlight">💡 Whether a high P/S is justified comes down to <strong>margins, growth, and risk (the discount rate)</strong> — the textbook derivation actually uses net margin, not gross margin, and ignoring risk is exactly why high-P/S stocks crater when rates rise. A 10x P/S SaaS at 80% gross margin can be more reasonable than a 2x P/S retailer at 10%, because their future profit pools differ completely.</div>
+      <div class="risk">⚠️ P/S's greatest danger: it cannot tell "quality losses funding growth" from "a money pit." When rates rose, high-P/S growth stocks got hit first — Zoom's annual P/S compressed from about 67x in 2020 to about 4x by 2023, DocuSign from about 29x in 2020 to about 4x by 2022 (the derating started in 2021, not in a single year). The downside is severe.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions, and the arguments reflect common market claims — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uv6: {
+    html: `
+      <p>The PEG ratio, popularized by Peter Lynch, folds earnings growth into P/E — solving the problem of high-growth companies whose P/E looks expensive but is actually fair.</p>
+      <ul>
+        <li><strong>Formula:</strong> PEG = P/E ÷ annual EPS growth rate (%)</li>
+        <li><strong>Example:</strong> company A at 30x P/E growing EPS 30% → PEG = 1.0; company B at 15x growing 5% → PEG = 3.0. Despite double the P/E, A screens cheaper on PEG.</li>
+        <li><strong>Reading it (Lynch's guide):</strong>
+          <ul>
+            <li>PEG &lt; 1: possibly undervalued — worth digging into</li>
+            <li>PEG ≈ 1: fair value</li>
+            <li>PEG &gt; 2: clear premium — be very sure the growth can last</li>
+          </ul>
+        </li>
+        <li><strong>Choosing the growth rate:</strong> trailing 3–5 year EPS growth (trailing PEG) or analyst-forecast 3–5 year growth (forward PEG) — the latter more forward-looking but noisier.</li>
+        <li><strong>Where it applies:</strong> best for steady growers (10–30%); breaks down for hyper-growth (&gt;50%) or shrinking companies. Lynch leaned on it heavily while running Fidelity's Magellan fund (29% annualized).</li>
+      </ul>
+      <div class="highlight">💡 PEG marries static valuation (P/E) with dynamic growth — an efficient first screen for "growth at a reasonable price."</div>
+      <div class="risk">⚠️ Its limits: growth estimates are highly subjective; it fails for cyclicals (energy, mining); and off a tiny EPS base, inflated growth rates make PEG look absurdly low while meaning nothing. Sustainability of growth is what matters.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uv7: {
+    html: `
+      <p>Discounted cash flow (DCF) is the most rigorous valuation method in theory. The core idea: a company's intrinsic value equals the sum of all its future free cash flows discounted to today.</p>
+      <ul>
+        <li><strong>Key inputs:</strong>
+          <ul>
+            <li><strong>Free cash flow (FCF):</strong> operating cash flow (CFO) − CapEx</li>
+            <li><strong>Discount rate (r):</strong> usually WACC — around <strong>8–12%</strong> for a typical company</li>
+            <li><strong>Forecast horizon:</strong> usually 5–10 years, then a terminal-value stage</li>
+            <li><strong>Perpetual growth rate (g):</strong> for the terminal value, usually <strong>2–3%</strong> (near long-run GDP growth)</li>
+          </ul>
+        </li>
+        <li><strong>The terminal value dominates:</strong> in most DCF models it accounts for 60–80% of total value — the model is acutely sensitive to long-run assumptions.</li>
+        <li><strong>Sensitivity analysis:</strong> shifting WACC and perpetual growth by ±1% each can move intrinsic value 30–50% — the DCF's valuation range is very wide.</li>
+        <li><strong>Where it fits:</strong> companies with stable, forecastable cash flows (consumer staples, utilities). Not for early-stage loss-makers, deeply uncertain industries, or cyclicals at the bottom of the cycle.</li>
+      </ul>
+      <div class="highlight">💡 DCF's real value is not the "precise number" but that it <strong>forces you to think about the business's core drivers</strong>: what powers cash-flow growth? How durable is the moat? How efficient is capital allocation? As Warren Buffett put it: better roughly right than precisely wrong.</div>
+      <div class="risk">⚠️ The fatal flaw: garbage in, garbage out — small input errors swing the output wildly. Check with the perpetuity formula: cutting the discount rate from 10% to 8% raises the terminal value +25% at g=0, +33% at g=2%, +40% at g=3% — sensitivity scales with the (r−g) gap, and higher growth assumptions make it fiercer. Treat a DCF as a reasonable range, never as precise truth.</div>
+          <p class="note-origin">📎 Numeric thresholds and ranges here are industry conventions — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
+  uv8: {
+    html: `
+      <p>Market capitalization and enterprise value (EV) are the two core valuation lenses; telling them apart is the foundation for using EV-based multiples (EV/EBITDA, EV/Revenue).</p>
+      <ul>
+        <li><strong>Market cap:</strong> price × shares outstanding — the market's price on the <strong>equity</strong> alone, ignoring debt and cash.</li>
+        <li><strong>Enterprise value:</strong> EV = market cap + interest-bearing debt + minority interest + preferred stock − cash and equivalents. The actual all-in price of buying the whole company, debts assumed.</li>
+        <li><strong>The intuition:</strong>
+          <ul>
+            <li>Company A: market cap 10 billion, 5 billion cash, no debt → EV = 5 billion (the real price is lower)</li>
+            <li>Company B: market cap 10 billion, 8 billion debt, 1 billion cash → EV = 17 billion (the real price is higher)</li>
+          </ul>
+        </li>
+        <li><strong>When to use which:</strong>
+          <ul>
+            <li>P/E, P/B, and P/S are built on <strong>market cap</strong> — shareholder-level metrics</li>
+            <li>EV/EBITDA, EV/EBIT, and EV/Revenue are built on <strong>enterprise value</strong> — capital-structure-neutral, better for cross-company comparison</li>
+          </ul>
+        </li>
+      </ul>
+      <div class="highlight">💡 When sizing up an M&amp;A target, EV is the number that matters: the acquirer pays the equity premium and assumes all the debt (or pockets the cash).</div>
+      <div class="risk">⚠️ "Interest-bearing debt" needs precision: include short- and long-term borrowings, bonds, and finance leases, but exclude operating liabilities like accounts payable. Analysts define EV slightly differently — confirm the definitions match before comparing.</div>
+          <p class="note-origin">📎 Some statements have no reliable source found — compiled from June 2026 online commentary; not empirical research. Verify before relying on it.</p>
+    `,
+  },
 };
