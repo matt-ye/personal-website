@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<!-- unlisted：暫時上架供工作坊分享，noindex、不進導覽列、不進 sitemap、不列入 agentSkills 卡片。 -->
+<title>Claude Skills 評估清單與應用場景分析</title>
+<style>
+  :root{
+    --bg:#ffffff; --fg:#1a1a1a; --muted:#5c6370; --line:#e3e6ea;
+    --accent:#1f6feb; --head:#f5f7fa; --warn-bg:#fff8e6; --warn-line:#e0a800;
+    --code-bg:#f2f4f7;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14171c; --fg:#e6e8eb; --muted:#9aa3ad; --line:#2b3037;
+      --accent:#6cb0ff; --head:#1b1f26; --warn-bg:#2a2314; --warn-line:#b8860b;
+      --code-bg:#1b1f26;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:2.5rem 1.25rem 5rem;
+    background:var(--bg); color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    line-height:1.75; font-size:16px;
+  }
+  main{max-width:960px; margin:0 auto}
+  h1{font-size:1.9rem; line-height:1.3; margin:0 0 .4rem; letter-spacing:-.01em}
+  .sub{color:var(--muted); font-size:.95rem; margin:0 0 2.5rem}
+  h2{font-size:1.35rem; margin:3rem 0 .9rem; padding-bottom:.4rem; border-bottom:2px solid var(--line)}
+  h3{font-size:1.08rem; margin:2rem 0 .6rem; color:var(--accent)}
+  p{margin:.9rem 0}
+  a{color:var(--accent); text-decoration:none; border-bottom:1px solid transparent}
+  a:hover{border-bottom-color:currentColor}
+  .tablewrap{overflow-x:auto; margin:1rem 0 1.5rem; -webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse; width:100%; min-width:520px; font-size:.93rem}
+  th,td{border:1px solid var(--line); padding:.6rem .7rem; text-align:left; vertical-align:top}
+  th{background:var(--head); font-weight:600; white-space:nowrap}
+  td:first-child{font-weight:600}
+  .lv{white-space:nowrap; text-align:center; font-variant-numeric:tabular-nums}
+  code{background:var(--code-bg); padding:.12em .4em; border-radius:3px; font-size:.9em}
+  .callout{
+    background:var(--warn-bg); border-left:4px solid var(--warn-line);
+    padding:.9rem 1.1rem; margin:1.2rem 0; border-radius:0 4px 4px 0;
+  }
+  .rule{font-weight:600}
+  ol{padding-left:1.3rem} ol li{margin:.7rem 0}
+  .note{color:var(--muted); font-size:.88rem}
+  .legend{
+    background:var(--head); border:1px solid var(--line); border-radius:6px;
+    padding:.8rem 1rem; font-size:.9rem; color:var(--muted); margin:1.5rem 0 0;
+  }
+  footer{margin-top:4rem; padding-top:1.2rem; border-top:1px solid var(--line); color:var(--muted); font-size:.85rem}
+  @media print{
+    body{padding:0; font-size:11pt} a{color:inherit}
+    h2{page-break-after:avoid} table{page-break-inside:avoid} .tablewrap{overflow:visible}
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Claude Skills 評估清單與應用場景分析</h1>
+<p class="sub">工作坊分享版 · 2026-08-18</p>
+
+<h2>這份文件是什麼</h2>
+<p>每個工具都<strong>回原始 repo 逐檔查過</strong>——讀 LICENSE 檔本身而非 README 的說法、逐一列出 hooks 與 scripts、查實際維護狀態，不採信目錄站與摘要。</p>
+<p><strong>清單會過期，但評估方法不會。</strong>那是這份文件最該帶走的東西——工具每週都在變，判斷力才是資產。</p>
+<p class="legend">📎 <strong>所有工具名稱都是連結</strong>，點擊即可前往原始 repo 自行查證。少數只有目錄站來源、查無可靠 repo 的項目，已於該列標註。</p>
+
+<h2>判定分級</h2>
+<div class="tablewrap">
+<table>
+<tr><th>級別</th><th>意義</th><th>預設動作</th></tr>
+<tr><td>P0 必備</td><td>缺少時工作流會斷</td><td>優先確認／安裝</td></tr>
+<tr><td>P1 常用</td><td>明顯提升常見工作</td><td>遇到對應情境就裝</td></tr>
+<tr><td>P2 按需</td><td>特定任務才需要</td><td>任務觸發才啟用</td></tr>
+<tr><td>E 評估中</td><td>有潛力但效益或風險未驗證</td><td>不安裝，先做隔離試點</td></tr>
+<tr><td>X 排除</td><td>不適用或風險超出需求</td><td>不安裝，保留排除理由避免重複評估</td></tr>
+</table>
+</div>
+
+<h2>推薦安裝（依場景分組）</h2>
+
+<h3>知識管理／筆記</h3>
+<div class="tablewrap">
+<table>
+<tr><th>Skill</th><th>級別</th><th>用途</th></tr>
+<tr>
+  <td><a href="https://github.com/kepano/obsidian-skills">obsidian-markdown ／ obsidian-cli ／ obsidian-bases ／ json-canvas</a></td>
+  <td class="lv">P0–P1</td>
+  <td>Obsidian 的 wikilink、properties、callout、資料庫視圖、概念圖。來源：kepano/obsidian-skills</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/kepano/obsidian-skills">defuddle</a></td>
+  <td class="lv">P0</td>
+  <td>網頁擷取成乾淨 Markdown。實測比重型爬蟲更乾淨（見〈應用場景決策表〉對照）</td>
+</tr>
+</table>
+</div>
+
+<h3>寫作／文件</h3>
+<div class="tablewrap">
+<table>
+<tr><th>Skill</th><th>級別</th><th>用途</th></tr>
+<tr>
+  <td><a href="https://github.com/Raymondhou0917/speak-human-tw">speak-human-tw</a></td>
+  <td class="lv">P1</td>
+  <td>繁中去 AI 味校對。實測通過：3 篇已發佈文章、29 條標註、硬性誤殺 0。預設只標問題不改稿，等作者勾選才動</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/anthropics/skills">doc-coauthoring</a></td>
+  <td class="lv">P1</td>
+  <td>結構化文件共筆：收集脈絡 → 逐節打磨 → 讀者測試</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/anthropics/skills">docx ／ pdf ／ pptx ／ xlsx</a></td>
+  <td class="lv">P2</td>
+  <td>Office 文件產製（Anthropic 官方 document-skills）</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/anthropics/skills">theme-factory</a></td>
+  <td class="lv">P2</td>
+  <td>10 組配色＋字型主題，套用到簡報／文件／網頁</td>
+</tr>
+</table>
+</div>
+
+<h3>Coding</h3>
+<div class="tablewrap">
+<table>
+<tr><th>Skill</th><th>級別</th><th>用途</th></tr>
+<tr>
+  <td><a href="https://github.com/DietrichGebert/ponytail">ponytail</a></td>
+  <td class="lv">P1</td>
+  <td>抑制 AI 過度工程化：不做／重用／標準庫／原生能力／最小實作的階梯。建議設 <code>lite</code> 級</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/mattpocock/skills">tdd ／ diagnosing-bugs ／ codebase-design ／ code-review ／ resolving-merge-conflicts</a></td>
+  <td class="lv">P1</td>
+  <td>來自 mattpocock/skills 的工程流程方法論。選擇性單裝，不整包</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/mattpocock/skills">git-guardrails-claude-code</a></td>
+  <td class="lv">P1</td>
+  <td>設定 hook 攔截危險 git 指令（push、reset --hard、clean、branch -D）。本身不掛 hooks，是設定指引</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/upstash/context7">context7</a></td>
+  <td class="lv">P2</td>
+  <td>即時查最新官方文件，避免過時 API。使用條件：抓回的文件視為不可信外部文字</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/anthropics/claude-plugins-official">typescript-lsp ／ pyright-lsp</a></td>
+  <td class="lv">P2</td>
+  <td>對應語言的 code intelligence</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/anthropics/claude-plugins-official">security-guidance</a></td>
+  <td class="lv">P2</td>
+  <td>AI 產碼的安全審查。會用高階模型跑 diff 審查，純文件專案建議停用</td>
+</tr>
+</table>
+</div>
+
+<h3>其他</h3>
+<div class="tablewrap">
+<table>
+<tr><th>Skill</th><th>級別</th><th>用途</th></tr>
+<tr>
+  <td><a href="https://github.com/anthropics/skills">skill-creator</a></td>
+  <td class="lv">P1</td>
+  <td>建立與迭代自己的 skill（含 eval 測試）</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/anthropics/claude-plugins-official">session-report</a></td>
+  <td class="lv">P2</td>
+  <td>session 用量報告：token、快取效率、子代理。多代理工作流的成本可視化</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/anthropics/skills">webapp-testing</a></td>
+  <td class="lv">P2</td>
+  <td>用 Playwright 測本機 web app</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/unclecode/crawl4ai">crawl4ai</a></td>
+  <td class="lv">P2</td>
+  <td>爬蟲。只在 defuddle 失效時用，見〈應用場景決策表〉</td>
+</tr>
+</table>
+</div>
+
+<h2>評估過但不推薦（防雷區）</h2>
+<p>這節可能比推薦清單更有用——每一項都附<strong>可查證的排除理由</strong>，讓你不必重複踩。</p>
+<div class="tablewrap">
+<table>
+<tr><th>工具</th><th>判定</th><th>為什麼不推薦</th></tr>
+<tr>
+  <td><a href="https://github.com/mvanhorn/last30days-skill">last30days</a></td>
+  <td class="lv">X（暫）</td>
+  <td>實測需 21 個環境變數／16+ 個外部服務（宣稱約 8 個）。有開放六週無人回應的資安揭露，含「SessionStart hook 每次啟動都碰憑證檔，不管你有沒有用它」。原始碼有函式的註解自述是為了規避資安掃描器而設計。57k 星、活躍維護反而放大風險半徑</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/PleasePrompto/notebooklm-skill">notebooklm-skill</a></td>
+  <td class="lv">X</td>
+  <td>目前是壞的（上游改名換網域後認證卡死、維護者 8 個月未動、修復 PR 全卡著）。用反偵測瀏覽器＋持久化 cookie 操作個人 Google 帳號，ToS 灰帶，帳號被鎖是全服務連坐</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/Kritt-ai/open-kritt">open-kritt</a></td>
+  <td class="lv">X</td>
+  <td>它不是 skill——是自架的 AI 漏洞掃描平台，角色相反（它呼叫 Claude Code 當分析後端）。官方威脅模型自承 scan agent 以 root 在容器內連網分析程式碼、建議跑專用 VM；掃描強制走雲端 LLM 無本機模型選項</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/get-zeked/research-knowledge-super-skill">research-knowledge-super-skill</a></td>
+  <td class="lv">X</td>
+  <td>8 個 commit 集中單日後棄置近 5 個月；把其他平台專屬工具與 Claude Code 混寫且自相矛盾；無正式 LICENSE；鼓勵無節流派子代理＋隨手裝套件</td>
+</tr>
+<tr>
+  <td><a href="https://nanoskill.ai/skills/content-research-writer">content-research-writer</a><br><span class="note">僅目錄站來源</span></td>
+  <td class="lv">X</td>
+  <td>無 License（GitHub API 回 404）、來源組織未認證。註：初篩以為有「12 個 hooks」是誤判——那全是寫作術語的「開場鉤子」</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/NousResearch/hermes-agent">academic-research-skill</a></td>
+  <td class="lv">X</td>
+  <td>實為某 agent 框架下 6 個子技能的打包（NousResearch/hermes-agent），主軸是 arXiv／機器學習論文寫作，與臨床或人文領域錯位、零文獻管理軟體整合</td>
+</tr>
+<tr>
+  <td><a href="https://nanoskill.ai/skills/people-search">people-search</a> ／ <a href="https://github.com/brightdata/skills">brightdata</a><br><span class="note">前者僅目錄站來源</span></td>
+  <td class="lv">X</td>
+  <td>對個人做資料彙整＋付費點數（隱私紅線）／商用爬蟲代理基礎設施（付費）</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/obra/superpowers">superpowers</a>（整包）</td>
+  <td class="lv">E</td>
+  <td>方法論扎實但流程強制：只要有 1% 可能適用就要求先 invoke，且查不到能完全停用這層自動流程的設定。建議只當 checklist 參考</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/AgriciDaniel/claude-seo">claude-seo</a> ／ <a href="https://github.com/zarazhangrui/frontend-slides">frontend-slides</a> ／ <a href="https://github.com/yusufkaraaslan/Skill_Seekers">Skill_Seekers</a></td>
+  <td class="lv">E</td>
+  <td>都會建立 Python 環境＋安裝 Chromium，涵蓋面過廣。只考慮縮小範圍的單頁試點</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/LearningCircuit/local-deep-research">local-deep-research</a></td>
+  <td class="lv">P1 但未裝</td>
+  <td>唯一在「省 token」上真正有解的方案（本地 LLM、零 API 成本、MIT）。未裝原因是基建重（Docker 或 pip＋Ollama＋數 GB 模型）。若要裝：egress 預設是混合模式，必須手動切成 Private only 才保證資料不外流</td>
+</tr>
+</table>
+</div>
+
+<h2>應用場景決策表</h2>
+
+<h3>網頁擷取：defuddle vs crawl4ai（有實測數據）</h3>
+<p>同一個維基百科長文，兩個工具的實測結果：</p>
+<div class="tablewrap">
+<table>
+<tr><th>工具</th><th>輸出字元</th><th>殘留導覽雜訊</th></tr>
+<tr><td>crawl4ai 原始輸出</td><td>214,225</td><td>整片側欄、選單都在</td></tr>
+<tr><td>crawl4ai 內容過濾後</td><td>150,277</td><td>仍有導覽，且砍掉了真正的正文</td></tr>
+<tr><td>defuddle</td><td>164,909</td><td>零</td></tr>
+</table>
+</div>
+
+<p>但換成 <strong>JS 渲染的頁面</strong>，結果完全反轉：</p>
+<div class="tablewrap">
+<table>
+<tr><th>工具</th><th>抓到的內容</th></tr>
+<tr><td>defuddle</td><td>88 字元 ＝ 失效</td></tr>
+<tr><td>crawl4ai</td><td>1,666 字元，目標內容全數取得</td></tr>
+</table>
+</div>
+
+<p class="rule">決策規則：預設用 defuddle（更乾淨、零基建）。只有當 defuddle 回傳異常短的內容時，才換 crawl4ai。</p>
+
+<div class="callout">
+<strong>⚠ 特別記住：</strong>defuddle 對 JS 頁面是「靜默失效」——不報錯，只回傳近乎空白。這比報錯危險，因為你可能不知道自己漏了東西。
+</div>
+
+<h3>其他場景</h3>
+<div class="tablewrap">
+<table>
+<tr><th>你想做什麼</th><th>用什麼</th></tr>
+<tr><td>對外文字發佈前去除 AI 腔</td><td><a href="https://github.com/Raymondhou0917/speak-human-tw">speak-human-tw</a>（先用 annotation 模式只標不改）</td></tr>
+<tr><td>寫規格書／提案／技術文件</td><td><a href="https://github.com/anthropics/skills">doc-coauthoring</a></td></tr>
+<tr><td>AI 寫的程式碼太複雜</td><td><a href="https://github.com/DietrichGebert/ponytail">ponytail</a>（lite 級）</td></tr>
+<tr><td>難搞的 bug</td><td><a href="https://github.com/mattpocock/skills">diagnosing-bugs</a></td></tr>
+<tr><td>怕 AI 亂 push ／ reset</td><td><a href="https://github.com/mattpocock/skills">git-guardrails-claude-code</a></td></tr>
+<tr><td>查某套件的最新 API 用法</td><td><a href="https://github.com/upstash/context7">context7</a></td></tr>
+<tr><td>想知道這次對話燒了多少 token</td><td><a href="https://github.com/anthropics/claude-plugins-official">session-report</a></td></tr>
+<tr><td>把自己的工作流做成 skill</td><td><a href="https://github.com/anthropics/skills">skill-creator</a></td></tr>
+</table>
+</div>
+
+<h2>怎麼評估一個 Skill（可複用 SOP）</h2>
+<p><strong>這節是這份文件的核心。</strong>清單會過期，方法不會。</p>
+<ol>
+<li><strong>先判定它是什麼</strong>——不要預設別人給的 GitHub 連結是 agent skill。它可能是獨立應用、MCP server、SaaS 開源版，甚至是<strong>反過來呼叫 Claude 的平台</strong>。先定類別，才不會用錯誤的判準去評</li>
+<li><strong>回原始 repo，不看目錄站</strong>——實際遇過目錄站標示的星數與 GitHub API 實測差到 600 倍</li>
+<li><strong>讀 LICENSE 檔本身</strong>，不要讀 README 對授權的描述。真實案例：README 說「建議標註出處」，LICENSE 檔寫的是<strong>強制</strong>歸屬條款</li>
+<li><strong>逐一列出 hooks</strong>——hooks 會改變每一回合的行為，是最該審的部分。要問：掛在哪個事件？做什麼？影響單一專案還是全域？能不能關？</li>
+<li><strong>查資料流</strong>——哪些功能純本地、哪些會送資料出去？能否指定本機模型？<strong>有敏感資料的人，這條是紅線不是偏好</strong></li>
+<li><strong>查維護訊號</strong>——最後 commit、issue 回應速度、有沒有懸而未決的資安揭露。star 數高不等於安全，反而放大風險半徑</li>
+<li><strong>安裝路徑要挑</strong>——同一個 skill 常有多種裝法。優先選能乾淨移除的（如官方 plugin 機制），避開會直接改寫全域設定檔的自家安裝器</li>
+<li><strong>小規模試點再收編</strong>——拋棄式環境、少量樣本、危險功能不啟用。實測往往推翻紙上評估（〈應用場景決策表〉的 defuddle vs crawl4ai 就是例子）</li>
+</ol>
+
+<footer>
+本清單的判定基於 2026 年 8 月的查證。工具生態變動快，採用前請重新確認維護狀態與授權——特別是標為 E（評估中）的項目，判定可能因上游修復而改變。
+</footer>
+
+</main>
+</body>
+</html>
