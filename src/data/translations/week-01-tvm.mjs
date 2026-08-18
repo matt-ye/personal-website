@@ -127,7 +127,10 @@ export const MAP = {
   '12 年': '12 years',
   '72 法則翻倍時間': 'Doubling time, Rule of 72',
   '以表格檢視資料（每 5 年）': 'View the data as a table (every 5 years)',
-  年: 'Year',
+  /* ⚠ 一個 key 兩種用途：表格表頭 <th>年</th>，以及 JS 的 s.N + " 年"
+     （滑桿讀數、72 法則翻倍時間）。選 yrs 是因為讀數比表頭顯眼——
+     'Year' 會讓畫面出現「30 Year」「12 Year」。26 週統一用這個。 */
+  年: 'yrs',
   /* 表格表頭——儲存格是裸數字（單位後綴已剝掉），單位必須在表頭 */
   累積本金: 'Contributed (NT$10k)',
   終值: 'Final value (NT$10k)',
@@ -324,7 +327,7 @@ export const MAP = {
     '"The best time was 20 years ago; the second best is today." Then show them that even 10 years gets to NT$1.64 million.',
   本腳本可搭配專欄: 'Pair this script with column piece',
   '#1《為什麼要投資》': '#1, "Why invest at all"',
-  '一起給家人讀。': 'and read them together.',
+  '一起給家人讀。': ' and read them together.',
 
   /* ── 區塊 ⑤ 檢核 ── */
   '區塊 ⑤ ／ 完成檢核': 'Block ⑤ / Completion checklist',

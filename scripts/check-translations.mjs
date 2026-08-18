@@ -78,7 +78,15 @@ for (const file of readdirSync(DIR).filter((f) => f.endsWith('.mjs'))) {
   /* 空字串是刻意的（片段重新分配時把某一段清空），不算沒翻。
      KEEP 裡的詞先挖掉再判斷——挖完還有中文，就是清單沒涵蓋到的東西。 */
   const stripKeep = (v) => KEEP.reduce((s, w) => s.split(w).join(''), v);
-  const untranslated = Object.entries(MAP).filter(([, v]) => v !== '' && CJK.test(stripKeep(v)));
+
+  /* 英文值裡的全形標點也算沒翻完。
+     ⚠ 只驗漢字會漏：'— 馮博堅：a three-word method' 的冒號是全形，
+     值裡沒有其他中文，於是整條通過檢查、直接上線到英文頁。
+     全形標點在英文句子裡看起來就是沒排版，而且逐條校對很難注意到。 */
+  const FULLWIDTH = /[、。！（），：；？「」]/;
+  const untranslated = Object.entries(MAP).filter(
+    ([, v]) => v !== '' && (CJK.test(stripKeep(v)) || FULLWIDTH.test(stripKeep(v))),
+  );
 
   /* MODALS_EN 這邊的三種錯各自對應 MAP 的同名檢查 */
   const srcModalKeys = new Set(modalBodies.values());
@@ -110,7 +118,7 @@ for (const file of readdirSync(DIR).filter((f) => f.endsWith('.mjs'))) {
     stale.slice(0, 8).forEach((s) => console.log(`          ${s.slice(0, 60)}`));
   }
   if (untranslated.length) {
-    console.log(`      ⚠ 英文值裡還有中文 ${untranslated.length} 條：`);
+    console.log(`      ⚠ 英文值裡還有中文或全形標點 ${untranslated.length} 條：`);
     untranslated.slice(0, 8).forEach(([k, v]) => console.log(`          ${k.slice(0, 30)} → ${v.slice(0, 40)}`));
   }
   if (staleModals.length) {
