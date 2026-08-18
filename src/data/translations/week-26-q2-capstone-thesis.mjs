@@ -269,8 +269,8 @@ export const MAP = {
     'Checkable — disclosed at earnings calls and in the accounts — and not price-based. It tests exactly the assumption the original case rested on, that the capex would earn a return. If the assumption falls, the argument has to be reopened.',
 
   /* ── 互動 2：Rubric ── */
-  '自評 Rubric：8 分才算 Q2 畢業':
-    'Self-assessment rubric: 8 points and you graduate Q2',
+  '自評 Rubric：13 分才算 Q2 畢業':
+    'Self-assessment rubric: 13 points and you graduate Q2',
   '寫完之後自己打分。': 'Score yourself once it is written. ',
   '七章各一項，加上「全文」一項，共八項':
     'one item for each of the seven chapters plus one for the document as a whole, eight in total',
@@ -421,7 +421,7 @@ export const MAP = {
   '才寫①一句話論點——前面都想清楚了，這句話會自己浮出來':
     ' do you write ① the one-line thesis — once everything before it is clear, the sentence writes itself',
   '跑一次 Rubric 自評': 'Run the rubric self-assessment once',
-  '低於 8 分的章節補強': 'Reinforce whatever scored below 8',
+  '拿 0–1 分的章節補強': 'Reinforce whatever sections scored 0-1',
   '怎麼知道做對了：': 'How to know you got it right: ',
   '把論文給一個沒讀過這家公司的人看五分鐘，他能複述出「這家公司怎麼賺錢」和「作者可能錯在哪」。如果他只記得目標價，代表你把論文寫成了推薦函。':
     'give the thesis to someone who has never read about the company, let them look at it for five minutes, and they should be able to tell you back how the company makes money and where the author might be wrong. If all they remember is the target price, you have written a sales letter.',
