@@ -26,7 +26,7 @@
  * 語域：成績單 vs 健檢報告、骨質與血壓的比喻是講給家人聽的，英文保住那個口吻。
  */
 
-export const KEEP = ['財報就像一本故事書'];
+export const KEEP = ['《財報就像一本故事書》'];
 export const ADDED = [];
 export const INCOMPLETE = false;
 

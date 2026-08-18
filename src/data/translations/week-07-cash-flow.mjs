@@ -21,7 +21,7 @@
  * 語域：寫給家人的教材。偵探、血液循環、三個水龍頭、牙仙這些比喻要留住。
  */
 
-export const KEEP = ['財報就像一本故事書'];
+export const KEEP = ['《財報就像一本故事書》'];
 export const ADDED = [];
 export const INCOMPLETE = false;
 
@@ -132,7 +132,7 @@ export const MAP = {
   '從淨利調整到營業現金流的橋型圖':
     'Bridge chart from net profit to operating cash flow',
   '第 1 筆 / 5': 'Item 1 of 5',
-  '＋ 加回現金': '＋ Add back to cash',
+  '＋ 加回現金': '+ Add back to cash',
   '− 從現金扣掉': '− Subtract from cash',
   '答對 0 / 0': 'Correct: 0 / 0',
   '下一筆 →': 'Next item →',

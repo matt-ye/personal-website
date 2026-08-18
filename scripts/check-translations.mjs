@@ -83,7 +83,15 @@ for (const file of readdirSync(DIR).filter((f) => f.endsWith('.mjs'))) {
      ⚠ 只驗漢字會漏：'— 馮博堅：a three-word method' 的冒號是全形，
      值裡沒有其他中文，於是整條通過檢查、直接上線到英文頁。
      全形標點在英文句子裡看起來就是沒排版，而且逐條校對很難注意到。 */
-  const FULLWIDTH = /[、。！（），：；？「」]/;
+  /* ⚠ 手列清單會漏。實測踩過：列了 、。！（），：；？「」 卻漏掉 ＋，
+     於是英文按鈕上出現「＋ Add back to cash」——全形加號比半形寬一截，
+     畫面上一眼看得出不對，兩層檢查卻都放行。改用完整區段：
+     U+FF01–FF5E（全形 ASCII 變體）與 U+3001–U+301F（CJK 標點）。
+
+     ＿（U+FF3F）是唯一的例外：它是練習題的填空底線，
+     全形版比半形寬、留給人寫字的空間剛好，英文表單同樣適用。
+     × ÷ − · 不在全形區段內，是英文正常的排版符號，本來就不會被掃到。 */
+  const FULLWIDTH = /[\uFF01-\uFF3E\uFF40-\uFF5E\u3001-\u301F]/;
   const untranslated = Object.entries(MAP).filter(
     ([, v]) => v !== '' && (CJK.test(stripKeep(v)) || FULLWIDTH.test(stripKeep(v))),
   );

@@ -23,7 +23,7 @@
  *   （「賺不賺」和「現金多不多」是兩本帳）——不要改寫成會計教科書。
  */
 
-export const KEEP = ['財報就像一本故事書'];
+export const KEEP = ['《財報就像一本故事書》'];
 export const ADDED = [];
 export const INCOMPLETE = false;
 
