@@ -228,8 +228,13 @@ export const MAP = {
   '「他不看總經，所以總經沒用」': '"He ignores macro, so macro is useless"',
   '他不': 'He does not ',
   '預測': 'forecast',
-  '總經（W12 立場相同），但對利率與通膨的理解貫穿每封信——他稱利率是「資產價格的地心引力」，W3 就是這句話的展開。':
-    ' the macro picture (the same stance as W12), but an understanding of interest rates and inflation runs through every letter. He describes rates as acting on asset valuations the way gravity acts on matter, and W3 is that sentence unpacked.',
+  /* 出處已更正：這句出自 Fortune 1999 專文，不在任何一年的股東信裡（見來源頁）。
+     中文被 <strong> 切成三段，英文照片段重新分配。 */
+  '總經（W12 立場相同），但對利率與通膨的理解貫穿每封信。那個著名的比喻——利率之於資產評價，猶如地心引力之於物質，利率越高、向下的拉力越強——':
+    " the macro picture (the same stance as W12), but an understanding of interest rates and inflation runs through every letter. His famous image — that rates act on asset valuations the way gravity acts on matter, the higher the rate the stronger the downward pull — ",
+  '出自 1999 年《財星》專文而非股東信': 'comes from a 1999 Fortune article, not from the letters',
+  'Buffett「地心引力」原文（Fortune, 1999/11）↗': 'Buffett on gravity, the original (Fortune, 1999/11) ↗',
+  '；W3 就是這句話的展開。': '; W3 is that idea worked out in full.',
   '「照他的話做就會富有」': '"Do what he says and you will get rich"',
   '他的話免費公開六十年，多數讀者仍然追漲殺跌——因為缺的從來不是知識，是 W23 的制度化紀律。':
     'His words have been free and public for sixty years, and most readers still buy high and sell low — because what was missing was never the knowledge. It is the institutionalised discipline of W23.',

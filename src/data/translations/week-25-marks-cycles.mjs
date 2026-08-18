@@ -341,7 +341,7 @@ export const MAP = {
   '目前價格隱含的成長假設是什麼':
     'what growth assumption is the current price implying',
   '（W21 反推九宮格）？共識有沒有可能太樂觀？萬一成長從 30% 降到 20%（仍很好），估值會怎樣（戴維斯雙殺）？——結論可能是「好公司，但此價無邊際，等待」。':
-    ' (reverse-engineer the W21 grid)? Could the consensus be too optimistic? If growth falls from 30% to 20% — still excellent — what happens to the valuation (the Davis double play in reverse)? The conclusion may well be "good company, no margin at this price, wait".',
+    ' (reverse-engineer the W21 grid)? Could the consensus be too optimistic? If growth falls from 30% to 20% — still excellent — what happens to the valuation (a reverse Davis double play: growth disappoints and the multiple derates at the same time)? The conclusion may well be "good company, no margin at this price, wait".',
   '溫度計偏熱時，具體該調整哪三件事（而不是賣光）？':
     'When the thermometer runs hot, which three things do you actually adjust, rather than selling everything?',
   '→ ①提高安全邊際要求（如 30%→40%）②放慢新資金部署（W17 分批拉長）③檢查倉位與槓桿（W18 上限有沒有被漲幅推破、確認零槓桿）——':
