@@ -10,8 +10,9 @@
  * **不套用「未遷移項目在英文頁隱藏」**——那會產生空列表，而薄內容 Google 不收。
  * 保留項目，沒有英文的欄位退回中文並標 lang="zh-TW"。
  *
- * 標題有 titleEn（26 週全有）。描述沒有——descriptionEn 一個都沒填，
- * 那是文案，要核准後才寫入，不在這次遷移裡代填。
+ * 標題與描述都有英文（titleEn／descriptionEn，26 週全有，2026-08-18 補齊）。
+ * 退回中文的分支**刻意留著**：之後新增的週次在文案寫好之前仍會走那條路，
+ * 而「空白」比「標了 lang 的中文」更糟——薄內容 Google 不收。
  */
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import T from '../../../../components/T.astro';
@@ -69,9 +70,13 @@ const tagLabel = (t: string) => (isEn ? TAG_EN[t] ?? t : t);
       <a href={localeHref(doc.url ?? `/projects/family-investing-course/${doc.slug}/`, locale)} class="doc-card">
         <div class="doc-card-body">
           <h2 class="doc-title"><T zh={doc.title} en={doc.titleEn} /></h2>
-          {/* 沒有 descriptionEn，英文頁退回中文並標 lang——空白比中文更糟，
-              但讓爬蟲把中文當成英文更糟，那會污染整頁的語言判定。 */}
-          <p class="doc-desc">{isEn ? <span lang="zh-TW">{doc.description}</span> : doc.description}</p>
+          {/* 英文頁優先用 descriptionEn；還沒有的週次退回中文並標 lang——
+              空白比中文更糟，但讓爬蟲把中文當成英文更糟，那會污染整頁的語言判定。 */}
+          <p class="doc-desc">
+            {isEn && !doc.descriptionEn ? <span lang="zh-TW">{doc.description}</span> : null}
+            {isEn && doc.descriptionEn ? doc.descriptionEn : null}
+            {!isEn ? doc.description : null}
+          </p>
         </div>
         <div class="doc-footer">
           <div class="doc-tags">

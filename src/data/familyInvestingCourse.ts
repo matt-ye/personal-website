@@ -10,6 +10,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W1 複利與貨幣時間價值',
     titleEn: 'W1 Time Value of Money',
     description: '所有金融計算的第一塊磚：複利與折現、FV/PV/年金公式、72 法則。附互動複利計算機、猜謎揭曉與費曼學習法分享腳本。',
+    descriptionEn:
+      "The first brick in every financial calculation: compounding and discounting, the FV/PV/annuity formulas, the Rule of 72. With a compounding calculator, a guess-and-reveal opener and a Feynman-technique script.",
     tags: ['Q1 共同地基', '互動計算機'],
     date: '2026-07-08',
     published: '2026-07-08',
@@ -20,6 +22,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W2 通膨與實質報酬',
     titleEn: 'W2 Inflation & Real Return',
     description: '通膨是「反向複利」：費雪方程式、購買力半衰期、CPI 怎麼讀，以及通膨對各類資產的影響。附「雙雪球賽跑」互動計算機與費曼學習法分享腳本。',
+    descriptionEn:
+      "Inflation is compounding in reverse: the Fisher equation, the half-life of purchasing power, how to read CPI, and what inflation does to each asset class. With a two-snowball race calculator and a Feynman script.",
     tags: ['Q1 共同地基', '互動計算機'],
     date: '2026-07-15',
     published: '2026-07-09',
@@ -30,6 +34,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W3 利率與殖利率曲線',
     titleEn: 'W3 Interest Rates & Yield Curve',
     description: '利率是所有資產的地心引力：政策傳導鏈、為什麼利率漲債券跌、存續期間、殖利率曲線倒掛與衰退預測。附「債券蹺蹺板」互動計算機與殖利率曲線切換。',
+    descriptionEn:
+      "Interest rates are gravity for every asset: the policy transmission chain, why bond prices fall when rates rise, duration, yield curve inversion and recession. With a bond seesaw calculator and a curve switcher.",
     tags: ['Q1 共同地基', '互動計算機'],
     date: '2026-07-22',
     published: '2026-07-09',
@@ -40,6 +46,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W4 借貸法則與應計制',
     titleEn: 'W4 Double-Entry & Accrual',
     description: '會計是商業的語言：會計恆等式、借貸法則、應計制與預收收入。開一家虛擬飲料店，用六筆分錄的互動記帳台看複式簿記如何永遠平衡——「賺錢」與「現金變多」是兩本帳。',
+    descriptionEn:
+      "Accounting is the language of business: the accounting identity, debit and credit, the accrual basis. Open an imaginary drinks shop and watch six entries always balance - making money and holding more cash are two different books.",
     tags: ['Q1 共同地基', '互動記帳台'],
     date: '2026-07-29',
     published: '2026-07-09',
@@ -50,6 +58,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W5 損益表深讀',
     titleEn: 'W5 Income Statement',
     description: '損益表是一道瀑布：把飲料店排成正式損益表，看三個利潤率、共同比分析、收入認列的操縱空間與業外損益陷阱。附「利潤率瀑布」互動圖與「賣土地美化淨利」演示。',
+    descriptionEn:
+      "The income statement is a waterfall: lay the drinks shop out properly and look at the three margins, common-size analysis, where revenue recognition bends and the non-operating trap. With a margin waterfall and a sell-the-land demo.",
     tags: ['Q1 共同地基', '互動圖表'],
     date: '2026-08-05',
     published: '2026-07-11',
@@ -60,6 +70,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W6 資產負債表深讀',
     titleEn: 'W6 Balance Sheet',
     description: '損益表看賺不賺，資產負債表看撐不撐得住：流動比與速動比、有息 vs 無息負債的兩張臉、商譽地雷與長短錯配。附「科目分類挑戰」十題互動遊戲。',
+    descriptionEn:
+      "The income statement says whether it makes money, the balance sheet whether it can hold up: current and quick ratios, the two faces of interest-bearing vs interest-free debt, the goodwill landmine. With a ten-question sorting game.",
     tags: ['Q1 共同地基', '互動測驗'],
     date: '2026-08-12',
     published: '2026-07-11',
@@ -70,6 +82,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W7 現金流量表深讀',
     titleEn: 'W7 Cash Flow Statement',
     description: '最誠實的一張表：三大活動、間接法、自由現金流與八種現金流組合。附「間接法偵探」互動對帳遊戲——從淨利 71,667 一筆筆對回現金 60,000，親手編出人生第一張現金流量表。',
+    descriptionEn:
+      "The most honest of the three statements: the three activities, the indirect method, free cash flow and the eight cash-flow combinations. Play detective from net profit 71,667 back to cash 60,000 and build your first cash flow statement by hand.",
     tags: ['Q1 共同地基', '互動測驗'],
     date: '2026-08-19',
     published: '2026-07-11',
@@ -80,6 +94,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W8 三表勾稽與財報紅旗',
     titleEn: 'W8 Reconciliation & Red Flags',
     description: '一張表可以化妝，三張表同時化妝很難不露餡：勾稽三條線、盈餘品質五特徵、紅旗檢查清單 v1 與博達案例課。附「紅旗雷達」八情境互動判讀挑戰（含單旗不定罪陷阱題）。',
+    descriptionEn:
+      "One statement can be dressed up; three at once is hard to fake: the three tie-out lines, the five marks of earnings quality, red-flag checklist v1 and the Procomp Informatics case. With an eight-scenario red-flag radar.",
     tags: ['Q1 共同地基', '互動測驗'],
     date: '2026-08-26',
     published: '2026-07-11',
@@ -90,6 +106,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W9 比率體系與杜邦五因子',
     titleEn: 'W9 Ratios & DuPont Analysis',
     description: 'Q1 分析工具的最後一塊：四大類比率抽屜、杜邦五因子拆解 ROE——同樣賺 17.3%，精品店與加槓桿的自助餐體質完全不同。附「ROE 果汁機」五因子互動實驗台與台積電 vs 聯電對決練習。',
+    descriptionEn:
+      "The last piece of the Q1 toolkit: four ratio drawers and the five-factor DuPont breakdown of ROE - the same 17.3%, but a boutique and a leveraged buffet are nothing alike. With an ROE juicer bench and TSMC vs UMC head to head.",
     tags: ['Q1 共同地基', '互動計算機'],
     date: '2026-09-02',
     published: '2026-07-11',
@@ -100,6 +118,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W10 台股交易制度與成本',
     titleEn: 'W10 Market Structure & Costs',
     description: '委託單的旅程、T+2 交割與違約交割、撮合規則、買賣價差與五檔深度——投資唯一 100% 確定的是過路費。附「過路費計算機」：折數×周轉×20 年，看終值被吃掉多少。',
+    descriptionEn:
+      "The journey of an order, T+2 settlement and settlement default, the matching rules, the spread and five-level depth - the only thing certain in investing is the toll. With a toll calculator: fee x turnover x 20 years.",
     tags: ['Q1 共同地基', '互動計算機'],
     date: '2026-09-09',
     published: '2026-07-11',
@@ -110,6 +130,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W11 總經指標判讀',
     titleEn: 'W11 Macro Indicators',
     description: '個股是顯微鏡，總經是氣象台：領先／同時／落後的座標、六個核心指標判讀卡、央行反應函數。附「預期 vs 現實」驚奇模擬器——為什麼數據好、股市卻跌——與每月總經儀表板模板。',
+    descriptionEn:
+      "A single stock is a microscope, the macro picture a weather station: leading, coincident and lagging indicators, six reading cards, the central bank reaction function. With an expectation vs reality surprise simulator.",
     tags: ['Q1 共同地基', '互動模擬器'],
     date: '2026-09-16',
     published: '2026-07-11',
@@ -120,6 +142,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W12 景氣循環與資產輪動',
     titleEn: 'W12 Cycles & Asset Rotation',
     description: '股市的春天總是在經濟的隆冬裡開始：景氣四階段、投資時鐘四象限、擇時的代價——錯過最好 10 天報酬腰斬、雙重正確只剩 36%。附投資時鐘互動導覽與「雙重正確」計算器。',
+    descriptionEn:
+      "Spring in the market always starts in the depths of the economic winter: the four phases of the cycle, the four quadrants of the investment clock, and what timing costs - miss the best 10 days and you halve your return. With an interactive clock.",
     tags: ['Q1 共同地基', '互動模擬器'],
     date: '2026-09-23',
     published: '2026-07-11',
@@ -130,6 +154,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W13 Q1 Capstone：20 分鐘財報健檢',
     titleEn: 'W13 Q1 Capstone: 20-min Health Check',
     description: 'Q1 期末考，考的不是記憶是組裝：把週 5–9 的五樣工具組成六步驟、20 分鐘的財報健檢流程，回答唯一的問題——值不值得再花 20 小時研究。附六步驟互動時間軸、一頁報告模板與自評計分器。',
+    descriptionEn:
+      "The Q1 final exam tests assembly, not memory: turn the five tools from weeks 5-9 into a six-step, 20-minute financial check-up that answers one question - is this worth another 20 hours? With a walkthrough, a one-page template and a self-scorer.",
     tags: ['Q1 共同地基', '實作週'],
     date: '2026-09-30',
     published: '2026-07-11',
@@ -140,6 +166,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W14 資產配置——股債現金與風險承受度',
     titleEn: 'W14 Asset Allocation',
     description: 'Q2 投資人季開場，全年最重要的單一決定：預備金→配置→選標的的順序、三類資產的角色、風險承受度三要素取最保守。附配置模擬器——拉動股債比例，看期望報酬、30 年終值與 2008 重演的損失金額。',
+    descriptionEn:
+      "Q2 opens with the biggest single decision of the year: emergency fund, then allocation, then picking - in that order. What each of the three asset classes is for, and how to read your own risk tolerance. With an allocation simulator.",
     tags: ['Q2 投資人季', '互動模擬器'],
     date: '2026-10-07',
     published: '2026-07-11',
@@ -150,6 +178,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W15 現代投資組合理論（MPT）入門',
     titleEn: 'W15 Modern Portfolio Theory',
     description: '為什麼分散是投資裡唯一的免費午餐：報酬是加權平均、風險不是——相關係數的第三項、效率前緣、系統性 vs 非系統性風險。附效率前緣互動繪圖器（拉 ρ 看曲線彎）與「幾檔才算分散」模擬器。',
+    descriptionEn:
+      "Why diversification is the only free lunch in investing: returns are a weighted average, risk is not - the correlation coefficient, the efficient frontier, systematic vs unsystematic risk. With a frontier plotter you can drag.",
     tags: ['Q2 投資人季', '互動圖表'],
     date: '2026-10-14',
     published: '2026-07-11',
@@ -160,6 +190,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W16 指數化投資與成本侵蝕',
     titleEn: 'W16 Index Investing & Costs',
     description: 'Q2 的預設答案：Sharpe「主動管理的算術」五步證明、SPIVA 成績單、成本的反向複利——1.5% 費率 30 年吃掉三分之一終值。附「反向雪球」費用侵蝕計算器與 ETF 六檢核點互動卡。',
+    descriptionEn:
+      "The default answer in Q2: Sharpe's five-step arithmetic of active management, the SPIVA scorecard, and cost as compounding in reverse - a 1.5% fee eats a third of your final value over 30 years. With a fee erosion calculator and six ETF checkpoints.",
     tags: ['Q2 投資人季', '互動計算機'],
     date: '2026-10-21',
     published: '2026-07-12',
@@ -170,6 +202,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W17 入場策略——Lump Sum vs DCA',
     titleEn: 'W17 Lump Sum vs DCA',
     description: '手上一筆錢，一次投入還是分批？先分清兩種本質不同的 DCA、Vanguard 的 2/3 結論，以及 DCA 真正買的東西——行為保險。附三情境路徑實驗室（看 DCA 唯一的勝利劇本）與三問入場決策器。',
+    descriptionEn:
+      "A lump sum in hand, all at once or in instalments? First separate the two very different things called DCA, then Vanguard's two-thirds finding, then what DCA actually buys you - behavioural insurance. With a three-scenario path lab.",
     tags: ['Q2 投資人季', '互動模擬器'],
     date: '2026-10-28',
     published: '2026-07-12',
@@ -180,6 +214,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W18 倉位管理與再平衡',
     titleEn: 'W18 Position Sizing & Rebalancing',
     description: 'Q2 配置系列收尾：單一標的上限怎麼定、集中 vs 分散的取捨、再平衡的本質是風險控制不是報酬增強——最後把一切固化成 IPS：寫給恐慌時自己的一封信。附漂移與再平衡模擬器、IPS 一頁模板。',
+    descriptionEn:
+      "Closing out the Q2 allocation series: how to cap any one holding, concentrated vs diversified, and rebalancing as risk control rather than a return booster - then set it down in an IPS, a letter to yourself for the panic.",
     tags: ['Q2 投資人季', '互動模擬器'],
     date: '2026-11-04',
     published: '2026-07-14',
@@ -190,6 +226,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W19 估值一——相對估值深用',
     titleEn: 'W19 Relative Valuation',
     description: '健檢回答「好不好」，估值回答「值多少」：四個倍數的適用與陷阱、EV 怎麼算才對、comps 怎麼選、倍數差異的三大歸因——便宜通常有理由。附 EV/EBITDA 計算機（含常見錯誤對照）與 PEG 天平。',
+    descriptionEn:
+      "The check-up answers is it good, valuation answers what is it worth: where each of the four multiples fits and traps you, how to work out EV properly, how to pick comps - cheap usually has a reason. With an EV/EBITDA calculator.",
     tags: ['Q2 投資人季', '互動計算機'],
     date: '2026-11-11',
     published: '2026-07-14',
@@ -200,6 +238,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W20 估值二——DCF 基礎',
     titleEn: 'W20 DCF Fundamentals',
     description: '公司值它未來能生出的所有現金，折現到今天：DCF 三零件（FCF 預測、折現率、終值）、終值為什麼佔六到八成、「假設放大器」的正確心態。附 DCF 組裝台——拉動三個假設看每股價值怎麼跳（含 r−g 分母爆炸防呆）。',
+    descriptionEn:
+      "A company is worth all the cash it will ever produce, discounted to today: the three parts of a DCF, why the terminal value is sixty to eighty per cent of it, and the right frame of mind for an amplifier of assumptions. With a DCF assembly bench.",
     tags: ['Q2 投資人季', '互動計算機'],
     date: '2026-11-18',
     published: '2026-07-14',
@@ -210,6 +250,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W21 估值三——敏感度、情境與安全邊際',
     titleEn: 'W21 Sensitivity & Margin of Safety',
     description: '尺本身不準怎麼辦？敏感度九宮格把單點變區間（13.2–26.7 差 2 倍）、三情境給區間商業故事、Graham 的安全邊際吸收誤差、市場先生寓言。附互動九宮格（含市價反推市場預期）與安全邊際計算器。',
+    descriptionEn:
+      "What if the ruler itself is off? A nine-cell sensitivity grid turns one number into a range (13.2-26.7, a factor of two), three scenarios give the range a business story, then Graham's margin of safety absorbs the error. With an interactive grid.",
     tags: ['Q2 投資人季', '互動計算機'],
     date: '2026-11-25',
     published: '2026-07-20',
@@ -220,6 +262,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W22 質化分析——護城河進階＋波特五力',
     titleEn: 'W22 Moats & Five Forces',
     description: '估值假設的品質保證：護城河從「有沒有」升級到來源×寬度×趨勢、Porter 五力產業掃描、定價權試金石——真正值錢的公司不是「現在很賺」，是「別人搶不走」。附五力雷達評分器與真假護城河快篩。',
+    descriptionEn:
+      "Quality control for your valuation assumptions: upgrade the moat question from does it have one to source x width x trend, sweep the industry with Porter's Five Forces, and test pricing power - what is valuable is what others cannot take.",
     tags: ['Q2 投資人季', '互動測驗'],
     date: '2026-12-02',
     published: '2026-07-20',
@@ -230,6 +274,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W23 行為財務學——認知偏誤與對策工程',
     titleEn: 'W23 Behavioral Finance',
     description: '前 22 週打造武器，本週處理拿武器的手會抖：兩套系統、六大偏誤目錄（損失趨避／過度自信／確認偏誤／錨定／羊群／近因）、對策工程——不靠意志力靠制度。附擲硬幣實驗、偏誤配對遊戲與對策速查器。',
+    descriptionEn:
+      "Twenty-two weeks building the weapon; this week the hand that holds it shakes: the two systems, six biases (loss aversion, overconfidence, confirmation, anchoring, herding, recency) and countermeasures built as rules, not willpower.",
     tags: ['Q2 投資人季', '互動測驗'],
     date: '2026-12-09',
     published: '2026-07-20',
@@ -240,6 +286,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W24 大師心法——Buffett 股東信精讀',
     titleEn: 'W24 Buffett Letters',
     description: '開始讀原典：為什麼讀信不讀語錄、三遍讀法、1988（可口可樂）與 2008（海嘯中的原則）兩封信的看點、四大原則與前 23 週的對應。附 takeaway 品檢器（行為指令 vs 感想）與四大原則對應卡。',
+    descriptionEn:
+      "Start reading the primary sources: why the letters and not a book of quotations, the three-pass method, what to look for in the 1988 and 2008 letters, and how his four principles map onto the first 23 weeks. With a takeaway checker.",
     tags: ['Q2 投資人季', '互動測驗'],
     date: '2026-12-16',
     published: '2026-07-20',
@@ -250,6 +298,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W25 大師心法——Marks 備忘錄與週期思維',
     titleEn: 'W25 Marks & Market Cycles',
     description: 'Buffett 教你看公司，Marks 教你看環境：第二層思考、風險是本金永久損失而非波動、心理鐘擺與信貸窗口——風險最高的時刻看起來最安全。附心理鐘擺互動與市場溫度計五指標評估。',
+    descriptionEn:
+      "Buffett teaches you to read the company, Marks to read the weather: second-level thinking, risk as the permanent loss of capital rather than volatility, the pendulum and the credit window - the riskiest moment looks the safest.",
     tags: ['Q2 投資人季', '互動評估'],
     date: '2026-12-23',
     published: '2026-07-26',
@@ -260,6 +310,8 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     title: 'W26 Q2 Capstone——個股投資論文',
     titleEn: 'W26 Q2 Capstone: Investment Thesis',
     description: 'Q2 期末驗收：把 W13 健檢、W19–21 估值、W22 質化分析組裝成完整投資論文。七章結構、反方論證三來源、可驗證的認錯觸發條件。附觸發條件健檢與 Rubric 自評計分器。',
+    descriptionEn:
+      "The Q2 final: assemble the W13 check-up, the W19-21 valuation and the W22 qualitative work into a full investment thesis. Seven chapters, three sources for the counter-case, and checkable triggers for admitting you were wrong.",
     tags: ['Q2 投資人季', 'Capstone', '互動評估'],
     date: '2026-12-30',
     published: '2026-08-09',
