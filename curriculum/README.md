@@ -37,28 +37,59 @@
 - 單元開頭的引言必須回答「本週在三個角色中的定位」
 - 每個單元講義開頭安排 10 分鐘「回補上週教家人卡住的點」（第 1 週除外）
 
-### 教材網頁的部署慣例（W1 起生效，之後每週照做）
+### 教材網頁的部署慣例（2026-08 雙語新架構版；W27 起照此做）
 
-單元 md 產出後，同步製作**教材網頁版**部署到本站 side project「給家人的投資課」：
+> ⚠ **架構已於 2026-08 全面改變**：課程頁不再是 `public/` 底下的自包含 HTML，
+> 而是 Astro 動態路由（`src/pages/[...lang]/projects/family-investing-course/[slug].astro`）。
+> W1–26 已全部遷入並補齊英文版。舊慣例裡「整頁含 head 的手刻 HTML」不要再做——
+> 那個目錄已經不存在了。
 
-1. 自包含 HTML 放 `public/projects/family-investing-course/<slug>/index.html`（slug 同單元檔名，如 `week-01-tvm`）
-2. 在 `src/data/familyInvestingCourse.ts` 加入該週 entry（陣列順序＝週次順序）
-3. 網頁固定要素：五區塊＋頂部黏性導航與閱讀進度、主題與主站同步（localStorage key `theme`、`:root[data-theme]` tokens）、返回課程首頁連結、檢核清單 localStorage 持久化（key 前綴 `fic-wNN-`）、canonical 與 og meta
+單元 md 產出後，同步製作**教材網頁版**。一個新週次要動三個檔案（中文版）＋一個檔案（英文版）：
+
+1. **內容片段** → `src/data/course-weeks/<slug>.html`（slug 同單元檔名，如 `week-27-…`）
+   - 只放 **body 內容**＋該頁專屬的 `<style>` 與互動 `<script>`——**不含** `<head>`、
+     theme 切換 script、GA、JSON-LD：這些全部由 `CourseWeekLayout` 統一產生
+   - 結構照既有 25 週：topnav（進度條＋五區塊錨點＋`#themeToggle`）→ header.unit →
+     hero 猜謎 → 五區塊 → footer.unit（下週預告）→ footer.site。開新檔前先讀一個
+     近期週次（如 `week-26-q2-capstone-thesis.html`）當模板
+2. **head meta** → `src/data/courseWeekMeta.ts` 加一筆：`title`／`description`／
+   `ogTitle`／`ogDescription` 四欄**皆必填**（SERP 版 vs 社群版是兩套文案，不可互相推導）
+3. **hub 條目** → `src/data/familyInvestingCourse.ts` 加一筆（陣列順序＝週次順序）；
+   hub 的「N / 52」、sitemap lastmod 與 autolink 的對照表都讀這個檔
+4. 網頁固定要素：五區塊＋頂部黏性導航與閱讀進度、主題與主站同步（localStorage key
+   `theme`、`:root[data-theme]` tokens）、返回課程首頁連結、檢核清單 localStorage
+   持久化（key 前綴 `fic-wNN-`）
    - 網頁版區塊④標題固定為「**分享這個概念 · 費曼學習法**」（導航縮寫「④ 分享」）——比單元 md 的「教家人腳本」更通用；內文腳本仍以家人為對象設計、註明對朋友同事同樣適用
    - 區塊②導讀的每個資源**附來源超連結**（canonical URL；claude.ai/code 環境的 egress 政策擋掉一般外站，無法就地驗證——改由 CI 驗證，見下）
    - 快問快答做成**每題一個獨立 toggle**（`<p class="qalabel">` ＋ `<div class="qagroup">` 包三個 `details.bonus`，summary 放題目、內容放答案），不要三題共用一個 toggle
-   - **週次引用照常寫純文字**（「W12」「第 21 週」），不必手動加連結——`astro.config.mjs`
-     的 `auto-link-week-refs` 會在 build 時把課程頁內文的週次引用自動轉成站內連結
-     （只連已上線的週次；`<script>`／既有 `<a>`／`summary`／`button`／`label` 內不動；
+   - **週次引用照常寫純文字**（「W12」「第 21 週」；英文版的「Week 12」同理），
+     不必手動加連結——`astro.config.mjs` 的 `auto-link-week-refs` 會在 build 時
+     把**中英文兩批**課程頁內文的週次引用轉成站內連結（英文頁只連英文頁；
+     只連已上線的週次；`<script>`／既有 `<a>`／`summary`／`button`／`label` 內不動；
      互動 JS 字串裡的 WNN 保持純文字是預期行為）。提到未來週次（如 W38）也照寫，
      等那週上線後下次 build 自動變連結
-4. 視覺系統沿用 W1 建立的「帳本」設計（松綠 `--pine` ＋金 `--coin`；圖表資料色 light `#1F8A5F`/`#A87B1F`、dark `#35A878`/`#BA8A25`——已通過對比與色覺無障礙驗證）；互動元素（計算機/猜謎/圖表）依該週內容設計，教家人開場盡量做成頁面互動
-5. 頁尾附「非投資建議」聲明；發佈走 PR（遵守根目錄 `CLAUDE.md` 工作流程）
+5. 視覺系統沿用 W1 建立的「帳本」設計（松綠 `--pine` ＋金 `--coin`；圖表資料色 light `#1F8A5F`/`#A87B1F`、dark `#35A878`/`#BA8A25`——已通過對比與色覺無障礙驗證）；互動元素（計算機/猜謎/圖表）依該週內容設計，教家人開場盡量做成頁面互動
+6. 頁尾附「非投資建議」聲明；發佈走 PR（遵守根目錄 `CLAUDE.md` 工作流程）
 
-**連結健檢（`npm run check:links`）**：`scripts/check-links.mjs` 會掃描所有教材頁，檢查
-①站內連結是否指到真實頁面（比對 `dist/`，需先 `npm run build`）②頁內錨點是否存在
-③外部網址的 HTTP 狀態。`.github/workflows/link-check.yml` 會在動到 `public/projects/**` 的 PR 上
-自動跑一次、每月 1 日定期再跑（抓連結腐爛），結果看 Actions 的 job summary 表格。
+**英文版（雙語政策：新內容一律雙語；中文先行、英文可後補，但不要隔太多週）**：
+
+7. `src/data/translations/<slug>.mjs` 建整頁對照表（`MAP`＝中文原句 → 英文；
+   `KEEP`＝允許留在英文頁的中文，多半是人名）。慣例見 `src/data/translations/README.md`
+   與近期週次檔頭的註記：行內標記邊界留半形空白、人名書名用原文、語域保持家庭教材的口語溫度
+8. `courseWeekMeta.ts` 該週補 `titleEn`／`descriptionEn`／`ogTitleEn`／`ogDescriptionEn`；
+   `familyInvestingCourse.ts` 補 `titleEn`／`descriptionEn`
+   - ⚠ 英文 title 控制在 **60 字元內**（YAEO 檢核 L1-TITLE-LONG 的門檻；
+     既有 25 週的英文 title 過長是已知待修，新週次不要再加長這個名單）
+9. **`/en/` 網址由資料推導，不維護清單**：`titleEn`＋`descriptionEn` 有填＋對照表存在
+   → 該週英文版自動產出。翻好一週就多一個網址，沒翻的單純沒有 `/en/` 版
+10. 驗證：`node scripts/check-translations.mjs`（對照表 vs 來源頁：漏譯／冗餘／沒翻）；
+    build 期 `translateFragment` 另有三道守衛（漏譯、殘留中文、script 可解析性），
+    出錯會**直接讓 build 失敗**，不會安靜輸出半調子英文頁
+
+**連結健檢（`npm run check:links`）**：`scripts/check-links.mjs` 掃描**全站 dist**（含課程頁
+與 /en/ 版），檢查①站內連結是否指到真實頁面（需先 `npm run build`）②頁內錨點是否存在
+③外部網址的 HTTP 狀態。`.github/workflows/link-check.yml` 會在 PR 上自動跑、
+每月 1 日定期再跑（抓連結腐爛），結果看 Actions 的 job summary 表格。
 撰寫環境連不出去時，**以 CI 的結果為準，不要憑記憶改網址**——例如 Khan Academy 的
 `accounting-and-financial-stateme` 看似被截斷，其實是該站真實的 32 字元 slug。
 
