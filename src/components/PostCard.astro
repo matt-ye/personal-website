@@ -40,5 +40,7 @@ const dateFormatted = pubDate.toLocaleDateString('en-US', {
     </span>
     <span class="lang-badge">{lang === 'zh' ? '中' : 'EN'}</span>
   </div>
-  <p class="post-card-desc">{description}</p>
+  {/* 摘要跟著文章本身的語言標示。標題已有 titleLang、旁邊也有語言徽章，
+     唯獨摘要沒標——英文頁上一段沒有 lang 的中文，對爬蟲就是「這是英文」。 */}
+  <p class="post-card-desc" lang={lang === 'zh' ? 'zh-TW' : undefined}>{description}</p>
 </li>
