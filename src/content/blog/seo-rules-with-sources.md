@@ -1,6 +1,7 @@
 ---
 title: 又一個 SEO 工具。差別是每條規則都附出處
 description: 學 SEO 時發現坊間建議幾乎都沒有依據。這篇記錄我把查得到出處的部分整理成 59 條檢核規則的過程，以及四件跟原本想的不一樣的事。
+descriptionEn: "Learning SEO, I found that almost none of the advice in circulation cites any evidence. This is the record of turning what does have sources into 59 checkable rules — and four findings that contradicted what I expected."
 pubDate: 2026-08-19
 lang: zh
 series: one-more-step
