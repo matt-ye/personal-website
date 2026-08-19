@@ -207,10 +207,18 @@ export function applyTranslations(html, { MAP = {}, MODALS_EN = null, KEEP = [] 
      escape 依語境而定：對照表的值是**純文字**，塞回原始碼前要照目標語境脫逸。 */
   const swap = (raw, escape) => {
     const en = lookup(raw);
-    if (en === null) return null;
     const lead = raw.slice(0, raw.length - raw.trimStart().length);
     const tail = raw.slice(raw.trimEnd().length);
-    return lead + (escape ? escape(en) : en) + tail;
+    if (en !== null) return lead + (escape ? escape(en) : en) + tail;
+
+    /* 查不到譯文，但只由全形標點構成的字串要自動轉半形——那是抽取器的盲區
+       （不含漢字，抽不到也不會被殘留檢查點名），詳見 normalizeFullwidthPunctuation。
+       含漢字的才是真的漏譯，交給 missing 去報。 */
+    const core = raw.trim();
+    if (!core || CJK.test(core)) return null;
+    const norm = normalizeFullwidthPunctuation(core, KEEP);
+    if (norm === core) return null;
+    return lead + (escape ? escape(norm) : norm) + tail;
   };
 
   /*
@@ -329,9 +337,51 @@ export function findResidualCjk(html, KEEP = []) {
     .replace(STYLE_BLOCK, '')
     .replace(/\s(?:href|src|action|formaction)="[^"]*"/g, '');
   for (const w of KEEP) probe = probe.split(w).join('');
+  /* 全形標點一併驗——它們不在 [一-鿿] 裡，但留在英文頁上一樣刺眼。
+     正規化跑完還剩下的，多半是被包在含漢字的字串裡（那條該由對照表處理），
+     或是新出現的標點沒列進 PUNCT。 */
   const hits = [];
-  for (const m of probe.matchAll(/[一-鿿]+/g)) {
+  for (const m of probe.matchAll(/[一-鿿]+|[、。！（），：；？「」]+/g)) {
     hits.push(probe.slice(Math.max(0, m.index - 50), m.index + m[0].length + 50).replace(/\s+/g, ' '));
   }
   return hits;
+}
+
+/*
+ * 孤立的全形標點：抽取器的盲區，必須自動補。
+ *
+ * ⚠ extractStrings 的判準是「含漢字 [一-鿿]」，所以**只由標點構成**的文字節點
+ *   （</strong> 後面單獨的 。、：、」、、）抽不到，對照表碰不到，
+ *   findResidualCjk 也不會報（它同樣只看 [一-鿿]）。結果是英文頁上散落
+ *   全形句號與冒號。實測 28 頁、135 種——三個翻譯代理各自獨立回報了同一件事。
+ *
+ *   用 135 條手工條目分散在 28 個檔裡處理，正是會出錯的做法：
+ *   漏一條沒人知道，而且下一批頁面要再抄一次。改成自動轉換。
+ *
+ * ⚠ 只轉**明確列出的**標點，不做整段 Unicode 範圍替換——範圍替換會掃到
+ *   KEEP 的中文書名號《》與人名裡的全形字，那些是刻意保留的。
+ *   KEEP 的詞先遮蔽再轉，轉完還原。
+ */
+const PUNCT = new Map([
+  ['。', '.'], ['，', ', '], ['、', ', '], ['：', ': '], ['；', '; '],
+  ['？', '?'], ['！', '!'], ['「', '"'], ['」', '"'], ['『', "'"], ['』', "'"],
+  ['（', ' ('], ['）', ')'], ['＋', ' + '], ['＝', ' = '], ['％', '%'],
+  ['～', '–'], ['－', '-'], ['·', ' · '],
+]);
+
+export function normalizeFullwidthPunctuation(s, KEEP = []) {
+  /* KEEP 的詞可能含全形字（書名號、人名括號），先換成不會被碰到的哨兵 */
+  const marks = [];
+  let out = s;
+  KEEP.forEach((w, i) => {
+    if (!w || !out.includes(w)) return;
+    const token = `\u0000K${i}\u0000`;
+    marks.push([token, w]);
+    out = out.split(w).join(token);
+  });
+  for (const [zh, en] of PUNCT) out = out.split(zh).join(en);
+  /* 轉換會製造多餘空白（「，」→", " 接在句尾、"（"→" (" 接在行首） */
+  out = out.replace(/[ \t]{2,}/g, ' ').replace(/ +([,.;:!?)])/g, '$1');
+  for (const [token, w] of marks) out = out.split(token).join(w);
+  return out;
 }

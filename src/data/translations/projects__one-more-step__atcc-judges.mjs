@@ -259,7 +259,7 @@ export const MAP = {
   '評審總評與反思': 'Closing remarks, and what I took from them',
   '「粗糙的開始，就是最好的開始。」': '"A rough start is the best start."',
   '— 孫宗德': '— 孫宗德',
-  '— 馮博堅的三個詞方法論': '— 馮博堅：a three-word method',
+  '— 馮博堅的三個詞方法論': '— 馮博堅: a three-word method',
   '想做「能容忍失敗的創投」。': 'Wants to build "venture capital that can tolerate failure".',
   '— 劉奕成': '— 劉奕成',
   '最重要的是堅持與韌性。': 'What matters most is persistence and resilience.',

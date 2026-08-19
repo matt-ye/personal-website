@@ -262,12 +262,14 @@ const awards = getPersonalAwards();
           <div class="org-row">
             <span class={`org-rank${p.rank <= 3 ? ' org-rank-top' : ''}`}>{String(p.rank).padStart(2, '0')}</span>
             <span class="org-name">
-              <span class="org-name-zh" lang="zh-TW">
+              <span class="org-name-zh" lang={isEn && p.nameEn ? undefined : 'zh-TW'}>
                 {p.url
-                  ? <a href={p.url} target="_blank" rel="noopener">{p.name}</a>
-                  : p.name}
+                  ? <a href={p.url} target="_blank" rel="noopener">{pick(p.name, p.nameEn)}</a>
+                  : pick(p.name, p.nameEn)}
               </span>
-              {p.nameEn && <span class="org-name-en" lang="en">{p.nameEn}</span>}
+              {/* 中文頁才需要英文副標；英文頁的主要顯示已經是英文名了。
+                  字典查不到英文名的單位會退回中文並標 lang="zh-TW"。 */}
+              {!isEn && p.nameEn && <span class="org-name-en" lang="en">{p.nameEn}</span>}
             </span>
             <span class="org-bar-bg"><span class="org-bar" data-width={p.pct} style={`width:${p.pct}%`}></span></span>
             <span class="org-count">{p.count}</span>

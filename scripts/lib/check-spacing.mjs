@@ -24,9 +24,24 @@
  * 兩邊的標記序列相同（機制 C 只換文字、不動結構），所以邊界可以一一對應。
  */
 
-const INLINE = /^(strong|em|b|i|code|span|a|abbr|sup|sub|mark|small|u)$/i;
+/* ⚠ sub／sup 不列入：上標下標本來就緊貼前文（Terminal value(end of year 5)），
+   把它們算進來會把正確的排版報成缺空白。 */
+const INLINE = /^(strong|em|b|i|code|span|a|abbr|mark|small|u)$/i;
 const CJK = /[一-鿿]/;
-const WORD = /[A-Za-z0-9]/;
+/*
+ * 需要空白的「左側」字元：字母數字，**以及收尾的引號與括號**。
+ *
+ * ⚠ 只看字母數字會漏。實測踩過：
+ *     <a>#1《為什麼要投資》</a>一起給家人讀。
+ *   → …"Why invest at all"and read them together.
+ *   左側是 " 不是字母，於是守衛放行，畫面上黏成 all"and。
+ */
+const NEED_AFTER = /[A-Za-z0-9"')\]}%]/;
+/* 需要空白的「右側」字元：只有字母數字。
+   ⚠ 刻意不含引號——文字後面緊接一個收尾引號是正常的
+   （…for two quarters running</strong>" or "…）。左側含引號就夠了：
+   真正要抓的 all"and 會由 NEED_AFTER 的 " 命中。 */
+const NEED_BEFORE = /[A-Za-z0-9]/;
 
 /*
  * 頁面自己的 CSS 把哪些 class／id 變成 block？
@@ -122,7 +137,7 @@ export function findMissingGaps(zhHtml, enHtml) {
     const a = isClose ? enPrev.slice(-1) : enEdgeA;
     const b = isClose ? enNext[0] : enEdgeB;
     if (!a || !b) continue;
-    if (WORD.test(a) && WORD.test(b)) {
+    if (NEED_AFTER.test(a) && NEED_BEFORE.test(b)) {
       out.push({
         side: isClose ? '後' : '前',
         tag: t.tag,

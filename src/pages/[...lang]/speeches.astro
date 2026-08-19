@@ -275,22 +275,23 @@ const yearSpan = (() => {
             {/* 單位有官網就做成連結——這些是指向真實機構的外連，對 E-E-A-T 有幫助；
                 字典查不到的單位沒有網址，就只顯示文字 */}
             {d.org && (
-              <div class="card-org" lang="zh-TW">
+              <div class="card-org" lang={isEn && d.orgEn ? undefined : 'zh-TW'}>
                 {d.orgUrl
-                  ? <a href={d.orgUrl} target="_blank" rel="noopener">{d.org}</a>
-                  : d.org}
+                  ? <a href={d.orgUrl} target="_blank" rel="noopener">{pick(d.org, d.orgEn)}</a>
+                  : pick(d.org, d.orgEn)}
               </div>
             )}
-            {d.orgEn && <div class="card-org-en" lang="en">{d.orgEn}</div>}
+            {/* 中文頁才需要英文副標；英文頁的主要顯示已經是英文名了 */}
+            {!isEn && d.orgEn && <div class="card-org-en" lang="en">{d.orgEn}</div>}
             {d.coOrg1 && (
-              <div class="card-org-co" lang="zh-TW"><T zh="協辦：" en="Co-host: " />{d.coOrg1Url
-                ? <a href={d.coOrg1Url} target="_blank" rel="noopener">{d.coOrg1}</a>
-                : d.coOrg1}</div>
+              <div class="card-org-co" lang={isEn && d.coOrg1En ? undefined : 'zh-TW'}><T zh="協辦：" en="Co-host: " />{d.coOrg1Url
+                ? <a href={d.coOrg1Url} target="_blank" rel="noopener">{pick(d.coOrg1, d.coOrg1En)}</a>
+                : pick(d.coOrg1, d.coOrg1En)}</div>
             )}
             {d.coOrg2 && (
-              <div class="card-org-co" lang="zh-TW"><T zh="協辦：" en="Co-host: " />{d.coOrg2Url
-                ? <a href={d.coOrg2Url} target="_blank" rel="noopener">{d.coOrg2}</a>
-                : d.coOrg2}</div>
+              <div class="card-org-co" lang={isEn && d.coOrg2En ? undefined : 'zh-TW'}><T zh="協辦：" en="Co-host: " />{d.coOrg2Url
+                ? <a href={d.coOrg2Url} target="_blank" rel="noopener">{pick(d.coOrg2, d.coOrg2En)}</a>
+                : pick(d.coOrg2, d.coOrg2En)}</div>
             )}
             <div class="card-stats">
               {d.audience > 0 && <span><b>{d.audience}</b><T zh="人" en=" people" /></span>}
@@ -573,8 +574,8 @@ function renderOrgLeaderboard(catFilter) {
     row.innerHTML = `
       <span class="org-rank${i < 3 ? ' org-rank-top' : ''}">${String(i + 1).padStart(2, '0')}</span>
       <span class="org-name">
-        <span class="org-name-zh">${name}</span>
-        ${info.eng ? `<span class="org-name-en">${info.eng}</span>` : ''}
+        <span class="org-name-zh"${lang() === 'en' && info.eng ? '' : ' lang="zh-TW"'}>${pick(name, info.eng)}</span>
+        ${lang() !== 'en' && info.eng ? `<span class="org-name-en">${info.eng}</span>` : ''}
       </span>
       <span class="org-bar-bg"><span class="org-bar" data-width="${pct}"></span></span>
       <span class="org-count">${info.count}</span>
@@ -674,7 +675,7 @@ function cardHTML(d) {
     { zh: d.coOrg1, en: d.coOrg1En },
     { zh: d.coOrg2, en: d.coOrg2En },
   ].filter(o => o.zh).map(o =>
-    `<div class="card-org-co">${L('協辦：', 'Co-host: ')}${o.zh}${o.en ? ` <span class="card-org-co-en">· ${o.en}</span>` : ''}</div>`
+    `<div class="card-org-co"${lang() === 'en' && o.en ? '' : ' lang="zh-TW"'}>${L('協辦：', 'Co-host: ')}${pick(o.zh, o.en)}${lang() !== 'en' && o.en ? ` <span class="card-org-co-en">· ${o.en}</span>` : ''}</div>`
   ).join('');
   return `
     <div class="speech-card">
@@ -683,8 +684,8 @@ function cardHTML(d) {
         <span>${tr(EDU, d.edu)}</span>
       </div>
       ${topicHTML}
-      ${d.org ? `<div class="card-org" lang="zh-TW">${d.org}</div>` : ''}
-      ${d.orgEn ? `<div class="card-org-en">${d.orgEn}</div>` : ''}
+      ${d.org ? `<div class="card-org"${lang() === 'en' && d.orgEn ? '' : ' lang="zh-TW"'}>${pick(d.org, d.orgEn)}</div>` : ''}
+      ${lang() !== 'en' && d.orgEn ? `<div class="card-org-en">${d.orgEn}</div>` : ''}
       ${coOrgHTML}
       <div class="card-stats">
         ${d.audience ? `<span><b>${d.audience}</b>${L('人', ' ppl')}</span>` : ''}

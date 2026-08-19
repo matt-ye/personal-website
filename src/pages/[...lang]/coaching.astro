@@ -115,7 +115,11 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
               {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
                 <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　<T zh="觀賽影片" en="Match video" /> {arr.length > 1 ? i + 1 : ''}▶</a>
               ))}
-              {pick(r.highlightZh, r.highlightEn) && <div class="static-award-note">{pick(r.highlightZh, r.highlightEn)}</div>}
+              {pick(r.highlightZh, r.highlightEn) && (
+                /* 英文欄空白時 pick 會退回中文——那段必須標語言，
+                   否則英文頁上一段沒有 lang 的中文對爬蟲就是英文。 */
+                <div class="static-award-note" lang={isEn && !r.highlightEn ? 'zh-TW' : undefined}>{pick(r.highlightZh, r.highlightEn)}</div>
+              )}
             </li>
           ))}
         </ul>
@@ -142,7 +146,11 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
               {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
                 <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　<T zh="觀賽影片" en="Match video" /> {arr.length > 1 ? i + 1 : ''}▶</a>
               ))}
-              {pick(r.highlightZh, r.highlightEn) && <div class="static-award-note">{pick(r.highlightZh, r.highlightEn)}</div>}
+              {pick(r.highlightZh, r.highlightEn) && (
+                /* 英文欄空白時 pick 會退回中文——那段必須標語言，
+                   否則英文頁上一段沒有 lang 的中文對爬蟲就是英文。 */
+                <div class="static-award-note" lang={isEn && !r.highlightEn ? 'zh-TW' : undefined}>{pick(r.highlightZh, r.highlightEn)}</div>
+              )}
             </li>
           ))}
         </ul>
@@ -169,7 +177,11 @@ const totalPrize = [...maicRows, ...atccRows].reduce((s, r) => {
               {r.url && r.url.split(/\s+/).filter(Boolean).map((u, i, arr) => (
                 <a class="fw-notes-link" href={u} target="_blank" rel="noopener">　<T zh="觀賽影片" en="Match video" /> {arr.length > 1 ? i + 1 : ''}▶</a>
               ))}
-              {pick(r.highlightZh, r.highlightEn) && <div class="static-award-note">{pick(r.highlightZh, r.highlightEn)}</div>}
+              {pick(r.highlightZh, r.highlightEn) && (
+                /* 英文欄空白時 pick 會退回中文——那段必須標語言，
+                   否則英文頁上一段沒有 lang 的中文對爬蟲就是英文。 */
+                <div class="static-award-note" lang={isEn && !r.highlightEn ? 'zh-TW' : undefined}>{pick(r.highlightZh, r.highlightEn)}</div>
+              )}
             </li>
           ))}
         </ul>
@@ -391,7 +403,7 @@ function renderATCC(rows) {
           <span class="fw-intl-badge">${medalEmoji(r.award)} ${rankLabel(r.award)}</span>
         </div>
         <div class="fw-venues">${prizeTag}${notes}${video}</div>
-        ${hl ? `<div class="fw-topic">"${hl}"</div>` : ''}
+        ${hl ? `<div class="fw-topic"${lang() === 'en' && !r.highlightEn ? ' lang="zh-TW"' : ''}>"${hl}"</div>` : ''}
       </div>
     `;
     el.appendChild(card);
