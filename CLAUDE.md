@@ -46,7 +46,28 @@
   一律填實際字元（`&`、`>`、nbsp 用 U+00A0 實字元）。這條只適用於「屬性／JS 字串」，
   模板標籤之間的文字（如 `<h1>演講 &amp; 工作坊</h1>`）照常寫 entity
 - 文章放在 `src/content/blog/`，格式為 Markdown（`.md`）
-- 頁面路由：`/` · `/writing` · `/writing/[slug]`
+- 頁面路由走 `src/pages/[...lang]/`：同一個檔案產出中文（`/…`）與英文（`/en/…`）兩個網址
+
+### 雙語（i18n）——2026-08 全站遷移完成
+- **政策：新內容一律雙語。中文先寫、英文隨後補**，兩者是獨立網址（`/…` 與 `/en/…`），
+  各自有 canonical 與 hreflang，由 layout 統一產生
+- **英文版的存在由資料推導，不維護清單**：英文 meta 欄位（`titleEn` 等）有填＋
+  （手刻頁）對照表存在 → `/en/` 網址自動產出；沒填就單純沒有英文版
+- 內容分三類，機制不同（細節與決策脈絡見 `docs/i18n-architecture-plan.md`）：
+  1. **Astro 模板頁**（首頁、coaching…）：`<T zh en>` 成對輸出
+  2. **手刻 HTML 頁**（one-more-step、marketing…）：內容片段在 `src/data/static-pages/`，
+     英文由 `src/data/translations/<key>.mjs` 整頁對照表在建置期換出（機制 C）
+  3. **課程週次頁**：內容片段在 `src/data/course-weeks/`，同走機制 C；
+     生產流程見 `curriculum/README.md`「教材網頁的部署慣例」
+- 對照表的驗證：`node scripts/check-translations.mjs`；build 期另有守衛，
+  漏譯／殘留中文會直接讓 build 失敗
+
+### 發佈前檢核（YAEO）
+- SEO/AEO 檢核用 owner 自己的 skill（repo：`matt-ye/yaeo`，skills/seo-aeo-audit）：
+  `node scripts/seo-check.mjs --dir ./dist --site https://mattye.dev`
+- 大改版或新頁上線前跑一次，看 error/warn（info 不用歸零，`noindex` 等是刻意設計）
+- 已知待修：25 頁課程英文版 title 超過 60 字元（L1-TITLE-LONG）。新頁的英文 title
+  控制在 60 字元內，不要再加長這個名單
 
 ### CSS
 - **不使用 Tailwind**，使用 plain CSS
