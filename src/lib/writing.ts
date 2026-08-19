@@ -60,6 +60,11 @@ export async function getWritingItems(): Promise<WritingItem[]> {
     category: p.data.series === 'family-investing' ? '投資專欄'
             : p.data.series === 'hardcore-presentation' ? '硬核簡報'
             : p.data.series === 'management-3r' ? '管理專欄'
+            /* One More Step 有兩個入口：/projects/one-more-step/ 讀 oneMoreStep.ts，
+               這裡讀 content collection。長文用 Markdown 寫的走這條，才拿得到
+               全文 RSS；手刻 HTML 的舊頁走 oneMoreStep.ts。兩邊都會匯進 /writing，
+               而下面是純串接沒有去重——**同一篇不要兩邊都放**。 */
+            : p.data.series === 'one-more-step' ? 'One More Step'
             : '隨筆',
     badge: p.data.titleEn ? '中 · EN' : (p.data.lang === 'zh' ? '中' : 'EN'),
     kind: 'post',

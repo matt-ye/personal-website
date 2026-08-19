@@ -17,12 +17,37 @@
  */
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import T from '../../../../components/T.astro';
-import { oneMoreStep as docs } from '../../../../data/oneMoreStep';
+import { getCollection } from 'astro:content';
+import { oneMoreStep } from '../../../../data/oneMoreStep';
 import { localeHref } from '../../../../lib/i18n';
 
 export function getStaticPaths() {
   return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
 }
+
+/*
+ * 這一頁的內容有兩個來源：
+ *   · oneMoreStep.ts —— 對應 public/ 底下的手刻 HTML 舊頁
+ *   · content collection 裡 series 為 one-more-step 的 Markdown 長文
+ *
+ * ⚠ **同一篇只能出現在其中一邊。** /writing 的 lib/writing.ts 是純串接、
+ *   沒有去重，兩邊都放會讓那一頁與 RSS 各出現兩次。
+ *   新的長文一律走 Markdown：content collection 有 rendered.html，
+ *   RSS 才拿得到全文，手刻頁沒有這個。
+ */
+const posts = (await getCollection('blog', ({ data }) => !data.draft && data.series === 'one-more-step'))
+  .map((p) => ({
+    slug: p.id,
+    title: p.data.title,
+    titleEn: p.data.titleEn ?? p.data.title,
+    description: p.data.description,
+    descriptionEn: p.data.descriptionEn,
+    tags: p.data.tags ?? [],
+    date: p.data.pubDate.toISOString().slice(0, 10),
+    url: '/writing/' + p.id + '/',
+  }));
+
+const docs = [...oneMoreStep, ...posts].sort((x, y) => (x.date < y.date ? 1 : -1));
 
 const isEn = Astro.currentLocale === 'en';
 const locale = isEn ? 'en' : 'zh';

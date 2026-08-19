@@ -32,7 +32,10 @@ export const projects: Project[] = [
   {
     slug: 'one-more-step',
     title: 'One More Step',
-    titleEn: 'Learning Notes',
+    /* 品牌名不翻譯。原本寫 'Learning Notes'，那是 tags 裡「學習筆記」的譯法，
+       被誤套到標題上——英文頁的專案卡因此叫 Learning Notes，跟站上其他地方
+       （/projects/one-more-step/ 的 h1、/writing 的分類、RSS）全部對不起來。 */
+    titleEn: 'One More Step',
     description: '把複雜的東西搞懂，然後寫下來。學習筆記集，涵蓋 IP 治理、電商創業等主題。',
     descriptionEn: 'Understanding complex topics, then writing them down — a collection of learning notes spanning IP governance, e-commerce entrepreneurship, and more.',
     status: 'live',
