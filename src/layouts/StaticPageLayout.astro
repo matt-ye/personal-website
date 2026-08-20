@@ -210,7 +210,15 @@ const alternates = hasEn
     </script>
   </head>
   <body>
-    <slot />
+    {/* 與 CourseWeekLayout 同一個理由：JSON-LD 宣告 Article，DOM 裡卻沒有
+        <article>，機器讀到的結構與宣告對不起來。staticPageMeta 14 筆全部是
+        ogType: article，所以無條件包是語意正確的（不是「先包了再說」）。
+
+        ⚠ 這批片段是從手刻頁原樣搬來的、各自內嵌整套 CSS。查過沒有任何
+        `body > x` 直接子選擇器，所以多一層容器不會讓既有樣式失配。 */}
+    <article>
+      <slot />
+    </article>
         {(siteLinks || langLink) && <SiteStrip siteLinks={siteLinks} lang={langLink} />}
   </body>
 </html>
