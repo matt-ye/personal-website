@@ -1,0 +1,603 @@
+<!-- W27 起照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* TWR/MWR 實驗台 */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .whenrow{display:flex;gap:.4rem;margin-top:1rem;flex-wrap:wrap;align-items:center}
+  .whenrow .wl{font-size:.85rem;font-weight:700;color:var(--ink-2);margin-right:.2rem}
+  .whenrow button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .whenrow button.on{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .labverdict{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .labverdict b{color:var(--coin)}
+
+  /* 波動拖累模擬器 */
+  .dragsim{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .dragsim h3{margin-top:0}
+  .bars{margin-top:1.1rem}
+  .barrow{margin-top:.8rem}
+  .barrow .bl{display:flex;justify-content:space-between;font-size:.82rem;color:var(--ink-2)}
+  .barrow .bl b{font-family:ui-monospace,Menlo,monospace}
+  .bartrack{height:1.1rem;background:var(--line-soft);border-radius:99px;overflow:hidden;margin-top:.3rem}
+  .bartrack i{display:block;height:100%;border-radius:99px;transition:width .25s}
+  .bartrack .smooth{background:var(--pine)}
+  .bartrack .bumpy{background:var(--coin)}
+  .dragnote{margin-top:1rem;padding:.8rem 1rem;border-radius:10px;font-size:.9rem;background:var(--pine-soft);color:var(--ink-2)}
+  .dragnote b{color:var(--pine)}
+
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 27</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q3 操盤手季 · Week 27</p>
+  <h1>報酬衡量——TWR/MWR 與模擬組合上線</h1>
+  <p class="lead" style="margin-top:.5rem">Q3 操盤手季開場。操盤手的第一課不是「怎麼賺」，是<strong>怎麼誠實地算自己賺了多少</strong>——多數人連自己的真實報酬率都算錯。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-18-position-rebalancing/">第 18 週</a>（IPS）</span><span class="chip">52 週 · 第 27 週</span><span class="chip">Q3 開場</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>鏡頭從「一家公司」換成「一個組合」。本週交付兩件事：三組容易混淆的報酬概念，和<strong>正式上線的模擬組合</strong>——它是 Q3 一整季的實驗載具，之後每週在上面加一個模組。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的電梯簡報——家人成功複述你的反方論證了嗎？卡住的那段改寫了沒？
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">第一年 +50%、第二年 −50%——「平均報酬 0%」。你的 100 萬變成多少？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">還是 100 萬，不賺不賠</button>
+    <button data-g="b">75 萬，虧了四分之一</button>
+    <button data-g="c">順序對就能賺</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 算術 vs 幾何：波動拖累</h2>
+  <p>100 萬 → 第一年 +50% → 150 萬 → 第二年 −50% → <strong>75 萬</strong>。算術平均（50−50）÷2 ＝ 0%，但你實實在在虧了 25%。</p>
+  <p>真實的複合報酬要用<strong>幾何平均</strong>：√(1.5 × 0.5) − 1 ＝ <strong>−13.4%／年</strong>。算術與幾何的差距就是<strong>波動拖累（volatility drag）</strong>，波動越大差距越大（近似公式：幾何 ≈ 算術 − σ²/2）。兩個含義：</p>
+  <ul>
+    <li>別人說「平均報酬 X%」，先問是算術還是幾何——<strong>你的資產照幾何長大</strong></li>
+    <li>「同樣的平均報酬，低波動組合長期贏」有數學原因——W15 的分散降波動不只是心理安慰，它直接提高幾何報酬</li>
+  </ul>
+  <p><strong>CAGR（年化複合成長率）</strong>就是幾何平均的標準版：(期末÷期初)^(1/年數) − 1。例：3 年 100 → 150，CAGR ＝ 1.5^(1/3) − 1 ＝ <strong>14.47%</strong>。</p>
+  </div>
+
+  <!-- 互動 1：波動拖累模擬器 -->
+  <div class="dragsim">
+    <h3>波動拖累模擬器</h3>
+    <p class="muted" style="margin-top:-.2rem">兩年一組：一年賺「平均＋波動」、一年賺「平均−波動」。算術平均不變，看波動怎麼吃掉終值。</p>
+    <div class="ctl">
+      <label>算術平均報酬 <output id="o-m">0%</output></label>
+      <input type="range" id="in-m" min="-5" max="15" step="1" value="0" aria-label="算術平均報酬">
+    </div>
+    <div class="ctl">
+      <label>波動幅度（±） <output id="o-x">50%</output></label>
+      <input type="range" id="in-x" min="0" max="60" step="5" value="50" aria-label="波動幅度">
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="sl">算術平均</p><p class="sv" id="s-ari">—</p><p class="sh">口頭上的「平均」</p></div>
+      <div class="stat"><p class="sl">幾何平均</p><p class="sv" id="s-geo">—</p><p class="sh">資產實際的成長率</p></div>
+      <div class="stat"><p class="sl">波動拖累</p><p class="sv" id="s-drag">—</p><p class="sh">≈ σ²/2</p></div>
+    </div>
+    <div class="bars">
+      <div class="barrow"><p class="bl"><span>零波動（同樣算術平均）· 10 年</span><b id="b-smooth-v">—</b></p><div class="bartrack"><i class="smooth" id="b-smooth" style="width:0%"></i></div></div>
+      <div class="barrow"><p class="bl"><span>有波動 · 10 年</span><b id="b-bumpy-v">—</b></p><div class="bartrack"><i class="bumpy" id="b-bumpy" style="width:0%"></i></div></div>
+    </div>
+    <div class="dragnote" id="dragnote">拉動滑桿看差距。</div>
+  </div>
+
+  <div class="prose">
+  <h2>2. TWR vs MWR：兩個都對，回答不同問題</h2>
+  <p>帳戶<strong>有資金進出</strong>時，「報酬率」出現兩種算法，結果可以天差地遠。講義算例：</p>
+  <ol>
+    <li>期 1：投入 10 萬 → 市場翻倍（+100%）→ 20 萬</li>
+    <li>你信心大增，<strong>加碼 90 萬</strong> → 110 萬</li>
+    <li>期 2：市場 −10% → 期末 <strong>99 萬</strong>。總投入 100 萬——<strong>實際虧 1 萬</strong></li>
+  </ol>
+  <p><strong>TWR（時間加權報酬）</strong>把每段報酬相乘、不理會資金進出：2.0 × 0.9 − 1 ＝ <strong>+80%</strong>。<br>
+  <strong>MWR（金額加權報酬，即 IRR）</strong>把每筆錢按在場時間加權：解 10(1+r)² + 90(1+r) ＝ 99，得 <strong>−0.91%／期</strong>。</p>
+  <div class="quote">同一段歷史，+80% 對上負報酬——兩個都沒算錯。TWR 回答「這個策略表現如何」，MWR 回答「你的錢實際長了多少」。差距＝你的擇時行為的成本。</div>
+  <p><strong>用法鐵律</strong>：評估策略、比較基金、對照基準 → 看 TWR；評估自己的錢包與行為 → 看 MWR。多數散戶的 MWR 顯著低於所持基金的 TWR（追高殺低的實證）——這個差距正是 W17 機械化入場與 W23 對策工程要消滅的東西。</p>
+  </div>
+
+  <!-- 互動 2：TWR/MWR 實驗台 -->
+  <div class="lab">
+    <h3>TWR / MWR 實驗台</h3>
+    <p class="muted" style="margin-top:-.2rem">起始投入固定 10 萬。動報酬、動加碼金額、換加碼時點，看兩個報酬率怎麼分道揚鑣。</p>
+    <div class="presets">
+      <button id="p-base">講義算例</button>
+      <button id="p-late">加碼改到期 2 之後</button>
+      <button id="p-none">完全不加碼</button>
+    </div>
+    <div class="ctl">
+      <label>期 1 報酬 <output id="o-r1">+100%</output></label>
+      <input type="range" id="in-r1" min="-60" max="120" step="5" value="100" aria-label="期一報酬">
+    </div>
+    <div class="ctl">
+      <label>期 2 報酬 <output id="o-r2">−10%</output></label>
+      <input type="range" id="in-r2" min="-60" max="120" step="5" value="-10" aria-label="期二報酬">
+    </div>
+    <div class="ctl">
+      <label>加碼金額 <output id="o-w">90 萬</output></label>
+      <input type="range" id="in-w" min="0" max="200" step="10" value="90" aria-label="加碼金額">
+    </div>
+    <div class="whenrow" id="whenrow" role="group" aria-label="加碼時點">
+      <span class="wl">加碼時點</span>
+      <button data-when="mid" class="on">期 1 結束後</button>
+      <button data-when="end">期 2 結束後</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="sl">期末市值</p><p class="sv" id="s-fv">—</p><p class="sh" id="s-inv">總投入 —</p></div>
+      <div class="stat"><p class="sl">實際損益</p><p class="sv" id="s-pnl">—</p><p class="sh">錢包的真相</p></div>
+      <div class="stat"><p class="sl">TWR</p><p class="sv" id="s-twr">—</p><p class="sh">策略的成績</p></div>
+      <div class="stat"><p class="sl">MWR（每期）</p><p class="sv" id="s-mwr">—</p><p class="sh">你的錢的成績</p></div>
+    </div>
+    <div class="labverdict" id="labverdict">調整參數看判讀。</div>
+  </div>
+
+  <div class="prose">
+  <h2>3. 報酬引用的三個必答</h2>
+  <p>任何人（包括你自己）報一個報酬率，先問三件事，否則數字沒有意義：</p>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>必答</th><th>為什麼</th></tr></thead>
+      <tbody>
+        <tr><td class="f">期間？</td><td>起訖日是哪天——起點選在低點的「三年翻倍」是話術</td></tr>
+        <tr><td class="f">含息否？</td><td>含股利再投入（total return）還是純價格？台股殖利率 3–4%，十年下來差距巨大</td></tr>
+        <tr><td class="f">幣別？</td><td>海外資產用台幣還是原幣計？（W14 的匯率課題）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>4. 模擬組合上線：Q3 的載具（本週交付物）</h2>
+  <p>從本週起，你有一個<strong>用真實市價、假鈔票</strong>運作的組合：</p>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>規格</th><th>內容</th></tr></thead>
+      <tbody>
+        <tr><td class="f">資金</td><td>虛擬 100 萬</td></tr>
+        <tr><td class="f">配置</td><td>完全依照你 W18 的 IPS（比例、標的類型、單一上限）</td></tr>
+        <tr><td class="f">建倉</td><td>依 IPS 的入場規則（W17）——若規則是分批，就真的分批記錄</td></tr>
+        <tr><td class="f">記錄格式</td><td>試算表一筆一列：日期｜標的｜動作｜股數｜成交價（當日實價）｜金額｜手續費稅（W10 真實費率）｜當下理由（一句話）</td></tr>
+        <tr><td class="f">估值頁</td><td>每週五收盤後更新各部位市值與組合總值</td></tr>
+        <tr><td class="f">紀律</td><td>買賣必須符合 IPS；違規操作可以做，但理由欄要註明「違規」——Q3 結束時看違規操作的績效（劇透：這是最好的行為財務自我實驗）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>為什麼用模擬而不是真錢？<strong>練的是流程與記錄習慣，不是膽量</strong>。等 Q3 的衡量工具齊了（Sharpe、歸因、壓測），這套流程平移到真錢帳戶，一天就能接軌。</p>
+
+  <h2>5. 常見誤解闢謠</h2>
+  <div class="myth">
+    <p class="say">「我的基金賺 30%，我卻沒賺到——基金一定有鬼。」</p>
+    <p>正常且常見：基金的 30% 是 TWR，你的是 MWR；你可能在淨值高點才申購。錯不在基金，在資金進出的時機——這正是兩個指標要分開的原因。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「這三個月賺 10%，年化就是 46% 的實力。」</p>
+    <p>年化放大了雜訊。三個月的成績有太多運氣成分，外推成年化等於宣稱這運氣能連續複製四次——一年以下的績效，直接看原始報酬即可。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「模擬組合不痛不癢，練不到心理。」</p>
+    <p>對，心理要真錢才練得到（所以 W23 的制度才重要）。但<strong>流程、記錄、衡量</strong>在模擬裡練最便宜——先把儀表裝好，再上路。</p>
+  </div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>把三個定義啃熟</h2>
+  <div class="readitem">
+    <div class="t">40 分鐘</div>
+    <div class="body"><b>Investopedia：TWR、MWR、CAGR 三條目</b>
+      <p>把定義與算例啃熟，特別注意 TWR 條目裡「切段再相乘」的分段邏輯。<a class="srclink" href="https://www.investopedia.com/terms/t/time-weightedror.asp" target="_blank" rel="noopener">Time-Weighted Rate of Return ↗</a>、<a class="srclink" href="https://www.investopedia.com/terms/m/money-weighted-return.asp" target="_blank" rel="noopener">Money-Weighted Rate of Return ↗</a>、<a class="srclink" href="https://www.investopedia.com/terms/c/cagr.asp" target="_blank" rel="noopener">CAGR ↗</a></p>
+    </div>
+  </div>
+  <div class="readitem">
+    <div class="t">40 分鐘 · 選讀</div>
+    <div class="body"><b>《Investments》（Bodie, Kane &amp; Marcus）報酬衡量章節</b>
+      <p>學術版。重點是理解 <strong>GIPS（全球投資績效標準）為什麼規定基金必須報 TWR</strong>——答案跟「經理人控制得了什麼」有關，快問快答 Q1 會考。<a class="srclink" href="https://www.gipsstandards.org/" target="_blank" rel="noopener">GIPS 官網 ↗</a></p>
+    </div>
+  </div>
+  <div class="readitem">
+    <div class="t">15 分鐘</div>
+    <div class="body"><b>回顧你 W18 的 IPS</b>
+      <p>建倉前最後一次確認：比例、單一上限、入場規則。模擬組合的每一筆都要對得上這張卡。</p>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>建倉，然後親手算一次</h2>
+
+  <h3>任務 A｜模擬組合建倉（30 分鐘）</h3>
+  <ol class="tasks">
+    <li>按第 4 節的規格建立試算表（記錄頁＋估值頁）</li>
+    <li>用今天（或最近交易日）的實價完成第一批建倉——分批規則就記第一期</li>
+    <li>每筆附一句理由；手續費稅用 W10 的真實費率算進去</li>
+  </ol>
+
+  <h3>任務 B｜手算 TWR vs MWR（20 分鐘）</h3>
+  <ol class="tasks">
+    <li>用講義算例自己算一遍：驗證 TWR ＝ +80%、期末 99 萬、MWR ≈ −0.91%／期（試算表 IRR 函數或試誤法）</li>
+    <li>改一個數字玩：把 90 萬的加碼改到<strong>期 2 之後</strong>才投入，TWR 和 MWR 各變成什麼？——親手體會「時機影響 MWR、不影響 TWR」</li>
+    <li>算完拿上面的實驗台對答案</li>
+  </ol>
+
+  <div class="verify">
+    <b>怎麼知道做對了：</b>你的手算與實驗台一致：講義算例 TWR +80%、MWR −0.91%／期；加碼移到期 2 後，TWR 不動、MWR 翻成 +34.16%／期——同一個策略，時機讓 MWR 從負翻到大正，這就是兩個指標分開的意義。
+  </div>
+
+  <ul class="checks" data-key="w27-practice">
+    <li><label><input type="checkbox"><span>模擬組合上線：含成本與理由欄，且每筆符合 IPS</span></label></li>
+    <li><label><input type="checkbox"><span>TWR/MWR 算例手算驗證通過</span></label></li>
+    <li><label><input type="checkbox"><span>每週五更新估值的行事曆提醒已設</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼基金業被規定用 TWR 揭露績效？</summary>
+      <div class="ans"><p>→ 因為基金經理人<strong>無法控制投資人何時申購贖回</strong>——資金進出的時機是客戶的行為。TWR 剔除資金流的影響，才能公平衡量經理人本身的操作能力。這正是 GIPS 的核心規定。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 你的 MWR 長期低於所持標的的 TWR——診斷是什麼？處方在哪幾週？</summary>
+      <div class="ans"><p>→ 診斷：<strong>擇時行為在漏錢</strong>——資金總在上漲後流入、下跌後流出（追高殺低）。處方：W17 機械化入場（定日投入）、W18 再平衡與 IPS 預先承諾、W23 對策工程。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> +50% 再 −50% 虧 25%——那 −50% 再 +50% 呢？順序重要嗎？</summary>
+      <div class="ans"><p>→ 一樣虧 25%（0.5 × 1.5 ＝ 1.5 × 0.5 ＝ 0.75）——<strong>乘法交換律：無資金進出時，順序不影響終值</strong>。但若中途有進出，順序就透過 MWR 影響你的實際損益——又回到「時機影響的是 MWR」。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>詭異的成績單</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（詭異的成績單）</p>
+    <p>「考考你：有個人投資，策略報酬率 +80%，但他的錢包<strong>虧了 1 萬</strong>。這可能嗎？」（揭曉講義算例，一步步走：小錢的時候賺了翻倍，大錢進場之後跌了一段。）</p>
+  </div>
+  <div class="script">
+    <p class="who">核心觀念</p>
+    <p>「所以『報酬率』有兩種：一種算<strong>策略</strong>厲不厲害，一種算<strong>你的錢</strong>有沒有長大。它們的差距，就是你進出場的時機造成的——大部分人虧就虧在這個差距：漲了才敢把大錢放進去。」（連回 W17：「所以我們家進場才要先定日期，不看心情。」）</p>
+  </div>
+  <div class="script">
+    <p class="who">互動（平均的騙局）</p>
+    <p>「再考一題：第一年賺 50%、第二年虧 50%，平均 0%，所以不賺不賠？」（拿 100 元演：150 → 75。）「跌下去要花更大力氣才爬得回來——這就是為什麼我們寧可賺得穩，不要大起大落。」</p>
+  </div>
+  <div class="script">
+    <p class="who">收尾（新玩具）</p>
+    <p>「從這週起，我們家有一個『模擬帳戶』：假的 100 萬、真的股價，完全照我們那張規則卡操作。每個月我會像基金經理人一樣跟你們報告成績——用今天學的兩種報酬率。」</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「模擬的有什麼用？」</b><br>「飛行員也先用模擬器。錢是假的，但價格、紀律、記錄全是真的——等儀表都會看了，換真錢只是換油門。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w27-final">
+    <li><label><input type="checkbox"><span>能解釋波動拖累並算 CAGR</span></label></li>
+    <li><label><input type="checkbox"><span>能用算例說明 TWR 與 MWR 各回答什麼問題</span></label></li>
+    <li><label><input type="checkbox"><span>模擬組合上線——Q3 載具就位</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家人或朋友皆可），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 27 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 28：風險衡量——波動、回撤與風險儀表</b>——組合會賺還不夠，要知道它「晃得多兇、最深摔多深」。下週你會給模擬組合裝上第一組風險儀表。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-26-q2-capstone-thesis/">上一週：Q2 Capstone 投資論文</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——150 萬再跌 50% 只剩 75 萬。「平均 0%」是算術平均；你的資產照幾何平均長大：√(1.5×0.5)−1 = −13.4%／年。這個差距叫波動拖累，下面的模擬器讓你親手拉出來。"
+      : (btn.dataset.g === "c"
+        ? "順序其實無所謂——0.5×1.5 和 1.5×0.5 都是 0.75，一樣虧 25%（乘法交換律）。「平均 0%」是算術平均；資產照幾何平均長大：√(1.5×0.5)−1 = −13.4%／年。這叫波動拖累。"
+        : "直覺的答案——但 100 萬 → 150 萬 → 75 萬，虧了四分之一。「平均 0%」是算術平均；你的資產照幾何平均長大：√(1.5×0.5)−1 = −13.4%／年。這個差距叫波動拖累，下面的模擬器讓你親手拉出來。");
+  });
+
+  /* ---------- 波動拖累模擬器 ---------- */
+  var inM = document.getElementById("in-m"), inX = document.getElementById("in-x");
+  function fmtPct(v, dp){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dp === undefined ? 1 : dp) + "%"; }
+  function runDrag(){
+    var m = +inM.value / 100, x = +inX.value / 100;
+    document.getElementById("o-m").textContent = (+inM.value >= 0 ? "+" : "−") + Math.abs(+inM.value) + "%";
+    document.getElementById("o-x").textContent = "±" + (+inX.value) + "%";
+    // 兩年一組：(1+m+x)(1+m−x)。滑桿範圍保證 1+m−x ≥ 0.35，不會出現負值開根號
+    var pair = (1 + m + x) * (1 + m - x);
+    var geo = Math.sqrt(pair) - 1;
+    var ari = m;
+    document.getElementById("s-ari").textContent = fmtPct(ari * 100);
+    document.getElementById("s-geo").textContent = fmtPct(geo * 100);
+    var drag = (ari - geo) * 100;
+    document.getElementById("s-drag").textContent = "−" + drag.toFixed(1) + "%";
+    // 10 年終值（100 萬起）：有波動＝五組兩年；零波動＝(1+m)^10
+    var bumpy = 100 * Math.pow(pair, 5);
+    var smooth = 100 * Math.pow(1 + m, 10);
+    var maxv = Math.max(bumpy, smooth, 100);
+    document.getElementById("b-smooth-v").textContent = smooth.toFixed(0) + " 萬";
+    document.getElementById("b-bumpy-v").textContent = bumpy.toFixed(0) + " 萬";
+    document.getElementById("b-smooth").style.width = (smooth / maxv * 100) + "%";
+    document.getElementById("b-bumpy").style.width = (bumpy / maxv * 100) + "%";
+    var note = document.getElementById("dragnote");
+    if (x === 0) {
+      note.innerHTML = "<b>零波動時算術＝幾何。</b>把波動拉上去，看同樣的「平均」怎麼分出兩條路。";
+    } else {
+      note.innerHTML = "<b>同樣「平均 " + (+inM.value) + "%」，十年差 " + Math.abs(smooth - bumpy).toFixed(0) + " 萬。</b>" +
+        "波動 ±" + (+inX.value) + "% 每年吃掉約 " + drag.toFixed(1) + " 個百分點的複合報酬——" +
+        "這就是 W15 分散降波動的數學紅利：不是心理安慰，是直接加在幾何報酬上。";
+    }
+  }
+  inM.addEventListener("input", runDrag);
+  inX.addEventListener("input", runDrag);
+  runDrag();
+
+  /* ---------- TWR/MWR 實驗台 ---------- */
+  var P = 10;   // 起始投入（萬），固定
+  var inR1 = document.getElementById("in-r1"), inR2 = document.getElementById("in-r2"), inW = document.getElementById("in-w");
+  var when = "mid";
+  var whenrow = document.getElementById("whenrow");
+  function setCls(el, v){ el.classList.remove("pos","neg"); if (v > 0.0001) el.classList.add("pos"); else if (v < -0.0001) el.classList.add("neg"); }
+  function runLab(){
+    var r1 = +inR1.value / 100, r2 = +inR2.value / 100, W = +inW.value;
+    document.getElementById("o-r1").textContent = fmtPct(+inR1.value, 0);
+    document.getElementById("o-r2").textContent = fmtPct(+inR2.value, 0);
+    document.getElementById("o-w").textContent = W + " 萬";
+    var twr = (1 + r1) * (1 + r2) - 1;
+    var fv, mwr;
+    if (when === "mid") {
+      fv = (P * (1 + r1) + W) * (1 + r2);
+      // 解 P·x² + W·x = fv（x = 1+每期 MWR）。fv ≥ 0 保證根號內非負
+      var x = (-W + Math.sqrt(W * W + 4 * P * fv)) / (2 * P);
+      mwr = x - 1;
+    } else {
+      fv = P * (1 + r1) * (1 + r2) + W;
+      // 加碼發生在期末，錢還沒經歷任何報酬：MWR 只由前 10 萬的旅程決定
+      mwr = Math.sqrt((1 + r1) * (1 + r2)) - 1;
+    }
+    var invested = P + W, pnl = fv - invested;
+    document.getElementById("s-fv").textContent = fv.toFixed(1) + " 萬";
+    document.getElementById("s-inv").textContent = "總投入 " + invested + " 萬";
+    var pnlEl = document.getElementById("s-pnl");
+    pnlEl.textContent = (pnl >= 0 ? "+" : "−") + Math.abs(pnl).toFixed(1) + " 萬"; setCls(pnlEl, pnl);
+    var twrEl = document.getElementById("s-twr");
+    twrEl.textContent = fmtPct(twr * 100); setCls(twrEl, twr);
+    var mwrEl = document.getElementById("s-mwr");
+    mwrEl.textContent = fmtPct(mwr * 100, 2); setCls(mwrEl, mwr);
+    var v = document.getElementById("labverdict");
+    var gap = twr - ((1 + mwr) * (1 + mwr) - 1); // 用兩期複合後的 MWR 跟 TWR 比
+    if (W === 0) {
+      v.innerHTML = "<b>沒有資金進出時，MWR 就是 TWR 的每期幾何平均。</b>兩個指標只有在錢進進出出時才會分家——把加碼拉上去看看。";
+    } else if (gap > 0.02) {
+      v.innerHTML = "<b>策略賺、你的錢沒跟上（TWR＞MWR）。</b>大錢在高點才進場——策略的好行情被小錢享受，壞行情由大錢承擔。這就是追高的成本，也是多數散戶的常態。";
+    } else if (gap < -0.02) {
+      v.innerHTML = "<b>你的錢比策略還會賺（MWR＞TWR）。</b>加碼的時機踩對了——大錢避開了壞行情。注意：這在事後看得到，事前靠的多半是運氣；W17 的答案是用機制、不是用感覺。";
+    } else {
+      v.innerHTML = "<b>兩個指標大致同步。</b>資金進出的時機沒有明顯幫倒忙也沒幫上忙——把報酬或時點改得更極端，看差距怎麼被拉開。";
+    }
+  }
+  whenrow.addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    when = btn.dataset.when;
+    whenrow.querySelectorAll("button").forEach(function(b){ b.classList.toggle("on", b === btn); });
+    runLab();
+  });
+  [inR1, inR2, inW].forEach(function(el){ el.addEventListener("input", runLab); });
+  function preset(r1, r2, w, wh){
+    inR1.value = r1; inR2.value = r2; inW.value = w; when = wh;
+    whenrow.querySelectorAll("button").forEach(function(b){ b.classList.toggle("on", b.dataset.when === wh); });
+    runLab();
+  }
+  document.getElementById("p-base").addEventListener("click", function(){ preset(100, -10, 90, "mid"); });
+  document.getElementById("p-late").addEventListener("click", function(){ preset(100, -10, 90, "end"); });
+  document.getElementById("p-none").addEventListener("click", function(){ preset(100, -10, 0, "mid"); });
+  runLab();
+
+  /* ---------- 檢核清單持久化 ---------- */
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w27-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w27-final") {
+        var all = state.every(Boolean);
+        document.getElementById("checkdone").textContent = all
+          ? "✓ Q3 開場完成——模擬組合已上線，下週給它裝第一組風險儀表。"
+          : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

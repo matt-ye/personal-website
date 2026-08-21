@@ -317,4 +317,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-08-09',
     url: '/projects/family-investing-course/week-26-q2-capstone-thesis/',
   },
+  {
+    slug: 'week-27-returns-portfolio',
+    title: 'W27 報酬衡量——TWR/MWR 與模擬組合上線',
+    titleEn: 'W27 Returns: TWR vs MWR',
+    description: 'Q3 操盤手季開場：算術 vs 幾何與波動拖累、TWR 與 MWR 各回答什麼問題、報酬引用三必答——並讓模擬組合正式上線，成為 Q3 一整季的實驗載具。附波動拖累模擬器與 TWR/MWR 實驗台。',
+    descriptionEn: 'Q3 opens: arithmetic vs geometric returns and volatility drag, what TWR and MWR each answer, and the paper portfolio goes live as the vehicle for the whole quarter. With two interactive calculators.',
+    tags: ['Q3 操盤手季', '互動模擬器'],
+    date: '2027-01-06',
+    published: '2026-08-19',
+    url: '/projects/family-investing-course/week-27-returns-portfolio/',
+  },
 ];
