@@ -234,7 +234,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "ogDescription": "P/E 12 和 P/E 30 哪家便宜？光看倍數無法回答——「貴/便宜」要放在成長、品質、風險的脈絡裡看。",
     "titleEn": "Week 19: Relative Valuation | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 19 of 52: where each of the four main multiples fits and where it traps you, how to work out EV, and how to pick comps - with an EV/EBITDA calculator.",
-    "ogTitleEn": "Week 19: Valuation One — Relative Valuation in Depth",
+    "ogTitleEn": "Week 19: Valuation I — Relative Valuation in Depth",
     "ogDescriptionEn": "A P/E of 12 or a P/E of 30 - which is cheaper? The multiple alone cannot answer: expensive and cheap only mean something in the context of growth, quality and risk.",
   },
   {
@@ -245,7 +245,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "ogDescription": "會生金蛋的鵝值多少錢？拉動成長率、折現率與永續 g，親眼看終值怎麼主導整個估值——DCF 是假設的放大器。",
     "titleEn": "Week 20: DCF Basics | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 20 of 52: the three parts of a DCF, and why the terminal value is sixty to eighty per cent of the whole valuation - with an interactive calculator.",
-    "ogTitleEn": "Week 20: Valuation II — the basics of DCF",
+    "ogTitleEn": "Week 20: Valuation II — The Basics of DCF",
     "ogDescriptionEn": "What is a goose that lays golden eggs worth? Drag the growth rate, the discount rate and the perpetual growth rate, and watch the terminal value dominate the whole valuation - a DCF is an amplifier for assumptions.",
   },
   {
@@ -256,7 +256,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "ogDescription": "同一個 DCF，假設都「聽起來合理」地小改——最保守到最樂觀差 2 倍。把單點變區間，只在明顯便宜時出手。",
     "titleEn": "Week 21: The Margin of Safety | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 21 of 52: a nine-cell sensitivity grid turns one number into a range, three scenarios give it a business story, then Graham's margin of safety.",
-    "ogTitleEn": "Week 21: Valuation Three — Sensitivity, Scenarios and the Margin of Safety",
+    "ogTitleEn": "Week 21: Valuation III — Sensitivity, Scenarios and the Margin of Safety",
     "ogDescriptionEn": "The same DCF with every assumption nudged to something that still sounds reasonable - a factor of two from the most conservative corner to the most optimistic. Turn the point into a range and act only when it is obviously cheap.",
   },
   {

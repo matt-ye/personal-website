@@ -127,7 +127,18 @@ const articleLd = {
     </script>
   </head>
   <body>
-    <slot />
+    {/* JSON-LD 宣告這些頁是 Article，但 DOM 裡沒有任何 <article>——
+        機器讀到的結構與宣告對不起來（YAEO 的 L2-NO-ARTICLE-TAG，26 週中英共 76 頁）。
+
+        包一層而不是改片段：26 個片段是從手刻頁原樣搬過來的，逐個改等於
+        26 次機會把內容改壞；在 layout 包一層是一個地方、零內容變動。
+
+        ⚠ 安全性查過：片段的 <style> 裡沒有任何 `body > x` 直接子選擇器
+        （grep 到的 `body>` 全是 `</tbody>` 的尾巴），所以多一層容器不會讓
+        既有樣式失配。日後若有人在片段裡加 body 直接子選擇器，會在這裡壞掉。 */}
+    <article>
+      <slot />
+    </article>
     {/* 週次頁彼此交叉連結，也連到 /writing/，但沒有首頁與 /projects/ 的出口。
         這裡無條件加——26 頁的結構一致，不需要像 StaticPageLayout 那樣逐頁判斷。 */}
     <SiteStrip />
