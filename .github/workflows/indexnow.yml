@@ -1,13 +1,18 @@
-# IndexNow 自動提交：push 到 main（= Cloudflare Pages 部署）後，
-# 把 sitemap 裡的全部網址提交給 api.indexnow.org。
-# Bing／Yandex／Naver／Seznam 即時收到；ChatGPT Search 靠 Bing 索引，
-# 所以這條對「被 AI 引用」有實際價值。Google 不支援 IndexNow，
-# 走原本的 sitemap 自然抓取，本 workflow 不處理。
+# IndexNow 自動提交：push 到 main 後，把 sitemap 裡的全部網址提交給
+# api.indexnow.org。Bing／Yandex／Naver／Seznam 即時收到；ChatGPT Search
+# 靠 Bing 索引，所以這條對「被 AI 引用」有實際價值。Google 不支援
+# IndexNow，走原本的 sitemap 自然抓取，本 workflow 不處理。
 #
 # ponytail: 提交的是整份 sitemap（~90 條），不是 diff 出來的變更頁。
 # 這個量級對 IndexNow 完全無害（濫用門檻是百萬級），換來零映射邏輯
 # ——不用維護「哪個 source 檔對應哪個網址」的規則表。
 # 若未來頁數成長到數千，再改成 diff 制。
+#
+# 2026-08-24：原本對 https://mattye.dev/sitemap-0.xml 發 HTTP 抓取，
+# 但 Cloudflare 把 GitHub Actions 的出口 IP 當機器人擋下（HTTP 403 +
+# 「Just a moment...」挑戰頁），連續 8 次重試、間隔 30 秒全部一樣，
+# 不是部署延遲、重試也無效（run 32701360538）。改成 checkout + 本機
+# build，直接讀 dist/ 產物，完全不對外抓 mattye.dev，繞開這層邊緣防護。
 name: IndexNow
 
 on:
@@ -15,49 +20,34 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   submit:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
+
       - name: Submit sitemap URLs to IndexNow
         run: |
           node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+
             const HOST = "mattye.dev";
             const KEY = "fa0eee755c45a6e7828a93590876a465";
-            const MAX_ATTEMPTS = 8;
-            const DELAY_MS = 30_000;
 
-            const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+            const xml = readFileSync("dist/sitemap-0.xml", "utf-8");
+            const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+            if (urls.length === 0) throw new Error("build 出來的 sitemap 是空的 — abort");
 
-            // Cloudflare Pages 由同一個 push 觸發建置，原本用固定 sleep 240
-            // 賭它部署完，但 2026-08-24 那次部署比預期慢，sleep 結束時剛好撞上
-            // 切版空窗期，抓到空白回應就直接 abort，白白錯過整批提交。
-            // 改成輪詢：抓不到非空 sitemap 就重試，而不是賭一次期限。
-            let urls = [];
-            let lastStatus, lastSnippet;
-            for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-              try {
-                const r = await fetch(`https://${HOST}/sitemap-0.xml`);
-                const xml = await r.text();
-                lastStatus = r.status;
-                lastSnippet = xml.slice(0, 200);
-                urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-              } catch (e) {
-                urls = [];
-                lastStatus = "fetch threw";
-                lastSnippet = String(e);
-              }
-              if (urls.length > 0) break;
-              console.log(`attempt ${attempt}/${MAX_ATTEMPTS}: HTTP ${lastStatus}, 0 <loc> matches, retrying in ${DELAY_MS / 1000}s`);
-              console.log(`  body snippet: ${JSON.stringify(lastSnippet)}`);
-              if (attempt < MAX_ATTEMPTS) await sleep(DELAY_MS);
-            }
-            if (urls.length === 0) throw new Error(`sitemap still empty after ${MAX_ATTEMPTS} attempts — abort (last HTTP ${lastStatus})`);
-
-            const keyRes = await fetch(`https://${HOST}/${KEY}.txt`);
-            if (!keyRes.ok) throw new Error(`key file not reachable: ${keyRes.status}`);
+            const localKey = readFileSync(`dist/${KEY}.txt`, "utf-8").trim();
+            if (localKey !== KEY) throw new Error(`key 檔內容對不上：${JSON.stringify(localKey)}`);
 
             const res = await fetch("https://api.indexnow.org/indexnow", {
               method: "POST",
