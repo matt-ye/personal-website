@@ -8,3 +8,13 @@
 # 語言的文章（保留中文 slug）。英文版的舊網址 301 過去，既有連結與 SEO 權重
 # 才不會斷。合併前兩篇是同一篇的翻譯，等於在互相稀釋排名。
 /writing/why-i-build-in-public   /writing/hello-world                 301
+
+# 捕夢網產生器沒有站內頁面——src/data/projects.ts 的條目直接把 url 指到
+# telaaurealab.com（slug 只用來當 React key）。但 Google 照別的專案的網址
+# 規律推測出 /dreamcatcher 與 /projects/dreamcatcher，抓到 404
+# （GSC 2026-08 回報）。站內查無任何連到這兩個路徑的 href，來源是外部連結
+# 或改版前的舊網址。301 到真正上線的位置，把這些點擊接回去。
+/dreamcatcher                    https://telaaurealab.com/            301
+/dreamcatcher/*                  https://telaaurealab.com/            301
+/projects/dreamcatcher           https://telaaurealab.com/            301
+/projects/dreamcatcher/*         https://telaaurealab.com/            301
