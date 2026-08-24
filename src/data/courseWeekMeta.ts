@@ -313,5 +313,12 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "descriptionEn": "Week 26 of 52: assemble Q1 and Q2 into an investment thesis - seven chapters, three sources for the counter-case, and checkable triggers for admitting error.",
     "ogTitleEn": "Week 26: Q2 Capstone — an investment thesis on one stock",
     "ogDescriptionEn": "An investment thesis is not a report, it is a decision contract written to the you of a year from now - it records why you bought, and what evidence would make you admit you were wrong.",
+  },
+  {
+    "slug": "week-27-returns-portfolio",
+    "title": "第 27 週：報酬衡量 TWR/MWR——模擬組合上線｜給家人的投資課 · Matt Ye",
+    "description": "52 週投資課第 27 週：算術 vs 幾何與波動拖累、TWR 與 MWR 各回答什麼問題、報酬引用三必答，並讓模擬組合正式上線。附波動拖累模擬器與 TWR/MWR 實驗台。",
+    "ogTitle": "第 27 週：報酬衡量 TWR/MWR——模擬組合上線 — 給家人的投資課",
+    "ogDescription": "策略 +80%、錢包卻虧 1 萬——TWR 與 MWR 各回答什麼問題。模擬組合上線，Q3 的實驗載具就位。"
   }
 ];
