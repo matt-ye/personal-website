@@ -21,23 +21,36 @@ jobs:
   submit:
     runs-on: ubuntu-latest
     steps:
-      # Cloudflare Pages 由同一個 push 觸發建置，等它部署完
-      # 再抓 sitemap，拿到的才是這次的新版本
-      - name: Wait for Cloudflare Pages deploy
-        run: sleep 240
-
       - name: Submit sitemap URLs to IndexNow
         run: |
           node --input-type=module -e '
             const HOST = "mattye.dev";
             const KEY = "fa0eee755c45a6e7828a93590876a465";
+            const MAX_ATTEMPTS = 8;
+            const DELAY_MS = 30_000;
+
+            const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+            // Cloudflare Pages 由同一個 push 觸發建置，原本用固定 sleep 240
+            // 賭它部署完，但 2026-08-24 那次部署比預期慢，sleep 結束時剛好撞上
+            // 切版空窗期，抓到空白回應就直接 abort，白白錯過整批提交。
+            // 改成輪詢：抓不到非空 sitemap 就重試，而不是賭一次期限。
+            let urls = [];
+            for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+              try {
+                const xml = await (await fetch(`https://${HOST}/sitemap-0.xml`)).text();
+                urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+              } catch {
+                urls = [];
+              }
+              if (urls.length > 0) break;
+              console.log(`attempt ${attempt}/${MAX_ATTEMPTS}: sitemap empty or unreachable, retrying in ${DELAY_MS / 1000}s`);
+              if (attempt < MAX_ATTEMPTS) await sleep(DELAY_MS);
+            }
+            if (urls.length === 0) throw new Error(`sitemap still empty after ${MAX_ATTEMPTS} attempts — abort`);
 
             const keyRes = await fetch(`https://${HOST}/${KEY}.txt`);
             if (!keyRes.ok) throw new Error(`key file not reachable: ${keyRes.status}`);
-
-            const xml = await (await fetch(`https://${HOST}/sitemap-0.xml`)).text();
-            const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
-            if (urls.length === 0) throw new Error("sitemap empty — abort");
 
             const res = await fetch("https://api.indexnow.org/indexnow", {
               method: "POST",
