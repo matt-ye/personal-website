@@ -36,18 +36,25 @@ jobs:
             // 切版空窗期，抓到空白回應就直接 abort，白白錯過整批提交。
             // 改成輪詢：抓不到非空 sitemap 就重試，而不是賭一次期限。
             let urls = [];
+            let lastStatus, lastSnippet;
             for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
               try {
-                const xml = await (await fetch(`https://${HOST}/sitemap-0.xml`)).text();
+                const r = await fetch(`https://${HOST}/sitemap-0.xml`);
+                const xml = await r.text();
+                lastStatus = r.status;
+                lastSnippet = xml.slice(0, 200);
                 urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-              } catch {
+              } catch (e) {
                 urls = [];
+                lastStatus = "fetch threw";
+                lastSnippet = String(e);
               }
               if (urls.length > 0) break;
-              console.log(`attempt ${attempt}/${MAX_ATTEMPTS}: sitemap empty or unreachable, retrying in ${DELAY_MS / 1000}s`);
+              console.log(`attempt ${attempt}/${MAX_ATTEMPTS}: HTTP ${lastStatus}, 0 <loc> matches, retrying in ${DELAY_MS / 1000}s`);
+              console.log(`  body snippet: ${JSON.stringify(lastSnippet)}`);
               if (attempt < MAX_ATTEMPTS) await sleep(DELAY_MS);
             }
-            if (urls.length === 0) throw new Error(`sitemap still empty after ${MAX_ATTEMPTS} attempts — abort`);
+            if (urls.length === 0) throw new Error(`sitemap still empty after ${MAX_ATTEMPTS} attempts — abort (last HTTP ${lastStatus})`);
 
             const keyRes = await fetch(`https://${HOST}/${KEY}.txt`);
             if (!keyRes.ok) throw new Error(`key file not reachable: ${keyRes.status}`);
