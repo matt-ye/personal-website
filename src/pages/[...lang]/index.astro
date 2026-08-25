@@ -148,22 +148,27 @@ const awards = getPersonalAwards();
             這個位置在 global.css 是固定尺寸——手機（@640 以下）180px、桌機 220px。
             原本寫 90vw／420px 灌水約兩倍，害 412px 視窗的手機挑 800w（28.6KB）
             而不是夠用的 360w（約 9KB）。斷點要用 640 才對得上 CSS 的 media query。
-            widths 最大 660＝桌機 220px × DPR 3；原本的 1200w 沒有任何裝置用得到。 */}
+            widths 最大 660＝桌機 220px × DPR 3；原本的 1200w 沒有任何裝置用得到。
+
+            width={660} 是給 src 回退值用的：不指定的話 Astro 會拿原始尺寸（3775px、303KB）
+            當 src。有 srcset 的瀏覽器一律走 srcset、不會下載它，所以沒有實害，
+            但那三個檔會白白進 build。指定後 src 落在 660w，width/height 屬性也跟著
+            變成 660×990——長寬比與原圖 3775×5663 相同（0.6666 vs 0.6667），CLS 不受影響。 */}
         <div class="hero-carousel" id="hero-carousel">
           <div class="carousel-slide active">
             <Image src={photoPointing} alt={isEn ? "Matt Ye speaking on stage" : "葉淨維 Matt Ye — 演講姿態"}
-                   widths={[220, 360, 440, 660]} sizes="(max-width: 640px) 180px, 220px"
+                   width={660} widths={[220, 360, 440, 660]} sizes="(max-width: 640px) 180px, 220px"
                    format="webp" quality={80} loading="eager" fetchpriority="high" />
           </div>
           <div class="carousel-slide">
             {/* 後兩張延後載入：它們要到第 4 秒才會出現，不該和首屏搶頻寬 */}
             <Image src={photoStanding} alt={isEn ? "Matt Ye, standing portrait" : "葉淨維 Matt Ye — 站姿"}
-                   widths={[220, 360, 440, 660]} sizes="(max-width: 640px) 180px, 220px"
+                   width={660} widths={[220, 360, 440, 660]} sizes="(max-width: 640px) 180px, 220px"
                    format="webp" quality={80} loading="lazy" />
           </div>
           <div class="carousel-slide">
             <Image src={photo5} alt={isEn ? "Matt Ye, smiling" : "葉淨維 Matt Ye — 笑容"}
-                   widths={[220, 360, 440, 660]} sizes="(max-width: 640px) 180px, 220px"
+                   width={660} widths={[220, 360, 440, 660]} sizes="(max-width: 640px) 180px, 220px"
                    format="webp" quality={80} loading="lazy" />
           </div>
         </div>
