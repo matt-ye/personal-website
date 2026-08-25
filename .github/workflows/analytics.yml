@@ -36,7 +36,13 @@ jobs:
           GIST_ID: ${{ secrets.GIST_ID }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_D1_DB_ID: ${{ secrets.CF_D1_DB_ID }}
-          CF_D1_TOKEN: ${{ secrets.CF_DEPLOY_TOKEN }} # 同一把自動化 token,見 runbook 第 10 步
+          # 這一步只需要 D1 讀寫，但 CF_DEPLOY_TOKEN 同時帶著 Workers Scripts:Edit 與
+          # Workers Routes:Edit@mattye.dev——一把能部署 Worker 的 token，每天被注入四次
+          # 只為了跑一句 D1 query。改用專門的 CF_D1_TOKEN（Cloudflare 主控台的 data-stores，
+          # 權限只有 D1／KV／R2），部署 token 就只在真的要部署時才出現。
+          # `||` 是為了讓這個改動不需要跟 secret 設定同時發生：CF_D1_TOKEN 沒設時
+          # 自動沿用舊的那把，設好之後下一次執行就自動切過去。切換完成後可以拿掉後半。
+          CF_D1_TOKEN: ${{ secrets.CF_D1_TOKEN || secrets.CF_DEPLOY_TOKEN }}
         run: node scripts/fetch-analytics.mjs
       - name: Upload snapshot artifact (debug)
         if: always()
