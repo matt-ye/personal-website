@@ -163,13 +163,41 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <slot name="head" />
 
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1RKL72DPPW"></script>
+    <!-- Google Analytics 4 — 外部腳本延到 load 事件之後才注入。
+         gtag.js（169KB）會在執行期自己再拉一個第一方容器（/ibvp/，181KB），
+         合計 350KB＝首頁 482KB 的 72.6%，在手機 4× CPU 節流下製造三個長任務
+         （103＋102＋77ms）。實測 LCP 四段分解裡「元素渲染延遲」1152ms、佔 87%——
+         圖片 227ms 就下載完了，慢的是主執行緒沒空畫。所以把它移出 LCP 關鍵路徑。
+
+         下面的 dataLayer／gtag shim 必須維持 eager，不可一起延後：
+         GA 載入前的 gtag() 呼叫（AnalyticsEvents.astro 的點擊事件）會先排進 dataLayer，
+         gtag.js 載入後照樣補送，事件不會掉。
+         load 之後再用 requestIdleCallback 讓出一次：實測資源 713ms 就收工、LCP 卻在 1323ms，
+         load 很可能早於 LCP 繪製，只等 load 會讓長任務又擠回窗口內。idle callback 定義上
+         要等主執行緒沒有待辦渲染工作才跑，正好閃開繪製。timeout 2000 是保底——
+         頁面若一直忙，最晚 2 秒仍會載，不會完全收不到資料。
+         代價：在 GA 載入前就離開的訪客不計入，跳出率會略微失真。 -->
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-1RKL72DPPW');
+
+      (function () {
+        function loadGA() {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-1RKL72DPPW';
+          document.head.appendChild(s);
+        }
+        function scheduleGA() {
+          // rIC 不是每個瀏覽器都有（Safari 16.4 以前沒有）——沒有就直接載，退回原本的 load 時機
+          if (typeof requestIdleCallback === 'function') requestIdleCallback(loadGA, { timeout: 2000 });
+          else loadGA();
+        }
+        if (document.readyState === 'complete') scheduleGA();
+        else addEventListener('load', scheduleGA, { once: true });
+      })();
     </script>
   </head>
   <body>

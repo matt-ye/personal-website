@@ -199,7 +199,8 @@ const alternates = hasEn
     {/* Google Analytics 4——與 BaseLayout 同一組設定。
         遷移前這些頁沒有 GA，靠 astro.config 的 inject-ga-static-html 在建置後
         用字串手術補上。現在頁面由 Astro 產生，直接放在這裡；那個外掛也就不必再跑。 */}
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1RKL72DPPW"></script>
+    <!-- Google Analytics 4 — 外部腳本延到 load 之後才注入（理由見 BaseLayout.astro）。
+         下面的 shim 維持 eager，載入前的 gtag() 呼叫會排進 dataLayer 不會掉。 -->
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -207,6 +208,22 @@ const alternates = hasEn
       }
       gtag('js', new Date());
       gtag('config', 'G-1RKL72DPPW');
+
+      (function () {
+        function loadGA() {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-1RKL72DPPW';
+          document.head.appendChild(s);
+        }
+        function scheduleGA() {
+          // rIC 不是每個瀏覽器都有（Safari 16.4 以前沒有）——沒有就直接載，退回原本的 load 時機
+          if (typeof requestIdleCallback === 'function') requestIdleCallback(loadGA, { timeout: 2000 });
+          else loadGA();
+        }
+        if (document.readyState === 'complete') scheduleGA();
+        else addEventListener('load', scheduleGA, { once: true });
+      })();
     </script>
   </head>
   <body>

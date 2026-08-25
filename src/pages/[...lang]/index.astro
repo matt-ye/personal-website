@@ -143,22 +143,27 @@ const awards = getPersonalAwards();
         {/* 用 <Image> 而不是 <img>：原始檔是 6.5–7.5 MB 的相機直出檔，
             三張加起來 20.8 MB，是 LCP 106 秒的真正原因（不是輪播）。
             Astro 會在 build 期轉成 WebP 並產生多種尺寸，瀏覽器依螢幕挑最小的那份。
-            widths 上限 1200 是因為這個位置在版面上最多就這麼寬，再大也看不出差別。 */}
+
+            sizes 必須對上實際版面，否則上面那句「挑最小的那份」不成立：
+            這個位置在 global.css 是固定尺寸——手機（@640 以下）180px、桌機 220px。
+            原本寫 90vw／420px 灌水約兩倍，害 412px 視窗的手機挑 800w（28.6KB）
+            而不是夠用的 360w（約 9KB）。斷點要用 640 才對得上 CSS 的 media query。
+            widths 最大 660＝桌機 220px × DPR 3；原本的 1200w 沒有任何裝置用得到。 */}
         <div class="hero-carousel" id="hero-carousel">
           <div class="carousel-slide active">
             <Image src={photoPointing} alt={isEn ? "Matt Ye speaking on stage" : "葉淨維 Matt Ye — 演講姿態"}
-                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   widths={[220, 360, 440, 660]} sizes="(max-width: 640px) 180px, 220px"
                    format="webp" quality={80} loading="eager" fetchpriority="high" />
           </div>
           <div class="carousel-slide">
             {/* 後兩張延後載入：它們要到第 4 秒才會出現，不該和首屏搶頻寬 */}
             <Image src={photoStanding} alt={isEn ? "Matt Ye, standing portrait" : "葉淨維 Matt Ye — 站姿"}
-                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   widths={[220, 360, 440, 660]} sizes="(max-width: 640px) 180px, 220px"
                    format="webp" quality={80} loading="lazy" />
           </div>
           <div class="carousel-slide">
             <Image src={photo5} alt={isEn ? "Matt Ye, smiling" : "葉淨維 Matt Ye — 笑容"}
-                   widths={[400, 800, 1200]} sizes="(max-width: 768px) 90vw, 420px"
+                   widths={[220, 360, 440, 660]} sizes="(max-width: 640px) 180px, 220px"
                    format="webp" quality={80} loading="lazy" />
           </div>
         </div>
