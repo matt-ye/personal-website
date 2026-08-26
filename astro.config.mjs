@@ -799,6 +799,84 @@ const lastmodByUrl = new Map([
   [`${SITE}/writing/`, newest(ess, blog, oms, mkt)],
 ]);
 
+/*
+ * 把鎖在 modal JS 裡的來源連結，也輸出一份到伺服器渲染的 HTML。
+ *
+ * investment-notes 這類手刻頁把 71 個 modal 的內容（含 38 張卡的來源註記）
+ * 放在 <script> 的 MODALS 物件裡，要點開彈窗才看得到。後果是：
+ *   · 讀者不點就看不到出處——而那頁自己寫著「可查證的事實已附官方出處」
+ *   · 爬蟲與 AI 讀到的是沒有引用的版本（不執行 JS）
+ * 實測該頁在 SEO 檢核裡「外部引用 0 個」，但 modal 裡其實有 17 個網域，
+ * 包含 SEC.gov、federalreserve.gov、twse.com.tw、Damodaran(NYU Stern)。
+ *
+ * 這裡不搬動 modal，只在 </main> 前補一份靜態清單。
+ * **MODALS 仍是唯一真相**，清單是它的衍生物，改 modal 會自動同步。
+ *
+ * 為什麼放在 build 期而不是寫進原始 HTML：那樣要為每個連結標籤新增
+ * 中英對照條目（check-translations.mjs 會擋），而標籤本來就已經有翻譯了
+ * ——英文頁的 script 裡是 MODALS_EN。從各自的產物抽，新增的可翻譯字串是零。
+ */
+function injectModalSources() {
+  return {
+    name: 'inject-modal-sources',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        const pages = [];
+        const walk = (d) => {
+          for (const entry of readdirSync(d)) {
+            const p = join(d, entry);
+            if (statSync(p).isDirectory()) { walk(p); continue; }
+            if (entry === 'index.html') pages.push(p);
+          }
+        };
+        walk(root);
+
+        let injectedPages = 0, injectedLinks = 0;
+        for (const file of pages) {
+          const html = readFileSync(file, 'utf8');
+          if (!html.includes('class="source-link"')) continue;
+          const closeMain = html.lastIndexOf('</main>');
+          if (closeMain === -1) continue;
+
+          /* 只從 <script> 裡抽——正文若已經有這些連結就不必再列一次 */
+          const scripts = (html.match(/<script\b[\s\S]*?<\/script>/gi) || []).join('');
+          const visible = html.replace(/<script\b[\s\S]*?<\/script>/gi, '');
+          const seen = new Set();
+          const items = [];
+          for (const m of scripts.matchAll(/<a class="source-link" href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)) {
+            const [, href, rawLabel] = m;
+            if (seen.has(href)) continue;
+            if (visible.includes(`href="${href}"`)) continue; // 正文已經有了
+            seen.add(href);
+            const label = rawLabel.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').replace(/^[→\s]+/, '').trim();
+            if (label) items.push({ href, label });
+          }
+          if (!items.length) continue;
+
+          /* 標題依頁面自己宣告的語言決定，不另建對照表 */
+          const isEn = /<html[^>]*\blang="en"/i.test(html);
+          const heading = isEn ? 'Sources cited in this page' : '本頁引用的來源';
+          const note = isEn
+            ? 'Collected from the cards above, so they are readable without opening each one.'
+            : '彙整自上方各張卡片的來源註記，不必逐一點開也看得到。';
+
+          const section =
+            `<section class="modal-sources" aria-labelledby="modal-sources-h">` +
+            `<h2 id="modal-sources-h">${heading}</h2><p>${note}</p><ul>` +
+            items.map((x) => `<li><a href="${x.href}" target="_blank" rel="noopener noreferrer">${x.label}</a></li>`).join('') +
+            `</ul></section>`;
+
+          writeFileSync(file, html.slice(0, closeMain) + section + html.slice(closeMain), 'utf8');
+          injectedPages++;
+          injectedLinks += items.length;
+        }
+        logger.info(`modal sources surfaced: ${injectedLinks} link(s) across ${injectedPages} page(s)`);
+      },
+    },
+  };
+}
+
 export default defineConfig({
   site: SITE,
   output: 'static',
@@ -832,6 +910,8 @@ export default defineConfig({
        麵包屑則從 dist 的目錄結構推導，新增內容不必另外設定。 */
     injectArticleDates(lastmodByUrl),
     injectBreadcrumbs(),
+    /* 必須排在 verify* 之前：它改寫 dist 的 HTML，驗證要看到改寫後的結果 */
+    injectModalSources(),
     verifyRssFeed(),
     verifyI18nHreflang(),
     verifyI18nMeta(),

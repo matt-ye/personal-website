@@ -243,6 +243,13 @@ export const MAP = {
   '區塊 ② ／ 必讀導讀 · 約 2 小時，與講義穿插':
     'Block ② / Required reading · about 2 hours, interleaved with the notes',
   '讀什麼、抓什麼': 'What to read, what to take from it',
+  '數字只在原典裡': 'The numbers live only in the originals',
+  /* 引號內是 1997 年信的原話，非回譯：
+     "per-share book value has grown from $19 to $25,488, a rate of 24.1% compounded annually"
+     — berkshirehathaway.com/letters/1997.html */
+  '——1997 年信自己算了一筆帳：每股帳面價值 33 年間從 19 美元成長到 25,488 美元，年化 24.1%；語錄不會給你這種可查證的基準線。來源：':
+    ' — the 1997 letter does the arithmetic itself: per-share book value "has grown from $19 to $25,488, a rate of 24.1% compounded annually" over 33 years; a quotation will never hand you a checkable baseline like that. Source: ',
+  '1997 年信 ↗': 'the 1997 letter ↗',
   '主時數': 'Main hours',
   'Berkshire 股東信官網 ↗': 'The Berkshire shareholder letters site ↗',
   '1988 年信 ↗': 'the 1988 letter ↗',
