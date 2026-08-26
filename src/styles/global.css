@@ -3077,3 +3077,31 @@ footer .container {
 [data-theme="dark"] .peop-venn .v-p { fill: #c4b5fd; }   /* 深底 10.48:1 */
 [data-theme="dark"] .peop-venn .v-e { fill: #5eead4; }   /* 13.08:1 */
 [data-theme="dark"] .peop-venn .v-o { fill: #fcd34d; }   /* 13.42:1 */
+
+/* ===== build 期注入的「本頁引用的來源」區塊 =====
+   由 astro.config.mjs 的 inject-modal-sources 產生：把鎖在 modal JS 裡的
+   來源連結，也輸出一份到伺服器渲染的 HTML。原因與取捨見該外掛的註解。 */
+.modal-sources {
+  margin: var(--spacing-xl) 0 var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+.modal-sources h2 { font-size: 1.15rem; margin-bottom: .35rem; }
+.modal-sources > p {
+  color: var(--color-text-muted);
+  font-size: .86rem;
+  margin-bottom: .9rem;
+}
+.modal-sources ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: .45rem;
+}
+.modal-sources li { font-size: .9rem; line-height: 1.5; }
+.modal-sources a {
+  color: var(--color-text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border);
+}
+.modal-sources a:hover { color: var(--color-accent); border-bottom-color: var(--color-accent); }
