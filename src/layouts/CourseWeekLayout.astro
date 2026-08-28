@@ -153,9 +153,17 @@ const articleLd = {
         ⚠ 安全性查過：片段的 <style> 裡沒有任何 `body > x` 直接子選擇器
         （grep 到的 `body>` 全是 `</tbody>` 的尾巴），所以多一層容器不會讓
         既有樣式失配。日後若有人在片段裡加 body 直接子選擇器，會在這裡壞掉。 */}
-    <article>
-      <slot />
-    </article>
+    {/* ⚠ <main> 必須包在 <article> 外面，不能反過來——HTML 規範明訂
+        main 不得是 article／aside／header／footer／nav 的後代。
+        原本 <main> 藏在各片段裡，變成 <article><main> 的無效巢狀（36 個片段全中），
+        且有 5 個片段根本沒有 main，那 10 頁（×中英）完全沒有地標。
+        現在地標統一由 layout 給，片段裡原本的 <main> 已改成同屬性的 <div>，
+        巢狀深度不變，既有樣式不受影響。 */}
+    <main>
+      <article>
+        <slot />
+      </article>
+    </main>
     {/* 週次頁彼此交叉連結，也連到 /writing/，但沒有首頁與 /projects/ 的出口。
         這裡無條件加——26 頁的結構一致，不需要像 StaticPageLayout 那樣逐頁判斷。 */}
     <SiteStrip />
