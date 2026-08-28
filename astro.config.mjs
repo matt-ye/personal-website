@@ -1,9 +1,10 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import { readdirSync, statSync, readFileSync, writeFileSync } from 'fs';
-import { join, relative, sep } from 'path';
+import { readdirSync, statSync, readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join, relative, sep, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { htmlToMarkdown } from './scripts/lib/html-to-markdown.mjs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const SITE = 'https://mattye.dev';
@@ -877,6 +878,107 @@ function injectModalSources() {
   };
 }
 
+// AI agent 取用的 markdown 分身：每個頁面在 /md/ 底下產一份 markdown，
+// 並在該頁 <head> 加 <link rel="alternate" type="text/markdown">。
+//
+// 為什麼要有：首頁 HTML 73KB，去掉標籤後只剩約 10KB 是正文——agent 抓一次
+// 有六成以上的位元組是版面。llms.txt 只給網站地圖層級的摘要，碰不到單頁內容。
+//
+// ⚠ 為什麼放在 /md/ 前綴，而不是 /about.md 這種更常見的形狀：
+//   Cloudflare Pages 的 _headers **只允許單一 splat 且貪婪吃到底**，
+//   寫不出 /*.md 這種副檔名比對（官方文件明載 "You may only include a
+//   single splat in the URL"）。放在單一前綴底下，public/_headers 一條
+//   `/md/*` 就能同時釘住 Content-Type 與 X-Robots-Tag: noindex。
+//   noindex 是刻意的：markdown 分身不該和本尊在搜尋結果裡互相稀釋，
+//   但 noindex 不影響 agent 直接抓取（那是索引控制，不是存取控制）。
+//
+// ⚠ 排在 injectModalSources 之後：那些外掛會改寫 dist 的 HTML，
+//   markdown 要反映改寫後的最終內容。
+function emitMarkdownTwins() {
+  const MD_DIR = 'md';
+  return {
+    name: 'emit-markdown-twins',
+    hooks: {
+      'astro:build:done': ({ dir, logger }) => {
+        const root = fileURLToPath(dir);
+        const pages = [];
+        const walk = (d) => {
+          for (const entry of readdirSync(d)) {
+            const p = join(d, entry);
+            if (statSync(p).isDirectory()) { walk(p); continue; }
+            if (entry === 'index.html') pages.push(p);
+          }
+        };
+        walk(root);
+
+        const emitted = [];
+        let skippedNoindex = 0, skippedEmpty = 0;
+
+        for (const file of pages) {
+          const segments = relative(root, file).split(sep).slice(0, -1);
+          if (segments[0] === MD_DIR) continue;
+          const route = segments.length ? `/${segments.join('/')}/` : '/';
+          const html = readFileSync(file, 'utf8');
+
+          /* noindex 的頁是刻意對搜尋隱形的（dashboard、prototype）。
+             不因為換一種格式就把它們攤出來——沿用既有意圖，不另立判斷。 */
+          const robots = html.match(/<meta[^>]+name=["']robots["'][^>]*>/i)?.[0] ?? '';
+          if (/noindex/i.test(robots)) { skippedNoindex++; continue; }
+
+          const body = htmlToMarkdown(html, { baseUrl: SITE + route });
+          if (!body) { skippedEmpty++; continue; }
+
+          const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? '')
+            .replace(/\s+/g, ' ').trim();
+          const lang = html.match(/<html[^>]+lang=["']([^"']+)["']/i)?.[1] ?? 'zh-TW';
+
+          /* 不寫時間戳：同樣的輸入要產生同樣的輸出，否則每次 build 都是新內容 */
+          const front = [
+            '---',
+            `title: ${JSON.stringify(title)}`,
+            `source: ${SITE}${route}`,
+            `lang: ${lang}`,
+            '---',
+            '',
+          ].join('\n');
+
+          const mdRel = segments.length ? `${segments.join('/')}.md` : 'index.md';
+          const mdPath = join(root, MD_DIR, ...mdRel.split('/'));
+          mkdirSync(dirname(mdPath), { recursive: true });
+          writeFileSync(mdPath, front + body + '\n', 'utf8');
+
+          const href = `/${MD_DIR}/${mdRel}`;
+          const link = `<link rel="alternate" type="text/markdown" href="${href}">`;
+          if (!html.includes(link)) {
+            const headClose = html.indexOf('</head>');
+            if (headClose !== -1) {
+              writeFileSync(file, html.slice(0, headClose) + link + html.slice(headClose), 'utf8');
+            }
+          }
+          emitted.push({ file, href, mdPath });
+        }
+
+        /* 自我驗證：產物不回頭讀一次，就只是「我以為寫出去了」。
+           三件事各自出過錯的可能不同——檔案沒寫成、內容空掉、連結沒注入。 */
+        const broken = [];
+        for (const e of emitted) {
+          if (!existsSync(e.mdPath)) { broken.push(`${e.href} 檔案不存在`); continue; }
+          if (readFileSync(e.mdPath, 'utf8').trim().length < 80) broken.push(`${e.href} 內容過短`);
+          if (!readFileSync(e.file, 'utf8').includes(`href="${e.href}"`)) broken.push(`${e.href} 的 link 沒注入`);
+        }
+        if (broken.length) {
+          throw new Error(`markdown 分身驗證失敗（${broken.length}）：\n  ${broken.slice(0, 10).join('\n  ')}`);
+        }
+
+        logger.info(
+          `markdown twins: ${emitted.length} page(s) → /${MD_DIR}/`
+          + `（略過 noindex ${skippedNoindex}、無 <main> ${skippedEmpty}）`,
+        );
+      },
+    },
+  };
+}
+
 export default defineConfig({
   site: SITE,
   output: 'static',
@@ -912,6 +1014,9 @@ export default defineConfig({
     injectBreadcrumbs(),
     /* 必須排在 verify* 之前：它改寫 dist 的 HTML，驗證要看到改寫後的結果 */
     injectModalSources(),
+    /* 同樣必須排在 verify* 之前，而且要排在 injectModalSources 之後——
+       markdown 分身要反映所有改寫外掛跑完後的最終 HTML */
+    emitMarkdownTwins(),
     verifyRssFeed(),
     verifyI18nHreflang(),
     verifyI18nMeta(),
