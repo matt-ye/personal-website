@@ -13,6 +13,10 @@
 # 「Just a moment...」挑戰頁），連續 8 次重試、間隔 30 秒全部一樣，
 # 不是部署延遲、重試也無效（run 32701360538）。改成 checkout + 本機
 # build，直接讀 dist/ 產物，完全不對外抓 mattye.dev，繞開這層邊緣防護。
+#
+# 2026-08-28：判定與輸出兩處都修，理由見步驟內註解。
+#   ① 一律印出回應 body——舊版只印 status，於是 403 連續四天沒人知道原因。
+#   ② 202 不再算成功。
 name: IndexNow
 
 on:
@@ -49,17 +53,43 @@ jobs:
             const localKey = readFileSync(`dist/${KEY}.txt`, "utf-8").trim();
             if (localKey !== KEY) throw new Error(`key 檔內容對不上：${JSON.stringify(localKey)}`);
 
+            const keyLocation = `https://${HOST}/${KEY}.txt`;
             const res = await fetch("https://api.indexnow.org/indexnow", {
               method: "POST",
               headers: { "Content-Type": "application/json; charset=utf-8" },
-              body: JSON.stringify({
-                host: HOST,
-                key: KEY,
-                keyLocation: `https://${HOST}/${KEY}.txt`,
-                urlList: urls,
-              }),
+              body: JSON.stringify({ host: HOST, key: KEY, keyLocation, urlList: urls }),
             });
+
+            // 一律印出 body。這一行就是「四天不知道錯在哪」與「一次提交就定位」的差別：
+            // 補上之後立刻看到 errorCode: UserForbiddedToAccessSite（金鑰驗證沒過）。
+            const body = await res.text();
             console.log(`submitted ${urls.length} URLs — HTTP ${res.status}`);
-            // 200 = 收到；202 = 收到、key 驗證排程中。其他都算失敗
-            if (res.status !== 200 && res.status !== 202) process.exit(1);
+            console.log(`response: ${body || "(空)"}`);
+
+            if (res.status === 200) process.exit(0);
+
+            // 202 也算失敗——這是刻意的，不是漏寫。
+            //
+            // 202 的語意是「收到了，金鑰驗證排程中」，不是「成功」。本 workflow 從
+            // 2026-08-17 建立到 2026-08-28 之間，歷史上唯一的兩次綠勾
+            // （run 32702097502／32702542357）就是 202；Bing 事後驗證失敗，之後每一次
+            // 都是 403。等於一個從未真正生效的整合，被兩個綠勾蓋住了四天。
+            //
+            // 代價是首次提交、金鑰還沒驗過時會紅一次。用一次假紅換掉「永遠假綠」是划算的
+            // ——同 AI-013：報一個數字之前，先問看到它的人會去做什麼。
+            // 若日後金鑰已穩定驗過、想讓 202 恢復成通過，改這裡並在 commit 說明理由。
+            if (res.status === 202) {
+              console.log("::error::IndexNow 回 202 = 金鑰驗證排程中，不是成功。驗證通過時會回 200。");
+              console.log(`若持續出現，代表 Bing 抓不到或不接受 ${keyLocation}`);
+              process.exit(1);
+            }
+
+            if (res.status === 403) {
+              console.log("::error::403 = 金鑰驗證沒過（常見 errorCode: UserForbiddedToAccessSite）");
+              console.log("檢查順序：");
+              console.log(`  1. ${keyLocation} 線上可取且內容等於檔名（本步驟已先驗過本機檔）`);
+              console.log("  2. Cloudflare 安全事件有沒有擋掉 Bing 的驗證器——這個 zone 擋過 GitHub Actions 的出口 IP");
+              console.log("  3. Bing Webmaster Tools 裡的 IndexNow 金鑰狀態");
+            }
+            process.exit(1);
           '
