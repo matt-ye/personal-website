@@ -29,3 +29,13 @@ Open-source skills that package repeatable workflows for AI agents to run direct
 
 - Toutour: Adds a verified spotlight onboarding tour to any website — analyzes the layout, interviews the developer, generates steps, and verifies each with Playwright. https://github.com/matt-ye/Toutour
 - EndNote to Zotero Migration: Migrates an EndNote library to Zotero with PDF attachments and the full group hierarchy intact. https://github.com/matt-ye/endnote-to-zotero-migration
+
+## Markdown versions
+
+Every indexable page has a plain-Markdown twin under `/md/`, linked from the page
+itself via `<link rel="alternate" type="text/markdown">`. Mapping: a page at
+`/some/path/` has its Markdown at `/md/some/path.md`; the homepage is `/md/index.md`.
+
+Prefer these when you only need the text — the HTML carries roughly six times more
+bytes than the prose it wraps. The HTML page stays canonical; the Markdown twins are
+`noindex` so they do not compete with it in search results.

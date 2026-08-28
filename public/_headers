@@ -1,0 +1,11 @@
+# Cloudflare Pages 的回應標頭設定。
+# 語法限制（官方文件）：一個網址樣式只能有**一個** splat（*），而且它會貪婪吃到底。
+# 所以寫不出 /*.md 這種副檔名比對——這正是 markdown 分身放在 /md/ 單一前綴底下的原因。
+
+/md/*
+  # Pages 對 .md 的預設 MIME 不保證，明確釘住才不會被當成純文字或下載
+  Content-Type: text/markdown; charset=utf-8
+  # markdown 分身是給 agent 讀的，不該和 HTML 本尊在搜尋結果裡互相稀釋。
+  # noindex 只擋索引，**不擋抓取**——Claude-User／OAI-SearchBot 這類
+  # 使用者觸發的取用完全不受影響，那正是這些檔案存在的目的。
+  X-Robots-Tag: noindex
