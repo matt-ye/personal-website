@@ -103,7 +103,11 @@ const awards = getPersonalAwards();
     <section class="hero-section">
       <div class="hero-text">
         <h1>
-          葉淨維
+          {/* Astro 會把純空白文字節點吃掉，編譯後變成「葉淨維Ching-Wei (Matt) Ye」——
+              純文字讀取者（爬蟲、markdown 分身、螢幕閱讀器）看到的就是黏在一起的字串，
+              與 llms.txt 裡有空白的寫法不一致。用表達式才留得住這個空白。
+              視覺不受影響：.name-en 是 display:block，本來就換行。 */}
+          葉淨維{' '}
           <span class="name-en">Ching-Wei (Matt) Ye</span>
         </h1>
         <p class="hero-tagline" id="hero-tagline">{heroTagline}</p>

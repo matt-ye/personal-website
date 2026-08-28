@@ -62,10 +62,10 @@ export function htmlToMarkdown(html, opts = {}) {
   /* 貪婪比對到最後一個收尾標籤：<article class="tribute"> 底下還巢狀著 <article>，
      非貪婪會在第一個 </article> 就切斷，整篇只剩開頭。實測踩過。 */
   const mainMatch = html.match(/<main\b[^>]*>([\s\S]*)<\/main>/i)
-    /* 站上有 5 個手刻頁（×中英＝10 頁）沒有 <main> 地標，內容包在 <article> 裡。
-       那是既有的 HTML 結構問題（缺少地標，對輔助技術與抓取都不利），
-       但**不該因此讓那些頁沒有 markdown 分身**——退而求其次用 <article>。
-       ⚠ 這是相容措施不是正解：真正的修法是那幾頁補上 <main>。 */
+    /* 防禦性後備。曾經有 5 個手刻頁（×中英＝10 頁）沒有 <main>，內容只包在 <article> 裡；
+       那批已於 2026-08-28 修掉——地標統一由 StaticPageLayout／CourseWeekLayout 提供，
+       全站每頁都是「剛好一個 <main>，且不巢在 <article> 內」。
+       這個分支留著是為了新頁若漏掉地標時分身不會整頁消失，**不是常態路徑**。 */
     || html.match(/<article\b[^>]*>([\s\S]*)<\/article>/i);
   /* 兩者都沒有的頁（例如純導向頁）就不產分身，交給呼叫端判斷 */
   if (!mainMatch) return '';
