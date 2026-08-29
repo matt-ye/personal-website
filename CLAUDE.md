@@ -69,6 +69,61 @@
 - 已知待修：25 頁課程英文版 title 超過 60 字元（L1-TITLE-LONG）。新頁的英文 title
   控制在 60 字元內，不要再加長這個名單
 
+### 頁面指紋清單 `data/page-manifest.json`（跨 session 的內容變更帳本）
+
+每頁 markdown 分身的內容指紋，**進版控**。用途不只提交給搜尋引擎——它是
+「**哪一頁的內容在哪一天真的變了**」的可讀紀錄，接手時直接查得到最新進度。
+
+```json
+"https://mattye.dev/about/": { "hash": "0b6b…", "lastChanged": "2026-08-30" }
+```
+
+```bash
+node scripts/page-manifest.mjs diff                  # 列出與清單有差異的網址
+node scripts/page-manifest.mjs build 2026-08-30      # 重算並直接寫回清單（不走 stdout）
+```
+
+- **指紋算在 `dist/md/` 的 markdown 分身，不是整份 HTML。** HTML 的 `<head>` 帶著
+  vite 資源雜湊，改一次全站 CSS 會讓 119 頁全部「看起來變了」，但內容一個字沒動。
+  分身只含 `<main>` 的語意內容。實測：同一份原始碼連續 build 兩次，指紋完全一致。
+- `lastChanged` **只在指紋改變時才更新**，所以沒有內容變更的 build 不會產生雜訊 commit。
+- ⚠ **不要用 `> data/page-manifest.json` 重導向產生它**——shell 會在腳本執行前先清空檔案，
+  於是讀到空檔、`lastChanged` 全部重置。腳本自己寫檔就是為了避開這個坑。
+
+### 搜尋引擎提交：Bing URL Submission API（`.github/workflows/bing-url-submission.yml`）
+
+push 到 `main` 後，把**指紋有變動的頁**提交給 Bing。金鑰在 repo secret
+`BING_WEBMASTER_API_KEY`（BWT → Settings → API access 取得）。
+
+> ⚠ **配額是硬約束：DailyQuota 100、MonthlyQuota 300，而全站 119 頁。**
+> 所以**絕對不能改回「每次 push 送整份 sitemap」**——那樣第三次 push 就爆掉。
+> 查當前配額：`GetUrlSubmissionQuota`。
+
+- 成功回應是 `{"d":null}`，**光看狀態碼分不出有沒有真的收下**——workflow 會回查配額確認有扣。
+- 配額不足時**不靜默截斷**：逐條列出未提交的網址，且 **manifest 不更新**，
+  那些頁下次仍會被判為變動並重試。若照常更新 manifest，它們會被當成已處理、永遠不再送。
+- 金鑰走 query string（微軟的設計）——**任何情況都不要把整串 URL 印進 log**。
+- 回寫 manifest 的 commit 用預設 `GITHUB_TOKEN`，GitHub 刻意不讓這種 commit 觸發 workflow，
+  所以不會遞迴（同 `sync-sheets.yml`）。
+
+#### ⚠ 不要改回 IndexNow
+
+`api.indexnow.org` 對本站一律回 **403 `UserForbiddedToAccessSite`**，2026-08 查證過，
+**六個假設全部被實測推翻**：金鑰檔內容（三處逐位元組一致）、Cloudflare 攔截
+（Security Events 篩該路徑 → 無事件）、Bing 抓不到（BWT Live URL 測試 → 可索引）、
+需要 BWT 產生的金鑰（那顆 Generate 是公開文件頁的前端隨機產生器，重整值就變）、
+尾端換行（拿掉仍 403）、`(host, key)` 組合卡住（換全新金鑰仍 403）。
+
+決定性對照組：**同一份請求、同一把金鑰、同一個金鑰檔，Yandex 回 202、Bing 回 403。**
+問題在 Bing 那一側，repo 裡沒有東西能修它。
+
+Yandex 那條仍保留在同一支 workflow 裡（`continue-on-error`，零配額成本），
+用的是 `public/121a93972fa37400d8b6c87a13075582.txt`。**那個金鑰檔不要刪。**
+
+> 另一個教訓：舊版 workflow 把 IndexNow 的 **202 當成成功**，而 202 的語意是
+> 「收到了，金鑰驗證排程中」。歷史上唯二的兩次綠勾都是 202，於是一個從未生效的
+> 整合被綠勾蓋了四天。**判定「成功」之前，先確認那個狀態碼真的代表事情做完了。**
+
 ### CSS
 - **不使用 Tailwind**，使用 plain CSS
 - 所有全域樣式在 `src/styles/global.css`
@@ -158,3 +213,7 @@ draft: false   # true 時不顯示在列表
 - 不使用 CSS framework（Tailwind、Bootstrap 等）
 - 不使用 `npm run build` 以外的 build 工具
 - 不修改 Cloudflare Pages 設定，除非 owner 明確要求
+- **不把搜尋引擎提交改回「每次 push 送整份 sitemap」**——Bing 的月配額只有 300，全站 119 頁，第三次 push 就爆（見〈搜尋引擎提交〉）
+- **不改回 IndexNow**（`api.indexnow.org`）——對本站一律 403，六個假設實測全推翻，問題在 Bing 端
+- **不刪 `public/121a93972fa37400d8b6c87a13075582.txt`**——那是仍在用的 Yandex IndexNow 金鑰檔
+- **不把含 API 金鑰的網址印進 log**——Bing 的金鑰走 query string
