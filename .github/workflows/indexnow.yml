@@ -44,7 +44,7 @@ jobs:
             import { readFileSync } from "node:fs";
 
             const HOST = "mattye.dev";
-            const KEY = "fa0eee755c45a6e7828a93590876a465";
+            const KEY = "121a93972fa37400d8b6c87a13075582";
 
             const xml = readFileSync("dist/sitemap-0.xml", "utf-8");
             const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
