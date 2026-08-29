@@ -1,0 +1,158 @@
+# 內容變更後，把「真的改了的頁面」提交給 Bing 的 URL Submission API。
+#
+# ## 為什麼不是 IndexNow
+#
+# 原本走 api.indexnow.org，但該端點對本站一律回 403 UserForbiddedToAccessSite。
+# 六個假設全部被實測推翻（金鑰檔內容、Cloudflare 攔截、Bing 抓不到、需要 BWT
+# 註冊的金鑰、尾端換行、(host,key) 組合卡住），最後用對照組確認是 Bing 端問題：
+# **同一份請求、同一把金鑰、同一個金鑰檔送給 Yandex 回 202，送給 Bing 回 403。**
+#
+# 改走帶身分驗證的 Bing Webmaster URL Submission API，對已驗證網站是官方支援路徑。
+#   端點：POST https://ssl.bing.com/webmaster/api.svc/json/SubmitUrlbatch?apikey=<KEY>
+#   金鑰：repo secret BING_WEBMASTER_API_KEY（BWT → Settings → API access 取得）
+#
+# ⚠ 金鑰走 query string（微軟的設計）。**任何情況都不要把整串 URL 印出來**，
+#   只印狀態碼與回應 body。
+#
+# ## 為什麼要 manifest，不能像以前那樣整份 sitemap 送
+#
+# 實測配額：DailyQuota 100、**MonthlyQuota 300**。全站 119 頁，
+# 每次 push 全送的話**第三次就爆掉**——而近期一天內就 merge 過 5 個 PR。
+#
+# 所以只送真正變動的頁：data/page-manifest.json 記錄每頁 markdown 分身的內容指紋，
+# 比對出差異才提交。指紋算在分身而不是整份 HTML，因為 HTML 的 <head> 帶著 vite
+# 資源雜湊，改一次 CSS 會讓 119 頁全部「看起來變了」（見 scripts/page-manifest.mjs）。
+#
+# manifest 進版控，是「哪一頁的內容在哪一天真的變了」的可讀紀錄，跨 session 查得到。
+#
+# ⚠ 回寫 commit 不會觸發新的 workflow——用預設 GITHUB_TOKEN 推的 commit，
+#   GitHub 刻意不再觸發 workflow，所以不會遞迴。同 repo 的 sync-sheets.yml 也是這樣。
+name: Bing URL submission
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  # 兩個 run 同時改 manifest 會互相覆蓋
+  group: bing-url-submission
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
+
+      - name: 找出變動的頁面
+        id: diff
+        run: |
+          node scripts/page-manifest.mjs diff > changed-urls.txt
+          count=$(wc -l < changed-urls.txt)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "變動 $count 頁"
+
+      # Bing 以外的 IndexNow 實作照樣收——同一把金鑰、同一個金鑰檔，Yandex 實測回 202。
+      # 沒有配額成本，失敗也不該擋住 Bing 那條主線，所以 continue-on-error。
+      - name: 順帶通知 Yandex（IndexNow，非致命）
+        if: steps.diff.outputs.count != '0'
+        continue-on-error: true
+        run: |
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const KEY = "121a93972fa37400d8b6c87a13075582";
+            const local = readFileSync(`dist/${KEY}.txt`, "utf-8").trim();
+            if (local !== KEY) throw new Error("金鑰檔內容與 KEY 對不上");
+            const urlList = readFileSync("changed-urls.txt", "utf-8").split("\n").map((s) => s.trim()).filter(Boolean);
+            const res = await fetch("https://yandex.com/indexnow", {
+              method: "POST",
+              headers: { "Content-Type": "application/json; charset=utf-8" },
+              body: JSON.stringify({ host: "mattye.dev", key: KEY, keyLocation: `https://mattye.dev/${KEY}.txt`, urlList }),
+            });
+            console.log(`Yandex — HTTP ${res.status}: ${(await res.text()) || "(空)"}`);
+          '
+
+      - name: 提交給 Bing
+        if: steps.diff.outputs.count != '0'
+        env:
+          BING_KEY: ${{ secrets.BING_WEBMASTER_API_KEY }}
+        run: |
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+
+            const KEY = process.env.BING_KEY;
+            if (!KEY) throw new Error("repo secret BING_WEBMASTER_API_KEY 沒有值");
+            const SITE = "https://mattye.dev/";
+            const BASE = "https://ssl.bing.com/webmaster/api.svc/json";
+            // 金鑰只出現在這個變數裡，永遠不進 log
+            const auth = `apikey=${encodeURIComponent(KEY)}`;
+
+            const urls = readFileSync("changed-urls.txt", "utf-8").split("\n").map((s) => s.trim()).filter(Boolean);
+            console.log(`變動 ${urls.length} 頁`);
+
+            const quotaRes = await fetch(`${BASE}/GetUrlSubmissionQuota?${auth}&siteUrl=${encodeURIComponent(SITE)}`);
+            if (!quotaRes.ok) throw new Error(`查配額失敗 HTTP ${quotaRes.status}`);
+            const quota = (await quotaRes.json()).d;
+            console.log(`配額：每日 ${quota.DailyQuota}／每月 ${quota.MonthlyQuota}`);
+
+            // 單批上限 500（官方），再取每日與每月剩餘的最小值
+            const room = Math.min(urls.length, quota.DailyQuota, quota.MonthlyQuota, 500);
+            if (room <= 0) {
+              console.log("::error::配額已用盡，本次一頁都沒提交");
+              process.exit(1);
+            }
+
+            // 不靜默截斷：送不完就明講哪些被丟掉，下次 build 它們仍會被判為變動並重試
+            const send = urls.slice(0, room);
+            if (send.length < urls.length) {
+              console.log(`::warning::配額只夠 ${send.length} 頁，其餘 ${urls.length - send.length} 頁本次未提交`);
+              for (const u of urls.slice(room)) console.log(`  未提交：${u}`);
+            }
+
+            const res = await fetch(`${BASE}/SubmitUrlbatch?${auth}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json; charset=utf-8" },
+              body: JSON.stringify({ siteUrl: SITE, urlList: send }),
+            });
+            const body = await res.text();
+            console.log(`提交 ${send.length} 頁 — HTTP ${res.status}`);
+            console.log(`response: ${body || "(空)"}`);
+            if (res.status !== 200) process.exit(1);
+
+            // 成功回應是 {"d":null}，看不出扣了沒——回查配額才是真的確認
+            const after = await (await fetch(`${BASE}/GetUrlSubmissionQuota?${auth}&siteUrl=${encodeURIComponent(SITE)}`)).json();
+            console.log(`提交後配額：每日 ${after.d.DailyQuota}／每月 ${after.d.MonthlyQuota}`);
+            if (after.d.MonthlyQuota >= quota.MonthlyQuota) {
+              console.log("::error::配額沒有減少——Bing 可能沒有真的收下這批網址");
+              process.exit(1);
+            }
+
+            // 未提交的頁不可寫進 manifest，否則會被當成已處理、永遠不再重試
+            if (send.length < urls.length) {
+              console.log("::warning::有未提交的頁，manifest 本次不更新，留待下次重試");
+              process.exit(1);
+            }
+          '
+
+      - name: 更新 manifest 並回寫
+        if: steps.diff.outputs.count != '0'
+        run: |
+          node scripts/page-manifest.mjs build "$(date -u '+%Y-%m-%d')"
+          if git diff --quiet data/page-manifest.json; then
+            echo "manifest 沒有變化，不 commit"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/page-manifest.json
+          git commit -m "chore: 更新頁面指紋清單（已提交 ${{ steps.diff.outputs.count }} 頁給 Bing）"
+          git push
