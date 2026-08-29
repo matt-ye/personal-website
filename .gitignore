@@ -52,3 +52,6 @@ out/
 # matt-agent-kit plugin（雲端只讀 committed 檔案）
 .claude/*
 !.claude/settings.json
+
+# Bing/IndexNow 提交流程的暫存清單（由 workflow 產生）
+changed-urls.txt
