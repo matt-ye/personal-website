@@ -319,6 +319,10 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "title": "第 27 週：報酬衡量 TWR/MWR——模擬組合上線｜給家人的投資課 · Matt Ye",
     "description": "52 週投資課第 27 週：算術 vs 幾何與波動拖累、TWR 與 MWR 各回答什麼問題、報酬引用三必答，並讓模擬組合正式上線。附波動拖累模擬器與 TWR/MWR 實驗台。",
     "ogTitle": "第 27 週：報酬衡量 TWR/MWR——模擬組合上線 — 給家人的投資課",
-    "ogDescription": "策略 +80%、錢包卻虧 1 萬——TWR 與 MWR 各回答什麼問題。模擬組合上線，Q3 的實驗載具就位。"
+    "ogDescription": "策略 +80%、錢包卻虧 1 萬——TWR 與 MWR 各回答什麼問題。模擬組合上線，Q3 的實驗載具就位。",
+    "titleEn": "Week 27: TWR vs MWR | Family Investing Course · Matt Ye",
+    "descriptionEn": "Week 27 of 52: arithmetic vs geometric returns and volatility drag, what TWR and MWR each answer — and the paper portfolio goes live as the vehicle for Q3.",
+    "ogTitleEn": "Week 27: TWR/MWR and the Paper Portfolio",
+    "ogDescriptionEn": "A strategy up 80% while the wallet lost money — what TWR and MWR each answer. The paper portfolio goes live as Q3's experimental vehicle."
   }
 ];

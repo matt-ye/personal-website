@@ -508,9 +508,11 @@
     if (x === 0) {
       note.innerHTML = "<b>零波動時算術＝幾何。</b>把波動拉上去，看同樣的「平均」怎麼分出兩條路。";
     } else {
-      note.innerHTML = "<b>同樣「平均 " + (+inM.value) + "%」，十年差 " + Math.abs(smooth - bumpy).toFixed(0) + " 萬。</b>" +
-        "波動 ±" + (+inX.value) + "% 每年吃掉約 " + drag.toFixed(1) + " 個百分點的複合報酬——" +
-        "這就是 W15 分散降波動的數學紅利：不是心理安慰，是直接加在幾何報酬上。";
+      // 整句模板＋佔位符，不用字串拼接——讓 i18n 抽取器能整句收錄，
+      // 英文翻譯才有調語序的空間（拼接片段逐段翻會卡死語序）
+      note.innerHTML = "<b>同樣「平均 {m}%」，十年差 {d} 萬。</b>波動 ±{x}% 每年吃掉約 {g} 個百分點的複合報酬——這就是 W15 分散降波動的數學紅利：不是心理安慰，是直接加在幾何報酬上。"
+        .replace("{m}", +inM.value).replace("{d}", Math.abs(smooth - bumpy).toFixed(0))
+        .replace("{x}", +inX.value).replace("{g}", drag.toFixed(1));
     }
   }
   inM.addEventListener("input", runDrag);
