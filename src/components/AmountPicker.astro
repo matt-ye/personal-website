@@ -11,13 +11,17 @@
  * prefix 只用來讓 label 的 for/id 配對唯一（/sponsor 頁上會同時存在
  * footer 的 modal 與頁面本身的選擇器，兩個實例都在同一份 DOM 裡）。
  */
+import T from './T.astro';
+
 interface Props { prefix: string; compact?: boolean }
 const { prefix, compact = false } = Astro.props;
 const inputId = `${prefix}-custom-input`;
 const hintId = `${prefix}-custom-hint`;
+const curLabelId = `${prefix}-cur-label`;
 ---
 <div class="ap" data-amount-picker data-amount="" data-valid="false" class:list={[{ 'ap-compact': compact }]}>
-  <div class="ap-tabs" data-ap-tabs role="group" aria-label="Currency">
+  <span class="ap-tabs-label" id={curLabelId}><T zh="幣別" en="Currency" /></span>
+  <div class="ap-tabs" data-ap-tabs role="group" aria-labelledby={curLabelId}>
     <button type="button" class="ap-tab sel" data-cur="twd">TWD</button>
     <button type="button" class="ap-tab" data-cur="usd">USD</button>
   </div>
@@ -43,6 +47,15 @@ const hintId = `${prefix}-custom-hint`;
 </div>
 
 <style>
+  /* 可見的幣別標籤：沒有它時，兩顆 pill 看不出是「幣別」選擇（實際回報過）。
+     字級／顏色對齊下方的 .ap-custom-label，置中對齊 tabs。 */
+  .ap-tabs-label {
+    display: block;
+    text-align: center;
+    font-size: 0.74rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.3rem;
+  }
   .ap-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.8rem; justify-content: center; }
   .ap-tab {
     padding: 0.3rem 1rem;
