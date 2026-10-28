@@ -288,6 +288,8 @@ export const MAP = {
     'Flying with an Excellent TA: A Teaching Assistant Training Handbook (2022, NTU Press)',
   '《卓越TA帶你飛：助教培訓手冊（第二版）》（2023，臺大出版中心）':
     'Flying with an Excellent TA: A Teaching Assistant Training Handbook, 2nd edition (2023, NTU Press)',
+  '《五法歸一：理工論文卓越之道》（2025，文鶴出版，臺大寫作教學中心）':
+    'Five Practical Approaches to One STEM-asterful Paper (2025, Wunhe Publishing, NTU Academic Writing Education Center)',
   '研究計畫': 'Research projects',
   '大班級中團體去惰化教學實踐——小故事、大世界（教育部教學實踐研究計畫，2020–2021，成果報告全文）':
     'Countering social loafing in large classes — Small Stories, Big World (Ministry of Education teaching practice research grant, 2020–2021; full report)',
