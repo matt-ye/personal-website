@@ -302,6 +302,10 @@ export const MAP = {
     'Combining project-based and cooperative learning to improve a Chinese writing course — the case of science writing (Ministry of Education teaching practice research grant, 2023–2024; co-PI)',
   '高等教育深耕計畫：寫作教學中心厚植學術力及推展深耕相關業務（多年度，主持人）':
     'Higher Education Sprout Project: strengthening academic capacity and deepening the work of the Writing Center (multi-year; PI)',
+  '北科大創新教學工作坊：臺大寫作中心課程 CP 值爆表的秘密——學生本位設計與需求導向（2025）':
+    'Taipei Tech innovative teaching workshop: the secret behind the Writing Center’s high-value courses — student-centered, needs-driven design (2025)',
+  '北科大創新教學工作坊：「滿江紅」才是真愛？臺大生的「自虐式」學習法則（2025）':
+    'Taipei Tech innovative teaching workshop: is a transcript full of red marks true love? How NTU students study the hard way (2025)',
   '研究計畫': 'Research projects',
   '大班級中團體去惰化教學實踐——小故事、大世界（教育部教學實踐研究計畫，2020–2021，成果報告全文）':
     'Countering social loafing in large classes — Small Stories, Big World (Ministry of Education teaching practice research grant, 2020–2021; full report)',
