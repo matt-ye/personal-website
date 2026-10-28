@@ -290,6 +290,18 @@ export const MAP = {
     'Flying with an Excellent TA: A Teaching Assistant Training Handbook, 2nd edition (2023, NTU Press)',
   '《五法歸一：理工論文卓越之道》（2025，文鶴出版，臺大寫作教學中心）':
     'Five Practical Approaches to One STEM-asterful Paper (2025, Wunhe Publishing, NTU Academic Writing Education Center)',
+  'Li (2020). Pedagogic Exploration in Adapting Automatic Writing Evaluation Software into University Writing Classes. 3rd ICATE（國際研討會論文）':
+    'Li (2020). Pedagogic Exploration in Adapting Automatic Writing Evaluation Software into University Writing Classes. 3rd ICATE (conference paper)',
+  '初探專業英文寫作協力教學模式（國科會專題研究計畫，主持人）':
+    'Exploring a collaborative teaching model for professional English writing (National Science and Technology Council research grant; PI)',
+  '論自動寫作評量系統於大學英文寫作課程之影響（教育部教學實踐研究計畫，2019–2020，共同主持）':
+    'The impact of automated writing evaluation systems on university English writing courses (Ministry of Education teaching practice research grant, 2019–2020; co-PI)',
+  '讀得深刻，寫得出色：運用 KWL 閱讀策略增進大學生科普寫作成效（教育部教學實踐研究計畫，2022–2023，共同主持）':
+    'Read Deeper and Write Well: using the KWL reading strategy to improve university students’ science-writing (Ministry of Education teaching practice research grant, 2022–2023; co-PI)',
+  '專題式學習、合作學習並用以促進中文寫作課程成效——以「科普寫作」為例（教育部教學實踐研究計畫，2023–2024，共同主持）':
+    'Combining project-based and cooperative learning to improve a Chinese writing course — the case of science writing (Ministry of Education teaching practice research grant, 2023–2024; co-PI)',
+  '高等教育深耕計畫：寫作教學中心厚植學術力及推展深耕相關業務（多年度，主持人）':
+    'Higher Education Sprout Project: strengthening academic capacity and deepening the work of the Writing Center (multi-year; PI)',
   '研究計畫': 'Research projects',
   '大班級中團體去惰化教學實踐——小故事、大世界（教育部教學實踐研究計畫，2020–2021，成果報告全文）':
     'Countering social loafing in large classes — Small Stories, Big World (Ministry of Education teaching practice research grant, 2020–2021; full report)',
