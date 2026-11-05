@@ -429,5 +429,12 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 42 週：WACC 的兩種金主、CAPM 三個輸入的出處與爭議、合理區間與風險對應門檻。附 WACC 組裝台、敏感度九宮格與錯用門檻計算機。",
     "ogTitle": "第 42 週：資金成本——WACC 與 CAPM — 給家人的投資課",
     "ogDescription": "股東的錢比銀行的錢貴，只是不寫在合約上。算出公司的跨欄高度，護城河鐵律就補完了分母。"
+  },
+  {
+    "slug": "week-43-capital-structure",
+    "title": "第 43 週：資本結構——MM 理論與實務槓桿｜給家人的投資課 · Matt Ye",
+    "description": "52 週投資課第 43 週：槓桿雙面刃、MM 定理的切披薩論證、稅盾與困境成本的抵換、融資順位與槓桿健康三數字。附槓桿實驗台與最適槓桿示意圖。",
+    "ogTitle": "第 43 週：資本結構——MM 理論與實務槓桿 — 給家人的投資課",
+    "ogDescription": "槓桿是放大鏡，唯一不變的是利息照付。從 MM 定理出發，看懂為什麼電信敢借、科技不敢借。"
   }
 ];

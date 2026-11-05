@@ -1,0 +1,465 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .chart43{width:100%;height:auto;margin-top:.8rem;display:block}
+  .chart43 .ax{stroke:var(--line);stroke-width:1}
+  .chart43 .cv{fill:none;stroke:var(--pine);stroke-width:2.5}
+  .chart43 .ts{fill:none;stroke:var(--cool);stroke-width:1.5;stroke-dasharray:5 4}
+  .chart43 .dot{fill:var(--coin)}
+  .chart43 text{fill:var(--ink-3);font-size:11px;font-family:ui-monospace,Menlo,monospace}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 43</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q4 財務長季 · Week 43</p>
+  <h1>資本結構——MM 理論與實務槓桿</h1>
+  <p class="lead" style="margin-top:.5rem">三大決策的第二個：錢從哪來——債與股的比例怎麼定？起點是財務學最優雅的定理（MM：完美世界裡比例根本不重要），終點是實務的權衡藝術。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 6、9、42 週</span><span class="chip">52 週 · 第 43 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>W9 學過的「權益乘數」、W37 學過的「槓桿者被迫平倉」，本週從 CFO 的座位再看一次——這次你是決定要借多少的人。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的「股東的錢更貴」——家人買單了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">一家公司資產不變，只是把一半的股本換成借款。公司的總價值會怎樣？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">變大，借錢能提高報酬率</button>
+    <button data-g="b">變小，負債越多越危險</button>
+    <button data-g="c">完美世界裡不變；現實要看稅與破產成本</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 先看槓桿的雙面刃</h2>
+  <p>同一家公司（資產 100、稅率 20%），兩種資本結構：<strong>全權益</strong> vs <strong>50 債 50 股</strong>（債息 3%，每年利息 1.5）。三種年景：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>EBIT</th><th>全權益 ROE</th><th>50% 槓桿 ROE</th></tr></thead>
+      <tbody>
+        <tr><td class="f">15（好年）</td><td>12.0%</td><td><strong>21.6%</strong>（放大）</td></tr>
+        <tr><td class="f">3（平年）</td><td>2.4%</td><td>2.4%（不加不減）</td></tr>
+        <tr><td class="f">0（壞年）</td><td>0.0%</td><td><strong>−2.4%</strong>（反咬）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <ul>
+    <li><strong>好年</strong>：資產賺 15%、債主只拿 3%，差額全歸股東 → ROE 幾乎翻倍</li>
+    <li><strong>平年</strong>：EBIT 3 恰好是「資產報酬率＝債息」的損益兩平點。<strong>槓桿放大的是「資產報酬與債息的差」</strong>，差為零時放大零</li>
+    <li><strong>壞年</strong>：資產賺不到債息，利息照付 → 股東倒貼</li>
+  </ul>
+  <p>這正是 W9 杜邦分析「權益乘數」的展開，也是 W37「危機中槓桿者被迫平倉」的和平時期版。</p>
+  </div>
+
+  <div class="lab">
+    <h3>槓桿雙面刃實驗台</h3>
+    <p class="muted" style="margin-top:-.2rem">資產 100、稅率 20%。拉負債比例與利率，看四種年景下股東的報酬怎麼被放大。</p>
+    <div class="ctl"><label>負債佔資產 <output id="o-dr">50%</output></label><input type="range" id="in-dr" min="0" max="90" step="5" value="50" aria-label="負債比例"></div>
+    <div class="ctl"><label>債息 <output id="o-ir">3.0%</output></label><input type="range" id="in-ir" min="1" max="10" step="0.5" value="3" aria-label="債息"></div>
+    <div class="tablewrap">
+      <table class="data" id="lv">
+        <thead><tr><th>年景（EBIT）</th><th>全權益 ROE</th><th>有槓桿 ROE</th><th>利息保障倍數</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="sl">損益兩平 EBIT</p><p class="sv" id="s-be">—</p><p class="sh">高於它，槓桿才幫你</p></div>
+      <div class="stat"><p class="sl">好壞年 ROE 差距</p><p class="sv" id="s-sp">—</p><p class="sh">全權益只有 12.0</p></div>
+    </div>
+    <div class="ibox" id="lvnote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>2. MM 定理：「比例不重要」為什麼是重要的起點</h2>
+  <p>Modigliani 與 Miller（1958）證明：在<strong>完美市場</strong>（無稅、無破產成本、無資訊不對稱）中，<strong>公司價值與資本結構無關</strong>。</p>
+  <div class="quote">切披薩論證：公司價值來自資產產生的現金流；債與股只是把披薩切給不同人的刀法——切法不會改變披薩的大小。</div>
+  <p>上面的實驗台看似「槓桿提高 ROE」，但 MM 指出：那是用更高的風險換來的（四種年景的差距變大了）。用 W29 的眼睛做風險調整後，股東並沒有更好。</p>
+  <p><strong>MM 的真正用法</strong>：它不是說比例真的不重要，而是把問題問對——<strong>現實世界的哪些不完美，讓比例變得重要？</strong>答案有三個，構成現代資本結構理論。</p>
+
+  <h2>3. 三個不完美＝實務的權衡</h2>
+  <p><strong>①稅盾（債的好處）</strong>：利息可抵稅、股利不行。借 100 億、利率 3%、稅率 20% → 每年省稅 100 × 3% × 20% ＝ <strong>0.6 億</strong>——政府補貼了債務融資（W42 WACC 公式裡那個「1 − 稅率」的來歷）。</p>
+  <p><strong>②財務困境成本（債的壞處）</strong>：借越多，破產機率越高，而破產很貴——直接成本（律師、清算折價），加上更大的間接成本：客戶不敢買、人才逃離、供應商要現金交易、被迫賤賣資產（W37 的死亡螺旋）。</p>
+  <p><strong>③代理與資訊問題</strong>：適度的債是紀律（強制吐出現金，管理層不敢亂花）；但債太多時，股東反而想賭大的——反正輸了的損失大半歸債主。</p>
+  <p><strong>抵換理論</strong>：最適槓桿，在「稅盾的邊際好處＝困境成本的邊際增加」那一點。不同產業的答案天差地遠：</p>
+  </div>
+
+  <div class="lab">
+    <h3>最適槓桿示意圖</h3>
+    <p class="muted" style="margin-top:-.2rem">示意模型：公司價值 ＝ 無槓桿價值 100 ＋ 稅盾 − 困境成本。困境成本隨負債加速上升，上升速度取決於現金流穩不穩、資產賣不賣得掉。</p>
+    <div class="presets" id="tpre"><button data-s="0.15">公用事業・電信</button><button data-s="0.3">一般製造業</button><button data-s="0.6">科技・製藥</button></div>
+    <div class="ctl"><label>困境成本敏感度 <output id="o-s">0.30</output></label><input type="range" id="in-s" min="0.1" max="1" step="0.05" value="0.3" aria-label="困境成本敏感度"></div>
+    <div class="ctl"><label>稅率 <output id="o-tx">20%</output></label><input type="range" id="in-tx" min="0" max="35" step="1" value="20" aria-label="稅率"></div>
+    <svg class="chart43" id="tchart" viewBox="0 0 320 170" role="img" aria-label="公司價值隨負債比例變化的曲線"></svg>
+    <div class="stats">
+      <div class="stat"><p class="sl">最適負債比例</p><p class="sv" id="s-opt">—</p><p class="sh">佔無槓桿價值</p></div>
+      <div class="stat"><p class="sl">最適點的公司價值</p><p class="sv" id="s-val">—</p><p class="sh">無槓桿＝100</p></div>
+    </div>
+    <div class="ibox" id="tnote"></div>
+  </div>
+
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>產業型態</th><th>合理槓桿</th><th>原因</th></tr></thead>
+      <tbody>
+        <tr><td class="f">公用事業、電信</td><td>高</td><td>現金流穩定如年金，撐得起利息</td></tr>
+        <tr><td class="f">科技、製藥</td><td>低（常近零負債）</td><td>現金流波動大，資產是人與研發、倒閉時賣不掉——困境成本巨大</td></tr>
+        <tr><td class="f">金融業</td><td>極高（本業即槓桿）</td><td>另一套框架（W6 的提醒）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>融資順位理論</strong>：實務上 CFO 的偏好順序是<strong>內部資金 → 借債 → 最後才增資</strong>。因為增資會對市場放出「管理層覺得自家股價貴了」的訊號，常伴隨股價下跌。這也解釋了為什麼賺錢的公司反而負債低——內部資金夠用，輪不到借。</p>
+
+  <h2>4. 實務儀表板：槓桿健康的三個數字</h2>
+  <ol>
+    <li><strong>淨負債 ÷ EBITDA</strong>：幾年的現金獲利能還清淨負債？（小於 1 保守、1–3 常態、大於 4 警戒，依產業浮動）</li>
+    <li><strong>利息保障倍數</strong>＝EBIT ÷ 利息費用：獲利是利息的幾倍？（大於 5 安心、小於 2 危險——W6 的老朋友，現在是你的經營指標）</li>
+    <li><strong>長短債結構</strong>：W6 的錯配課——長期資產配長期負債。「短債長投」是台灣中小企業最常見的猝死姿勢</li>
+  </ol>
+  <p><strong>台灣現象一問</strong>：科技大廠帳上千億現金、幾乎零負債——太保守嗎？兩面論：保守結構是景氣劇烈產業的生存保費（2008 年誰活得好？）；但長期囤積超額現金，等於股東的錢以 1% 閒置（W42）——這正是下週股利政策的入口。</p>
+
+  <h2>5. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「零負債就是好公司。」</p><p>可能只是不敢用稅盾的過度保守；適度負債的公司 WACC 更低。最健康的身體不是零負重，是能負重的身體。</p></div>
+  <div class="myth"><p class="say">「槓桿提高 ROE，所以借錢就是創造價值。」</p><p>MM 的當頭棒喝：ROE 上升伴隨風險同步上升，<strong>價值沒變</strong>——除非稅盾大於困境成本。用 W9 的話說：靠權益乘數拉高的 ROE，品質最低。</p></div>
+  <div class="myth"><p class="say">「增資是利多，公司要擴張了。」</p><p>順位理論的訊號效果：管理層傾向在股價貴的時候賣新股，實證上增資公告平均伴隨股價下跌。擴張是不是利多，要看投的案子 NPV（W41），不是看融資動作。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>從定理到三家公司</h2>
+  <div class="readitem"><div class="t">70 分鐘</div><div class="body"><b>《Principles of Corporate Finance》資本結構兩章</b><p>MM 定理＋抵換理論與順位理論——本週主幹。</p></div></div>
+  <div class="readitem"><div class="t">15 分鐘</div><div class="body"><b>Modigliani &amp; Miller（1958）</b><p>讀教科書的轉述版即可：知道這篇讓兩人拿了諾貝爾獎，以及「無關」為何是革命性的起點。</p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>實習公司＋兩家對照</b><p>抓三家不同產業的公司（例如科技／電信／傳產），算淨負債／EBITDA 與利息保障倍數——親眼看產業的槓桿哲學差異。</p></div></div>
+  <div class="readitem"><div class="t">選讀</div><div class="body"><b>一篇「短債長投」出事的台灣企業案例</b><p>對照第 4 節第 3 點，找出它在哪一步錯配。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>槓桿分析三連發</h2>
+  <h3>任務 A｜雙面刃重演（20 分鐘）</h3>
+  <p>用試算表重建講義的三年景算例，再把債息改成 5%——損益兩平的 EBIT 變成多少？體會「利率上升把兩平點推高」（連回 W3）。</p>
+  <h3>任務 B｜三公司槓桿對照（25 分鐘）</h3>
+  <p>用必讀第 3 項的三家公司算淨負債／EBITDA、利息保障倍數、有息負債／權益，排成表；每家寫一行「它的槓桿哲學，以及為什麼合理（或不合理）」。</p>
+  <div class="verify"><b>怎麼知道做對了：</b>實驗台預設（負債 50%、債息 3%）的有槓桿 ROE 必須是 21.6%／2.4%／−2.4%，損益兩平 EBIT 是 3.0；債息拉到 5%，兩平點變 5.0。最適槓桿示意圖：「公用事業」的最適負債比例 66.7%、「科技・製藥」只有 16.7%——同一套理論，參數不同、答案不同。</div>
+  <ul class="checks" data-key="w43-practice">
+    <li><label><input type="checkbox"><span>三年景驗證＋利率敏感版完成</span></label></li>
+    <li><label><input type="checkbox"><span>三公司對照表完成（有產業脈絡判讀）</span></label></li>
+    <li><label><input type="checkbox"><span>能複述稅盾算例（0.6 億）與抵換理論</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> MM 說資本結構無關——那 CFO 為什麼還要煩惱它？</summary><div class="ans"><p>→ 因為現實不是完美市場。MM 的價值在指出「煩惱的正確標的」：<strong>稅盾、困境成本、訊號</strong>這三個不完美，而不是比例本身；CFO 管理的是三者的權衡。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 為什麼科技公司負債低、電信公司負債高，兩者都「理性」？</summary><div class="ans"><p>→ 槓桿的承受力取決於<strong>現金流的穩定度與資產的可變賣性</strong>。電信月費如年金、基地台有殘值 → 撐得起高負債，也該用稅盾；科技業現金流隨景氣劇烈波動、核心資產是留不住的人才與過時很快的設備 → 困境成本巨大，低負債是保命符。同一理論、不同參數、都理性。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 「公司宣布現金增資」——你的第一反應該是什麼？</summary><div class="ans"><p>→ 先問「<strong>為什麼不用內部資金或借債？</strong>」增資是順位最後的選項。管理層越過前兩者直接賣股，可能是：①投資需求大到前兩者不夠（查案子的 NPV 故事）；②管理層認為股價高估（對你是警訊）；③借不到錢了（更大的警訊）。增資本身中性，跳過順位的理由才是資訊。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>買房就是資本結構決策</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（買房的智慧）</p><p>「我們家早就做過資本結構決策——<strong>買房</strong>：全現金買，還是貸七成？」（讓家人說各自的理由——他們會自然講出利息負擔、風險、彈性。）</p></div>
+  <div class="script"><p class="who">核心演示（雙面刃表）</p><p>「同一家店，借一半錢經營：生意好的年份，老闆報酬率從 12% 跳到 21.6%；普通年份沒差；生意差的年份<strong>從 0 變成倒虧</strong>。槓桿是放大鏡——放大獲利，也放大虧損，<strong>唯一不變的是利息照付</strong>。」</p></div>
+  <div class="script"><p class="who">互動（家庭槓桿健檢）</p><p>「公司有個指標叫『利息保障倍數』：獲利是利息的幾倍。我們家的版本：<strong>月收入是月房貸的幾倍？</strong>」</p><p class="aside">現場算，順便討論「幾倍會睡不著」——這就是家庭的資本結構政策。</p></div>
+  <div class="script"><p class="who">收尾（一句帶走）</p><p>「欠錢不是罪，欠到『壞年份付不出利息』才是——公司和家庭同一條命。」</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那到底該借多少？」</b><br>「沒有萬用答案，只有原則：收入越穩，可以借越多（電信和科技的差別）；以及永遠先想壞年份，不是好年份。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w43-final">
+    <li><label><input type="checkbox"><span>能講出 MM 定理與「三個不完美」</span></label></li>
+    <li><label><input type="checkbox"><span>三年景算例與三公司對照完成</span></label></li>
+    <li><label><input type="checkbox"><span>能默寫槓桿健康三數字與量級</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家庭利息保障倍數），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 43 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 44：股利政策</b>——三大決策的最後一個：賺來的錢，發還是留？現金股利 vs 庫藏股，以及台灣特有的高配息文化。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-42-wacc-capm/">上一週：資金成本</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "c"
+      ? "答對了——這就是 MM 定理：完美世界裡，公司價值來自資產的現金流，債與股只是切披薩的刀法。現實中比例會影響價值，是因為三個不完美：稅盾（債的好處）、困境成本（債的壞處）、資訊與代理問題。"
+      : "MM 定理的答案是：完美世界裡不變——公司價值來自資產的現金流，債與股只是切披薩的刀法。借錢提高的報酬率是用更高的風險換的。現實中比例會影響價值，是因為稅盾、困境成本、資訊問題這三個不完美。";
+  });
+
+  function pc(v){ return (v < 0 ? "−" : "") + Math.abs(v).toFixed(1) + "%"; }
+
+  /* 槓桿雙面刃 */
+  var iD = document.getElementById("in-dr"), iR = document.getElementById("in-ir"), T = 0.2;
+  var YRS = [{n:"好年", e:15}, {n:"平年", e:3}, {n:"壞年", e:0}, {n:"危機年", e:-5}];
+  function runL(){
+    var d = +iD.value, r = +iR.value / 100, eq = 100 - d, int = d * r;
+    document.getElementById("o-dr").textContent = d + "%";
+    document.getElementById("o-ir").textContent = (+iR.value).toFixed(1) + "%";
+    var rows = "", hi = null, lo = null;
+    YRS.forEach(function(y){
+      var u = y.e * (1 - T), l = (y.e - int) * (1 - T) / eq * 100;
+      if (y.e === 15) hi = l; if (y.e === 0) lo = l;
+      var cov = int > 0 ? (y.e / int) : null;
+      rows += "<tr><td class=\"f\">" + y.n + "（" + y.e + "）</td><td>" + pc(u) + "</td><td><strong>" + pc(l) + "</strong></td><td>" + (cov === null ? "無利息" : cov.toFixed(1) + " 倍" + (cov < 2 ? " ⚠" : "")) + "</td></tr>";
+    });
+    document.querySelector("#lv tbody").innerHTML = rows;
+    document.getElementById("s-be").textContent = (r * 100).toFixed(1);
+    document.getElementById("s-sp").textContent = (hi - lo).toFixed(1);
+    var n = document.getElementById("lvnote");
+    n.innerHTML = d === 0 ? "<b>全權益：四種年景的 ROE 就是資產報酬扣稅。</b>沒有利息要付，也沒有放大。"
+      : "<b>負債 " + d + "%：好壞年的 ROE 差距從 12.0 擴大到 " + (hi - lo).toFixed(1) + " 個百分點。</b>EBIT 高於 " + (r * 100).toFixed(1) + " 時槓桿幫你、低於它時反咬你——利率越高，這條線越難跨。" + (d >= 70 ? " 負債這麼高，壞年連利息都付不出：這就是困境成本開始收費的地方。" : "");
+  }
+  [iD, iR].forEach(function(e){ e.addEventListener("input", runL); });
+  runL();
+
+  /* 最適槓桿示意 */
+  var iS = document.getElementById("in-s"), iT = document.getElementById("in-tx"), svg = document.getElementById("tchart");
+  function runT(){
+    var s = +iS.value, t = +iT.value / 100;
+    document.getElementById("o-s").textContent = s.toFixed(2);
+    document.getElementById("o-tx").textContent = iT.value + "%";
+    function V(d){ return 100 + 100 * t * d - 100 * s * d * d; }
+    var opt = Math.min(1, t / (2 * s)), vmax = V(opt);
+    var X = function(d){ return 34 + d * 276; }, Y = function(v){ return 150 - (v - 90) / 30 * 140; };
+    var pts = [], ts = [];
+    for (var i = 0; i <= 50; i++){ var d = i / 50; pts.push(X(d).toFixed(1) + "," + Math.max(5, Math.min(150, Y(V(d)))).toFixed(1)); ts.push(X(d).toFixed(1) + "," + Math.max(5, Y(100 + 100 * t * d)).toFixed(1)); }
+    svg.innerHTML =
+      '<line class="ax" x1="34" y1="150" x2="310" y2="150"/><line class="ax" x1="34" y1="10" x2="34" y2="150"/>' +
+      '<line class="ax" x1="34" y1="' + Y(100) + '" x2="310" y2="' + Y(100) + '" stroke-dasharray="2 3"/>' +
+      '<text x="2" y="' + (Y(100) + 4) + '">100</text><text x="2" y="' + (Y(110) + 4) + '">110</text><text x="2" y="' + (Y(90) + 4) + '">90</text>' +
+      '<text x="34" y="165">0%</text><text x="160" y="165">50%</text><text x="285" y="165">100%</text>' +
+      '<polyline class="ts" points="' + ts.join(" ") + '"/>' +
+      '<polyline class="cv" points="' + pts.join(" ") + '"/>' +
+      '<circle class="dot" cx="' + X(opt) + '" cy="' + Y(vmax) + '" r="5"/>';
+    document.getElementById("s-opt").textContent = (opt * 100).toFixed(1) + "%";
+    document.getElementById("s-val").textContent = vmax.toFixed(1);
+    var n = document.getElementById("tnote");
+    n.innerHTML = t === 0 ? "<b>沒有稅盾，借錢只剩壞處：最適負債是 0。</b>這就是 MM 的完美世界加上困境成本。"
+      : "<b>虛線是只有稅盾的世界（越借越值錢），實線扣掉困境成本後，在 " + (opt * 100).toFixed(1) + "% 達到頂點。</b>" + (s <= 0.2 ? "現金流穩如年金的產業，困境成本上升得慢，撐得起高槓桿。" : s >= 0.5 ? "現金流波動大、資產是人才與研發的產業，困境成本來得又快又兇——低負債是保命符。" : "過了頂點再借，每多借一塊錢，困境成本的增加都大於省下的稅。");
+  }
+  [iS, iT].forEach(function(e){ e.addEventListener("input", runT); });
+  document.getElementById("tpre").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    iS.value = btn.dataset.s; iT.value = 20; runT();
+  });
+  runT();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w43-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w43-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 槓桿的兩面都看過了——下週處理最後一個決策：賺的錢怎麼分。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

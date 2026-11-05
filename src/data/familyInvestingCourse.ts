@@ -493,4 +493,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-42-wacc-capm/',
   },
+  {
+    slug: 'week-43-capital-structure',
+    title: 'W43 資本結構——MM 與槓桿',
+    titleEn: 'W43 Capital Structure',
+    description: '槓桿放大的是資產報酬與債息的差；MM 定理把問題問對，稅盾、困境成本、訊號三個不完美決定實務答案；融資順位與槓桿健康三數字。附雙面刃實驗台與最適槓桿示意圖。',
+    descriptionEn: 'Leverage amplifies the gap between asset returns and the interest rate; MM frames the question, and tax shields, distress costs and signalling decide the real-world answer.',
+    tags: ['Q4 財務長季', '互動圖表'],
+    date: '2027-04-28',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-43-capital-structure/',
+  },
 ];
