@@ -515,4 +515,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-44-dividend-policy/',
   },
+  {
+    slug: 'week-45-working-capital',
+    title: 'W45 營運資金——現金轉換循環',
+    titleEn: 'W45 Working Capital & the CCC',
+    description: '存貨＋應收−應付天數＝錢繞一圈的時間；飲料店算出來是 −6.4 天的好生意；正 CCC 公司的成長會吃掉淨利。附 CCC 時間軸與成長帳單計算機。',
+    descriptionEn: 'Inventory plus receivable days minus payable days: how long cash takes to come back, why the drink shop runs at −6.4 days, and how growth eats cash at positive-CCC firms.',
+    tags: ['Q4 財務長季', '互動計算機'],
+    date: '2027-05-12',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-45-working-capital/',
+  },
 ];
