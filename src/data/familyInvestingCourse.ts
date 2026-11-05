@@ -449,4 +449,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-38-journal-review/',
   },
+  {
+    slug: 'week-39-q3-capstone-report',
+    title: 'W39 Q3 期末專題——風險月報',
+    titleEn: 'W39 Q3 Capstone: Risk Report',
+    description: '七節月報結構（快照、績效、風險、風險調整、歸因、操作、展望）全部來自舊模組；勾稽紀律、一段話摘要、Rubric 8 分畢業，並向家人做第一次經理人報告。附勾稽台與自評表。',
+    descriptionEn: 'Assemble twelve weeks of modules into a seven-section monthly report: reconciliation checks, a one-paragraph summary, a 10-point rubric, and a first manager\'s report to the family.',
+    tags: ['Q3 操盤手季', 'Capstone', '互動評估'],
+    date: '2027-03-31',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-39-q3-capstone-report/',
+  },
 ];
