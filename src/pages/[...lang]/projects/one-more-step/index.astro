@@ -17,7 +17,7 @@
  */
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import T from '../../../../components/T.astro';
-import { getCollection } from 'astro:content';
+import { getPostsByLocale } from '../../../../lib/writing';
 import { oneMoreStep } from '../../../../data/oneMoreStep';
 import { localeHref } from '../../../../lib/i18n';
 
@@ -35,17 +35,28 @@ export function getStaticPaths() {
  *   新的長文一律走 Markdown：content collection 有 rendered.html，
  *   RSS 才拿得到全文，手刻頁沒有這個。
  */
-const posts = (await getCollection('blog', ({ data }) => !data.draft && data.series === 'one-more-step'))
-  .map((p) => ({
-    slug: p.id,
-    title: p.data.title,
-    titleEn: p.data.titleEn ?? p.data.title,
-    description: p.data.description,
-    descriptionEn: p.data.descriptionEn,
-    tags: p.data.tags ?? [],
-    date: p.data.pubDate.toISOString().slice(0, 10),
-    url: '/writing/' + p.id + '/',
-  }));
+/* 文章拆成中英兩個檔之後，本頁語言的那一份由 getPostsByLocale 取；
+   卡片上「中文標題下方那行英文小字」仍需要英文版的標題，所以另外索引一份
+   英文的來對照——那行小字和頁面語言是兩件事，中文頁也要顯示它。 */
+const omsEn = new Map(
+  (await getPostsByLocale('en', (data) => data.series === 'one-more-step')).map((p) => [
+    p.slug,
+    p.data,
+  ]),
+);
+
+const posts = (
+  await getPostsByLocale(Astro.currentLocale, (data) => data.series === 'one-more-step')
+).map((p) => ({
+  slug: p.slug,
+  title: p.data.title,
+  titleEn: omsEn.get(p.slug)?.title ?? p.data.title,
+  description: p.data.description,
+  descriptionEn: omsEn.get(p.slug)?.description,
+  tags: p.data.tags ?? [],
+  date: p.data.pubDate.toISOString().slice(0, 10),
+  url: '/writing/' + p.slug + '/',
+}));
 
 const docs = [...oneMoreStep, ...posts].sort((x, y) => (x.date < y.date ? 1 : -1));
 

@@ -11,11 +11,15 @@ const blog = defineCollection({
        「更新於」，沒填就什麼都不輸出——理由同 astro.config 的 sitemap lastmod：
        填了不準的日期比不填更糟，Google 會因此不信任整站的時間訊號。 */
     updatedDate: z.coerce.date().optional(),
+    /* 這一篇是哪個語言的版本。中英是兩個獨立檔案、兩個獨立網址——
+       中文放 `blog/<slug>.md`，英文放 `blog/en/<slug>.md`，路由靠 id 前綴分流
+       （見 lib/writing.ts 的 getPostsByLocale）。
+
+       曾經的做法是同一個檔用 titleEn/descriptionEn 加內文的 .lang-zh/.lang-en
+       兩個 div 提供雙語，一個網址服務兩種語言。那樣兩個語言拿不到各自的網址，
+       hreflang 無從指起；真的補上 hreflang，兩邊 HTML 又幾乎一樣，
+       Google 會判為重複網頁。所以拆檔。 */
     lang: z.enum(['zh', 'en']).default('zh'),
-    /* 雙語文章：同一篇同時提供中英內文（內文用 .lang-zh / .lang-en 包住）。
-       填了 titleEn 就代表這篇會跟著站上的語言切換走，標題與日期格式一起換。 */
-    titleEn: z.string().optional(),
-    descriptionEn: z.string().optional(),
     tags: z.array(z.string()).optional(),
     draft: z.boolean().optional().default(false),
     series: z.string().optional(),

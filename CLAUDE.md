@@ -95,9 +95,18 @@ node scripts/page-manifest.mjs build 2026-08-30      # 重算並直接寫回清�
 push 到 `main` 後，把**指紋有變動的頁**提交給 Bing。金鑰在 repo secret
 `BING_WEBMASTER_API_KEY`（BWT → Settings → API access 取得）。
 
-> ⚠ **配額是硬約束：DailyQuota 100、MonthlyQuota 300，而全站 119 頁。**
-> 所以**絕對不能改回「每次 push 送整份 sitemap」**——那樣第三次 push 就爆掉。
+> ⚠ **配額是硬約束，其中每日那道最緊：實測 2026-09-07 為 DailyQuota 100、
+> MonthlyQuota 2400，而全站已有 132 頁。**
+> 所以**絕對不能改回「每次 push 送整份 sitemap」**——全站一次就超過當日上限，
+> 而且會把額度花在一個字都沒改的頁上。
 > 查當前配額：`GetUrlSubmissionQuota`。
+>
+> ⚠ 這兩個欄位回的是**剩餘量不是總額**。同一次 run 裡提交 28 頁後，
+> 兩個數字各減 28（100→72、2400→2372）——workflow 就是靠這個差值確認
+> Bing 真的收下了。所以看到「MonthlyQuota 2400」不要讀成「本月上限 2400」。
+>
+> 月配額曾經是 300（本檔到 2026-09-07 為止都這樣記），Bing 會依網站狀況調整，
+> 別把數字當常數用——要判斷夠不夠就當場查一次。
 
 - 成功回應是 `{"d":null}`，**光看狀態碼分不出有沒有真的收下**——workflow 會回查配額確認有扣。
 - 配額不足時**不靜默截斷**：逐條列出未提交的網址，且 **manifest 不更新**，
@@ -213,7 +222,7 @@ draft: false   # true 時不顯示在列表
 - 不使用 CSS framework（Tailwind、Bootstrap 等）
 - 不使用 `npm run build` 以外的 build 工具
 - 不修改 Cloudflare Pages 設定，除非 owner 明確要求
-- **不把搜尋引擎提交改回「每次 push 送整份 sitemap」**——Bing 的月配額只有 300，全站 119 頁，第三次 push 就爆（見〈搜尋引擎提交〉）
+- **不把搜尋引擎提交改回「每次 push 送整份 sitemap」**——全站 132 頁一次就超過每日上限 100，而且會把額度花在沒改過的頁上（見〈搜尋引擎提交〉）
 - **不改回 IndexNow**（`api.indexnow.org`）——對本站一律 403，六個假設實測全推翻，問題在 Bing 端
 - **不刪 `public/121a93972fa37400d8b6c87a13075582.txt`**——那是仍在用的 Yandex IndexNow 金鑰檔
 - **不把含 API 金鑰的網址印進 log**——Bing 的金鑰走 query string

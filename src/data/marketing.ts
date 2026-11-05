@@ -11,14 +11,14 @@ export const marketingUnits: OmsDoc[] = [
     titleEn: 'Marketing Foundations & Trends',
     description: '漏斗演進三部曲（AIDA→AARRR→Flywheel）、AEO/GEO 與 zero-click 時代的對策，加上 JTBD、StoryBrand、Hook Model 三個必學框架。行銷學習地圖 W1-2。',
     /*
-     * ⚠ 這段英文**不能**寫進 staticPageMeta 的 descriptionEn。
+     * 這頁曾經刻意沒有英文版——內文有 13 處純中文未補譯，而 staticPageMeta 的
+     * descriptionEn 同時是「要不要產生英文版」的判準，填了會生出翻譯不完整的頁。
      *
-     * 那個欄位同時是「這頁要不要產生英文版」的判準（StaticPageLayout 的 hasEn
-     * 與 [slug].astro 的 getStaticPaths 都讀它）。這頁刻意沒有英文版——內文還有
-     * 13 處純中文未補譯——所以往那裡填會連帶生出一個翻譯不完整的英文頁。
-     *
-     * 卡片描述與頁面有沒有英文版是兩件事：卡片就在 /en/writing/ 上，
-     * 標題已經是英文了，描述沒有理由留中文。
+     * 那 13 處在 #241（2026-08，「marketing 五頁：把成對 span 之外的中文包起來」）
+     * 就補完了，只是這裡與 lib/i18n.ts 的註解沒跟著改，於是這頁被兩行過時的說明
+     * 擋在英文區外一個月。2026-09-07 驗過才放行：英文頁 <main> 內的可見中文只剩
+     * 語言切換鈕的「中」（與已上線的另外四頁一致），中英可見字數比 1.68 也落在
+     * 那四頁 1.53–1.76 的區間內——沒有整段漏譯。
      */
     descriptionEn:
       'The three-stage evolution of the funnel (AIDA to AARRR to Flywheel), what AEO/GEO and the zero-click era demand, plus three frameworks worth knowing: JTBD, StoryBrand and the Hook Model. Marketing Roadmap W1-2.',

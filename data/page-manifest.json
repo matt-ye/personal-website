@@ -10,12 +10,12 @@
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/en/about/": {
-      "hash": "ba07c0003ab9b378",
-      "lastChanged": "2026-08-30"
+      "hash": "f1e4fae1a9228d47",
+      "lastChanged": "2026-10-28"
     },
     "https://mattye.dev/en/coaching/": {
       "hash": "54f03a265de1be8d",
-      "lastChanged": "2026-08-30"
+      "lastChanged": "2026-10-28"
     },
     "https://mattye.dev/en/projects/agent-skills/": {
       "hash": "5bfc6b3823ce8584",
@@ -78,8 +78,8 @@
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/en/projects/family-investing-course/week-14-asset-allocation/": {
-      "hash": "5e779c4e6a219771",
-      "lastChanged": "2026-08-30"
+      "hash": "dd600d74d6278d63",
+      "lastChanged": "2026-09-06"
     },
     "https://mattye.dev/en/projects/family-investing-course/week-15-mpt/": {
       "hash": "be0bdd843a41fe2b",
@@ -94,8 +94,8 @@
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/en/projects/family-investing-course/week-18-position-rebalancing/": {
-      "hash": "d2a8ffb137604641",
-      "lastChanged": "2026-08-30"
+      "hash": "6a3310a70bf24208",
+      "lastChanged": "2026-09-06"
     },
     "https://mattye.dev/en/projects/family-investing-course/week-19-relative-valuation/": {
       "hash": "470e6b4c4d975484",
@@ -126,16 +126,24 @@
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/en/projects/family-investing-course/week-26-q2-capstone-thesis/": {
-      "hash": "6ba30b0e98da9cc3",
-      "lastChanged": "2026-08-30"
+      "hash": "f02a982b1484fe5a",
+      "lastChanged": "2026-09-06"
+    },
+    "https://mattye.dev/en/projects/family-investing-course/week-27-returns-portfolio/": {
+      "hash": "45d541dba1c7520d",
+      "lastChanged": "2026-09-06"
     },
     "https://mattye.dev/en/projects/family-investing-course/": {
       "hash": "83fc40578f003acb",
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/en/projects/marketing/faceless-pipeline/": {
-      "hash": "7892d4f2a6da9ae6",
-      "lastChanged": "2026-08-30"
+      "hash": "4987350ede7fd030",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/projects/marketing/marketing-foundations/": {
+      "hash": "30d9ba9de98b6719",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/en/projects/marketing/short-video/": {
       "hash": "2b68568877dfec86",
@@ -150,8 +158,8 @@
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/en/projects/marketing/": {
-      "hash": "622b868d5786df9d",
-      "lastChanged": "2026-08-30"
+      "hash": "0aa30b2ec29a70f8",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/en/projects/one-more-step/atcc-judges/": {
       "hash": "15ffaccc524be3ac",
@@ -177,6 +185,10 @@
       "hash": "a43d8a9b9d505276",
       "lastChanged": "2026-08-30"
     },
+    "https://mattye.dev/en/projects/one-more-step/ip-governance-ai/": {
+      "hash": "1dd6439baf15a2f9",
+      "lastChanged": "2026-09-07"
+    },
     "https://mattye.dev/en/projects/one-more-step/lemon-squeezy/": {
       "hash": "f6122b4c9be3a674",
       "lastChanged": "2026-08-30"
@@ -190,36 +202,84 @@
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/en/projects/": {
-      "hash": "774200f7573af391",
-      "lastChanged": "2026-08-30"
+      "hash": "f648c4d1bc875efe",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/en/speeches/": {
-      "hash": "7840205c0ef02e15",
-      "lastChanged": "2026-08-30"
+      "hash": "f5b24335452a38f7",
+      "lastChanged": "2026-10-28"
     },
     "https://mattye.dev/en/sponsor/": {
-      "hash": "b197fcc781f3b0a5",
-      "lastChanged": "2026-08-30"
+      "hash": "5d7c894c45a02b5f",
+      "lastChanged": "2026-09-29"
     },
     "https://mattye.dev/en/writing/In-Memory-of-Miguel-Li/": {
-      "hash": "5dbf6098631c7473",
-      "lastChanged": "2026-08-30"
+      "hash": "06ccd537b47a07a5",
+      "lastChanged": "2026-10-28"
+    },
+    "https://mattye.dev/en/writing/family-investing-01-why-invest/": {
+      "hash": "8ece71a92c4744f8",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/family-investing-02-inflation/": {
+      "hash": "f67af2cde5cfab2d",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/family-investing-03-interest-rate/": {
+      "hash": "c428f9150a4aa245",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/family-investing-04-what-is-stock/": {
+      "hash": "76cdd9598bc4f852",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/family-investing-05-etf-dca/": {
+      "hash": "ad1b2e3e8ac16ff3",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/family-investing-06-economic-moat/": {
+      "hash": "52a270df8cd98ade",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/family-investing-07-financial-statements/": {
+      "hash": "8678a69baa202486",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/family-investing-08-capital-allocation-intro/": {
+      "hash": "a9033f35b08c3628",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/hardcore-presentation-00-roadmap/": {
+      "hash": "c4bda8b4cb9425b4",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/hello-world/": {
+      "hash": "aa6eaa99e3650e31",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/management-3r-01-manifesto/": {
+      "hash": "17f4dfa84874af50",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/en/writing/seo-rules-with-sources/": {
+      "hash": "5ccae0de8aae264c",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/en/writing/symbolic-reminder/": {
       "hash": "6c4462cf820a12d6",
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/en/writing/": {
-      "hash": "532eec8f2919ad17",
-      "lastChanged": "2026-08-30"
+      "hash": "b4841f9e616da1cb",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/en/": {
-      "hash": "d02625805cbfe380",
-      "lastChanged": "2026-08-30"
+      "hash": "103cb7b097d4ae78",
+      "lastChanged": "2026-10-28"
     },
     "https://mattye.dev/": {
-      "hash": "c4f9a7db68337fb9",
-      "lastChanged": "2026-08-30"
+      "hash": "83400e37eab2eca4",
+      "lastChanged": "2026-10-28"
     },
     "https://mattye.dev/projects/agent-skills/": {
       "hash": "ae41ccc95742e5c4",
@@ -334,20 +394,20 @@
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/projects/family-investing-course/week-27-returns-portfolio/": {
-      "hash": "e3705d6234ce8604",
-      "lastChanged": "2026-08-30"
+      "hash": "b5c7afa34a05ea88",
+      "lastChanged": "2026-09-06"
     },
     "https://mattye.dev/projects/family-investing-course/": {
       "hash": "7fb0219f26480aef",
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/projects/marketing/faceless-pipeline/": {
-      "hash": "2d6ba0c9b7d54b88",
-      "lastChanged": "2026-08-30"
+      "hash": "5909db18dfadf9bf",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/projects/marketing/marketing-foundations/": {
-      "hash": "6dd7492420fced85",
-      "lastChanged": "2026-08-30"
+      "hash": "6906156e4514f104",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/projects/marketing/short-video/": {
       "hash": "27881e36c778b2f5",
@@ -390,8 +450,8 @@
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/projects/one-more-step/ip-governance-ai/": {
-      "hash": "777e13e7168a1048",
-      "lastChanged": "2026-08-30"
+      "hash": "95c2f70bbc8e3449",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/projects/one-more-step/lemon-squeezy/": {
       "hash": "420628343aa99433",
@@ -410,64 +470,64 @@
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/speeches/": {
-      "hash": "d0d636c402a1d16b",
-      "lastChanged": "2026-08-30"
+      "hash": "d853a48da128fddb",
+      "lastChanged": "2026-10-28"
     },
     "https://mattye.dev/sponsor/": {
-      "hash": "d8c5f0115d165134",
-      "lastChanged": "2026-08-30"
-    },
-    "https://mattye.dev/writing/family-investing-01-why-invest/": {
-      "hash": "04d0302ac7ae9386",
-      "lastChanged": "2026-08-30"
-    },
-    "https://mattye.dev/writing/family-investing-02-inflation/": {
-      "hash": "bc5de6822b9ea1a5",
-      "lastChanged": "2026-08-30"
-    },
-    "https://mattye.dev/writing/family-investing-03-interest-rate/": {
-      "hash": "6e5d2c312e438801",
-      "lastChanged": "2026-08-30"
-    },
-    "https://mattye.dev/writing/family-investing-04-what-is-stock/": {
-      "hash": "ab87603c7d7b40fa",
-      "lastChanged": "2026-08-30"
-    },
-    "https://mattye.dev/writing/family-investing-05-etf-dca/": {
-      "hash": "4a4286893a30d490",
-      "lastChanged": "2026-08-30"
-    },
-    "https://mattye.dev/writing/family-investing-06-economic-moat/": {
-      "hash": "838f7fea6c673e19",
-      "lastChanged": "2026-08-30"
-    },
-    "https://mattye.dev/writing/family-investing-07-financial-statements/": {
-      "hash": "3a933a0f785775a1",
-      "lastChanged": "2026-08-30"
-    },
-    "https://mattye.dev/writing/family-investing-08-capital-allocation-intro/": {
-      "hash": "c98f003116524c08",
-      "lastChanged": "2026-08-30"
-    },
-    "https://mattye.dev/writing/hardcore-presentation-00-roadmap/": {
-      "hash": "a18480d1fecca2b5",
-      "lastChanged": "2026-08-30"
-    },
-    "https://mattye.dev/writing/hello-world/": {
-      "hash": "d3d2121a12c3605b",
-      "lastChanged": "2026-08-30"
+      "hash": "376068ec47efdf32",
+      "lastChanged": "2026-09-29"
     },
     "https://mattye.dev/writing/In-Memory-of-Miguel-Li/": {
-      "hash": "0879b28f4e9b2283",
-      "lastChanged": "2026-08-30"
+      "hash": "c87c239c421de36e",
+      "lastChanged": "2026-10-28"
+    },
+    "https://mattye.dev/writing/family-investing-01-why-invest/": {
+      "hash": "b65843e6f1e097f1",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/writing/family-investing-02-inflation/": {
+      "hash": "e96fa0a8f4e49593",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/writing/family-investing-03-interest-rate/": {
+      "hash": "31d470fa0155800f",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/writing/family-investing-04-what-is-stock/": {
+      "hash": "8fdc3aff161059ea",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/writing/family-investing-05-etf-dca/": {
+      "hash": "f6c39b762f89d33e",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/writing/family-investing-06-economic-moat/": {
+      "hash": "de07d5ff70873558",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/writing/family-investing-07-financial-statements/": {
+      "hash": "306c207f05311704",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/writing/family-investing-08-capital-allocation-intro/": {
+      "hash": "74cd38485698579a",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/writing/hardcore-presentation-00-roadmap/": {
+      "hash": "d64849186412fd0b",
+      "lastChanged": "2026-09-07"
+    },
+    "https://mattye.dev/writing/hello-world/": {
+      "hash": "0a99ee15b2fa1b20",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/writing/management-3r-01-manifesto/": {
-      "hash": "a03a22c6ce75de27",
-      "lastChanged": "2026-08-30"
+      "hash": "acc166e05e24af09",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/writing/seo-rules-with-sources/": {
-      "hash": "c8368c805849b914",
-      "lastChanged": "2026-08-30"
+      "hash": "c5b54c596ae62632",
+      "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/writing/symbolic-reminder/": {
       "hash": "b92ad6e5e642853d",

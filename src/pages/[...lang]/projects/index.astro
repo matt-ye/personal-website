@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import T from '../../../components/T.astro';
-import { getCollection } from 'astro:content';
+import { getPostsByLocale } from '../../../lib/writing';
 import { projects } from '../../../data/projects';
 import { agentSkills } from '../../../data/agentSkills';
 import { localeHref } from '../../../lib/i18n';
@@ -14,18 +14,17 @@ export function getStaticPaths() {
 const isEn = Astro.currentLocale === 'en';
 
 async function seriesPosts(series: string) {
-  const posts = (await getCollection('blog', ({ data }) => !data.draft && data.series === series))
+  /* 文章已拆成中英兩個檔，getPostsByLocale 直接給本頁語言的那一份——
+     所以不再需要「沒有英文標題就退回中文並標 lang」的那套補救：
+     英文頁上不會再出現中文標題（缺英文檔的話 build 就先失敗了，
+     守衛在 [...lang]/writing/[slug].astro）。 */
+  const posts = (await getPostsByLocale(Astro.currentLocale, (data) => data.series === series))
     .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
     .slice(0, 3);
 
   return posts.map((post) => ({
-    href: `/writing/${post.id}/`,
-    /* 11 篇文章只有 1 篇填了 titleEn。英文頁沒有英文標題時退回中文，
-       並標 lang="zh-TW"——空白比中文更糟（讀者什麼都看不到），
-       但讓爬蟲把中文當成英文更糟（會污染這一頁的語言判定）。
-       翻譯是唯一無法自動化的部分，見 docs/i18n-architecture-plan.md 第 3 節。 */
-    title: isEn ? (post.data.titleEn ?? post.data.title) : post.data.title,
-    titleLang: isEn && !post.data.titleEn ? 'zh-TW' : undefined,
+    href: localeHref(`/writing/${post.slug}/`, Astro.currentLocale),
+    title: post.data.title,
     date: post.data.pubDate.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
       month: 'numeric',
       day: 'numeric',
@@ -138,8 +137,7 @@ const presentationPosts = await seriesPosts('hardcore-presentation');
         <ul class="series-mini-list">
           {presentationPosts.map(post => (
             <li class="series-mini-item">
-              {/* 沒有英文標題時退回中文並標 lang——見上方 seriesPosts() 的說明 */}
-              <a href={post.href} class="series-mini-title" lang={post.titleLang}>{post.title}</a>
+              <a href={post.href} class="series-mini-title">{post.title}</a>
               <span class="series-mini-date">{post.date}</span>
             </li>
           ))}
@@ -171,8 +169,7 @@ const presentationPosts = await seriesPosts('hardcore-presentation');
         <ul class="series-mini-list">
           {investingPosts.map(post => (
             <li class="series-mini-item">
-              {/* 沒有英文標題時退回中文並標 lang——見上方 seriesPosts() 的說明 */}
-              <a href={post.href} class="series-mini-title" lang={post.titleLang}>{post.title}</a>
+              <a href={post.href} class="series-mini-title">{post.title}</a>
               <span class="series-mini-date">{post.date}</span>
             </li>
           ))}
@@ -206,8 +203,7 @@ const presentationPosts = await seriesPosts('hardcore-presentation');
         <ul class="series-mini-list">
           {managementPosts.map(post => (
             <li class="series-mini-item">
-              {/* 沒有英文標題時退回中文並標 lang——見上方 seriesPosts() 的說明 */}
-              <a href={post.href} class="series-mini-title" lang={post.titleLang}>{post.title}</a>
+              <a href={post.href} class="series-mini-title">{post.title}</a>
               <span class="series-mini-date">{post.date}</span>
             </li>
           ))}

@@ -142,6 +142,11 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [personLd, websiteL
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content={siteName} />
+    {/* 跟著頁面語言走，值域與另外兩個 layout 一致（zh_TW／en_US）。
+        缺這一行的症狀在頁面上完全看不出來：分享卡照樣長得對，只有抓卡片的那一端
+        少了語言訊號——所以全站 46 個走 BaseLayout 的頁面漏了它一年沒人發現，
+        而同樣的東西 CourseWeekLayout 與 StaticPageLayout 一直都有輸出。 */}
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'zh_TW'} />
     <meta property="og:image" content={imageURL} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />

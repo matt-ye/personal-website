@@ -1,4 +1,6 @@
 ---
+import { localeHref } from '../lib/i18n';
+
 interface Props {
   id: string;
   title: string;
@@ -33,7 +35,10 @@ const dateFormatted = pubDate.toLocaleDateString('en-US', {
         語意上是標題，但不產生自己的盒子，所以 .post-card-header 的 flex
         排版與原本完全一致——標題、日期、語言標籤仍然是同一層的 flex 子元素。 */}
     <Heading class="post-card-heading">
-      <a href={`/writing/${id}/`} class="post-card-title" lang={titleLang}>{title}</a>
+      {/* 卡片連到跟自己同語言的那個網址。id 一律是純 slug（呼叫端用
+          getPostsByLocale 取，前綴已去掉），語言前綴交給 localeHref 決定——
+          未遷移的文章會維持中文路徑，不會連到不存在的 /en/ 網址。 */}
+      <a href={localeHref(`/writing/${id}/`, lang === 'en' ? 'en' : undefined)} class="post-card-title" lang={titleLang}>{title}</a>
     </Heading>
     <span class="post-card-date">
       <time datetime={pubDate.toISOString()}>{dateFormatted}</time>

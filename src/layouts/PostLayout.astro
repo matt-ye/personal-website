@@ -1,7 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import T from '../components/T.astro';
 import { tagLabel } from '../lib/tagLabels';
+import { localeHref } from '../lib/i18n';
 
 interface Props {
   title: string;
@@ -10,21 +10,25 @@ interface Props {
   updatedDate?: Date;
   lang?: 'zh' | 'en';
   tags?: string[];
-  titleEn?: string;
-  descriptionEn?: string;
   ymyl?: boolean;
 }
 
-const { title, description, pubDate, updatedDate, lang = 'zh', tags, titleEn, descriptionEn, ymyl = false } = Astro.props;
+const { title, description, pubDate, updatedDate, lang = 'zh', tags, ymyl = false } = Astro.props;
 
-/* 有 titleEn 就是雙語文章：標題與日期跟著站上的語言切換，不再固定單一語言 */
-const bilingual = Boolean(titleEn);
+/* 文章拆成獨立網址之後，這一頁只有一種語言——標題、日期、標籤都直接依 lang
+   輸出，不再用 <T> 或 .lang-zh/.lang-en 兩份都印再交給 CSS 切。
+   在單語頁輸出兩份的代價不只是多餘的位元組：英文頁的 HTML 裡混著中文，
+   對爬蟲就是語言判定的雜訊。 */
+const isEn = lang === 'en';
+const t = (zh: string, en: string) => (isEn ? en : zh);
 
-const htmlLang = lang === 'zh' ? 'zh-TW' : 'en';
+const htmlLang = isEn ? 'en' : 'zh-TW';
 
-const dateZh = pubDate.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
-const dateEn = pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-const dateFormatted = lang === 'zh' ? dateZh : dateEn;
+const dateFormatted = pubDate.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL('/OG.png', Astro.site).href;
@@ -52,45 +56,29 @@ const articleLd = {
 <BaseLayout title={title} description={description} lang={htmlLang} ogType="article">
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleLd)} />
 
-  <a href="/writing/" class="back-link">← Writing</a>
+  <a href={localeHref('/writing/', lang)} class="back-link">← Writing</a>
 
   <header class="post-page-header">
-    <h1>
-      {bilingual ? (
-        <>
-          <span class="lang-zh" lang="zh-TW">{title}</span><span class="lang-en" lang="en" hidden>{titleEn}</span>
-        </>
-      ) : title}
-    </h1>
+    <h1>{title}</h1>
     <div class="post-meta">
       {/* 作者署名。在此之前「葉淨維」只出現在 <title>、meta 與頁尾版權——
           那些位置對讀者與評分員都不算內容創作者資訊。rel="author" 是這層
           關係的機器可讀宣告，連到 /about/ 讓資歷可查證。 */}
-      <a class="post-author" href="/about/" rel="author">
-        <T zh="葉淨維" en="Matt Ye" />
+      <a class="post-author" href={localeHref('/about/', lang)} rel="author">
+        {t('葉淨維', 'Matt Ye')}
       </a>
-      <time datetime={pubDate.toISOString()}>
-        {bilingual ? (
-          <>
-            <span class="lang-zh" lang="zh-TW">{dateZh}</span><span class="lang-en" lang="en" hidden>{dateEn}</span>
-          </>
-        ) : dateFormatted}
-      </time>
+      <time datetime={pubDate.toISOString()}>{dateFormatted}</time>
       {updatedDate && (
         <time class="post-updated" datetime={updatedDate.toISOString()}>
-          {lang === 'zh'
-            ? `更新於 ${updatedDate.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })}`
-            : `Updated ${updatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`}
+          {isEn
+            ? `Updated ${updatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+            : `更新於 ${updatedDate.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })}`}
         </time>
       )}
-      {/* 徽章與標籤都走 <T>：這篇文章在中文網址上，顯示語言是使用者按切換鈕
-          即時決定的，建置期並不知道——所以兩種都輸出，交給 CSS 切。 */}
-      {bilingual
-        ? <span class="lang-badge"><T zh="中 · EN" en="ZH · EN" /></span>
-        : <span class="lang-badge">{lang === 'zh' ? <T zh="中" en="ZH" /> : 'EN'}</span>}
+      <span class="lang-badge">{t('中', 'EN')}</span>
       {tags && tags.length > 0 && (
         <div class="tags">
-          {tags.map(tag => <span class="tag"><T zh={tag} en={tagLabel(tag, true)} /></span>)}
+          {tags.map((tag) => <span class="tag">{isEn ? tagLabel(tag, true) : tag}</span>)}
         </div>
       )}
     </div>
@@ -108,10 +96,10 @@ const articleLd = {
       放進 prose 裡會被 RSS 全文與 LLM 當成正文的一部分。 */}
   {ymyl && (
     <aside class="post-disclaimer" role="note">
-      <T
-        zh="本文為個人學習紀錄與家人教育素材，非投資建議；內容涉及之制度與稅率以主管機關現行公告為準。"
-        en="This article is a personal learning record and educational material for my family — not investment advice. Any regulations or tax rates mentioned are subject to the current announcements of the competent authorities."
-      />
+      {t(
+        '本文為個人學習紀錄與家人教育素材，非投資建議；內容涉及之制度與稅率以主管機關現行公告為準。',
+        'This article is a personal learning record and educational material for my family — not investment advice. Any regulations or tax rates mentioned are subject to the current announcements of the competent authorities.',
+      )}
     </aside>
   )}
 

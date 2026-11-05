@@ -24,6 +24,7 @@ export interface StaticPageMeta {
   ogType: string;
   ogImage: string;
   canonical: string;
+  /** 覆寫用。不填就由路由推導（/en/ → en_US，其餘 → zh_TW），見 StaticPageLayout。 */
   ogLocale?: string;
   ogImageAlt?: string;
   ogImageAltEn?: string;
@@ -88,6 +89,11 @@ export const staticPageMeta: StaticPageMeta[] = [
     "description": "行銷漏斗演進（AIDA→AARRR→Flywheel）、AEO/GEO、zero-click content、JTBD/StoryBrand/Hook Model。中英雙語行銷學習單元 W1-2。",
     "ogTitle": "行銷基礎與 2026 趨勢 — Marketing Foundations",
     "ogDescription": "行銷漏斗演進、AEO/GEO、zero-click、JTBD/StoryBrand/Hook Model。中英雙語學習單元。",
+    "jsonLdEn": {"行銷專欄 Marketing Column":"Marketing Column"},
+    "titleEn": "Marketing Foundations & Trends | Marketing Column · Matt Ye",
+    "descriptionEn": "How the funnel evolved (AIDA to AARRR to Flywheel), what AEO/GEO and zero-click demand, plus JTBD, StoryBrand and the Hook Model. Bilingual unit W1-2.",
+    "ogTitleEn": "Marketing Foundations & 2026 Trends",
+    "ogDescriptionEn": "Funnel evolution, AEO/GEO, zero-click, and three frameworks worth knowing. Bilingual learning unit W1-2.",
     "ogType": "article",
     "ogImage": "https://mattye.dev/og-logo.png",
     "canonical": "https://mattye.dev/projects/marketing/marketing-foundations/",

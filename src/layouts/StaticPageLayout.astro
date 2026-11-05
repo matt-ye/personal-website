@@ -97,7 +97,11 @@ const title = isEn ? (meta.titleEn ?? meta.title) : meta.title;
 const description = isEn ? (meta.descriptionEn ?? meta.description) : meta.description;
 const ogTitle = isEn ? (meta.ogTitleEn ?? meta.ogTitle) : meta.ogTitle;
 const ogDescription = isEn ? (meta.ogDescriptionEn ?? meta.ogDescription) : meta.ogDescription;
-const ogLocale = isEn ? 'en_US' : meta.ogLocale;
+/* 中文版的預設值和英文版一樣是推導出來的，不是靠每頁記得填。
+   原本這行是 `isEn ? 'en_US' : meta.ogLocale`——英文版寫死、中文版看資料，
+   於是 one-more-step 那 7 頁（meta 沒填 ogLocale）只有英文版輸出 og:locale。
+   欄位保留下來當覆寫用，真的需要別的值（en_GB 之類）時才填。 */
+const ogLocale = isEn ? 'en_US' : (meta.ogLocale ?? 'zh_TW');
 
 /*
  * JSON-LD：不手改、不重組，程式覆寫 5 個鍵後再序列化。

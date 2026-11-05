@@ -3,7 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import T from '../../components/T.astro';
 import PostCard from '../../components/PostCard.astro';
 import Tour from '../../components/Tour.astro';
-import { getCollection } from 'astro:content';
+import { getPostsByLocale } from '../../lib/writing';
+import { localeHref } from '../../lib/i18n';
 import { Image } from 'astro:assets';
 import { projects } from '../../data/projects';
 /* hero 照片放 src/assets/ 而非 public/：只有前者會經過 Astro 的圖片最佳化。
@@ -12,7 +13,7 @@ import photoPointing from '../../assets/photo-pointing.jpg';
 import photoStanding from '../../assets/photo-standing.jpg';
 import photo5 from '../../assets/photo-5.jpg';
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
+const posts = (await getPostsByLocale(Astro.currentLocale))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
   .slice(0, 3);
 
@@ -320,18 +321,19 @@ const awards = getPersonalAwards();
       <section style="margin-top: var(--spacing-xl)">
         <h2 class="section-heading"><T zh="近期文章" en="Recent Writing" /></h2>
         <ul class="post-list">
+          {/* 取到的已經是本頁語言的那一份（getPostsByLocale 分流），
+              所以標題與描述直接用，不需要再退回中文、也不需要 titleLang。 */}
           {posts.map(post => (
             <PostCard
-              id={post.id}
-              title={isEn ? (post.data.titleEn ?? post.data.title) : post.data.title}
-            titleLang={isEn && !post.data.titleEn ? 'zh-TW' : undefined}
+              id={post.slug}
+              title={post.data.title}
               description={post.data.description}
               pubDate={post.data.pubDate}
               lang={post.data.lang}
             />
           ))}
         </ul>
-        <a href="/writing/" class="section-cta"><T zh="所有文章 →" en="All posts →" /></a>
+        <a href={localeHref('/writing/', Astro.currentLocale)} class="section-cta"><T zh="所有文章 →" en="All posts →" /></a>
       </section>
     )}
 

@@ -9,7 +9,7 @@
  *
  * ⚠️ 新增內容來源時只要改這個檔，/writing 與 /rss.xml 會同時生效。
  */
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { oneMoreStep } from '../data/oneMoreStep';
 import { staticPageMeta } from '../data/staticPageMeta';
 import { marketingUnits } from '../data/marketing';
@@ -47,13 +47,44 @@ export const CAT_ORDER = [
   '隨筆',
 ];
 
+/**
+ * 依語言取 Markdown 文章。
+ *
+ * 中文在 `src/content/blog/<slug>.md`、英文在 `src/content/blog/en/<slug>.md`，
+ * 兩份都在同一個 collection 裡，所以每個列出文章的頁面都得自己分流。
+ * 分流邏輯放這裡共用，理由同本檔開頭：各抄一份的話，總有一頁會忘記過濾，
+ * 症狀是同一篇出現兩次、或英文頁列出中文文章。
+ *
+ * 回傳的 `slug` 已去掉 `en/` 前綴，可直接組成網址。
+ */
+export async function getPostsByLocale(
+  locale: string | undefined,
+  filter: (data: CollectionEntry<'blog'>['data']) => boolean = () => true,
+) {
+  const all = await getCollection('blog', ({ data }) => !data.draft);
+  const isEn = locale === 'en';
+  return all
+    .filter((p) => (isEn ? p.id.startsWith('en/') : !p.id.startsWith('en/')))
+    .filter((p) => filter(p.data))
+    .map((p) => ({ ...p, slug: p.id.replace(/^en\//, '') }));
+}
+
 export async function getWritingItems(): Promise<WritingItem[]> {
   // Blog posts → unified items
-  const posts: WritingItem[] = (await getCollection('blog', ({ data }) => !data.draft)).map(p => ({
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+  /* 文章拆成中英兩個檔之後，collection 裡同一篇會出現兩次（`<slug>` 與
+     `en/<slug>`）。清單只收中文那份、英文那份拿來補卡片的替代標題與描述——
+     直接全收會讓 /writing 與 RSS 每篇都出現兩遍。 */
+  const enPosts = new Map(
+    allPosts.filter((p) => p.id.startsWith('en/')).map((p) => [p.id.slice(3), p]),
+  );
+
+  const posts: WritingItem[] = allPosts.filter((p) => !p.id.startsWith('en/')).map(p => ({
     title: p.data.title,
     titleEn: '',            // 留空：文章卡片不像 One More Step 那樣多印一行英文標題
-    titleAlt: p.data.titleEn ?? '',
-    descAlt: p.data.descriptionEn ?? '',
+    titleAlt: enPosts.get(p.id)?.data.title ?? '',
+    descAlt: enPosts.get(p.id)?.data.description ?? '',
     desc: p.data.description,
     href: `/writing/${p.id}/`,
     date: p.data.pubDate,
@@ -66,7 +97,7 @@ export async function getWritingItems(): Promise<WritingItem[]> {
                而下面是純串接沒有去重——**同一篇不要兩邊都放**。 */
             : p.data.series === 'one-more-step' ? 'One More Step'
             : '隨筆',
-    badge: p.data.titleEn ? '中 · EN' : (p.data.lang === 'zh' ? '中' : 'EN'),
+    badge: enPosts.has(p.id) ? '中 · EN' : (p.data.lang === 'zh' ? '中' : 'EN'),
     kind: 'post',
     /* Astro 的 content layer 已經把 Markdown 渲染好放在 rendered.html，
        不需要另外裝 markdown-it 之類的依賴。 */

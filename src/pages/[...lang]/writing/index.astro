@@ -17,6 +17,7 @@ import T from '../../../components/T.astro';
 /* 來源合併邏輯抽到 src/lib/writing.ts —— RSS feed 讀同一份，
    新增內容來源時改那個檔，這頁與 /rss.xml 會同時生效。 */
 import { getWritingItems, CAT_ORDER } from '../../../lib/writing';
+import { localeHref } from '../../../lib/i18n';
 
 export function getStaticPaths() {
   return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
@@ -76,7 +77,9 @@ const badgeLabel = (b: string) => (isEn ? BADGE_EN[b] ?? b : b);
           {/* 這頁的結構是「h1 寫作 → 文章清單」，中間沒有分區，所以文章標題就是 h2。
               heading 用 .post-card-heading（display:contents）只提供語意、不影響排版。 */}
           <h2 class="post-card-heading">
-            <a href={it.href} class="post-card-title">
+            {/* 卡片連到跟本頁同語言的網址。已遷移的路徑在英文頁自動指向 /en/，
+                未遷移的維持中文——連回中文好過連到不存在的 /en/ 網址。 */}
+            <a href={localeHref(it.href, Astro.currentLocale)} class="post-card-title">
               {it.titleAlt
                 ? <T zh={it.title} en={it.titleAlt} />
                 : (isEn ? <span lang="zh-TW">{it.title}</span> : it.title)}
