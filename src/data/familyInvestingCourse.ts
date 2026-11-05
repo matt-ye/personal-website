@@ -405,4 +405,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-34-execution/',
   },
+  {
+    slug: 'week-35-fund-industry',
+    title: 'W35 基金實務——費用與利益衝突',
+    titleEn: 'W35 The Fund Industry',
+    description: '看懂基金業的管線：保管銀行為何是詐騙濾網、2/20 在虧損年的不對稱、尾隨佣金如何讓理專勸你轉換，以及十分鐘讀公開說明書。附 2/20 解剖台與 20 年費差帳單。',
+    descriptionEn: 'How the fund industry\'s plumbing works: why custodian banks screen out scams, the asymmetry of 2-and-20 in a losing year, trailing commissions, and reading a prospectus in ten minutes.',
+    tags: ['Q3 操盤手季', '互動計算機'],
+    date: '2027-03-03',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-35-fund-industry/',
+  },
 ];
