@@ -416,4 +416,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-35-fund-industry/',
   },
+  {
+    slug: 'week-36-decision-process',
+    title: 'W36 決策流程——清單與事前驗屍',
+    titleEn: 'W36 Decision Process',
+    description: '把紅旗、偏誤對策、反方論證組裝成 12 項買入前清單；學事前驗屍、決策記錄卡（含「不買」）與 48 小時規則。附清單試跑台、驗屍板與決策卡產生器。',
+    descriptionEn: 'Assemble red flags, bias countermeasures and the counter-thesis into a 12-item pre-buy checklist; learn the premortem, decision journal cards and the 48-hour rule.',
+    tags: ['Q3 操盤手季', '互動工具'],
+    date: '2027-03-10',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-36-decision-process/',
+  },
 ];
