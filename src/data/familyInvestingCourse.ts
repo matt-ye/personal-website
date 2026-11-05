@@ -504,4 +504,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-43-capital-structure/',
   },
+  {
+    slug: 'week-44-dividend-policy',
+    title: 'W44 股利政策與庫藏股',
+    titleEn: 'W44 Dividends & Buybacks',
+    description: '賺來的錢發還是留，只看留下的錢賺不賺得到 WACC；股利無關論與稅、訊號、客群三個偏離；庫藏股的 EPS 魔術與 Buffett 兩條件。附果樹模擬器與庫藏股照妖鏡。',
+    descriptionEn: 'Pay out or retain comes down to one test — can retained earnings beat WACC? Dividend irrelevance and its three real-world breaks, the buyback EPS trick and Buffett\'s two conditions.',
+    tags: ['Q4 財務長季', '互動模擬器'],
+    date: '2027-05-05',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-44-dividend-policy/',
+  },
 ];
