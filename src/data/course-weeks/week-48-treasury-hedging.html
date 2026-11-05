@@ -1,0 +1,465 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .mbars{display:flex;align-items:center;gap:3px;height:160px;margin-top:1rem;position:relative}
+  .mbars::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--line)}
+  .mbars .c{flex:1;height:100%;position:relative}
+  .mbars .b{position:absolute;left:0;right:0;border-radius:3px}
+  .mbars .b.p{background:var(--ok);bottom:50%}
+  .mbars .b.n{background:var(--down);top:50%}
+  .mbars .b.x{background:var(--line);top:calc(50% - 1px);height:2px}
+  .mlab{display:flex;gap:3px;font-size:.66rem;color:var(--ink-3);text-align:center;margin-top:.2rem}
+  .mlab span{flex:1}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 48</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q4 財務長季 · Week 48</p>
+  <h1>資金調度與避險——匯率與利率風險</h1>
+  <p class="lead" style="margin-top:.5rem">W33 學的衍生品保險，本週裝進公司：出口商手上的美元、浮動利率的借款、海外子公司的報表。核心紀律一句話：<strong>財務部是滅火器，不是印鈔機</strong>——台灣的 TRF 風暴，就是忘記這句話的集體學費。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 3、33、43 週</span><span class="chip">52 週 · 第 48 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>CFO 管理本業以外的波動；投資人讀年報的避險附註，那一頁是 CFO 給你的人格測驗。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的頂讓故事——家人算出「不該買」了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">出口商用遠期外匯鎖定匯率 31.5。三個月後台幣貶到 32.5，等於「少賺 100 萬」。這筆避險是失敗嗎？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">是，早知道不要避</button>
+    <button data-g="b">不是，它買到的是確定性</button>
+    <button data-g="c">要看下一季匯率怎麼走</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 匯率曝險的三張臉</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>曝險</th><th>定義</th><th>例子</th><th>管理工具</th></tr></thead>
+      <tbody>
+        <tr><td class="f">交易曝險</td><td>已簽約的未來外幣收付</td><td>三個月後收 100 萬美元貨款</td><td>遠期外匯、選擇權（本週主角）</td></tr>
+        <tr><td class="f">換算曝險</td><td>海外子公司報表換算回母幣</td><td>美國子公司的美元資產負債</td><td>通常不避（帳面效果，不是現金）</td></tr>
+        <tr><td class="f">經濟曝險</td><td>匯率長期改變競爭力</td><td>台幣長期升值侵蝕出口報價力</td><td>金融工具解不了——靠營運布局（海外設廠、雙幣定價）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>台灣出口商的日常：接單美元、成本台幣——<strong>台幣升值直接咬毛利</strong>（W5 的毛利率殺手之一）。這是台灣 CFO 最重要的單一風險。</p>
+
+  <h2>2. 遠期外匯：避險的原型</h2>
+  <p>出口商三個月後將收 <strong>100 萬美元</strong>，今天跟銀行簽遠期合約，鎖定匯率 <strong>31.5</strong>：到期不管即期匯率是 30.0 還是 32.5，都收 3,150 萬台幣。</p>
+  <p><strong>正確判讀</strong>：避險把多種可能變成<strong>一種確定</strong>——它不是賺錢工具，是「把匯率從變數變常數」的工具。事後看「少賺 100 萬」不是避險失敗：<strong>消除不確定性本身就是產品</strong>，公司因此能放心報價、算毛利、做 W46 的預算。用 W38 的語言：評價避險看決策品質，不看結果。</p>
+  </div>
+
+  <div class="lab">
+    <h3>遠期外匯與避險比率</h3>
+    <p class="muted" style="margin-top:-.2rem">100 萬美元應收、遠期匯率 31.5。拉避險比率，看三個月後收入的「可能範圍」怎麼收窄。</p>
+    <div class="presets" id="fpre"><button data-h="100" data-s="30">全避・台幣升到 30</button><button data-h="100" data-s="32.5">全避・台幣貶到 32.5</button><button data-h="60" data-s="30">避 60%・升到 30</button><button data-h="0" data-s="30">不避・升到 30</button></div>
+    <div class="ctl"><label>三個月後即期匯率 <output id="o-s">30.00</output></label><input type="range" id="in-s" min="28" max="35" step="0.1" value="30" aria-label="即期匯率"></div>
+    <div class="ctl"><label>避險比率 <output id="o-h">100%</output></label><input type="range" id="in-h" min="0" max="100" step="10" value="100" aria-label="避險比率"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">有避險的收入</p><p class="sv" id="s-hd">—</p><p class="sh">萬台幣</p></div>
+      <div class="stat"><p class="sl">完全不避的收入</p><p class="sv" id="s-un">—</p><p class="sh">萬台幣</p></div>
+      <div class="stat"><p class="sl">匯率 30–33 時的收入範圍</p><p class="sv" id="s-rg">—</p><p class="sh">不確定性的寬度</p></div>
+    </div>
+    <div class="ibox" id="fnote"></div>
+  </div>
+
+  <div class="prose">
+  <p><strong>工具家譜</strong>（概念即可）：遠期外匯（鎖死，最常用）、外匯選擇權（付權利金、保留好處——W33 的保險邏輯）、換匯換利與利率交換（把浮動利率換固定、把美元債換台幣債，本質都是「交換現金流的合約」）。</p>
+
+  <h2>3. 避險政策：把「避多少」寫成制度</h2>
+  <p>好公司的避險像 IPS（W18），不靠財務長的手感：</p>
+  <ol>
+    <li><strong>避險比率</strong>：交易曝險的 50–80%——留一部分自然波動；100% 避險成本高，也放棄所有上檔</li>
+    <li><strong>期間對齊</strong>：避險天期＝收付款天期，超過的部分就是投機</li>
+    <li><strong>禁止投機條款</strong>：<strong>沒有對應的曝險，不得建立衍生品部位</strong>——W33 的分界線寫進公司章程</li>
+    <li><strong>自然避險優先</strong>：美元收入配美元採購、美元借款，收支同幣別互相抵銷——零成本、零對手風險，最被低估的工具</li>
+  </ol>
+
+  <h2>4. 台灣的血淚教材：TRF 風暴</h2>
+  <p>2014–2016 年，大量台灣中小企業（多為有人民幣收付的貿易商）向銀行買了 <strong>TRF（目標可贖回遠期合約）</strong>，被包裝成「避險兼賺匯差」。結構的致命處：<strong>獲利有上限（達標即出場）、虧損無下限，而且常有雙倍槓桿</strong>。人民幣單邊升值時月月小賺；2015 年 8 月人民幣匯改急貶後，虧損雪崩，損失以百億計。</p>
+  </div>
+
+  <div class="lab">
+    <h3>TRF 形狀測試</h3>
+    <p class="muted" style="margin-top:-.2rem">示意模型：每月名目 100 萬美元，履約價 6.20。匯率低於 6.20（人民幣強）時公司賺差價，累積賺滿「出場目標」就提前結束；高於 6.20 時，公司按槓桿倍數賠差價，沒有下限。單位：萬元人民幣。</p>
+    <div class="presets" id="tpre"><button data-f="6.00">人民幣續升</button><button data-f="6.30">小幅反轉</button><button data-f="6.80">急貶（2015 式）</button></div>
+    <div class="ctl"><label>12 個月後匯率 <output id="o-tf">6.80</output></label><input type="range" id="in-tf" min="5.9" max="7.2" step="0.05" value="6.8" aria-label="12 個月後匯率"></div>
+    <div class="ctl"><label>虧損槓桿 <output id="o-tl">2 倍</output></label><input type="range" id="in-tl" min="1" max="2" step="1" value="2" aria-label="虧損槓桿"></div>
+    <div class="ctl"><label>出場目標（獲利上限） <output id="o-tc">15</output></label><input type="range" id="in-tc" min="5" max="40" step="5" value="15" aria-label="出場目標"></div>
+    <div class="mbars" id="tbars" aria-hidden="true"></div>
+    <div class="mlab" id="tlab"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">最多能賺</p><p class="sv pos" id="s-tmax">—</p><p class="sh">出場目標</p></div>
+      <div class="stat"><p class="sl">實際累積損益</p><p class="sv" id="s-tcum">—</p><p class="sh">萬元人民幣</p></div>
+      <div class="stat"><p class="sl">持續月數</p><p class="sv" id="s-tm">—</p><p class="sh">達標即提前出場</p></div>
+    </div>
+    <div class="ibox" id="tnote"></div>
+  </div>
+
+  <div class="prose">
+  <p>三個教訓，每個都呼應你學過的課：</p>
+  <ol>
+    <li><strong>「穩定小賺＋極端巨虧」的報酬形狀</strong>——W29 的假高 Sharpe、W33 賣尾部風險的公司版：這種形狀一出現就該警鈴大作</li>
+    <li><strong>它從來不是避險</strong>——獲利上限讓「保護」在最需要時消失，本質是賣選擇權收權利金，拿公司的命賺零用錢</li>
+    <li><strong>財務部變利潤中心的下場</strong>——當避險部門開始「貢獻獲利」，誘因已經歪了（W35 利益衝突的內部版）</li>
+  </ol>
+
+  <h2>5. 利率風險：W3 的公司版收尾</h2>
+  <p>浮動利率借款的公司，升息直接墊高利息（W43 的兩平點被推高）。管理選項：發固定利率債鎖定，或用利率交換把浮動換固定。判斷框架與匯率相同：<strong>現金流穩定的公司鎖利率＝買預算確定性</strong>；「猜利率方向」不是 CFO 的工作（W12 擇時的教訓，公司版）。</p>
+  <p><strong>投資人視角</strong>：翻實習公司年報的「避險會計」與「衍生工具」附註，看三件事：①避了什麼險（幣別、金額）；②工具與天期；③<strong>有沒有與曝險無關的部位</strong>——紅旗。附註寫得清楚透明的公司，通常財務紀律也好。</p>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「避險有成本，不避最省。」</p><p>不避險＝把公司損益交給匯率擲骰子；「省下的保費」會在壞年份以毛利率崩跌償還，而且常常發生在最需要現金的時刻（W37）。</p></div>
+  <div class="myth"><p class="say">「事後匯率沒動，避險白做了。」</p><p>這是 resulting（W38）：保險沒理賠不代表保險白買；避險買的是「當初就能確定」。</p></div>
+  <div class="myth"><p class="say">「銀行推薦的結構型商品比較划算。」</p><p>複雜度是費用的藏身處（W35）。記住 TRF 的形狀測試：<strong>問清楚最壞情況虧多少——答案是「無下限」就轉身走</strong>。家庭版同樣適用。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>教科書、血淚史與年報附註</h2>
+  <div class="readitem"><div class="t">40 分鐘</div><div class="body"><b>《Principles of Corporate Finance》風險管理章</b><p>公司為什麼要避險、怎麼避。</p></div></div>
+  <div class="readitem"><div class="t">40 分鐘</div><div class="body"><b>TRF 風暴回顧</b><p>搜「TRF 風暴 台灣 中小企業」，讀一篇深度回顧（金管會報告或財經深度報導），對照講義的三個教訓。</p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>實習公司年報的避險附註</b><p>找「金融工具」「避險會計」附註——第一次讀會硬，用第 5 節的三件事當地圖。這是本週練習的原料。</p></div></div>
+  <div class="readitem"><div class="t">15 分鐘</div><div class="body"><b>Investopedia：Forward Contract 與 Currency Swap</b><p><a class="srclink" href="https://www.investopedia.com/terms/f/forwardcontract.asp" target="_blank" rel="noopener">Forward Contract ↗</a></p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>實習公司的避險體檢</h2>
+  <ol class="tasks">
+    <li><strong>外幣曝險</strong>：主要幣別、金額量級；附註的敏感度分析表——匯率動 1% 影響損益多少？</li>
+    <li><strong>避險工具</strong>：遠期、選擇權、交換？名目金額、天期</li>
+    <li><strong>避險比率估算</strong>：工具名目金額 ÷ 曝險 ≈ ＿%</li>
+    <li><strong>紅旗檢查</strong>：有沒有與曝險不對應的部位？附註透明度給分（1–5）</li>
+    <li>手算講義的遠期算例三情境（鎖定 3,150 萬）</li>
+  </ol>
+  <div class="verify"><b>怎麼知道做對了：</b>遠期台：全避時不管匯率 30 或 32.5，有避險的收入都是 3,150 萬；匯率 30 時不避是 3,000 萬（避險多收 150 萬），32.5 時不避是 3,250 萬（少收 100 萬）。避 60%、匯率 30 時收入 3,090 萬，收入範圍的寬度從不避的 300 萬縮到 120 萬。TRF 形狀測試：「人民幣續升」賺滿 15 就出場；「急貶」12 個月累積 −573 萬元人民幣——最多賺 15，卻賠了它的 38 倍。</div>
+  <ul class="checks" data-key="w48-practice">
+    <li><label><input type="checkbox"><span>避險附註一頁解剖完成（含透明度評分）</span></label></li>
+    <li><label><input type="checkbox"><span>遠期三情境手算通過</span></label></li>
+    <li><label><input type="checkbox"><span>能複述避險政策四條與 TRF 三教訓</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 「避險後匯率反而對我們有利，虧了 100 萬」——CFO 該怎麼向董事會解釋？</summary><div class="ans"><p>→ 用<strong>決策與結果分離</strong>（W38）：避險當下鎖定的匯率，讓公司能以確定的毛利接單報價；事後匯率走向是無人能測的結果。董事會語言：「我們付出 100 萬的機會成本，買到整季報價與預算的確定性——這正是政策設計的原意。若想保留有利走向的空間，該討論的是改用選擇權或調整避險比率，而不是不避。」</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 自然避險為什麼優於金融避險？</summary><div class="ans"><p>→ 收支同幣別：<strong>零交易成本、零對手風險、不用管到期日</strong>，而且自動隨業務規模伸縮。台灣常見型態：接美元訂單的廠商以美元計價採購設備原料、發美元公司債；在美國設廠讓成本與收入同幣別。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 用三個你學過的概念解釋 TRF 為什麼註定是災難？</summary><div class="ans"><p>→ ①<strong>賣尾部風險的報酬形狀</strong>（W29、W33）：有上限的小獲利 × 無下限的巨虧；②<strong>槓桿</strong>（W43、W37）：雙倍名目金額放大災難；③<strong>它不滿足避險的定義</strong>（W33）：達標出場條款讓「保護」在行情反轉前就消失，剩下的全是裸曝險。任何一個概念掌握了，都不會碰它。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>問下限</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（出國換匯的放大版）</p><p>「出國前先換好日幣，回來發現日幣又跌了——你會說『虧了』嗎？」（會有點嘔，但——）「你換匯是為了<strong>確定旅費</strong>，不是為了賭匯率。公司也一樣：三個月後要收幾千萬美元，先跟銀行『講好匯率』，今天就能確定這張單賺不賺——<strong>做生意的賺生意的錢，不賭匯率的錢</strong>。」</p></div>
+  <div class="script"><p class="who">核心故事（TRF）</p><p>「十年前台灣幾百家中小企業買了一種商品，號稱『避險還能月月賺小錢』。它的形狀是：<strong>贏有上限、輸沒下限</strong>。人民幣一路升時大家月月領糖果；2015 年一夕反轉，虧損雪崩，以百億計的學費。教訓只有三個字：<strong>問下限</strong>。任何投資，先問『最壞虧多少』；答案含糊或『理論上無限』，轉身就走。」</p></div>
+  <div class="script"><p class="who">互動（家庭防身題庫）</p><p>「複習一下我們的防身三題：①最壞虧多少？（本週）②錢誰保管？（W35）③每年收我多少 %？（W16）——三題走天下，九成的坑跨得過。」</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那我們家的美股 ETF 要避匯率嗎？」</b><br>「長期投資人通常不避（W14 講過）：避險成本年年付，而匯率長期雙向。公司要避，是因為它有『三個月後的確定收付』；我們沒有交期，時間會攤平。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w48-final">
+    <li><label><input type="checkbox"><span>能講匯率曝險的三張臉與各自的管理法</span></label></li>
+    <li><label><input type="checkbox"><span>遠期算例＋實習公司避險體檢完成</span></label></li>
+    <li><label><input type="checkbox"><span>能複述 TRF 三教訓與「形狀測試」</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（問下限＋防身三題），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 48 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 49：公司治理與財報舞弊</b>——Enron、Wirecard 與台灣案例：紅旗清單升級 v2 的素材課。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-47-mergers-acquisitions/">上一週：併購</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——避險把「可能收 3,000 萬、也可能收 3,250 萬」變成「確定收 3,150 萬」，公司因此能放心報價、算毛利。事後少賺 100 萬是結果，不是決策品質；保險沒理賠，不代表保險白買。"
+      : "不是失敗。避險把「可能收 3,000 萬、也可能收 3,250 萬」變成「確定收 3,150 萬」，公司因此能放心報價、算毛利。用事後的匯率評價避險，就是 W38 說的 resulting。";
+  });
+
+  /* 遠期外匯 */
+  var fS = document.getElementById("in-s"), fH = document.getElementById("in-h"), F = 31.5;
+  function runF(){
+    var s = +fS.value, h = +fH.value / 100;
+    document.getElementById("o-s").textContent = s.toFixed(2);
+    document.getElementById("o-h").textContent = fH.value + "%";
+    var hd = h * F * 100 + (1 - h) * s * 100, un = s * 100, lo = h * F * 100 + (1 - h) * 3000, hi = h * F * 100 + (1 - h) * 3300;
+    document.getElementById("s-hd").textContent = Math.round(hd).toLocaleString();
+    document.getElementById("s-un").textContent = Math.round(un).toLocaleString();
+    document.getElementById("s-rg").textContent = Math.round(lo).toLocaleString() + "–" + Math.round(hi).toLocaleString();
+    var d = hd - un, n = document.getElementById("fnote");
+    n.innerHTML = (h === 1 ? "<b>全避：不管匯率怎麼走，都收 3,150 萬。</b>" : h === 0 ? "<b>不避：收入完全交給匯率，範圍寬達 300 萬。</b>" : "<b>避 " + fH.value + "%：收入範圍收窄到 " + Math.round(hi - lo) + " 萬。</b>保留一部分上檔，也保留一部分風險——這就是避險比率的取捨。") +
+      (Math.abs(d) >= 0.5 ? "這次的匯率下，避險" + (d > 0 ? "多收 " : "少收 ") + Math.round(Math.abs(d)) + " 萬——" + (d > 0 ? "但這不是避險的目的，" : "這不是失敗，") + "確定性才是它的產品。" : "");
+  }
+  [fS, fH].forEach(function(x){ x.addEventListener("input", runF); });
+  document.getElementById("fpre").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    fH.value = btn.dataset.h; fS.value = btn.dataset.s; runF();
+  });
+  runF();
+
+  /* TRF 形狀測試 */
+  var tF = document.getElementById("in-tf"), tL = document.getElementById("in-tl"), tC = document.getElementById("in-tc"), K = 6.2;
+  function runT(){
+    var fin = +tF.value, lev = +tL.value, cap = +tC.value;
+    document.getElementById("o-tf").textContent = fin.toFixed(2);
+    document.getElementById("o-tl").textContent = lev + " 倍";
+    document.getElementById("o-tc").textContent = cap;
+    var path = [6.15, 6.16, 6.18];
+    for (var i = 1; i <= 9; i++) path.push(6.18 + (fin - 6.18) * i / 9);
+    var gain = 0, cum = 0, out = [], ko = false;
+    for (var m = 0; m < 12; m++){
+      if (ko){ out.push(null); continue; }
+      var s = path[m], g;
+      if (s < K){ g = (K - s) * 100; if (gain + g >= cap - 1e-9){ g = cap - gain; ko = true; } gain += g; }
+      else g = -(s - K) * 100 * lev;
+      cum += g; out.push(g);
+    }
+    var mx = 1; out.forEach(function(v){ if (v !== null) mx = Math.max(mx, Math.abs(v)); });
+    var bars = "", lab = "";
+    out.forEach(function(v, i){
+      var h = v === null ? 0 : Math.abs(v) / mx * 50;
+      bars += '<div class="c">' + (v === null ? '<div class="b x"></div>' : '<div class="b ' + (v >= 0 ? "p" : "n") + '" style="height:' + h.toFixed(1) + '%"></div>') + '</div>';
+      lab += "<span>" + (i + 1) + "</span>";
+    });
+    document.getElementById("tbars").innerHTML = bars;
+    document.getElementById("tlab").innerHTML = lab;
+    var months = out.filter(function(v){ return v !== null; }).length;
+    document.getElementById("s-tmax").textContent = "+" + cap;
+    var c = document.getElementById("s-tcum"); c.textContent = (cum < 0 ? "−" : "+") + Math.abs(cum).toFixed(1); c.className = "sv " + (cum >= 0 ? "pos" : "neg");
+    document.getElementById("s-tm").textContent = months + " 個月";
+    var n = document.getElementById("tnote");
+    n.innerHTML = ko ? "<b>第 " + months + " 個月賺滿 " + cap + " 就出場了。</b>這是最好的劇本——而它的獲利早就被上限鎖死。月月領糖果的那幾個月，正是大家加碼買進的時候。"
+      : cum < 0 ? "<b>最多只能賺 " + cap + "，實際累積 −" + Math.abs(cum).toFixed(1) + "，是上限的 " + (Math.abs(cum) / cap).toFixed(0) + " 倍。</b>前幾個月的小賺讓人安心，反轉後每個月的虧損還在擴大，而且" + (lev > 1 ? "槓桿 " + lev + " 倍讓虧損翻倍。" : "沒有任何下限。") + "形狀測試：贏有上限、輸沒下限——轉身就走。"
+      : "<b>累積 +" + cum.toFixed(1) + "，還沒碰到出場目標。</b>匯率一旦越過 6.20，每個月都開始按槓桿倍數賠錢。";
+  }
+  [tF, tL, tC].forEach(function(x){ x.addEventListener("input", runT); });
+  document.getElementById("tpre").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    tF.value = btn.dataset.f; tL.value = 2; tC.value = 15; runT();
+  });
+  runT();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w48-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w48-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 學會問下限了——下週看財報舞弊怎麼騙過所有人。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

@@ -1,0 +1,449 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .sw{display:flex;gap:.5rem;align-items:center;margin-top:.8rem;font-size:.88rem;color:var(--ink-2)}
+  .sw input{accent-color:var(--pine)}
+  .eqn{margin-top:1rem;padding:.8rem 1rem;border-radius:10px;background:var(--paper);border:1px dashed var(--line);font-family:ui-monospace,Menlo,monospace;font-size:.85rem;color:var(--ink-2);text-align:center;line-height:1.9}
+  .eqn b{color:var(--ink)}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 47</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q4 財務長季 · Week 47</p>
+  <h1>企業估值應用——併購</h1>
+  <p class="lead" style="margin-top:.5rem">估值技能的終極考場：一家公司買下另一家。W19–21 的工具全部上陣，加上兩個新零件：<strong>綜效</strong>與<strong>控制權溢價</strong>。核心悖論先講：實證上，<strong>多數併購毀滅買方股東的價值</strong>——本週搞懂為什麼，以及怎麼識別例外。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 19–21、42 週</span><span class="chip">52 週 · 第 47 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>CFO 決定出價上限；持有買方股票的投資人，要看懂自己是不是那個買單的人。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的家庭預算——「成長速限」講通了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">隔壁飲料店頂讓開價 130 萬。它自己值 100 萬；買下來共用進貨與排班，還能多出「值 20 萬」的好處。該買嗎？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">該買，有綜效</button>
+    <button data-g="b">不該買，100 ＋ 20 還不到 130</button>
+    <button data-g="c">看能不能殺價到 125</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 併購的價值方程式</h2>
+  <div class="quote">買方創造的價值 ＝ 目標獨立價值 ＋ 綜效現值 − 支付價格</div>
+  <p><strong>完整算例</strong>：目標公司獨立價值 100 億、預估綜效現值 20 億、買方付 30% 溢價（130 億）→ 買方價值 ＝ 100 ＋ 20 − 130 ＝ <strong>−10 億</strong>。</p>
+  <p><strong>賣方股東現賺 30 億溢價，買方股東倒虧 10 億——即使綜效全數實現。</strong>溢價是<strong>確定付出</strong>的（平均 20–40%），綜效是<strong>不確定實現</strong>的（實證實現率偏低）。所以併購的預設結果是「賣方贏、買方輸」；買方要贏，綜效必須大於溢價，而且真的做得出來。</p>
+
+  <h2>2. 綜效：唯一能正當化溢價的東西</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>類型</th><th>例子</th><th>可信度</th></tr></thead>
+      <tbody>
+        <tr><td class="f">成本綜效</td><td>合併採購、關閉重複產線、裁併後台</td><td>較高（可量化、操之在己）</td></tr>
+        <tr><td class="f">營收綜效</td><td>交叉銷售、通路互補、定價力提升</td><td>較低（要客戶配合——「1＋1＝3」常變 1＋1＝1.8）</td></tr>
+        <tr><td class="f">財務綜效</td><td>稅務結構、借款成本下降</td><td>有限，而且容易被高估</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>綜效的估值紀律</strong>：它是未來現金流，要用 DCF 折現（W20），而且要扣<strong>整合成本</strong>——系統合併、留才獎金、文化內耗，常被漏列。經驗法則：<strong>營收綜效打對折、成本綜效打八折</strong>；投行簡報上的綜效數字，先問「誰負責交付、寫進誰的 KPI」。</p>
+  </div>
+
+  <div class="lab">
+    <h3>併購價值方程式</h3>
+    <p class="muted" style="margin-top:-.2rem">預設是講義算例：綜效 20 億（成本 12、營收 8）。勾選「套用打折法則」，看綜效縮水後的真實結果。</p>
+    <div class="ctl"><label>目標獨立價值 <output id="o-sv">100 億</output></label><input type="range" id="in-sv" min="50" max="200" step="5" value="100" aria-label="目標獨立價值"></div>
+    <div class="ctl"><label>成本綜效（現值） <output id="o-cs">12 億</output></label><input type="range" id="in-cs" min="0" max="50" step="1" value="12" aria-label="成本綜效"></div>
+    <div class="ctl"><label>營收綜效（現值） <output id="o-rs">8 億</output></label><input type="range" id="in-rs" min="0" max="50" step="1" value="8" aria-label="營收綜效"></div>
+    <div class="ctl"><label>整合成本 <output id="o-ic">0 億</output></label><input type="range" id="in-ic" min="0" max="20" step="1" value="0" aria-label="整合成本"></div>
+    <div class="ctl"><label>收購溢價 <output id="o-pr">30%</output></label><input type="range" id="in-pr" min="0" max="60" step="1" value="30" aria-label="收購溢價"></div>
+    <label class="sw"><input type="checkbox" id="in-hc">套用打折法則（成本綜效 × 0.8、營收綜效 × 0.5）</label>
+    <div class="eqn" id="eqn"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">賣方股東</p><p class="sv pos" id="s-sell">—</p><p class="sh">現拿的溢價（億）</p></div>
+      <div class="stat"><p class="sl">買方股東</p><p class="sv" id="s-buy">—</p><p class="sh">創造的價值（億）</p></div>
+      <div class="stat"><p class="sl">打平需要的綜效</p><p class="sv" id="s-need">—</p><p class="sh">＝溢價＋整合成本</p></div>
+    </div>
+    <div class="ibox" id="mnote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>3. 支付方式的訊號：現金 vs 換股</h2>
+  <ul>
+    <li><strong>現金收購</strong>：買方獨吞未來的綜效與風險——管理層<strong>有信心</strong>的姿態，也常暗示認為自家股價不貴</li>
+    <li><strong>換股收購</strong>：把風險分給賣方股東一起扛——常暗示買方認為<strong>自家股票貴</strong>（用貴的紙買東西划算；W43 增資訊號的親戚）</li>
+  </ul>
+  <p>實證與此一致：現金併購的買方，長期表現優於換股併購的買方。</p>
+  <p><strong>EPS 增厚的陷阱（本週最重要的防身術）</strong>：高本益比公司換股買低本益比公司，EPS <strong>必然</strong>增厚。A（本益比 20、淨利 100、股數 100、股價 20）換股買 B（本益比 10、淨利 50、市值 500）：發新股 500 ÷ 20 ＝ 25 股 → 合併 EPS ＝ 150 ÷ 125 ＝ <strong>1.20（+20%）</strong>。<strong>零綜效也會發生</strong>，純粹是「用 20 倍的紙買 10 倍的獲利」的算術——W40「不是極大化 EPS」、W44 庫藏股魔術的三度重演。</p>
+  </div>
+
+  <div class="lab">
+    <h3>EPS 增厚機</h3>
+    <p class="muted" style="margin-top:-.2rem">A 用自家股票買下 B，沒有任何綜效。看 EPS 怎麼變，再對照價值有沒有變。</p>
+    <div class="presets" id="epre"><button data-a="20" data-b="10" data-p="0">講義算例</button><button data-a="20" data-b="25" data-p="0">B 比 A 貴</button><button data-a="20" data-b="10" data-p="30">加付 30% 溢價</button></div>
+    <div class="ctl"><label>A（買方）本益比 <output id="o-pa">20 倍</output></label><input type="range" id="in-pa" min="5" max="40" step="1" value="20" aria-label="買方本益比"></div>
+    <div class="ctl"><label>B（目標）本益比 <output id="o-pb">10 倍</output></label><input type="range" id="in-pb" min="5" max="40" step="1" value="10" aria-label="目標本益比"></div>
+    <div class="ctl"><label>收購溢價 <output id="o-pp">0%</output></label><input type="range" id="in-pp" min="0" max="60" step="5" value="0" aria-label="收購溢價"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">發行新股</p><p class="sv" id="s-ns">—</p><p class="sh">股（原本 100）</p></div>
+      <div class="stat"><p class="sl">合併後 EPS</p><p class="sv" id="s-eps">—</p><p class="sh">原本 1.00</p></div>
+      <div class="stat"><p class="sl">買方股東的價值變化</p><p class="sv" id="s-val">—</p><p class="sh">價值方程式</p></div>
+    </div>
+    <div class="ibox" id="enote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>4. 為什麼買方常輸：三個結構性原因</h2>
+  <ol>
+    <li><strong>贏家的詛咒</strong>：競標中出價最高者勝出——而最高價常來自<strong>最樂觀、最可能高估</strong>的買家。你贏得標的那一刻，就是「全場只有你願意付這麼多」的證明</li>
+    <li><strong>代理問題（帝國建造）</strong>：規模＝CEO 的薪酬、地位、媒體版面——管理層用股東的錢買自己的王座（W40 目標函數的第三個「不是」）</li>
+    <li><strong>過度自信</strong>（W23 的公司版）：「別人整合失敗，我們不一樣」。Buffett 的比喻：管理層自認是能吻醒蟾蜍的公主，但多數蟾蜍吻了還是蟾蜍——而且是用溢價買的蟾蜍</li>
+  </ol>
+  <p><strong>例外長什麼樣</strong>：小規模補強型（買技術或團隊，整合面小）、買方有可複製的整合手冊（連續併購者）、危機中的廉價收購（W24 Buffett 在 2008 的姿態）。共同點：<strong>紀律與價格</strong>，還是那兩件事。</p>
+
+  <h2>5. 控制權溢價與少數股權折價</h2>
+  <p>為什麼買「整家公司」要付溢價？因為<strong>控制權有價</strong>：能換管理層、改資本配置、拿綜效——這些散戶股東拿不到。反過來，你平常買的股票是「少數股權」，天生比控制權交易便宜。兩個含義：①用併購交易價回推「你的持股該值多少」，要先扣掉控制權溢價；②被收購題材的想像空間 ＝ 溢價 × 機率，通常都被高估。</p>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「合併後市佔第一，就是好併購。」</p><p>市佔是規模不是價值（W22 的假護城河）；判準永遠是綜效對溢價。</p></div>
+  <div class="myth"><p class="say">「EPS 增厚，對股東就好。」</p><p>上面的增厚機：算術效果，與價值無關。被這招說服的董事會，正是併購毀值的共犯結構。</p></div>
+  <div class="myth"><p class="say">「被收購方股價大漲，代表市場看好這筆併購。」</p><p>漲的是<strong>溢價</strong>——賣方的確定收益。看<strong>買方</strong>的股價反應，才是市場對「這筆交易划不划算」的投票；公告日買方股價下跌，是常態級的警訊。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>理論與一件真實案子</h2>
+  <div class="readitem"><div class="t">50 分鐘</div><div class="body"><b>《Principles of Corporate Finance》併購章</b><p>動機分類、支付方式、實證結果。</p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>《Valuation》綜效章節（選讀）</b><p>麥肯錫怎麼替綜效估值打折。</p></div></div>
+  <div class="readitem"><div class="t">40 分鐘</div><div class="body"><b>一件台灣真實併購案</b><p>選近年一件大型案（公開收購或合併），收集：公告新聞稿、溢價（收購價 vs 公告前股價）、宣稱的綜效、<strong>公告日買賣雙方的股價反應</strong>。這是本週練習的原料。</p></div></div>
+  <div class="readitem"><div class="t">選讀</div><div class="body"><b>Damodaran：The Value of Control</b><p>控制權價值的完整框架。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>一件併購案的完整解剖</h2>
+  <h3>任務 A｜併購解剖卡（40 分鐘）</h3>
+  <ol class="tasks">
+    <li>案名、買方／目標、公告日</li>
+    <li>支付方式：現金／換股／混合 → 訊號解讀</li>
+    <li>溢價：收購價 vs 前 20 日均價 ＝ ＿%</li>
+    <li>宣稱綜效的內容與金額 → 用打折法則重估</li>
+    <li>價值方程式：獨立價值＋折後綜效 − 支付價格 ≈ ＿（正／負）</li>
+    <li>市場投票：公告日買方股價 ＿%、目標股價 ＿%</li>
+    <li>判決：買方股東是贏是輸？三行理由</li>
+  </ol>
+  <h3>任務 B｜EPS 魔術重演（10 分鐘）</h3>
+  <p>手算講義的換股算例，再把 B 的本益比改成 25（比買方貴）——EPS 變增厚還是稀釋？</p>
+  <div class="verify"><b>怎麼知道做對了：</b>價值方程式預設：賣方 +30、買方 −10、打平需要綜效 30；勾選打折法則後，綜效剩 13.6，買方變 −16.4。EPS 增厚機：講義算例 EPS 1.200（+20%）、價值變化 0；「B 比 A 貴」EPS 0.923（稀釋）；「加付 30% 溢價」EPS 仍是 1.132（增厚！），買方價值卻是 −150——EPS 和價值往相反方向走。</div>
+  <ul class="checks" data-key="w47-practice">
+    <li><label><input type="checkbox"><span>解剖卡完成（含市場投票數據）</span></label></li>
+    <li><label><input type="checkbox"><span>EPS 算例雙向驗證（增厚與稀釋）</span></label></li>
+    <li><label><input type="checkbox"><span>能默寫價值方程式</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 「贏家的詛咒」為什麼在競標中幾乎無法避免？CFO 的解方是什麼？</summary><div class="ans"><p>→ 因為競標的<strong>選擇機制</strong>本身就在挑出「估值最樂觀的人」——估值是一個分布，最高出價來自分布的右尾，中標與高估在統計上綁在一起。解方：<strong>事前定死上限價</strong>（W36 預先承諾的併購版——投行的費用結構會慫恿你加價，上限要在熱血之前寫下），超過就退場。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 買方宣布換股收購，持有買方股票的你該想到哪兩件事？</summary><div class="ans"><p>→ ①管理層可能認為<strong>自家股票被高估</strong>，才捨得當貨幣用——對你的持股是間接警訊；②交易風險由你共同承擔，換股後你間接持有目標公司——要用 W26 的論文標準重新檢視：合併後的新公司，你還想持有嗎？</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 綜效 20 億、溢價 30 億——什麼情況下仍可能對買方合理？</summary><div class="ans"><p>→ 當目標「對買方的特定價值」高於獨立價值——例如握有買方急需的專利、產能或執照，讓對手買走的策略成本不在 100 億的獨立估值裡。但「策略價值」正是最常被濫用的加價藉口：它必須能翻譯成具體的現金流（誰、何時、多少），否則就是帝國建造的修辭。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>頂讓的故事</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（頂讓的故事）</p><p>「隔壁飲料店要頂讓，開價 130 萬。我們算過它自己值 100 萬；買下來共用進貨、共用排班，可以多出『值 20 萬』的好處。<strong>該買嗎？</strong>」（讓家人算：100 ＋ 20 ＝ 120，小於 130——不該。）「這就是併購的全部數學：好處是猜的，溢價是真金白銀。」</p></div>
+  <div class="script"><p class="who">核心觀念（為什麼老闆們還是愛買）</p><p>「那為什麼新聞上的公司整天在併購？三個人性：①<strong>拍賣會效應</strong>——搶標搶贏的，通常是出價最衝動的；②<strong>老闆想當大王</strong>——公司變兩倍大，老闆薪水和排場跟著變大，虧的是股東；③<strong>人人自信是例外</strong>——『別人整合失敗，我不一樣』。」</p></div>
+  <div class="script"><p class="who">互動（看新聞的新姿勢）</p><p>「下次看到併購新聞，我們家看兩個地方：①<strong>買方</strong>當天股價漲還是跌——市場幫你投票了；②付現金還是換股票——換股，可能是老闆自己覺得股票貴，順手花掉。」</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「被買的公司股東賺翻了？」</b><br>「對，賣方幾乎永遠是贏家，現拿三成溢價——所以持股被公開收購通常是好消息；要小心的是當『買方』的股東。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w47-final">
+    <li><label><input type="checkbox"><span>能默寫價值方程式，解釋「賣方贏、買方輸」的結構</span></label></li>
+    <li><label><input type="checkbox"><span>台灣併購案解剖卡完成</span></label></li>
+    <li><label><input type="checkbox"><span>能拆穿 EPS 增厚話術</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（頂讓故事＋看新聞兩招），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 47 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 48：資金調度與避險</b>——出口商的美元、借款的利率：公司層級的風險管理，以及台灣 TRF 風暴的教訓。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-46-financial-planning/">上一週：財務規劃</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——獨立價值 100 加上綜效 20，總共 120，付 130 等於倒虧 10。而且溢價是確定付出的，綜效只是預估：真的做出來都還虧，做不出來虧更多。"
+      : "不該買：獨立價值 100 加上綜效 20 只有 120，付 130 等於倒虧 10——即使殺到 125 也還是虧。溢價是確定付出的，綜效只是預估。";
+  });
+
+  function sg(v, dp){ return (v < 0 ? "−" : "+") + Math.abs(v).toFixed(dp === undefined ? 1 : dp); }
+
+  /* 價值方程式 */
+  var vS = document.getElementById("in-sv"), vC = document.getElementById("in-cs"), vR = document.getElementById("in-rs"), vI = document.getElementById("in-ic"), vP = document.getElementById("in-pr"), vH = document.getElementById("in-hc");
+  function runV(){
+    var s = +vS.value, c = +vC.value, r = +vR.value, ic = +vI.value, p = +vP.value / 100, h = vH.checked;
+    document.getElementById("o-sv").textContent = s + " 億";
+    document.getElementById("o-cs").textContent = c + " 億";
+    document.getElementById("o-rs").textContent = r + " 億";
+    document.getElementById("o-ic").textContent = ic + " 億";
+    document.getElementById("o-pr").textContent = vP.value + "%";
+    var syn = h ? c * 0.8 + r * 0.5 : c + r, price = s * (1 + p), buy = s + syn - ic - price;
+    document.getElementById("eqn").innerHTML = "獨立價值 <b>" + s + "</b> ＋ 綜效 <b>" + syn.toFixed(1) + "</b>" + (ic ? " − 整合成本 <b>" + ic + "</b>" : "") + " − 支付價格 <b>" + price.toFixed(1) + "</b> ＝ <b>" + sg(buy) + "</b> 億";
+    document.getElementById("s-sell").textContent = "+" + (price - s).toFixed(1);
+    var b = document.getElementById("s-buy"); b.textContent = sg(buy); b.className = "sv " + (buy >= 0 ? "pos" : "neg");
+    document.getElementById("s-need").textContent = (price - s + ic).toFixed(1);
+    var n = document.getElementById("mnote");
+    n.className = "ibox" + (buy >= 0 ? " good" : "");
+    n.innerHTML = buy >= 0
+      ? "<b>買方股東也贏：綜效 " + syn.toFixed(1) + " 億蓋過了溢價" + (ic ? "與整合成本" : "") + "。</b>剩下的問題只有一個——這些綜效真的做得出來嗎？誰負責交付？"
+      : "<b>賣方確定拿走 " + (price - s).toFixed(1) + " 億，買方股東倒虧 " + Math.abs(buy).toFixed(1) + " 億。</b>" + (h ? "打折後的綜效只剩 " + syn.toFixed(1) + " 億——營收綜效最容易縮水。" : "這還是綜效全數實現的最佳情況；試試勾選打折法則。");
+  }
+  [vS, vC, vR, vI, vP].forEach(function(x){ x.addEventListener("input", runV); });
+  vH.addEventListener("change", runV);
+  runV();
+
+  /* EPS 增厚機 */
+  var eA = document.getElementById("in-pa"), eB = document.getElementById("in-pb"), eP = document.getElementById("in-pp");
+  function runE(){
+    var pa = +eA.value, pb = +eB.value, pr = +eP.value / 100;
+    document.getElementById("o-pa").textContent = pa + " 倍";
+    document.getElementById("o-pb").textContent = pb + " 倍";
+    document.getElementById("o-pp").textContent = eP.value + "%";
+    var paid = pb * 50 * (1 + pr), ns = paid / pa, eps = 150 / (100 + ns), val = -(paid - pb * 50);
+    document.getElementById("s-ns").textContent = ns.toFixed(1);
+    var e = document.getElementById("s-eps"); e.textContent = eps.toFixed(3); e.className = "sv " + (eps > 1.0005 ? "pos" : eps < 0.9995 ? "neg" : "");
+    var v = document.getElementById("s-val"); v.textContent = val === 0 ? "0" : sg(val, 0); v.className = "sv " + (val < 0 ? "neg" : "");
+    var d = (eps - 1) * 100, n = document.getElementById("enote");
+    if (eps > 1.0005 && val < 0) n.innerHTML = "<b>EPS 增厚 " + d.toFixed(1) + "%，買方股東卻損失 " + Math.abs(val).toFixed(0) + "。</b>多付的溢價直接送給賣方，但因為 A 的本益比比較高，EPS 照樣上升——拿 EPS 增厚當併購理由的簡報，最該被追問的就是這一頁。";
+    else if (eps > 1.0005) n.innerHTML = "<b>EPS 增厚 " + d.toFixed(1) + "%，價值一分沒變。</b>零綜效、零溢價，只因為用 " + pa + " 倍的紙買了 " + pb + " 倍的獲利。增厚或稀釋，只反映兩邊本益比的相對高低。";
+    else if (eps < 0.9995) n.innerHTML = "<b>EPS 稀釋 " + Math.abs(d).toFixed(1) + "%</b>——因為目標的本益比比買方高。稀釋也不代表毀值：判準永遠是價值方程式，不是 EPS。";
+    else n.innerHTML = "<b>兩邊本益比相同：EPS 不變。</b>";
+  }
+  [eA, eB, eP].forEach(function(x){ x.addEventListener("input", runE); });
+  document.getElementById("epre").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    eA.value = btn.dataset.a; eB.value = btn.dataset.b; eP.value = btn.dataset.p; runE();
+  });
+  runE();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w47-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w47-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 看得穿併購了——下週處理公司的匯率與利率風險。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

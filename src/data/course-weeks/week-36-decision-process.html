@@ -1,0 +1,540 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .clgroup{margin-top:1rem}
+  .clgroup h4{margin:0 0 .3rem;font-size:.82rem;letter-spacing:.08em;color:var(--coin)}
+  .clitem{display:flex;gap:.6rem;align-items:flex-start;padding:.45rem .2rem;border-bottom:1px dashed var(--line-soft);font-size:.92rem}
+  .clitem input{margin-top:.35rem;accent-color:var(--pine);flex:none}
+  .clitem .src{color:var(--ink-3);font-size:.78rem;white-space:nowrap;margin-left:auto;padding-left:.5rem}
+  .pmrow{display:grid;grid-template-columns:1.6rem 1fr auto;gap:.5rem;align-items:center;margin-top:.55rem}
+  .pmrow .n{font-weight:800;color:var(--ink-3);font-size:.85rem;text-align:right}
+  .pmrow input[type=text]{font:inherit;font-size:.9rem;padding:.4rem .6rem;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);min-width:0}
+  .pmrow select{font:inherit;font-size:.85rem;padding:.38rem .4rem;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+  .card36{margin-top:1rem;padding:1rem 1.1rem;border:1.5px dashed var(--pine);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.82rem;line-height:1.7;white-space:pre-wrap;color:var(--ink-2);background:var(--paper)}
+  @media (max-width:520px){.clitem .src{display:none}.pmrow{grid-template-columns:1.2rem 1fr}.pmrow select{grid-column:2}}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 36</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q3 操盤手季 · Week 36</p>
+  <h1>投資決策流程——檢查清單與事前驗屍</h1>
+  <p class="lead" style="margin-top:.5rem">把散落在 W8（紅旗）、W23（偏誤對策）、W26（反方論證）的紀律零件，組裝成一條<strong>制度化的決策生產線</strong>：買入前檢查清單＋事前驗屍＋決策記錄。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 8、23、26 週</span><span class="chip">52 週 · 第 36 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>個人投資者一人分飾機構裡的提案人、風控與投委會——本週學會怎麼在自己腦中把這三個角色拆開。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的自保三問——家人能背出「我的錢放在誰名下、誰保管」了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">飛行員飛了一萬小時，起飛前還是要拿出清單一項項唸。為什麼？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">法規規定，做做樣子</button>
+    <button data-g="b">怕新手副駕漏掉</button>
+    <button data-g="c">人在壓力下一定會漏東西</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 為什麼專家也需要清單</h2>
+  <p>Gawande《清單革命》的原始場景是外科手術與飛航：<strong>專家失誤的主因不是無知（不知道），是疏忽（知道但在壓力下漏掉）</strong>。手術清單讓死亡率大幅下降，機制毫不神奇——把「每次都該做的事」從記憶體搬到紙上。</p>
+  <p>投資恰好是「壓力下決策」的重災區（W23：情緒高張時系統二離線）。檢查清單是把前面 35 週學的判斷力，在關鍵時刻<strong>強制上線</strong>的機器。Buffett 的搭檔 Munger 是最著名的清單主義者——他的「多元思維模型」本質上就是一張超大型清單。</p>
+
+  <h2>2. 買入前檢查清單 v1：組裝你已有的零件</h2>
+  <p>三段式、12 項——每項都指回你已完成的課程工具。這不是新知識，是舊知識的<strong>強制執行</strong>。下面就是一台可以直接試跑的清單：</p>
+  </div>
+
+  <div class="lab">
+    <h3>買入前清單試跑台</h3>
+    <p class="muted" style="margin-top:-.2rem">拿一筆你正在考慮的交易，誠實地逐項勾。沒過的那幾項會被點名。</p>
+    <div id="cl">
+      <div class="clgroup"><h4>A｜這家公司過關嗎（事實層）</h4>
+        <label class="clitem"><input type="checkbox"><span>20 分鐘健檢通過</span><span class="src">W13</span></label>
+        <label class="clitem"><input type="checkbox"><span>紅旗 ≤ 1 支，且沒有待查項</span><span class="src">W8</span></label>
+        <label class="clitem"><input type="checkbox"><span>護城河有財務證據（ROIC 趨勢），且沒有變窄</span><span class="src">W22</span></label>
+        <label class="clitem"><input type="checkbox"><span>能用三句話向家人解釋它怎麼賺錢</span><span class="src">W24</span></label>
+      </div>
+      <div class="clgroup"><h4>B｜這筆交易過關嗎（價格與部位層）</h4>
+        <label class="clitem"><input type="checkbox"><span>估值區間做了，現價低於保守值 ×（1 − 安全邊際）</span><span class="src">W21</span></label>
+        <label class="clitem"><input type="checkbox"><span>說得出市價隱含的假設、我為什麼不同意</span><span class="src">W25</span></label>
+        <label class="clitem"><input type="checkbox"><span>部位與產業集中度都符合 IPS 上限</span><span class="src">W18</span></label>
+        <label class="clitem"><input type="checkbox"><span>執行計畫定了（限價、分批天數）</span><span class="src">W34</span></label>
+      </div>
+      <div class="clgroup"><h4>C｜我自己過關嗎（行為層）</h4>
+        <label class="clitem"><input type="checkbox"><span>反方論證寫了，而且讓我動搖過</span><span class="src">W26</span></label>
+        <label class="clitem"><input type="checkbox"><span>想法來源清楚（熱門推薦 → 已過 48 小時冷靜期）</span><span class="src">W23</span></label>
+        <label class="clitem"><input type="checkbox"><span>事前驗屍做了</span><span class="src">本週 §3</span></label>
+        <label class="clitem"><input type="checkbox"><span>決策記錄卡寫了</span><span class="src">本週 §4</span></label>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="sl">A 事實層</p><p class="sv" id="s-a">0/4</p><p class="sh">公司</p></div>
+      <div class="stat"><p class="sl">B 交易層</p><p class="sv" id="s-b">0/4</p><p class="sh">價格與部位</p></div>
+      <div class="stat"><p class="sl">C 行為層</p><p class="sv" id="s-c">0/4</p><p class="sh">我自己</p></div>
+    </div>
+    <div class="ibox" id="clnote">從第一項開始勾。</div>
+  </div>
+
+  <div class="prose">
+  <p><strong>使用規則</strong>：12 項全過才下單；<strong>任何一項想跳過的衝動，本身就是警訊</strong>——最想跳過清單的時刻，正是最需要清單的時刻。這是一張<strong>確認清單</strong>（做完才勾），不是執行清單（照著做）。</p>
+
+  <h2>3. 事前驗屍（premortem）：從「會不會失敗」到「已經失敗了，為什麼」</h2>
+  <p>Gary Klein 發明、Kahneman 稱為對抗過度自信最有效的單一技術：</p>
+  <div class="quote">想像一年後這筆投資已經虧了 40%。這是既成事實。現在寫下：它是怎麼發生的？</div>
+  <p>它和「風險分析」的差別在心理開關：問「有什麼風險」時，大腦在<strong>防守論點</strong>（找得少、找得輕）；設定「已經失敗」後，大腦轉為<strong>解釋事實</strong>（想像力全開）。實務三步：</p>
+  <ol>
+    <li>設定失敗場景（虧 40%／論點破產）</li>
+    <li>限時 10 分鐘，寫出至少 <strong>5 條</strong>「事後看顯而易見」的原因</li>
+    <li>每條標記：<strong>可監控</strong>（→ 進 W26 觸發條件）、<strong>可預防</strong>（→ 縮部位或調整執行）、<strong>純運氣</strong>（→ 接受，並確認部位大小承受得起）</li>
+  </ol>
+  </div>
+
+  <div class="lab">
+    <h3>事前驗屍板</h3>
+    <p class="muted" style="margin-top:-.2rem">一年後，這筆投資虧了 40%。寫下五個原因並分類——板子會告訴你每一類該做什麼。（內容只存在這個瀏覽器。）</p>
+    <div class="ctl" style="margin-bottom:.4rem"><label for="pm-name" style="display:block">標的／決定</label><div class="pmrow" style="grid-template-columns:1fr;margin-top:.3rem"><input type="text" id="pm-name" placeholder="例：加碼 A 公司一倍" aria-label="標的或決定"></div></div>
+    <div id="pm"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">已寫</p><p class="sv" id="s-pmn">0/5</p><p class="sh">至少五條</p></div>
+      <div class="stat"><p class="sl">可監控</p><p class="sv" id="s-pmm">0</p><p class="sh">→ 觸發條件</p></div>
+      <div class="stat"><p class="sl">可預防</p><p class="sv" id="s-pmp">0</p><p class="sh">→ 縮部位／改執行</p></div>
+      <div class="stat"><p class="sl">純運氣</p><p class="sv" id="s-pml">0</p><p class="sh">→ 部位承受得起嗎</p></div>
+    </div>
+    <div class="ibox" id="pmnote">先寫第一條。</div>
+  </div>
+
+  <div class="prose">
+  <h2>4. 決策記錄：寫給未來複盤的自己</h2>
+  <p>每筆買賣——<strong>包括「認真考慮後不買」</strong>——都記一張卡：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>欄位</th><th>寫什麼</th></tr></thead>
+      <tbody>
+        <tr><td class="f">日期｜標的｜動作｜股價</td><td>動作含「不買」</td></tr>
+        <tr><td class="f">論點</td><td>三行以內</td></tr>
+        <tr><td class="f">預期</td><td>多久、什麼結果</td></tr>
+        <tr><td class="f">反方最強一擊</td><td>一行</td></tr>
+        <tr><td class="f">觸發條件</td><td>可驗證的事實（W26）</td></tr>
+        <tr><td class="f">情緒自評 1–10｜想法來源</td><td>W38 複盤的原料</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>兩個設計的用意：</p>
+  <ul>
+    <li><strong>「不買」也記錄</strong>：一年後回看「錯過的」與「躲過的」，才能校準判斷。多數人只複盤買了的——這是樣本偏差</li>
+    <li><strong>情緒自評</strong>：日後統計「情緒 8 分以上時做的決策」的品質。多數人會發現，高情緒決策有系統性偏差</li>
+  </ul>
+
+  <h2>5. 一人投委會：三頂帽子</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>帽子</th><th>機構角色</th><th>個人版做法</th></tr></thead>
+      <tbody>
+        <tr><td class="f">提案人</td><td>研究員：陳述論點</td><td>寫投資論文（W26）——書面化強制完整</td></tr>
+        <tr><td class="f">魔鬼代言人</td><td>指定唱反調者</td><td>反方論證＋事前驗屍——換位到「說服自己不買」</td></tr>
+        <tr><td class="f">投票者</td><td>委員會：隔日表決</td><td><strong>48 小時規則</strong>：清單全過後仍隔兩天下單</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>核心原理與 W23 一脈相承：<strong>好流程長得像機場安檢——不信任任何人的當下直覺，包括自己的。</strong></p>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「清單會讓我錯過時機。」</p><p>長期投資裡「非現在不可」的機會極少（W24：沒有必須揮棒的好球帶）。真因為清單慢了兩天而「錯過」的標的，多半是你本來就不該追的動能。</p></div>
+  <div class="myth"><p class="say">「我都想過了，寫下來多此一舉。」</p><p>腦中的「想過」是霧，紙上的「寫下」是照妖鏡——寫不出來的部分，就是沒想過的部分（W26 論文的教訓）。</p></div>
+  <div class="myth"><p class="say">「清單做完就可以放心。」</p><p>清單擋的是<strong>已知的疏忽</strong>，擋不住未知（W21 安全邊際仍是最後防線）。它把犯錯率降低，不降到零。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>決策心理學與清單方法論</h2>
+  <div class="readitem"><div class="t">50 分鐘</div><div class="body"><b>《高勝算決策》（Annie Duke）選章</b><p>讀「決策與結果分離」與「跟未來的自己對賭」兩章——事前驗屍的心理學基礎：好決策可能壞結果，壞決策可能好結果，只看結果會學錯東西。</p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>Howard Marks：Oaktree memo</b><p>找一篇談決策流程的 memo（例如〈Dare to Be Great〉系列），萃取 3 條行為指令，併入你的原則清單 → v1.2。<a class="srclink" href="https://www.oaktreecapital.com/insights/memos" target="_blank" rel="noopener">Oaktree Memos ↗</a></p></div></div>
+  <div class="readitem"><div class="t">20 分鐘</div><div class="body"><b>Atul Gawande《清單革命》概要</b><p>讀書摘或演講摘要即可，抓「執行清單 vs 確認清單」的區分——投資用的是確認清單：做完才勾，不是照著做。</p></div></div>
+  <div class="readitem"><div class="t">10 分鐘</div><div class="body"><b>回顧零件倉庫</b><p>翻出自己的 W8 紅旗清單、W23 對策節、W26 反方論證——本週要組裝的零件全在這裡。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>清單裝機與首航</h2>
+  <h3>任務 A｜清單 v1 落地（25 分鐘）</h3>
+  <p>把講義 12 項改寫成<strong>你自己的語言</strong>，每項附「去哪查」的捷徑（連結或檔案位置），存成獨立文件——與紅旗清單、IPS、原則清單並列為你的<strong>四大常備文件</strong>。</p>
+  <h3>任務 B｜首航＋事前驗屍（25 分鐘）</h3>
+  <ol class="tasks">
+    <li>對模擬組合的下一筆調整（沒有就假設「把某持股加碼一倍」）跑完 12 項清單，誠實記錄哪幾項最想跳過</li>
+    <li>做一次完整事前驗屍：10 分鐘寫 5 條失敗原因，逐條標記［監控／預防／運氣］</li>
+    <li>用下方產生器開第一張決策記錄卡</li>
+  </ol>
+  </div>
+
+  <div class="lab">
+    <h3>決策記錄卡產生器</h3>
+    <p class="muted" style="margin-top:-.2rem">填完即生成一張可複製的卡片。「不買」也是一個動作。</p>
+    <div id="dc">
+      <div class="pmrow" style="grid-template-columns:6.5rem 1fr"><span class="n" style="text-align:left">標的</span><input type="text" data-f="t" placeholder="A 公司" aria-label="標的"></div>
+      <div class="pmrow" style="grid-template-columns:6.5rem 1fr"><span class="n" style="text-align:left">動作</span><select data-f="a" aria-label="動作"><option>買入</option><option>加碼</option><option>減碼</option><option>賣出</option><option>考慮後不買</option></select></div>
+      <div class="pmrow" style="grid-template-columns:6.5rem 1fr"><span class="n" style="text-align:left">論點</span><input type="text" data-f="th" placeholder="三行以內" aria-label="論點"></div>
+      <div class="pmrow" style="grid-template-columns:6.5rem 1fr"><span class="n" style="text-align:left">反方一擊</span><input type="text" data-f="cx" placeholder="一行" aria-label="反方最強一擊"></div>
+      <div class="pmrow" style="grid-template-columns:6.5rem 1fr"><span class="n" style="text-align:left">觸發條件</span><input type="text" data-f="tr" placeholder="可驗證的事實" aria-label="觸發條件"></div>
+      <div class="pmrow" style="grid-template-columns:6.5rem 1fr"><span class="n" style="text-align:left">想法來源</span><select data-f="s" aria-label="想法來源"><option>自己研究</option><option>熱門推薦</option><option>新聞／社群</option><option>親友</option></select></div>
+    </div>
+    <div class="ctl" style="margin-top:.9rem"><label>情緒自評 <output id="o-emo">5</output></label><input type="range" id="in-emo" min="1" max="10" step="1" value="5" aria-label="情緒自評"></div>
+    <div class="card36" id="dcard"></div>
+    <div class="ibox" id="dcnote"></div>
+  </div>
+
+  <div class="prose">
+  <div class="verify"><b>怎麼知道做對了：</b>清單試跑台勾滿 12 項時，結論必須是「可以下單，但先等 48 小時」而不是「立刻下單」；事前驗屍板寫滿 5 條、且至少一條標成「可監控」，才會出現「轉成觸發條件」的提示；決策卡的情緒自評拉到 8 以上、或來源選「熱門推薦」，卡片要自動加註警示。</div>
+  <ul class="checks" data-key="w36-practice">
+    <li><label><input type="checkbox"><span>清單 v1 成為獨立文件（用自己的話、有查找捷徑）</span></label></li>
+    <li><label><input type="checkbox"><span>首航完成：清單＋事前驗屍＋決策卡三件套</span></label></li>
+    <li><label><input type="checkbox"><span>能說出三頂帽子各對應的工具</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 事前驗屍為什麼比「列出風險」有效？（一句話說心理機制）</summary><div class="ans"><p>→ 它把大腦從<strong>辯護模式</strong>（我的決定有什麼風險 → 傾向淡化）切換到<strong>解釋模式</strong>（失敗已成事實，怎麼發生的 → 傾向窮盡）。確定性的假設解除了自我防衛，想像力才會誠實。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 為什麼「認真考慮後不買」也要記錄？</summary><div class="ans"><p>→ 判斷力的校準需要<strong>完整樣本</strong>。只複盤買了的，看不見「躲過的地雷」（該給自己加分）與「錯過的十倍股」（該檢討的保守）。不買的決策卡讓兩者都留下證據，而且幾乎零成本——不用真的花錢。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 清單的哪一項在牛市最容易被跳過？恐慌時呢？</summary><div class="ans"><p>→ 牛市：<strong>第 5 項估值邊際</strong>（「再不上車就晚了」，FOMO 直接衝撞安全邊際）與第 10 項想法來源（熱門推薦滿天飛）。恐慌時：<strong>第 1–4 項基本面確認</strong>（「跌這麼多一定超值」，把便宜當論點、跳過健檢）。兩種市場，清單擋的是不同的門。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>機長的清單與家庭事前驗屍</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（機長的清單）</p><p>「飛行員飛了一萬小時，起飛前還是要拿出清單一項項唸。是他記性差嗎？」（不是——是知道<strong>人在壓力下一定會漏東西</strong>。）「投資最大的敵人不是不懂，是懂了但當下忘了。所以我把這半年學的，全部做成一張起飛清單。」（秀清單 v1。）</p></div>
+  <div class="script"><p class="who">核心演示（家庭事前驗屍）</p><p>「來玩一個聰明人的遊戲：假裝我們家一年後做了一個超後悔的財務決定——<strong>已經發生了</strong>。現在每人說一個『當初怎麼會沒想到』的原因。」（拿真實的家庭決策來玩：換車、裝修、某筆投資。）「先假裝失敗，反而最能避免失敗——這招叫事前驗屍，開刀房和機艙都在用。」</p><p class="aside">家人提出的原因記下來——這是本週完成檢核的一項。你會驚訝家人的想像力。</p></div>
+  <div class="script"><p class="who">互動（48 小時規則）</p><p>「以後聽到任何『快來不及了、現在不買就沒了』的投資機會，我們家的標準動作是什麼？」（引導：等 48 小時。）「真正的好機會等得起兩天；等不起兩天的，是話術。」</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「這麼麻煩，乾脆不要投資了。」</b><br>「清單只在『要出手』時用，平常的定期定額全自動（W17）——麻煩是保留給大決定的，日常其實更省心。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w36-final">
+    <li><label><input type="checkbox"><span>四大常備文件到齊（紅旗清單／IPS／原則清單／買入清單）</span></label></li>
+    <li><label><input type="checkbox"><span>首航三件套完成（清單、事前驗屍、決策卡）</span></label></li>
+    <li><label><input type="checkbox"><span>家庭事前驗屍玩過一次，記下家人提出的原因</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 36 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 37：壓力測試</b>——用 2008、2020、2022 三場歷史風暴轟炸你的模擬組合，看它（和你的 IPS）撐不撐得住。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-35-fund-industry/">上一週：基金實務</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "c"
+      ? "答對了——專家失誤的主因不是不知道，是知道但在壓力下漏掉。清單把「每次都該做的事」從記憶體搬到紙上。投資正是壓力下決策的重災區，所以本週要做一張起飛清單。"
+      : "其實是因為人在壓力下一定會漏東西——專家失誤的主因不是不知道，是知道但當下漏掉。清單把「每次都該做的事」從記憶體搬到紙上。投資正是壓力下決策的重災區，所以本週要做一張起飛清單。";
+  });
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+
+  /* 買入前清單試跑台 */
+  var groups = document.querySelectorAll("#cl .clgroup"), ids = ["s-a","s-b","s-c"];
+  function runCl(){
+    var total = 0, miss = [];
+    groups.forEach(function(g, gi){
+      var c = 0;
+      g.querySelectorAll(".clitem").forEach(function(it, i){
+        if (it.querySelector("input").checked) c++;
+        else miss.push((gi * 4 + i + 1) + ". " + it.querySelector("span").textContent);
+      });
+      total += c;
+      var el = document.getElementById(ids[gi]);
+      el.textContent = c + "/4"; el.className = "sv " + (c === 4 ? "pos" : "");
+    });
+    var n = document.getElementById("clnote");
+    if (total === 12) n.innerHTML = "<b>12／12 全過——可以下單，但先等 48 小時。</b>投票者的帽子還沒戴：讓系統二值完班，兩天後想法沒變再送出限價單。";
+    else if (total === 0) n.innerHTML = "從第一項開始勾。";
+    else n.innerHTML = "<b>" + total + "／12，不下單。</b>還沒過的：<br>" + miss.map(esc).join("<br>") + (miss.length <= 2 ? "<br><span class=\"muted\">只差一兩項時最想跳過——那份衝動本身就是警訊。</span>" : "");
+  }
+  document.querySelectorAll("#cl input").forEach(function(b){ b.addEventListener("change", runCl); });
+  runCl();
+
+  /* 事前驗屍板 */
+  var PMK = "fic-w36-premortem", pmState = {name:"", rows:[]};
+  try { pmState = JSON.parse(localStorage.getItem(PMK)) || pmState; } catch(e){}
+  var pm = document.getElementById("pm"), pmName = document.getElementById("pm-name");
+  pmName.value = pmState.name || "";
+  for (var i = 0; i < 5; i++){
+    var r = pmState.rows[i] || {t:"", k:""};
+    var row = document.createElement("div"); row.className = "pmrow";
+    row.innerHTML = '<span class="n">' + (i + 1) + '</span><input type="text" aria-label="失敗原因 ' + (i + 1) + '" placeholder="它是怎麼虧掉 40% 的？"><select aria-label="原因 ' + (i + 1) + ' 的分類"><option value="">分類…</option><option value="m">可監控</option><option value="p">可預防</option><option value="l">純運氣</option></select>';
+    row.querySelector("input").value = r.t; row.querySelector("select").value = r.k;
+    pm.appendChild(row);
+  }
+  function runPm(){
+    var rows = [], n = 0, cnt = {m:0, p:0, l:0}, unk = 0;
+    pm.querySelectorAll(".pmrow").forEach(function(row){
+      var t = row.querySelector("input").value.trim(), k = row.querySelector("select").value;
+      rows.push({t:t, k:k});
+      if (t){ n++; if (k) cnt[k]++; else unk++; }
+    });
+    try { localStorage.setItem(PMK, JSON.stringify({name:pmName.value, rows:rows})); } catch(e){}
+    document.getElementById("s-pmn").textContent = n + "/5";
+    document.getElementById("s-pmn").className = "sv " + (n >= 5 ? "pos" : "");
+    document.getElementById("s-pmm").textContent = cnt.m;
+    document.getElementById("s-pmp").textContent = cnt.p;
+    document.getElementById("s-pml").textContent = cnt.l;
+    var out = [], note = document.getElementById("pmnote");
+    if (n === 0){ note.innerHTML = "先寫第一條。"; return; }
+    if (n < 5) out.push("<b>還差 " + (5 - n) + " 條。</b>寫不出來的時候，試試這幾個方向：產業變了、管理層出事、我付太貴、我太早加碼、我忍不住在低點賣掉。");
+    else out.push("<b>五條到齊。</b>");
+    if (unk) out.push("有 " + unk + " 條還沒分類。");
+    if (cnt.m) out.push("可監控 " + cnt.m + " 條 → 轉成觸發條件，寫進論文的「我會在什麼情況下認錯」（W26）。");
+    if (cnt.p) out.push("可預防 " + cnt.p + " 條 → 現在就處理：縮小部位、分批進場，或改執行計畫。");
+    if (cnt.l) out.push("純運氣 " + cnt.l + " 條 → 不能預防，只能確認：若真的發生，這個部位虧 40% 你承受得起嗎？");
+    if (n >= 5 && cnt.l >= 4) out.push("<span class=\"muted\">幾乎全歸給運氣？回頭看一次——事後看「顯而易見」的原因，通常不是運氣。</span>");
+    note.innerHTML = out.join("<br>");
+  }
+  pmName.addEventListener("input", runPm);
+  pm.addEventListener("input", runPm); pm.addEventListener("change", runPm);
+  runPm();
+
+  /* 決策記錄卡 */
+  var dc = document.getElementById("dc"), iEmo = document.getElementById("in-emo");
+  function runDc(){
+    var f = {};
+    dc.querySelectorAll("[data-f]").forEach(function(el){ f[el.dataset.f] = el.value.trim(); });
+    var emo = +iEmo.value;
+    document.getElementById("o-emo").textContent = emo;
+    var d = new Date(), ds = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+    var warn = [];
+    if (emo >= 8) warn.push("⚠ 情緒 " + emo + " 分：高情緒決策，48 小時後重看");
+    if (f.s === "熱門推薦" || f.s === "新聞／社群") warn.push("⚠ 外部來源：先過 48 小時冷靜期");
+    if (!f.cx && f.a !== "考慮後不買") warn.push("⚠ 反方一擊空白：魔鬼代言人還沒上場");
+    document.getElementById("dcard").textContent =
+      "日期 " + ds + "｜" + (f.t || "____") + "｜" + f.a + "\n" +
+      "論點：" + (f.th || "____") + "\n" +
+      "反方最強一擊：" + (f.cx || "____") + "\n" +
+      "觸發條件：" + (f.tr || "____") + "\n" +
+      "情緒 " + emo + "/10｜來源：" + f.s + (warn.length ? "\n\n" + warn.join("\n") : "");
+    document.getElementById("dcnote").innerHTML = f.a === "考慮後不買"
+      ? "<b>「不買」的卡最常被省略，也最有價值。</b>一年後回看，它會告訴你躲過了地雷，還是錯過了機會。"
+      : "<b>把卡片複製進你的決策日誌。</b>W38 複盤時，會統計「情緒 8 分以上」那幾張卡的成績。";
+  }
+  dc.addEventListener("input", runDc); dc.addEventListener("change", runDc);
+  iEmo.addEventListener("input", runDc);
+  runDc();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w36-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w36-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 生產線裝好了——下週用三場歷史風暴測試它。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>
