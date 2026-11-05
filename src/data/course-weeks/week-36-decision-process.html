@@ -438,7 +438,7 @@
       var c = 0;
       g.querySelectorAll(".clitem").forEach(function(it, i){
         if (it.querySelector("input").checked) c++;
-        else miss.push((gi * 4 + i + 1) + "．" + it.querySelector("span").textContent);
+        else miss.push((gi * 4 + i + 1) + ". " + it.querySelector("span").textContent);
       });
       total += c;
       var el = document.getElementById(ids[gi]);
@@ -505,10 +505,10 @@
     if (f.s === "熱門推薦" || f.s === "新聞／社群") warn.push("⚠ 外部來源：先過 48 小時冷靜期");
     if (!f.cx && f.a !== "考慮後不買") warn.push("⚠ 反方一擊空白：魔鬼代言人還沒上場");
     document.getElementById("dcard").textContent =
-      "日期 " + ds + "｜" + (f.t || "＿＿") + "｜" + f.a + "\n" +
-      "論點：" + (f.th || "＿＿") + "\n" +
-      "反方最強一擊：" + (f.cx || "＿＿") + "\n" +
-      "觸發條件：" + (f.tr || "＿＿") + "\n" +
+      "日期 " + ds + "｜" + (f.t || "____") + "｜" + f.a + "\n" +
+      "論點：" + (f.th || "____") + "\n" +
+      "反方最強一擊：" + (f.cx || "____") + "\n" +
+      "觸發條件：" + (f.tr || "____") + "\n" +
       "情緒 " + emo + "/10｜來源：" + f.s + (warn.length ? "\n\n" + warn.join("\n") : "");
     document.getElementById("dcnote").innerHTML = f.a === "考慮後不買"
       ? "<b>「不買」的卡最常被省略，也最有價值。</b>一年後回看，它會告訴你躲過了地雷，還是錯過了機會。"

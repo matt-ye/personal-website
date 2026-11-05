@@ -331,7 +331,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 28 週：波動率年化（×√252）、最大回撤與回本不對稱、VaR 速算與三缺陷、下行偏差，給模擬組合裝上風險儀表板。附回本陡坡與風險翻譯機互動。",
     "ogTitle": "第 28 週：風險衡量——波動率、回撤與 VaR — 給家人的投資課",
     "ogDescription": "虧 50% 要賺 100% 才回本——回本的坡非線性地陡。波動、MDD、VaR 三儀表上線，把風險翻成家人聽得懂的金額。",
-    "titleEn": "Week 28: Volatility, Drawdown and VaR | Family Investing Course · Matt Ye",
+    "titleEn": "Week 28: Volatility, Drawdown, VaR | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 28 of 52: annualized volatility, maximum drawdown and the recovery asymmetry (a 50% loss needs a 100% gain), and VaR with its three flaws.",
     "ogTitleEn": "Week 28: Measuring Risk — Volatility, Drawdown, VaR",
     "ogDescriptionEn": "Lose 50% and you need +100% just to get back. Put numbers on risk: volatility, drawdown and VaR, translated into money."
@@ -342,7 +342,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 29 週：Sharpe、Sortino 與資訊比率——同樣賺 8% 誰賺得高明；比公式更重要的四個使用陷阱。附 Sharpe 對決台與陷阱照妖鏡互動。",
     "ogTitle": "第 29 週：風險調整績效——Sharpe 家族 — 給家人的投資課",
     "ogDescription": "報酬除以風險才能比高下：C 賺 12% 卻輸給賺 8% 的 A。三比率的分工、四個陷阱，附對決台與照妖鏡互動。",
-    "titleEn": "Week 29: Sharpe, Sortino and Calmar | Family Investing Course · Matt Ye",
+    "titleEn": "Week 29: Sharpe, Sortino, Calmar | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 29 of 52: risk-adjusted returns — the Sharpe ratio, Sortino and Calmar, what each penalizes, and why a too-smooth return curve is a red flag.",
     "ogTitleEn": "Week 29: The Sharpe Family — Risk-Adjusted Returns",
     "ogDescriptionEn": "Two funds both made 10%. Which one earned it? Sharpe, Sortino and Calmar each answer a different version of that question."
@@ -353,7 +353,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 30 週：超額 2.4pp 拆成配置、選股與交互三塊且勾稽歸零，並修正被誤用最多的「90% 來自配置」。附 Brinson 拆帳台與 90% 判讀互動。",
     "ogTitle": "第 30 週：績效歸因——Brinson 模型 — 給家人的投資課",
     "ogDescription": "贏大盤 2.4pp——押對類別還是挑對股票？配置＋選股＋交互＝超額，帳拆得乾乾淨淨。附拆帳台互動。",
-    "titleEn": "Week 30: Brinson Performance Attribution | Family Investing Course · Matt Ye",
+    "titleEn": "Week 30: Brinson Attribution | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 30 of 52: split excess return into allocation, selection and interaction effects, and learn which skill actually produced the result.",
     "ogTitleEn": "Week 30: Brinson Attribution — Where Did the Return Come From?",
     "ogDescriptionEn": "Beating the market is the result; attribution tells you why. Allocation, selection and interaction, reconciled to the last basis point."
@@ -364,7 +364,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 31 週：好基準三條件、含息報酬指數、追蹤誤差與 Active Share，拆穿櫃子裡的指數基金。附含息尺與櫃子稽查器互動。",
     "ogTitle": "第 31 週：基準與追蹤誤差 — 給家人的投資課",
     "ogDescription": "拿不含息的加權指數比，人人都是股神。好基準三條件、TE 與 Active Share，三分鐘識破櫃子裡的指數基金。",
-    "titleEn": "Week 31: Benchmarks and Tracking Error | Family Investing Course · Matt Ye",
+    "titleEn": "Week 31: Benchmarks and Tracking | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 31 of 52: how to choose an honest benchmark, tracking error and the information ratio, and how to spot a closet index fund.",
     "ogTitleEn": "Week 31: Benchmarks and Tracking Error",
     "ogDescriptionEn": "A shortened ruler makes anyone look tall. Pick an honest benchmark, then measure tracking error and the information ratio."
@@ -375,7 +375,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 32 週：三因子模型、五大因子家族、價值因子的失落十年，以及 smart beta 解碼。附因子拆帳台與 ETF 解碼互動。",
     "ogTitle": "第 32 週：因子投資——Fama-French 與風格的科學 — 給家人的投資課",
     "ogDescription": "你的選股超額，會不會只是買了便宜股、小型股的風格？三因子一跑，傳奇選股人的 α 常縮成雜訊。",
-    "titleEn": "Week 32: Factor Investing and Fama-French | Family Investing Course · Matt Ye",
+    "titleEn": "Week 32: Factor Investing | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 32 of 52: market, size and value factors, decomposing a fund's return into factor exposures, and how to read smart-beta marketing.",
     "ogTitleEn": "Week 32: Factor Investing — The Science of Style",
     "ogDescriptionEn": "Much of what looks like skill is factor exposure you could buy cheaply. Split a fund's return into market, size and value."
@@ -397,7 +397,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 34 週：交易成本四層地圖、Implementation Shortfall、市場衝擊與參與率、個人執行五紀律。附 IS 計算器與拆單規劃器。",
     "ogTitle": "第 34 週：交易執行——滑價與市場衝擊 — 給家人的投資課",
     "ogDescription": "一次進場就漏掉 1.16%：價差、滑價、市場衝擊，還有掛太低沒買到的機會成本——對帳單上看不到的那一半。",
-    "titleEn": "Week 34: Trade Execution and Slippage | Family Investing Course · Matt Ye",
+    "titleEn": "Week 34: Execution and Slippage | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 34 of 52: implementation shortfall, bid-ask spreads, slippage and market impact, and how to plan an order so execution doesn't eat your return.",
     "ogTitleEn": "Week 34: Execution — Slippage and Market Impact",
     "ogDescriptionEn": "The price you saw isn't the price you got. Measure implementation shortfall and plan orders that don't move the market."
@@ -408,7 +408,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 35 週：基金容器與保管銀行、2/20 與台灣公募帳單、尾隨佣金的利益衝突、十分鐘讀公開說明書。附 2/20 解剖台與費差帳單。",
     "ogTitle": "第 35 週：基金實務——結構、費用與利益衝突 — 給家人的投資課",
     "ogDescription": "理專的薪水是你付的，而且每年持續付。看懂基金業的錢流管線，帶走自保三問：每年多少、貴幾倍、誰保管。",
-    "titleEn": "Week 35: Fund Structures, Fees and Conflicts | Family Investing Course · Matt Ye",
+    "titleEn": "Week 35: Fund Fees and Conflicts | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 35 of 52: fund vehicles and custodian banks, 2-and-20 versus Taiwan fund fees, trailing commissions and reading a prospectus in ten minutes.",
     "ogTitleEn": "Week 35: The Fund Industry — Fees and Conflicts",
     "ogDescriptionEn": "Your bank adviser's pay comes from you, every year. Follow the money through the fund industry and take home three questions."
@@ -419,7 +419,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 36 週：12 項買入前檢查清單、事前驗屍、決策記錄卡與一人投委會的三頂帽子。附清單試跑台、驗屍板與決策卡產生器。",
     "ogTitle": "第 36 週：投資決策流程——檢查清單與事前驗屍 — 給家人的投資課",
     "ogDescription": "專家失誤的主因不是不知道，是壓力下漏掉。把 35 週學的判斷力做成一張起飛清單，再用事前驗屍拆掉過度自信。",
-    "titleEn": "Week 36: Checklists and the Premortem | Family Investing Course · Matt Ye",
+    "titleEn": "Week 36: Checklists and Premortems | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 36 of 52: a 12-item pre-buy checklist, the premortem, decision journal cards and the 48-hour rule — a one-person investment committee.",
     "ogTitleEn": "Week 36: The Decision Process — Checklists and Premortems",
     "ogDescriptionEn": "Experts fail by omission under pressure, not ignorance. Turn 35 weeks of judgment into a preflight checklist."
@@ -430,7 +430,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 37 週：三場危機的病因差異、把歷史情境灌進組合、反向壓測與流動性壓測、壓測後的行動選單。附三場風暴壓測台與毀滅劇本計算器。",
     "ogTitle": "第 37 週：壓力測試與危機案例 — 給家人的投資課",
     "ogDescription": "2008 債券救了你，2022 沒有——因為病因不同。趁沒失火時做一次家庭投資消防演習。",
-    "titleEn": "Week 37: Stress Testing 2008, 2020, 2022 | Family Investing Course · Matt Ye",
+    "titleEn": "Week 37: Stress Testing | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 37 of 52: three crises with three different causes, running history through your portfolio in dollars, reverse stress tests and what to do next.",
     "ogTitleEn": "Week 37: Stress Testing and Crisis Case Studies",
     "ogDescriptionEn": "Bonds saved you in 2008 and failed in 2022 because the disease was different. Run a fire drill on the family portfolio."
@@ -441,7 +441,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 38 週：resulting 謬誤與決策四象限、日誌三個關鍵欄位、月度與季度複盤節奏。附四象限審判庭與運氣放大鏡。",
     "ogTitle": "第 38 週：投資紀律——交易日誌與複盤 — 給家人的投資課",
     "ogDescription": "亂做卻賺錢，是最危險的格子。學會把「決策品質」和「結果品質」分開看，才知道自己有沒有在進步。",
-    "titleEn": "Week 38: Trading Journals and Reviews | Family Investing Course · Matt Ye",
+    "titleEn": "Week 38: Journals and Reviews | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 38 of 52: resulting and the decision-outcome grid, three journal fields worth adding, and monthly versus quarterly reviews.",
     "ogTitleEn": "Week 38: Investment Discipline — Journals and Reviews",
     "ogDescriptionEn": "A bad decision that made money is the most dangerous square. Separate decision quality from outcome quality to know if you're improving."
@@ -452,7 +452,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 39 週：把 W27–38 的模組組裝成七節專業月報，含勾稽紀律、一段話摘要與 10 分制 Rubric。附月報勾稽台與自評表。",
     "ogTitle": "第 39 週：Q3 期末專題——模擬組合風險月報 — 給家人的投資課",
     "ogDescription": "錢怎麼樣了、為什麼、接下來看什麼——三分鐘講清楚，壞消息先講。寫得出這份月報，操盤手就從志向變成技能。",
-    "titleEn": "Week 39: Q3 Capstone — Monthly Risk Report | Family Investing Course · Matt Ye",
+    "titleEn": "Week 39: Q3 Capstone Risk Report | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 39 of 52: assemble twelve weeks of modules into a seven-section monthly report with reconciliation checks, a summary and a 10-point rubric.",
     "ogTitleEn": "Week 39: Q3 Capstone — The Monthly Risk Report",
     "ogDescriptionEn": "How is the money doing, why, and what's next — in three minutes, bad news first. The report that turns a goal into a skill."
@@ -474,7 +474,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 41 週：NPV 是換了主詞的 DCF、IRR 的三個陷阱、回收期法的用途與增量現金流三原則。附擴廠案 NPV 實驗台與第二家店計算機。",
     "ogTitle": "第 41 週：資本預算——NPV 與 IRR — 給家人的投資課",
     "ogDescription": "報酬率 50% 的小案子，輸給 20% 的大案子。學會 CFO 最常用的工具，也學會讓沉沒成本閉嘴。",
-    "titleEn": "Week 41: Capital Budgeting, NPV and IRR | Family Investing Course · Matt Ye",
+    "titleEn": "Week 41: NPV and IRR | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 41 of 52: NPV as DCF aimed at one project, IRR's three traps, what payback is good for, and incremental cash flows versus sunk costs.",
     "ogTitleEn": "Week 41: Capital Budgeting — NPV and IRR",
     "ogDescriptionEn": "A 50% return on a small project can lose to 20% on a big one. Learn the CFO's favorite tool and silence the sunk cost."
@@ -485,7 +485,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 42 週：WACC 的兩種金主、CAPM 三個輸入的出處與爭議、合理區間與風險對應門檻。附 WACC 組裝台、敏感度九宮格與錯用門檻計算機。",
     "ogTitle": "第 42 週：資金成本——WACC 與 CAPM — 給家人的投資課",
     "ogDescription": "股東的錢比銀行的錢貴，只是不寫在合約上。算出公司的跨欄高度，護城河鐵律就補完了分母。",
-    "titleEn": "Week 42: Cost of Capital — WACC and CAPM | Family Investing Course · Matt Ye",
+    "titleEn": "Week 42: WACC and CAPM | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 42 of 52: the blended price of debt and equity, where to source the risk-free rate, beta and ERP, and why WACC is a range, not a number.",
     "ogTitleEn": "Week 42: Cost of Capital — WACC and CAPM",
     "ogDescriptionEn": "Shareholders' money costs more than the bank's; it just isn't written in a contract. Find the hurdle every project must clear."
@@ -496,7 +496,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 43 週：槓桿雙面刃、MM 定理的切披薩論證、稅盾與困境成本的抵換、融資順位與槓桿健康三數字。附槓桿實驗台與最適槓桿示意圖。",
     "ogTitle": "第 43 週：資本結構——MM 理論與實務槓桿 — 給家人的投資課",
     "ogDescription": "槓桿是放大鏡，唯一不變的是利息照付。從 MM 定理出發，看懂為什麼電信敢借、科技不敢借。",
-    "titleEn": "Week 43: Capital Structure and Leverage | Family Investing Course · Matt Ye",
+    "titleEn": "Week 43: Capital Structure | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 43 of 52: leverage as a double-edged sword, Modigliani–Miller, tax shields versus distress costs, the pecking order and three leverage gauges.",
     "ogTitleEn": "Week 43: Capital Structure — MM and Real-World Leverage",
     "ogDescriptionEn": "Leverage magnifies gains and losses; only the interest bill stays fixed. Why phone companies borrow and tech companies don't."
@@ -507,7 +507,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 44 週：股利決策樹與 ROIC 對 WACC 的唯一判準、股利無關論的三個偏離、庫藏股的 EPS 魔術與台灣高配息文化。附果樹模擬器與庫藏股照妖鏡。",
     "ogTitle": "第 44 週：股利政策與庫藏股 — 給家人的投資課",
     "ogDescription": "發股利是吃果子，保留是種樹。判斷標準不是想不想吃，是土地還肥不肥。",
-    "titleEn": "Week 44: Dividends and Share Buybacks | Family Investing Course · Matt Ye",
+    "titleEn": "Week 44: Dividends and Buybacks | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 44 of 52: the payout decision tree, dividend irrelevance and its three real-world breaks, the buyback EPS trick and Taiwan's dividend culture.",
     "ogTitleEn": "Week 44: Dividend Policy and Buybacks",
     "ogDescriptionEn": "Paying a dividend is eating the fruit; retaining is planting trees. The question isn't appetite, it's whether the soil is still rich."
@@ -518,7 +518,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 45 週：CCC 三元件、飲料店的負 CCC、成長吃現金的帳單、管理槓桿與代價、現金水位三層。附 CCC 時間軸與成長帳單計算機。",
     "ogTitle": "第 45 週：營運資金管理——現金轉換循環 — 給家人的投資課",
     "ogDescription": "錢還沒付給供應商，就已經從客人手上收回來了。看懂誰在墊錢，就看懂為什麼有些公司越成長越缺錢。",
-    "titleEn": "Week 45: Working Capital and the CCC | Family Investing Course · Matt Ye",
+    "titleEn": "Week 45: Working Capital and CCC | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 45 of 52: the cash conversion cycle, why the drink shop runs at negative days, how growth eats cash, and the costs of each lever.",
     "ogTitleEn": "Week 45: Working Capital — The Cash Conversion Cycle",
     "ogDescriptionEn": "Collect from customers before paying suppliers, and growth funds itself. See why some fast-growing companies keep running short of cash."
@@ -529,7 +529,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 46 週：銷售驅動法五步驟、外部資金需求、可持續成長率 g* 的三個用途、預算的政治學與情境化。附一頁式預測台與借來的成長推演。",
     "ogTitle": "第 46 週：財務規劃與預算 — 給家人的投資課",
     "ogDescription": "不借錢、不增資，成長有速限：ROE ×（1 − 配發率）。學會讓三張報表往前推一年，看成長養不養得起。",
-    "titleEn": "Week 46: Financial Planning and Budgets | Family Investing Course · Matt Ye",
+    "titleEn": "Week 46: Financial Planning | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 46 of 52: driving three statements from one revenue assumption, external financing needs, the sustainable growth rate and budget politics.",
     "ogTitleEn": "Week 46: Financial Planning — Linked Forecasts",
     "ogDescriptionEn": "Without new debt or equity, growth has a speed limit: ROE times the retention ratio. Push three statements a year forward."
@@ -551,7 +551,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 48 週：匯率曝險三張臉、遠期外匯與避險比率、避險政策四條、台灣 TRF 風暴三教訓與利率風險。附遠期外匯台與 TRF 形狀測試。",
     "ogTitle": "第 48 週：資金調度與避險——匯率與利率風險 — 給家人的投資課",
     "ogDescription": "財務部是滅火器，不是印鈔機。避險買的是確定性；贏有上限、輸沒下限的商品，問完下限就轉身走。",
-    "titleEn": "Week 48: Treasury, FX and Rate Hedging | Family Investing Course · Matt Ye",
+    "titleEn": "Week 48: FX and Rate Hedging | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 48 of 52: three faces of currency exposure, forwards and hedge ratios, natural hedges, a hedging policy, and the lessons of Taiwan's TRF crisis.",
     "ogTitleEn": "Week 48: Treasury and Hedging — Currency and Rates",
     "ogDescriptionEn": "Treasury is a fire extinguisher, not a money printer. Hedging buys certainty; capped upside with unlimited downside is a reason to walk away."
@@ -562,7 +562,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 49 週：治理防火牆、Enron／Wirecard／博達三案的共同四步驟、紅旗清單 v2 的五項治理紅旗與 CFO 的頭版測試。附殺信使測試與 15 項掃描器。",
     "ogTitle": "第 49 週：公司治理與財報舞弊案例 — 給家人的投資課",
     "ogDescription": "正常公司面對質疑會回應數據；心虛的公司攻擊提問的人。三個世紀級騙局，警訊都亮了好幾年。",
-    "titleEn": "Week 49: Governance and Accounting Fraud | Family Investing Course · Matt Ye",
+    "titleEn": "Week 49: Governance and Fraud | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 49 of 52: governance as firewalls, the shared pattern behind Enron, Wirecard and Procomp, five governance red flags and the CFO's front-page test.",
     "ogTitleEn": "Week 49: Corporate Governance and Fraud Cases",
     "ogDescriptionEn": "Honest companies answer critics with data; guilty ones attack the critic. Three famous frauds all flashed warnings for years."
@@ -573,7 +573,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 50 週：台灣投資稅制地圖、股利二擇一的 36.5% 交叉點、美股預扣稅與最低稅負制、公司端的未分配盈餘加徵。附二擇一計算機與預扣稅帳單。",
     "ogTitle": "第 50 週：稅務基礎——台灣投資人的稅務地圖 — 給家人的投資課",
     "ogDescription": "報稅季那個勾，勾錯多繳幾千到幾萬。稅率 5% 的人領 50 萬股利，選對了還能退稅。",
-    "titleEn": "Week 50: Taxes for Taiwan Investors | Family Investing Course · Matt Ye",
+    "titleEn": "Week 50: Taxes in Taiwan | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 50 of 52: Taiwan's investment tax map, the 36.5% crossover for dividend taxation, US withholding tax, the minimum tax and corporate taxes.",
     "ogTitleEn": "Week 50: Tax Basics for Taiwan Investors",
     "ogDescriptionEn": "Tick the wrong box at tax time and you overpay. At a 5% bracket, NT$500,000 in dividends can even get you a refund."
@@ -584,7 +584,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 51 週：IR 工具箱的誠實度結構、法說會三層聽法、致股東報告書的五年測謊、CFO 的溝通紀律。附形容詞偵測器與承諾追蹤表。",
     "ogTitle": "第 51 週：投資人關係與資本市場溝通 — 給家人的投資課",
     "ogDescription": "「審慎樂觀」是沒有內容的四個字。學會聽分析師追問什麼、管理層繞開什麼，再把去年的承諾拿來對帳。",
-    "titleEn": "Week 51: Investor Relations and Earnings Calls | Family Investing Course · Matt Ye",
+    "titleEn": "Week 51: Investor Relations | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 51 of 52: how honest each IR channel is, why earnings-call Q&A matters most, adjectives versus numbers, and tracking management's promises.",
     "ogTitleEn": "Week 51: Investor Relations and Market Communication",
     "ogDescriptionEn": "\"Cautiously optimistic\" says nothing. Listen for what analysts keep asking and what management dodges, then check last year's promises."
@@ -595,7 +595,7 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課最終週：同一家公司、兩張桌子——CFO 視角財務健檢與投資人視角估值報告、張力測試與年度回顧。附 52 週看板、張力測試台與 Rubric。",
     "ogTitle": "第 52 週：年度期末專題——CFO＋投資人雙報告 — 給家人的投資課",
     "ogDescription": "一年前猜「月存一萬、三十年變多少」，今天交出兩份專業報告。這不是課程的結束，是操作系統 v1.0 的發布日。",
-    "titleEn": "Week 52: Capstone — CFO and Investor Reports | Family Investing Course · Matt Ye",
+    "titleEn": "Week 52: Annual Capstone | Family Investing Course · Matt Ye",
     "descriptionEn": "Week 52 of 52: one company, two seats — a CFO's financial review with three recommendations and an investor's valuation, made to feed each other.",
     "ogTitleEn": "Week 52: Annual Capstone — Two Reports, Two Seats",
     "ogDescriptionEn": "A year ago: guess what NT$10,000 a month becomes in 30 years. Today: two professional reports. The release of your operating system v1.0."
