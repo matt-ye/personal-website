@@ -1,0 +1,446 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .rates{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.6rem}
+  .rates button{font:inherit;font-size:.85rem;padding:.35rem .8rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .rates button.on{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  .warnbox{margin-top:1rem;padding:.8rem 1.1rem;border-radius:10px;border:1.5px solid var(--warn);background:var(--coin-soft);font-size:.9rem;color:var(--ink-2)}
+  .warnbox b{color:var(--warn)}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 50</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q4 財務長季 · Week 50</p>
+  <h1>稅務基礎——台灣投資人的稅務地圖</h1>
+  <p class="lead" style="margin-top:.5rem">報酬的最後一道濾網。你在 W16 算過費用的複利侵蝕——稅是同一類敵人，但<strong>合法的安排空間更大</strong>。本週建立台灣投資人與公司的稅務地圖，核心交付：把自己和家人的「股利課稅二擇一」算清楚。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 10、44 週</span><span class="chip">52 週 · 第 50 週</span>
+  </div>
+  <div class="warnbox"><b>⚠ 特別聲明：</b>稅法經常修訂。本頁的稅率與門檻是撰寫時的通則整理，<strong>實際申報以財政部、國稅局當年度公告為準</strong>；重大金額決策前建議諮詢會計師。目標是讓你「會算、會問對問題」，不是取代專業意見。</div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的殺信使測試——家人記住「看它回應內容，還是攻擊動機」了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">一位綜所稅率 5% 的上班族，今年領了 50 萬股利，選擇合併計稅。他要多繳多少稅？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">多繳 2.5 萬</button>
+    <button data-g="b">多繳 14 萬</button>
+    <button data-g="c">不用繳，還退 1.75 萬</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 台灣投資稅制地圖（個人端）</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>稅目</th><th>規則（通則）</th><th>備註</th></tr></thead>
+      <tbody>
+        <tr><td class="f">證券交易稅</td><td>賣出時 0.3%（股票）／0.1%（ETF）</td><td>W10 學過——買進不課</td></tr>
+        <tr><td class="f">證券交易所得稅</td><td>現行<strong>停徵</strong>（個人買賣上市股票的價差）</td><td>台灣長期投資人最大的稅務紅利</td></tr>
+        <tr><td class="f">股利所得</td><td><strong>二擇一</strong>（下節詳算）</td><td>每年報稅時選</td></tr>
+        <tr><td class="f">二代健保補充保費</td><td>單筆股利達 2 萬即收 2.11%</td><td>領股息的隱藏成本</td></tr>
+        <tr><td class="f">海外所得</td><td>年滿 100 萬計入最低稅負制</td><td>第 3 節</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>先看懂全局</strong>：台灣稅制對「價差」極友善（停徵）、對「股息」相對重（所得稅＋補充保費）。這個不對稱是理解台灣投資稅務的鑰匙，也呼應 W44：<strong>同樣的總報酬，「填息的價差」與「領到的股息」稅負不同</strong>。</p>
+
+  <h2>2. 股利課稅二擇一：本週的核心計算</h2>
+  <ul>
+    <li><strong>合併計稅</strong>：股利併入綜合所得課稅，但享有<strong>股利 × 8.5% 的抵減稅額（上限 8 萬）</strong></li>
+    <li><strong>分離課稅</strong>：股利單獨以 <strong>28%</strong> 課稅，不進綜所稅</li>
+  </ul>
+  <p><strong>完整算例｜股利 50 萬</strong>（抵減 42,500，沒碰到 8 萬上限）：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>綜所稅邊際稅率</th><th>合併淨稅負（稅 − 抵減）</th><th>分離（28%）</th><th>該選</th></tr></thead>
+      <tbody>
+        <tr><td class="f">5%</td><td><strong>−17,500（退稅）</strong></td><td>140,000</td><td>合併</td></tr>
+        <tr><td class="f">12%</td><td>17,500</td><td>140,000</td><td>合併</td></tr>
+        <tr><td class="f">20%</td><td>57,500</td><td>140,000</td><td>合併</td></tr>
+        <tr><td class="f">30%</td><td>107,500</td><td>140,000</td><td>合併</td></tr>
+        <tr><td class="f">40%</td><td>157,500</td><td><strong>140,000</strong></td><td>分離</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>交叉點的數學</strong>：合併划算的條件是 t × D − 8.5% × D 小於 28% × D → <strong>t 小於 36.5%</strong>。只有適用最高級距 40% 的人該選分離。但股利大到抵減觸頂 8 萬（約 94 萬以上）時，交叉點會往下移——要細算。</p>
+  <p class="muted">簡化說明：這裡用「邊際稅率 × 股利」估算增加的稅；股利金額大到跨越級距時，實際稅負要分段計算。</p>
+  </div>
+
+  <div class="lab">
+    <h3>二擇一計算機</h3>
+    <p class="muted" style="margin-top:-.2rem">選你的綜所稅邊際稅率，輸入一年的股利。</p>
+    <div class="rates" id="rates" role="group" aria-label="邊際稅率"><button data-t="5">5%</button><button data-t="12">12%</button><button data-t="20">20%</button><button data-t="30">30%</button><button data-t="40">40%</button></div>
+    <div class="ctl" style="margin-top:.8rem"><label>一年股利 <output id="o-d">50 萬</output></label><input type="range" id="in-d" min="5" max="300" step="5" value="50" aria-label="一年股利"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">合併計稅</p><p class="sv" id="s-m">—</p><p class="sh">稅 − 抵減（元）</p></div>
+      <div class="stat"><p class="sl">分離課稅</p><p class="sv" id="s-s">—</p><p class="sh">28%（元）</p></div>
+      <div class="stat"><p class="sl">你的交叉稅率</p><p class="sv" id="s-x">—</p><p class="sh">低於它選合併</p></div>
+      <div class="stat"><p class="sl">補充保費</p><p class="sv" id="s-h">—</p><p class="sh">2.11%，兩種都要繳</p></div>
+    </div>
+    <div class="ibox" id="dnote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>3. 海外投資的稅（全球配置者必修，接 W14）</h2>
+  <ol>
+    <li><strong>美股股息預扣 30%</strong>：台美沒有租稅協定，美國公司發的股息先扣三成（1,000 美元實收 700）。這是愛爾蘭註冊 ETF 受台灣投資人歡迎的主因：美股股息的預扣降到 15%，累積型也不產生每年的配息申報（W16 挑選清單第 5 點的稅務原因補完）</li>
+    <li><strong>資本利得</strong>：美國對外國人不課證券交易的資本利得稅——海外價差主要面對的是台灣端</li>
+    <li><strong>台灣端的最低稅負制</strong>：海外所得（含價差、股息）年滿 <strong>100 萬</strong>須計入基本所得額；扣除免稅額度（數百萬級，以當年公告為準）後，超過部分與一般所得稅擇高、課 20%。多數中產投資人實際上課不到，但申報義務與成本紀錄要做好</li>
+    <li><strong>紀錄紀律</strong>：海外券商不會幫你報稅——每筆買賣的成本、日期、匯率自己留存（W27 的模擬組合記錄格式就是現成模板）</li>
+  </ol>
+  </div>
+
+  <div class="lab">
+    <h3>股息預扣稅的 20 年帳單</h3>
+    <p class="muted" style="margin-top:-.2rem">同一個市場（總報酬 7%），只差在股息被預扣多少。示意比較：美國註冊配息型（預扣 30%）vs 愛爾蘭註冊累積型（基金層預扣 15%）。</p>
+    <div class="ctl"><label>投入金額 <output id="o-a">100 萬</output></label><input type="range" id="in-a" min="10" max="1000" step="10" value="100" aria-label="投入金額"></div>
+    <div class="ctl"><label>股息殖利率 <output id="o-y">2.0%</output></label><input type="range" id="in-y" min="0.5" max="5" step="0.1" value="2" aria-label="股息殖利率"></div>
+    <div class="ctl"><label>年數 <output id="o-n">20 年</output></label><input type="range" id="in-n" min="5" max="40" step="1" value="20" aria-label="年數"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">美國註冊（30%）</p><p class="sv" id="s-us">—</p><p class="sh">終值</p></div>
+      <div class="stat"><p class="sl">愛爾蘭註冊（15%）</p><p class="sv" id="s-ie">—</p><p class="sh">終值</p></div>
+      <div class="stat"><p class="sl">差距</p><p class="sv neg" id="s-gap">—</p><p class="sh">預扣稅的複利代價</p></div>
+    </div>
+    <div class="ibox" id="wnote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>4. 公司端速覽（CFO 視角收尾）</h2>
+  <ul>
+    <li><strong>營所稅 20%</strong>；<strong>未分配盈餘加徵 5%</strong>——賺 100、稅後 80，若全保留，次年再繳 4。這是台灣特有的「催吐條款」，也是高配發率文化的另一個制度推手（W44 的拼圖補完）；產創條例的實質投資可以扣除，是「保留下來蓋廠」的緩衝</li>
+    <li><strong>研發投資抵減</strong>：科技業有效稅率常低於 20% 的原因</li>
+    <li>讀年報的「所得稅」附註：<strong>有效稅率調節表</strong>顯示法定 20% 與實繳的差距來自哪裡（抵減、海外稅率差、前年虧損扣抵）——CFO 的合法節稅成績單</li>
+  </ul>
+
+  <h2>5. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「省稅最大化，就是最優投資。」</p><p>順序永遠是：好投資 → 稅務優化。為了免稅扭曲配置——過度重押高股息或保險商品——是撿稅金的芝麻、丟報酬的西瓜（W16、W44 的總報酬視角）。</p></div>
+  <div class="myth"><p class="say">「海外所得反正查不到。」</p><p>金融帳戶資訊交換（CRS）已是國際常態；合法申報＋善用免稅額度，成本遠低於補稅加罰的尾部風險。用 W33 的語言說：逃稅是賣尾部風險。</p></div>
+  <div class="myth"><p class="say">「股利會退稅，所以多領股利多賺。」</p><p>退的是抵減，本質是把公司已繳的稅部分還給你；投資決策仍看總報酬（W44），稅只是排序相近選項時的加分項。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>講義給框架，官方給數字</h2>
+  <div class="readitem"><div class="t">40 分鐘</div><div class="body"><b>財政部稅務入口網</b><p>查「股利所得課稅」與「基本稅額（最低稅負制）」主題頁，<strong>驗證本頁的稅率與門檻是否為現行值</strong>，註明查證日期。<a class="srclink" href="https://www.etax.nat.gov.tw/" target="_blank" rel="noopener">財政部稅務入口網 ↗</a></p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>綠角：海外券商稅務系列</b><p>台灣投資人海外稅務最完整的民間整理之一。</p></div></div>
+  <div class="readitem"><div class="t">20 分鐘</div><div class="body"><b>實習公司年報的所得稅附註</b><p>找有效稅率調節表——它實際稅率幾 %？差異來自哪裡？</p></div></div>
+  <div class="readitem"><div class="t">選讀</div><div class="body"><b>健保署「補充保險費」說明頁</b><p>單筆門檻與費率的官方說明。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>家庭稅務體檢（本週交付物）</h2>
+  <h3>任務 A｜二擇一試算（25 分鐘）</h3>
+  <ol class="tasks">
+    <li>用你（或家人）的實際邊際稅率與年股利金額跑二擇一；先重算講義 50 萬 × 五級距的表</li>
+    <li>找出你家的正確選擇，以及一年差多少錢</li>
+    <li>順手算補充保費：現有持股的配息，單筆超過 2 萬的有哪些？</li>
+  </ol>
+  <h3>任務 B｜海外部位稅務盤點（20 分鐘）</h3>
+  <p>若有（或規劃中）海外投資：確認工具類型的稅務差異（美國註冊 vs 愛爾蘭註冊）、估算距離「海外所得 100 萬申報線」多遠、成本紀錄是否齊全。</p>
+  <div class="verify"><b>怎麼知道做對了：</b>二擇一計算機（股利 50 萬）：5% 級距合併是 −17,500（退稅）、分離 140,000；40% 級距合併 157,500、分離 140,000，結論翻成分離；交叉稅率 36.5%。股利拉到 150 萬，抵減觸頂 8 萬，交叉稅率降到 33.3%。預扣稅帳單（100 萬、殖利率 2%、20 年）：美國註冊 345.8 萬、愛爾蘭註冊 365.8 萬，差 20.0 萬。</div>
+  <ul class="checks" data-key="w50-practice">
+    <li><label><input type="checkbox"><span>講義五級距表重算通過＋自家二擇一結論</span></label></li>
+    <li><label><input type="checkbox"><span>稅率門檻已對照官方現行公告（註明查證日）</span></label></li>
+    <li><label><input type="checkbox"><span>海外部位（若有）稅務盤點完成</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 為什麼低薪資所得者「領股利可能退稅」？</summary><div class="ans"><p>→ 因為合併計稅的抵減（股利 × 8.5%）<strong>大於</strong>低邊際稅率產生的稅額。稅率 5% 的人領 50 萬股利，增加的稅 25,000 小於抵減 42,500，差額 17,500 直接退還——制度等於補貼低所得的存股族。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 台灣稅制的哪兩條規則，共同解釋了高配息文化？</summary><div class="ans"><p>→ ①個人端：<strong>價差停徵、股息有抵減甚至退稅</strong>——對廣大中低稅率散戶，領息的稅務體驗很好；②公司端：<strong>未分配盈餘加徵 5%</strong>——保留不發要多繳稅，推著公司把盈餘配出去。供需兩端都被制度推向配息。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 愛爾蘭註冊累積型 ETF 對台灣投資人的兩個稅務優勢？</summary><div class="ans"><p>→ ①美股股息的預扣稅率由 30% 降為 <strong>15%</strong>（愛爾蘭與美國有租稅協定）；②<strong>累積型</strong>把股息留在基金內再投入，不產生台灣端的年度配息申報，複利也不中斷。兩者疊加，長期持有的稅務摩擦明顯低於美國註冊配息型。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>報稅季的一個勾</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（報稅季的一個勾）</p><p>「每年報稅有個很多人亂勾的選項：股利要『合併』還是『分開』算稅。勾錯，多繳幾千到幾萬。今天教你怎麼勾——結論先講：<strong>我們家大概率選合併</strong>，因為有 8.5% 的抵減。」</p><p class="aside">用家人的實際數字現場算——這 30 分鐘可能是全年「時薪」最高的教學。</p></div>
+  <div class="script"><p class="who">核心觀念（稅是第三隻手）</p><p>「投資報酬有三隻手在分：市場給的、費用拿走的（W16 講過）、<strong>稅拿走的</strong>。第三隻手的重點只有三句：①台灣賣股的價差<strong>不課稅</strong>（超級紅利）；②股息會課稅，還有健保補充保費；③海外的要自己記帳申報。」</p></div>
+  <div class="script"><p class="who">互動（防身題庫＋1）</p><p>「防身題庫加到第四題：①最壞虧多少？②錢誰保管？③每年收多少 %？④<strong>稅後拿多少？</strong>任何投資話術，四題問完再說。」</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「這麼複雜，找人報就好。」</b><br>「可以找，但<strong>會算的人才知道對方報得對不對</strong>——就像看得懂帳的人請會計師，跟全信會計師，是兩種安全等級。」</p>
+    <p class="qa"><b>「規則以後會改吧？」</b><br>「一定會——所以我們學的是『怎麼算』的框架，每年報稅前花十分鐘查最新數字就好。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w50-final">
+    <li><label><input type="checkbox"><span>能默寫二擇一的交叉點邏輯（t 對 36.5%）</span></label></li>
+    <li><label><input type="checkbox"><span>家庭稅務體檢完成（含官方查證日期）</span></label></li>
+    <li><label><input type="checkbox"><span>能講出海外投資的三件稅務事（預扣、利得、最低稅負）</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（現場算自家的勾），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 50 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 51：投資人關係與資本市場溝通</b>——CFO 面對分析師的那一面：法說會怎麼聽、財測怎麼讀。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-49-governance-fraud/">上一週：公司治理與舞弊</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議，亦非稅務建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "c"
+      ? "答對了——50 萬 × 5% ＝ 增加 2.5 萬的稅，但合併計稅有股利 × 8.5% ＝ 4.25 萬的抵減，抵完還多 1.75 萬，直接退稅。這是台灣高股息文化的稅制推手之一。"
+      : "答案是不用繳，還退 1.75 萬：50 萬 × 5% ＝ 增加 2.5 萬的稅，但合併計稅有股利 × 8.5% ＝ 4.25 萬的抵減。選分離課稅才是 28%、14 萬。";
+  });
+
+  function nt(v){ return (v < 0 ? "−" : "") + Math.round(Math.abs(v)).toLocaleString(); }
+
+  /* 二擇一 */
+  var T = 5, iD = document.getElementById("in-d"), rates = document.getElementById("rates");
+  function runD(){
+    var D = +iD.value * 10000, t = T / 100;
+    document.getElementById("o-d").textContent = iD.value + " 萬";
+    rates.querySelectorAll("button").forEach(function(b){ b.classList.toggle("on", +b.dataset.t === T); });
+    var cr = Math.min(D * 0.085, 80000), m = t * D - cr, s = 0.28 * D, x = 0.28 + cr / D, hp = D >= 20000 ? D * 0.0211 : 0;
+    var em = document.getElementById("s-m"); em.textContent = nt(m); em.className = "sv " + (m <= s ? "pos" : "");
+    var es = document.getElementById("s-s"); es.textContent = nt(s); es.className = "sv " + (s < m ? "pos" : "");
+    document.getElementById("s-x").textContent = (x * 100).toFixed(1) + "%";
+    document.getElementById("s-h").textContent = nt(hp);
+    var n = document.getElementById("dnote");
+    n.innerHTML = (m <= s
+      ? "<b>選合併計稅，比分離省 " + nt(s - m) + " 元。</b>" + (m < 0 ? "抵減大於增加的稅，還退 " + nt(-m) + " 元。" : "")
+      : "<b>選分離課稅，比合併省 " + nt(m - s) + " 元。</b>邊際稅率 " + T + "% 已經高過你的交叉稅率 " + (x * 100).toFixed(1) + "%。") +
+      (cr >= 80000 ? "<br>抵減已經觸頂 8 萬——股利越多，交叉稅率越往 28% 靠近。" : "") +
+      "<br>另外，單筆股利 2 萬以上要繳 2.11% 補充保費（約 " + nt(hp) + " 元，以單筆計），不管選哪一種。";
+  }
+  rates.addEventListener("click", function(e){ var b = e.target.closest("button"); if(!b) return; T = +b.dataset.t; runD(); });
+  iD.addEventListener("input", runD);
+  runD();
+
+  /* 預扣稅帳單 */
+  var wA = document.getElementById("in-a"), wY = document.getElementById("in-y"), wN = document.getElementById("in-n");
+  function runW(){
+    var a = +wA.value, y = +wY.value, n = +wN.value;
+    document.getElementById("o-a").textContent = a + " 萬";
+    document.getElementById("o-y").textContent = y.toFixed(1) + "%";
+    document.getElementById("o-n").textContent = n + " 年";
+    var us = a * Math.pow(1 + (7 - y * 0.30) / 100, n), ie = a * Math.pow(1 + (7 - y * 0.15) / 100, n);
+    document.getElementById("s-us").textContent = us.toFixed(1) + " 萬";
+    document.getElementById("s-ie").textContent = ie.toFixed(1) + " 萬";
+    document.getElementById("s-gap").textContent = "−" + (ie - us).toFixed(1) + " 萬";
+    document.getElementById("wnote").innerHTML = "<b>每年只差 " + (y * 0.15).toFixed(2) + " 個百分點，" + n + " 年後差 " + (ie - us).toFixed(1) + " 萬。</b>殖利率越高、時間越長，預扣稅的複利代價越大——這是 W16 費用侵蝕的稅務版。（示意模型：未計基金費用率差異與其他稅務細節。）";
+  }
+  [wA, wY, wN].forEach(function(x){ x.addEventListener("input", runW); });
+  runW();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w50-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w50-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 第三隻手管好了——下週聽懂 CFO 對市場說的話。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

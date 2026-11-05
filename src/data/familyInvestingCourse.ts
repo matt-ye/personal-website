@@ -570,4 +570,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-49-governance-fraud/',
   },
+  {
+    slug: 'week-50-taxes-taiwan',
+    title: 'W50 稅務基礎——股利二擇一',
+    titleEn: 'W50 Taxes for Taiwan Investors',
+    description: '價差停徵、股息課稅的不對稱；股利合併計稅與分離課稅在 36.5% 交叉；美股股息預扣 30% 與愛爾蘭註冊 ETF、最低稅負制。附二擇一計算機與預扣稅 20 年帳單。',
+    descriptionEn: 'Taiwan taxes capital gains lightly and dividends heavily: the 36.5% crossover between combined and separate dividend taxation, US withholding tax, Irish-domiciled ETFs and the alternative minimum tax.',
+    tags: ['Q4 財務長季', '互動計算機'],
+    date: '2027-06-16',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-50-taxes-taiwan/',
+  },
 ];
