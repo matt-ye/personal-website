@@ -592,4 +592,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-51-investor-relations/',
   },
+  {
+    slug: 'week-52-annual-capstone',
+    title: 'W52 年度期末專題——雙報告',
+    titleEn: 'W52 Annual Capstone: Two Reports',
+    description: '同一家公司、兩張桌子：報告 A 用 CFO 的眼睛提三個建議，報告 B 用投資人的眼睛估值與決策，再讓兩份報告互相餵養。附 52 週看板、張力測試台與 Rubric。',
+    descriptionEn: 'One company, two seats: a CFO\'s financial review with three recommendations and an investor\'s valuation report, made to feed each other — plus a 52-week progress board and a final rubric.',
+    tags: ['Q4 財務長季', 'Capstone', '互動評估'],
+    date: '2027-06-30',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-52-annual-capstone/',
+  },
 ];

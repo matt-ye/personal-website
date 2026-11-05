@@ -1,0 +1,473 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .board{display:grid;grid-template-columns:repeat(13,1fr);gap:4px;margin-top:1rem}
+  .board a{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:.72rem;font-weight:700;text-decoration:none;background:var(--paper);border:1px solid var(--line);color:var(--ink-3)}
+  .board a.part{background:var(--coin-soft);border-color:var(--coin);color:var(--coin)}
+  .board a.done{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  .board a:hover{outline:2px solid var(--pine)}
+  .qrow{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.8rem;font-size:.8rem;text-align:center;color:var(--ink-3)}
+  .qrow b{display:block;font-size:1.05rem;color:var(--ink);font-family:ui-monospace,Menlo,monospace}
+  .rb{display:grid;grid-template-columns:1fr auto;gap:.5rem;align-items:center;padding:.55rem 0;border-bottom:1px dashed var(--line-soft);font-size:.9rem}
+  .rb .seg{display:flex;gap:.25rem}
+  .rb .seg button{font:inherit;font-size:.82rem;width:2.2rem;padding:.3rem 0;border-radius:8px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .rb .seg button.on{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  .sw{display:flex;gap:.5rem;align-items:center;margin-top:.6rem;font-size:.88rem;color:var(--ink-2)}
+  .sw input{accent-color:var(--pine)}
+  @media (max-width:520px){.board{grid-template-columns:repeat(7,1fr)}.qrow{grid-template-columns:repeat(2,1fr)}}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 52</span>
+    <a class="sec" href="#lecture">① 手冊</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q4 財務長季 · Week 52 · 年度期末專題</p>
+  <h1>年度期末專題——CFO＋投資人雙報告</h1>
+  <p class="lead" style="margin-top:.5rem">52 週的總驗收。同一家公司、兩張桌子：<strong>報告 A</strong> 用財務長的眼睛做財務健檢與建議，<strong>報告 B</strong> 用投資人的眼睛評估值與買賣。兩份報告的張力——CFO 想守住的、投資人想看穿的——就是你這一年學會的完整判斷力。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時＋年度回顧</span><span class="chip">前置：第 1–51 週全部</span><span class="chip">52 週 · 第 52 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>投資人、操盤手、財務長的第一年目標，全部在這兩份報告裡達陣。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的法說三招——家人聽出「審慎樂觀」的空洞了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先看一眼這一年</p>
+  <p class="q">下面是你在這台裝置上勾過的每週「完成檢核」。綠色是全部完成，黃色是做到一半。</p>
+  <div class="board" id="board" aria-label="52 週完成情況"></div>
+  <div class="qrow" id="qrow"></div>
+  <p class="muted" id="boardnote" style="margin-top:.8rem"></p>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 雙報告組裝手冊＋年度回顧指南 · 約 1 小時</p>
+  <div class="prose">
+  <h2>雙報告的設計哲學</h2>
+  <p>同一組事實，兩個問題：</p>
+  <ul>
+    <li><strong>報告 A（CFO）</strong>問：這家公司的財務<strong>該怎麼管得更好</strong>？你是內部人，輸出是<strong>建議</strong></li>
+    <li><strong>報告 B（投資人）</strong>問：這家公司<strong>值多少、現在買嗎</strong>？你是外部人，輸出是<strong>決策</strong></li>
+  </ul>
+  <p>建議沿用實習公司——W40–51 的素材直接可用。兩份各 2–3 頁，<strong>先寫 A 再寫 B</strong>：當過 CFO 再當投資人，你會發現自己讀年報的眼神完全不同了。</p>
+
+  <h2>報告 A｜CFO 視角財務健檢（素材全在 Q4）</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>節</th><th>內容</th><th>素材</th></tr></thead>
+      <tbody>
+        <tr><td class="f">① 資本結構評估</td><td>槓桿三數字 vs 產業；稅盾用足了嗎、太冒險嗎</td><td>W43</td></tr>
+        <tr><td class="f">② 資金成本</td><td>自算 WACC＋ROIC 對照——創造還是毀滅價值</td><td>W42、W9</td></tr>
+        <tr><td class="f">③ 資本配置紀錄</td><td>近年大型投資的事後成績；股利與庫藏股政策評鑑</td><td>W41、W44</td></tr>
+        <tr><td class="f">④ 營運資金與規劃</td><td>CCC 五年趨勢；g* 與實際成長的資金缺口</td><td>W45、W46</td></tr>
+        <tr><td class="f">⑤ 風險與治理</td><td>避險政策體檢；治理紅旗掃描結果</td><td>W48、W49</td></tr>
+        <tr><td class="f">⑥ 給管理層的三個建議</td><td>每條：問題（數字佐證）→ 建議 → 預期效果</td><td>全部</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>⑥ 是報告 A 的靈魂——寫成「若我是 CFO，明年最優先改的三件事」，每條都要有 Q4 工具的量化支撐。例：「CCC 較同業長 25 天，可釋放約 X 億——建議應收帳期紀律化。」</p>
+
+  <h2>報告 B｜投資人視角估值報告（素材全在 Q1–Q3）</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>節</th><th>內容</th><th>素材</th></tr></thead>
+      <tbody>
+        <tr><td class="f">① 一句話論點</td><td>市場錯在哪、我的預期</td><td>W26 格式</td></tr>
+        <tr><td class="f">② 商業模式與護城河</td><td>五力＋三維護城河，更新到最新</td><td>W22</td></tr>
+        <tr><td class="f">③ 財報健檢摘要</td><td>20 分鐘健檢流程的最新一跑</td><td>W13</td></tr>
+        <tr><td class="f">④ 估值</td><td>相對估值＋DCF（折現率用報告 A 的自算 WACC）＋九宮格區間＋安全邊際</td><td>W19–21、W42</td></tr>
+        <tr><td class="f">⑤ 風險與反方論證</td><td>含報告 A 發現的內部問題——雙報告的交叉引用</td><td>W26、W37</td></tr>
+        <tr><td class="f">⑥ 結論</td><td>買／等／跳過＋倉位（IPS 內）＋觸發條件</td><td>W18、W26</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <h2>張力測試：讓兩份報告互相餵養</h2>
+  <p>成熟度的檢驗：報告 A 的三個建議若被採納，報告 B 的估值會怎麼變？能把兩份報告<strong>互相餵養</strong>，就是「換過兩張桌子」的證明。下面用一家示意公司把三個典型建議翻譯成每股價值：</p>
+  </div>
+
+  <div class="lab">
+    <h3>張力測試台</h3>
+    <p class="muted" style="margin-top:-.2rem">示意公司：營收 1,000 億、自由現金流 50 億、WACC 8%、永續成長 3%、股數 25 億股 → 每股價值 40.00 元（永續成長模型）。勾選報告 A 的建議，看報告 B 的估值怎麼動。</p>
+    <label class="sw"><input type="checkbox" id="lv-ccc">建議一：應收帳期紀律化，CCC 縮短 <output id="o-cd">10</output> 天（一次性釋放現金）</label>
+    <div class="ctl"><input type="range" id="in-cd" min="0" max="40" step="1" value="10" aria-label="CCC 縮短天數"></div>
+    <label class="sw"><input type="checkbox" id="lv-wacc">建議二：資本結構調整，WACC 下降 <output id="o-wd">0.3</output> 個百分點</label>
+    <div class="ctl"><input type="range" id="in-wd" min="0" max="1" step="0.1" value="0.3" aria-label="WACC 下降"></div>
+    <label class="sw"><input type="checkbox" id="lv-fcf">建議三：停掉 ROIC 低於 WACC 的投資，自由現金流增加 <output id="o-fd">5</output>%</label>
+    <div class="ctl"><input type="range" id="in-fd" min="0" max="20" step="1" value="5" aria-label="自由現金流增加"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">原本每股價值</p><p class="sv">40.00</p><p class="sh">元</p></div>
+      <div class="stat"><p class="sl">採納建議後</p><p class="sv" id="s-nv">—</p><p class="sh">元</p></div>
+      <div class="stat"><p class="sl">變化</p><p class="sv" id="s-ch">—</p><p class="sh">報告 B 的上修空間</p></div>
+    </div>
+    <div class="ibox" id="lvnote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>自評 Rubric（10 分制）</h2>
+  <p>每項 0／1／2 分，8 分以上＝完課。分數存在這個瀏覽器。</p>
+  </div>
+  <div class="lab">
+    <h3>雙報告 Rubric</h3>
+    <div id="rub">
+      <div class="rb"><span>A：六節齊全、三個建議有量化支撐</span><span class="seg"></span></div>
+      <div class="rb"><span>B：估值區間用自算 WACC、有反方論證與觸發條件</span><span class="seg"></span></div>
+      <div class="rb"><span>交叉引用：A 的發現出現在 B 的風險節（或反向）</span><span class="seg"></span></div>
+      <div class="rb"><span>數字紀律：每個主張有出處；報表數據為最新一季</span><span class="seg"></span></div>
+      <div class="rb"><span>家人聽證會通過（見分享環節）</span><span class="seg"></span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="sl">總分</p><p class="sv" id="s-rub">0／10</p><p class="sh">8 分以上完課</p></div>
+    </div>
+    <div class="ibox" id="rubnote">逐項給分。</div>
+  </div>
+
+  <div class="prose">
+  <h2>年度回顧：雙報告之後的最後一件事</h2>
+  <ol>
+    <li><strong>重讀 W1 的自己</strong>：打開第 1 週的複利試算表與筆記——量測這一年的距離</li>
+    <li><strong>盤點資產</strong>：四大常備文件（紅旗清單 v2／IPS／原則清單 v1.2／買入清單）、模擬組合與月報、健檢流程、投資論文、雙報告、總經儀表板、市場溫度計、52 次教家人的紀錄——<strong>這些不是作業，是你的操作系統</strong></li>
+    <li><strong>回填 01-overview.md</strong>：52 週全勾＋里程碑＋一段年度心得</li>
+    <li><strong>第二年方向</strong>（候選）：CFA 一級正式備考（本課綱已覆蓋大半主題的直覺版）／量化工具（Python 回測、自動化月報）／真錢帳戶的漸進轉換（W39 的條件）／房地產與另類資產／家族財務治理（把「教家人」升級成家庭財務會議制度）</li>
+  </ol>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>本週不讀新材料</h2>
+  <div class="readitem"><div class="t">15 分鐘</div><div class="body"><b>重讀自己的 W26 投資論文與 W39 月報</b><p>雙報告的文體基準。</p></div></div>
+  <div class="readitem"><div class="t">5 分鐘</div><div class="body"><b>重讀 W40 的三大決策地圖</b><p>報告 A 的目錄雛形。</p></div></div>
+  <div class="readitem"><div class="t">10 分鐘</div><div class="body"><b>翻一遍課程首頁的 52 週列表</b><p>寫報告時「工具想不起來在哪週」的索引——上面的年度看板也可以直接點進去。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 3 小時</p>
+  <div class="prose">
+  <h2>完成雙報告</h2>
+  <h3>任務 A｜報告 A（1.5 小時）</h3>
+  <p>六節組裝——大部分是 W40–51 練習產出的整理更新；新寫的只有「三個建議」。</p>
+  <h3>任務 B｜報告 B（1 小時）</h3>
+  <p>在 W26 論文的基礎上全面更新：最新財報、自算 WACC、納入報告 A 的交叉發現。</p>
+  <h3>任務 C｜張力測試＋Rubric（30 分鐘）</h3>
+  <p>寫半頁「若 A 的建議被採納，B 的估值怎麼變」，然後自評打分。</p>
+  <div class="verify"><b>怎麼知道做對了：</b>張力測試台三個建議分別勾選：CCC 縮短 10 天 → 每股 +1.10 元；WACC 降 0.3 個百分點 → +2.55 元；自由現金流 +5% → +2.00 元。三個全勾 → 每股 45.78 元（+14.4%），比三者單獨相加還多——因為現金流增加，又被更低的 WACC 放大了。</div>
+  <ul class="checks" data-key="w52-practice">
+    <li><label><input type="checkbox"><span>雙報告完成（各 2–3 頁）</span></label></li>
+    <li><label><input type="checkbox"><span>張力測試半頁完成</span></label></li>
+    <li><label><input type="checkbox"><span>Rubric ≥ 8</span></label></li>
+  </ul>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>年度聽證會</h2>
+  <p class="muted" style="margin-top:-.3rem">52 週的最後一場，形式升級——家人是評審。</p>
+  <div class="script"><p class="who">雙報告簡報（15 分鐘）</p><p>先用 CFO 身分報告「這家公司的錢管得如何、我有三個建議」；再換投資人身分報告「它值多少、我買不買」——中間明確說一句：「<strong>現在我換桌子了。</strong>」</p></div>
+  <div class="script"><p class="who">家人質詢（10 分鐘）</p><p>邀請家人用這一年學過的所有武器提問：三張報表的比喻、護城河試金石、防身四題、殺信使測試……</p><p class="aside">他們問得出好問題，就是你教學成功的終極證明。</p></div>
+  <div class="script"><p class="who">年度總結（5 分鐘）</p><p>「一年前的第一課，我讓你們猜『月存一萬、三十年變多少』。今天我交出了兩份專業報告。謝謝你們當了 52 週的學生——其實你們是我最好的老師：<strong>講不到你們懂的地方，就是我沒真懂的地方。</strong>」</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「所以到底要不要買？」</b><br>照報告 B 誠實回答——包括「跳過」（W21：跳過拿滿分）。</p>
+    <p class="qa"><b>「明年還教嗎？」</b><br>「教——而且我們家已經有自己的投資系統了：規則卡、防身題、每月報告。明年的新主題，我們一起挑。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w52-final">
+    <li><label><input type="checkbox"><span>雙報告＋張力測試完成，Rubric ≥ 8</span></label></li>
+    <li><label><input type="checkbox"><span>年度聽證會完成（家人至少提出三個「內行」問題）</span></label></li>
+    <li><label><input type="checkbox"><span>四大文件與所有持續性工具盤點歸檔</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md：第 52 週＋全部里程碑＋年度心得</span></label></li>
+    <li><label><input type="checkbox"><span>決定第二年方向，更新學習者檔案的目標節</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>52 週完課 🎓</b>——投資人、操盤手、財務長的第一年基礎全部建成。這不是課程的結束，是你的操作系統 v1.0 的發布日。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-51-investor-relations/">上一週：投資人關係</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* 年度看板 */
+  var SLUGS = ["week-01-tvm","week-02-inflation","week-03-interest-rates","week-04-accounting","week-05-income-statement","week-06-balance-sheet","week-07-cash-flow","week-08-quality-red-flags","week-09-dupont-ratios","week-10-market-structure","week-11-macro-indicators","week-12-cycles-rotation","week-13-q1-capstone","week-14-asset-allocation","week-15-mpt","week-16-index-investing","week-17-entry-strategy","week-18-position-rebalancing","week-19-relative-valuation","week-20-dcf","week-21-margin-of-safety","week-22-moat-five-forces","week-23-behavioral-finance","week-24-buffett-letters","week-25-marks-cycles","week-26-q2-capstone-thesis","week-27-returns-portfolio","week-28-risk-measurement","week-29-sharpe-family","week-30-brinson-attribution","week-31-benchmarks-tracking","week-32-factor-investing","week-33-derivatives-hedging","week-34-execution","week-35-fund-industry","week-36-decision-process","week-37-stress-testing","week-38-journal-review","week-39-q3-capstone-report","week-40-cfo-overview","week-41-capital-budgeting","week-42-wacc-capm","week-43-capital-structure","week-44-dividend-policy","week-45-working-capital","week-46-financial-planning","week-47-mergers-acquisitions","week-48-treasury-hedging","week-49-governance-fraud","week-50-taxes-taiwan","week-51-investor-relations","week-52-annual-capstone"];
+  function boardRender(){
+    var html = "", cnt = [[0,0],[0,0],[0,0],[0,0]], done = 0;
+    for (var n = 1; n <= 52; n++){
+      var key = "fic-w" + (n < 10 ? "0" + n : n) + "-w" + n + "-final", st = [], cls = "";
+      try { st = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+      if (st.length && st.every(Boolean)) cls = "done"; else if (st.some(Boolean)) cls = "part";
+      var q = Math.min(3, Math.floor((n - 1) / 13));
+      cnt[q][1]++; if (cls === "done"){ cnt[q][0]++; done++; }
+      html += '<a class="' + cls + '" href="/projects/family-investing-course/' + SLUGS[n - 1] + '/" title="第 ' + n + ' 週">' + n + '</a>';
+    }
+    document.getElementById("board").innerHTML = html;
+    var names = ["Q1 共同地基", "Q2 投資人", "Q3 操盤手", "Q4 財務長"];
+    document.getElementById("qrow").innerHTML = cnt.map(function(c, i){ return "<div><b>" + c[0] + "／" + c[1] + "</b>" + names[i] + "</div>"; }).join("");
+    document.getElementById("boardnote").textContent = done === 52 ? "52 週全部完成。這一頁，是你的操作系統 v1.0 的發布日。"
+      : done === 0 ? "這台裝置上還沒有勾過任何一週的完成檢核——也許你是在別的裝置上學的。點任何一格，都能回到那一週。"
+      : "已完成 " + done + " 週。點任何一格，都能回到那一週補完。";
+  }
+  boardRender();
+
+  function sg(v){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2); }
+
+  /* 張力測試 */
+  var cC = document.getElementById("lv-ccc"), cW = document.getElementById("lv-wacc"), cF = document.getElementById("lv-fcf");
+  var rC = document.getElementById("in-cd"), rW = document.getElementById("in-wd"), rF = document.getElementById("in-fd");
+  var FCF = 50, W = 0.08, G = 0.03, SH = 25, REV = 1000, BASE = FCF / (W - G) / SH;
+  function runLv(){
+    document.getElementById("o-cd").textContent = rC.value;
+    document.getElementById("o-wd").textContent = (+rW.value).toFixed(1);
+    document.getElementById("o-fd").textContent = rF.value;
+    var cash = cC.checked ? REV / 365 * +rC.value : 0, w = cW.checked ? W - +rW.value / 100 : W, f = cF.checked ? FCF * (1 + +rF.value / 100) : FCF;
+    var v = (f / (w - G) + cash) / SH, ch = v - BASE;
+    document.getElementById("s-nv").textContent = v.toFixed(2);
+    var e = document.getElementById("s-ch"); e.textContent = sg(ch) + "（" + (ch >= 0 ? "+" : "−") + Math.abs(ch / BASE * 100).toFixed(1) + "%）"; e.className = "sv " + (ch > 0.005 ? "pos" : "");
+    var parts = [];
+    if (cC.checked) parts.push("CCC 釋放 " + cash.toFixed(1) + " 億現金（每股 " + sg(cash / SH) + "）");
+    if (cW.checked) parts.push("WACC 從 8.0% 降到 " + (w * 100).toFixed(1) + "%");
+    if (cF.checked) parts.push("自由現金流從 50 億增加到 " + f.toFixed(1) + " 億");
+    var n = document.getElementById("lvnote");
+    n.className = "ibox" + (parts.length ? " good" : "");
+    n.innerHTML = parts.length ? "<b>報告 A 的建議，讓報告 B 的估值上修 " + sg(ch) + " 元。</b>" + parts.join("；") + "。" + (parts.length === 3 ? "三者一起時效果比單獨相加更大：更多的現金流，被更低的折現率放大了。" : "")
+      : "勾選報告 A 的建議。每一條建議，都應該能翻譯成報告 B 裡的一個數字。";
+  }
+  [cC, cW, cF].forEach(function(x){ x.addEventListener("change", runLv); });
+  [rC, rW, rF].forEach(function(x){ x.addEventListener("input", runLv); });
+  runLv();
+
+  /* Rubric */
+  var RK = "fic-w52-rubric", rub = [0,0,0,0,0];
+  try { var sv = JSON.parse(localStorage.getItem(RK)); if (sv && sv.length === 5) rub = sv; } catch(e){}
+  document.querySelectorAll("#rub .rb").forEach(function(row, i){
+    var seg = row.querySelector(".seg");
+    [0,1,2].forEach(function(v){
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = v; b.dataset.v = v;
+      b.setAttribute("aria-label", "第 " + (i + 1) + " 項給 " + v + " 分");
+      seg.appendChild(b);
+    });
+    seg.addEventListener("click", function(e){
+      var b = e.target.closest("button"); if(!b) return;
+      rub[i] = +b.dataset.v; runRub();
+    });
+  });
+  function runRub(){
+    try { localStorage.setItem(RK, JSON.stringify(rub)); } catch(e){}
+    document.querySelectorAll("#rub .rb").forEach(function(row, i){
+      row.querySelectorAll("button").forEach(function(b){ b.classList.toggle("on", +b.dataset.v === rub[i]); });
+    });
+    var t = rub.reduce(function(a, b){ return a + b; }, 0);
+    var el = document.getElementById("s-rub"); el.textContent = t + "／10"; el.className = "sv " + (t >= 8 ? "pos" : "");
+    var low = []; rub.forEach(function(v, i){ if (v < 2) low.push(i + 1); });
+    var n = document.getElementById("rubnote");
+    n.className = "ibox" + (t >= 8 ? " good" : "");
+    n.innerHTML = t >= 8 ? "<b>" + t + " 分——完課。</b>" + (low.length ? "第 " + low.join("、") + " 項還有進步空間，那就是第二年的起點。" : "滿分。")
+      : (t === 0 ? "逐項給分。" : "<b>" + t + " 分，還差 " + (8 - t) + " 分。</b>先補分數最低的項目：第 " + low.join("、") + " 項。");
+  }
+  runRub();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w52-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w52-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "🎓 52 週完課——操作系統 v1.0 發布。" : "";
+        boardRender();
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>
