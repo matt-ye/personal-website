@@ -438,4 +438,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-37-stress-testing/',
   },
+  {
+    slug: 'week-38-journal-review',
+    title: 'W38 交易日誌與複盤',
+    titleEn: 'W38 Journaling and Review',
+    description: '用四象限分開評價決策與結果，認出最危險的「僥倖格」；日誌補上情緒分、市場環境與預期回填；月度查執行、季度查判斷。附四象限審判庭與運氣放大鏡。',
+    descriptionEn: 'Separate decision quality from outcome quality with a four-quadrant grid; add emotion, market context and expectations to the journal; review execution monthly and judgment quarterly.',
+    tags: ['Q3 操盤手季', '互動工具'],
+    date: '2027-03-24',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-38-journal-review/',
+  },
 ];
