@@ -383,4 +383,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-32-factor-investing/',
   },
+  {
+    slug: 'week-33-derivatives-hedging',
+    title: 'W33 衍生性商品——避險用途',
+    titleEn: 'W33 Derivatives for Hedging',
+    description: '衍生品是保險不是賭場：期貨保證金的 10 倍槓桿、選擇權的時間價值、保護性賣權鎖住地板（但全年約 10% 保費）、covered call 賣掉大漲換租金。附槓桿顯微鏡與 payoff 實驗台。',
+    descriptionEn: 'Derivatives as insurance, not a casino: futures margin as built-in leverage, option time value, protective puts and covered calls — and why you should not insure all the time. With a leverage microscope and a payoff bench.',
+    tags: ['Q3 操盤手季', '互動圖表'],
+    date: '2027-02-17',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-33-derivatives-hedging/',
+  },
 ];

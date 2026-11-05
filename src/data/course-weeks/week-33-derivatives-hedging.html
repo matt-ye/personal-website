@@ -1,0 +1,484 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  #payoff{width:100%;height:auto;display:block;margin-top:.8rem}
+  #payoff .ax{stroke:var(--line);stroke-width:1}
+  #payoff .base{stroke:var(--ink-3);stroke-width:2;stroke-dasharray:5 4;fill:none}
+  #payoff .strat{stroke:var(--pine);stroke-width:3;fill:none}
+  #payoff .mark{fill:var(--coin)}
+  #payoff text{fill:var(--ink-3);font-size:11px}
+  .seg{display:flex;gap:.4rem;flex-wrap:wrap;margin:.6rem 0 .2rem}
+  .seg button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .seg button.on{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  .legend{font-size:.78rem;color:var(--ink-3);margin-top:.3rem}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 33</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q3 操盤手季 · Week 33</p>
+  <h1>衍生性商品——避險用途</h1>
+  <p class="lead" style="margin-top:.5rem">衍生品是金融世界的雙面刃：媒體上它是賭場，機構裡它是保險公司。本課的立場很清楚——<strong>衍生品是風險管理工具，不是投機工具</strong>。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 3、28 週</span><span class="chip">52 週 · 第 33 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>學會它，你能替組合買保單（W37 壓測後的行動選項）、看懂 CFO 的避險部位（Q4 的 W48），也能識破「穩賺選擇權策略」的推銷話術。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週因子考古——HML 的失落期找到了嗎？你算出要等幾年才回正？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">如果每一季都替股票組合買「跌超過 5% 就理賠」的保險，一整年的保費大概要多少？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">約 1%，像車險一樣便宜</button>
+    <button data-g="b">約 3%</button>
+    <button data-g="c">約 10%——比多數年份的股市報酬還貴</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 期貨：標準化的「先講好價格」</h2>
+  <p><strong>遠期合約</strong>的直覺：農夫和麵包店在播種時就約好半年後的小麥價格——兩邊都消除了不確定性。<strong>期貨</strong>＝標準化（規格、到期日）、集中結算、每日結算損益的遠期合約。</p>
+  <p>台指期基本規格（以期交所公告為準）：大台每點 <strong>200 元</strong>、小台每點 50 元、微台每點 10 元；保證金只需押合約價值的一小部分（量級約 10% 上下，隨波動調整，<strong>下單前必查期交所當期公告</strong>）。</p>
+  <p><strong>保證金＝內建槓桿</strong>：指數 20,000 點的大台名目價值 400 萬，保證金若約 40 萬 → 10 倍槓桿——指數動 1%，你的保證金動 10%。這就是「期貨危險」的全部來源：不是商品危險，是<strong>槓桿沒被尊重</strong>。避險用法恰恰相反：持有 400 萬現股、放空一口大台 → 淨曝險歸零（鎖住價值，代價是也放棄上漲）。</p>
+  </div>
+
+  <div class="lab">
+    <h3>槓桿顯微鏡：一口大台</h3>
+    <p class="muted" style="margin-top:-.2rem">每點 200 元。拉指數點位、保證金比例與指數漲跌，看同一口合約對「保證金」造成多大的晃動——以及有現股對沖時的淨結果。</p>
+    <div class="ctl"><label>指數點位 <output id="o-ix">20,000</output></label><input type="range" id="in-ix" min="10000" max="30000" step="1000" value="20000" aria-label="指數點位"></div>
+    <div class="ctl"><label>保證金比例 <output id="o-mg">10%</output></label><input type="range" id="in-mg" min="5" max="25" step="1" value="10" aria-label="保證金比例"></div>
+    <div class="ctl"><label>指數漲跌 <output id="o-mv">−3%</output></label><input type="range" id="in-mv" min="-10" max="10" step="1" value="-3" aria-label="指數漲跌"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">名目價值</p><p class="sv" id="s-nv">—</p><p class="sh">點位 × 200 元</p></div>
+      <div class="stat"><p class="sl">槓桿倍數</p><p class="sv" id="s-lev">—</p><p class="sh">名目 ÷ 保證金</p></div>
+      <div class="stat"><p class="sl">做多一口：保證金變動</p><p class="sv" id="s-long">—</p><p class="sh">投機的體感</p></div>
+      <div class="stat"><p class="sl">現股＋放空一口：淨變動</p><p class="sv" id="s-hedge">—</p><p class="sh">避險的體感</p></div>
+    </div>
+    <div class="ibox" id="levnote">拉動滑桿。</div>
+  </div>
+
+  <div class="prose">
+  <h2>2. 選擇權：可以只買「保險的那一半」</h2>
+  <p>期貨是「義務」（到期必須履約），選擇權是「權利」（可以不用）：<strong>買權（Call）</strong>付權利金，取得用履約價<strong>買</strong>的權利——看漲的票；<strong>賣權（Put）</strong>付權利金，取得用履約價<strong>賣</strong>的權利——<strong>下跌的保險</strong>。</p>
+  <p>權利金＝<strong>內含價值</strong>（現在履約能拿到的）＋<strong>時間價值</strong>（剩餘時間內變成有利的可能性）。時間價值每天衰減（theta）、到期歸零——<strong>買方付租金，賣方收租金</strong>。</p>
+
+  <h2>3. 保護性賣權：給組合買保單</h2>
+  <p>持股市值 100，買 3 個月期、履約價 95（價外 5%）的賣權，權利金 2.5：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>到期股價</th><th>未保險</th><th>有保險（股票＋put−保費）</th></tr></thead>
+      <tbody>
+        <tr><td class="num">110</td><td class="num">110</td><td class="num">107.5（漲時少賺保費）</td></tr>
+        <tr><td class="num">100</td><td class="num">100</td><td class="num">97.5</td></tr>
+        <tr><td class="num">95</td><td class="num">95</td><td class="num">92.5</td></tr>
+        <tr><td class="num">85</td><td class="num">85</td><td class="num"><strong>92.5</strong></td></tr>
+        <tr><td class="num">70</td><td class="num">70</td><td class="num"><strong>92.5</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>跌到哪都鎖在 92.5</strong>——最大損失＝價外距離 5 ＋ 保費 2.5 ＝ <strong>7.5%</strong>，完全是保險的形狀（自負額 5%＋保費 2.5%）。</p>
+  <p><strong>代價的真相</strong>：單季保費 2.5% → 全年連續投保粗略 <strong>~10%／年</strong>——比多數年份的股市報酬還貴！所以長期持有保護性賣權幾乎必然侵蝕報酬。保險要買在「特定曝險、特定期間」（重大事件前、集中部位、W37 壓測發現的具體弱點），不是常態配備。長期投資人的「保險」正解是 W14 的配置與預備金——便宜得多。</p>
+
+  <h2>4. Covered Call：把上漲賣掉換租金</h2>
+  <p>持股 100，賣出履約價 105 的買權、收權利金 2：跌到 95 時值 97（多墊 2）、100 時 102、105 時 107——<strong>漲到 115 也只有 107</strong>，漲幅被截斷。</p>
+  <p>本質：<strong>賣掉「大漲的可能性」換固定租金</strong>——盤整市場的現金流策略。誠實的定價問題：你收的租金，長期補得起「錯過的大漲」嗎？W12 說過，報酬集中在少數大漲日——被截斷的正是那些日子。</p>
+  </div>
+
+  <div class="lab">
+    <h3>到期 payoff 實驗台</h3>
+    <p class="muted" style="margin-top:-.2rem">選策略、調履約價與權利金。虛線是純持股，綠線是你的策略，金點是你拉的到期股價。</p>
+    <div class="seg" id="seg" role="group" aria-label="策略">
+      <button data-s="put" class="on">保護性賣權</button>
+      <button data-s="cc">Covered Call</button>
+    </div>
+    <div class="ctl"><label>履約價 <output id="o-k">95</output></label><input type="range" id="in-k" min="80" max="120" step="1" value="95" aria-label="履約價"></div>
+    <div class="ctl"><label>權利金 <output id="o-p">2.5</output></label><input type="range" id="in-p" min="0" max="8" step="0.5" value="2.5" aria-label="權利金"></div>
+    <div class="ctl"><label>到期股價 <output id="o-st">85</output></label><input type="range" id="in-st" min="70" max="130" step="1" value="85" aria-label="到期股價"></div>
+    <svg id="payoff" viewBox="0 0 420 210" role="img" aria-label="到期損益圖">
+      <line class="ax" x1="40" y1="190" x2="410" y2="190"></line>
+      <line class="ax" x1="40" y1="10" x2="40" y2="190"></line>
+      <text x="40" y="205">70</text><text x="215" y="205">100</text><text x="392" y="205">130</text>
+      <text x="4" y="16">130</text><text x="8" y="194">70</text>
+      <polyline id="pl-base" class="base" points=""></polyline>
+      <polyline id="pl-strat" class="strat" points=""></polyline>
+      <circle id="pt" class="mark" r="5" cx="0" cy="0"></circle>
+    </svg>
+    <p class="legend">虛線＝純持股　綠線＝策略　金點＝到期股價下的組合價值</p>
+    <div class="stats">
+      <div class="stat"><p class="sl">純持股</p><p class="sv" id="s-base">—</p><p class="sh">到期價值</p></div>
+      <div class="stat"><p class="sl">策略</p><p class="sv" id="s-strat">—</p><p class="sh">到期價值</p></div>
+    </div>
+    <div class="ibox" id="pnote">拉動滑桿。</div>
+  </div>
+
+  <div class="prose">
+  <h2>5. 為什麼散戶做多裸選擇權多半虧</h2>
+  <ol>
+    <li><strong>時間價值天天扣血</strong>——買方要「方向對＋幅度夠＋時間內發生」三個全對；賣方只要三個不全發生就贏</li>
+    <li><strong>樂透偏好</strong>（W23）——價外選擇權便宜、報酬倍數誘人，恰是期望值最差的角落</li>
+    <li><strong>雙邊成本與價差</strong>——選擇權的買賣價差比例遠大於股票（W10 隱性成本的放大版）</li>
+  </ol>
+  <p>而「賣方穩賺」也是半個神話：賣方＝開保險公司，平時月月收租、Sharpe 漂亮（W29 陷阱③的本尊），一次大浪潮賠掉多年租金——沒有資本與風控就裸賣，是撿鋼板的完整定義。</p>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「期貨選擇權＝賭博。」</p><p>工具中性：農夫用期貨是避險、賭徒用期貨是賭博。差別在<strong>有沒有對應的曝險要對沖</strong>——有現股才叫避險，沒有就是裸部位。</p></div>
+  <div class="myth"><p class="say">「保險越多越安心。」</p><p>保費是確定成本。全年投保 ~10% 的保費會把期望報酬吃到見骨——保險買「破產風險」，不買「波動不舒服」。</p></div>
+  <div class="myth"><p class="say">「有人靠賣選擇權財富自由。」</p><p>倖存者敘事（W24 的警告）——同一策略的爆倉者不會開課。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>規格以官方為準</h2>
+  <div class="readitem"><div class="t">50 分鐘</div><div class="body"><b>Investopedia：Protective Put、Covered Call、Theta</b><p><a class="srclink" href="https://www.investopedia.com/terms/p/protective-put.asp" target="_blank" rel="noopener">Protective Put ↗</a>、<a class="srclink" href="https://www.investopedia.com/terms/c/coveredcall.asp" target="_blank" rel="noopener">Covered Call ↗</a>、<a class="srclink" href="https://www.investopedia.com/terms/t/theta.asp" target="_blank" rel="noopener">Theta ↗</a></p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>臺灣期貨交易所：台指期與台指選擇權現行規格、保證金</b><p>講義的量級以此為準；順看「交易人須知」的風險預告。<a class="srclink" href="https://www.taifex.com.tw/" target="_blank" rel="noopener">臺灣期貨交易所 ↗</a></p></div></div>
+  <div class="readitem"><div class="t">5 分鐘</div><div class="body"><b>回顧 W28 風險模組</b><p>你的組合 VaR 是多少？本週練習會替它「詢價」。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>替模擬組合詢一次保險價</h2>
+  <h3>任務 A｜保單報價（30 分鐘）</h3>
+  <ol class="tasks">
+    <li>查台指選擇權<strong>實際報價</strong>：取 2–3 個月期、價外約 5% 的賣權權利金</li>
+    <li>換算：權利金點數 × 50 元 × 需要口數（股票部位市值 ÷ (指數 × 50 元)）→ 保費佔組合 %</li>
+    <li>年化（×4 粗略），寫下：「幫我的組合全年投保要＿%——我的結論是＿＿」</li>
+    <li>用講義算例重算一遍保險表（92.5 鎖定值）</li>
+  </ol>
+  <h3>任務 B｜payoff 圖（15 分鐘）</h3>
+  <ol class="tasks"><li>試算表畫兩張到期 payoff 圖（X＝到期股價 70–130），跟純持股的直線對照——親手畫過一次，形狀一輩子忘不掉</li></ol>
+  <div class="verify"><b>怎麼知道做對了：</b>保護性賣權在履約價以下是一條水平線，高度＝履約價 − 權利金（95 − 2.5 ＝ 92.5）；covered call 在履約價以上是水平線，高度＝履約價＋權利金（105 ＋ 2 ＝ 107）。拿上面的實驗台對答案。</div>
+  <ul class="checks" data-key="w33-practice">
+    <li><label><input type="checkbox"><span>真實保費詢價完成（有日期與報價來源）</span></label></li>
+    <li><label><input type="checkbox"><span>兩張 payoff 圖畫出</span></label></li>
+    <li><label><input type="checkbox"><span>能解釋為什麼不常態投保</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 避險與投機的分界線是什麼（一句話）？</summary><div class="ans"><p>→ <strong>有沒有對應的既有曝險</strong>：對沖手上真實部位的風險＝避險；沒有部位而建立方向性曝險＝投機。同一張合約，差別只在你的資產負債表。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 為什麼「買方要三個全對、賣方只要不全對」？</summary><div class="ans"><p>→ 買方損益＝方向 × 幅度 − 時間價值衰減：方向錯、幅度不夠、或時間拖太久，任一個都讓權利金歸零；賣方收下權利金後，只要「三個全對」不發生就落袋。結構性的勝率不對稱——但賣方的尾部虧損無上限，<strong>勝率高 ≠ 期望值高</strong>。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 你的組合在什麼「特定情境」下值得買 put？</summary><div class="ans"><p>→ <strong>已知的重大二元事件</strong>（大選、重大裁決、關鍵財報）疊加<strong>無法降低的集中部位</strong>（如限售股、近期要動用的資金）——「短期間、特定風險、無法用賣出解決」三條件都滿足時，付保費才划算；平時的市場波動用配置吸收即可。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>投資的車險</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（保險的語言）</p><p>「你買過車險吧？付保費、有自負額、出事才理賠、沒出事保費歸零。股票世界有一模一樣的東西——今天講投資的保險。」</p></div>
+  <div class="script"><p class="who">核心演示</p><p>「我們的股票 100 萬，付 2.5 萬保費，保證跌到哪都剩 92.5 萬。」（結構與車險完全同構，家人秒懂。）「<strong>但你猜這保險一年要多少？大概 10%</strong>——比車險貴太多了。所以我們平常不保，靠的是配置：債券與現金那部分就是天然的減震。」</p></div>
+  <div class="script"><p class="who">互動（識破話術）</p><p>「有人說他『賣保險給別人、月月穩定收租』——聽起來穩嗎？」</p><p class="aside">引導：保險公司平時都賺，大災那年呢？聽到「選擇權穩定現金流」，先問：大跌那個月你賠多少？</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那期貨呢？聽說很危險。」</b><br>「工具不危險，10 倍槓桿才危險——同一把菜刀，切菜和揮舞是兩回事。我們家用不到槓桿，IPS 的禁止事項寫著呢。」</p>
+    <p class="qa"><b>「完全不碰不就好了？」</b><br>「不碰是好預設！但要<strong>看得懂</strong>——公司財報裡有它（避險部位）、推銷話術裡有它，看不懂的人才會被騙。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w33-final">
+    <li><label><input type="checkbox"><span>能畫出保護性賣權與 covered call 的 payoff</span></label></li>
+    <li><label><input type="checkbox"><span>真實詢價完成、能說出「為何不常態投保」</span></label></li>
+    <li><label><input type="checkbox"><span>能區分避險與投機（曝險對應原則）</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成，記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 33 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 34：交易執行</b>——從「決定買」到「真的買到」之間，錢是怎麼漏掉的：滑價、市場衝擊，與大單的拆法。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-32-factor-investing/">上一週：因子投資</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "c"
+      ? "答對了——一季保費約 2.5%，四季加起來約 10%，比多數年份的股市報酬還高。所以長期常態投保幾乎必然侵蝕報酬；保險要買在特定事件、特定部位、特定期間。"
+      : "大部分人都低估了——價外 5% 的三個月期賣權，權利金常在 2.5% 上下，四季加起來約 10%，比多數年份的股市報酬還高。所以長期常態投保幾乎必然侵蝕報酬。";
+  });
+
+  function pct(v, dp){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dp === undefined ? 0 : dp) + "%"; }
+  function money(v){ return (v >= 0 ? "+" : "−") + Math.abs(v).toLocaleString() + " 元"; }
+
+  /* 槓桿顯微鏡 */
+  var iIx = document.getElementById("in-ix"), iMg = document.getElementById("in-mg"), iMv = document.getElementById("in-mv");
+  function runLev(){
+    var ix = +iIx.value, mg = +iMg.value, mv = +iMv.value;
+    document.getElementById("o-ix").textContent = ix.toLocaleString();
+    document.getElementById("o-mg").textContent = mg + "%";
+    document.getElementById("o-mv").textContent = pct(mv);
+    var nv = ix * 200, margin = nv * mg / 100, pnl = nv * mv / 100;
+    document.getElementById("s-nv").textContent = (nv / 10000).toLocaleString() + " 萬";
+    document.getElementById("s-lev").textContent = (100 / mg).toFixed(1) + "×";
+    var el = document.getElementById("s-long");
+    var lp = pnl / margin * 100;
+    el.textContent = pct(lp); el.className = "sv " + (lp > 0 ? "pos" : lp < 0 ? "neg" : "");
+    document.getElementById("s-hedge").textContent = "±0 元";
+    var n = document.getElementById("levnote");
+    if (mv === 0) n.innerHTML = "<b>指數不動，什麼都沒發生。</b>把漲跌拉開，看槓桿怎麼放大。";
+    else n.innerHTML = "<b>指數只動 " + pct(mv) + "，做多一口的保證金就動了 " + pct(lp) + "（" + money(pnl) + "）。</b>" +
+      (lp <= -100 ? "保證金已經賠光還不夠——這就是被追繳、斷頭的那一刻。" : lp <= -50 ? "保證金腰斬——遠在觸及這裡之前，你就會收到追繳通知。" : "") +
+      "同一口合約若是拿來對沖等值的現股：現股 " + money(pnl) + "、期貨 " + money(-pnl) + "，淨變動是零——這才是避險。";
+  }
+  [iIx, iMg, iMv].forEach(function(el){ el.addEventListener("input", runLev); });
+  runLev();
+
+  /* payoff 實驗台 */
+  var strat = "put";
+  var iK = document.getElementById("in-k"), iP = document.getElementById("in-p"), iSt = document.getElementById("in-st");
+  var seg = document.getElementById("seg");
+  function val(s, S, K, P){
+    if (s === "put") return Math.max(S, K) - P;      // 股票＋put − 保費
+    return Math.min(S, K) + P;                       // 股票 − call ＋ 權利金
+  }
+  function X(S){ return 40 + (S - 70) / 60 * 370; }
+  function Y(v){ return 190 - (Math.max(70, Math.min(130, v)) - 70) / 60 * 180; }
+  function runPay(){
+    var K = +iK.value, P = +iP.value, S = +iSt.value;
+    document.getElementById("o-k").textContent = K;
+    document.getElementById("o-p").textContent = P.toFixed(1);
+    document.getElementById("o-st").textContent = S;
+    var base = [], st = [];
+    for (var s = 70; s <= 130; s += 1) { base.push(X(s).toFixed(1) + "," + Y(s).toFixed(1)); st.push(X(s).toFixed(1) + "," + Y(val(strat, s, K, P)).toFixed(1)); }
+    document.getElementById("pl-base").setAttribute("points", base.join(" "));
+    document.getElementById("pl-strat").setAttribute("points", st.join(" "));
+    var v = val(strat, S, K, P);
+    var pt = document.getElementById("pt"); pt.setAttribute("cx", X(S).toFixed(1)); pt.setAttribute("cy", Y(v).toFixed(1));
+    document.getElementById("s-base").textContent = S.toFixed(1);
+    document.getElementById("s-strat").textContent = v.toFixed(1);
+    var n = document.getElementById("pnote");
+    if (strat === "put") {
+      var floor = K - P;
+      n.innerHTML = "<b>地板＝履約價 − 權利金 ＝ " + floor.toFixed(1) + "。</b>" +
+        (S < K ? "股價跌破履約價，保險開始理賠——再怎麼跌都鎖在地板。" : "股價在履約價之上，保險沒用上——你付的 " + P.toFixed(1) + " 就是這季的保費。") +
+        "最大損失 ＝ (100 − 履約價) ＋ 權利金 ＝ " + (100 - K + P).toFixed(1) + "。";
+    } else {
+      var cap = K + P;
+      n.innerHTML = "<b>天花板＝履約價＋權利金 ＝ " + cap.toFixed(1) + "。</b>" +
+        (S > K ? "股價漲過履約價，超出的部分歸買方——大漲被截斷了。" : "股價在履約價之下，你多收了 " + P.toFixed(1) + " 的租金墊著。") +
+        "賣掉的是大漲的可能性，換來的是固定租金。";
+    }
+  }
+  seg.addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    strat = b.dataset.s;
+    seg.querySelectorAll("button").forEach(function(x){ x.classList.toggle("on", x === b); });
+    if (strat === "put") { iK.value = 95; iP.value = 2.5; } else { iK.value = 105; iP.value = 2; }
+    runPay();
+  });
+  [iK, iP, iSt].forEach(function(el){ el.addEventListener("input", runPay); });
+  runPay();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w33-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w33-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 保單的形狀畫進腦子了——下週看錢怎麼在下單時漏掉。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

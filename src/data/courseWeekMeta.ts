@@ -359,5 +359,12 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 32 週：三因子模型、五大因子家族、價值因子的失落十年，以及 smart beta 解碼。附因子拆帳台與 ETF 解碼互動。",
     "ogTitle": "第 32 週：因子投資——Fama-French 與風格的科學 — 給家人的投資課",
     "ogDescription": "你的選股超額，會不會只是買了便宜股、小型股的風格？三因子一跑，傳奇選股人的 α 常縮成雜訊。"
+  },
+  {
+    "slug": "week-33-derivatives-hedging",
+    "title": "第 33 週：衍生性商品——避險用途｜給家人的投資課 · Matt Ye",
+    "description": "52 週投資課第 33 週：期貨保證金的內建槓桿、選擇權權利金、保護性賣權與 covered call，以及為何不常態投保。附槓桿顯微鏡與 payoff 實驗台。",
+    "ogTitle": "第 33 週：衍生性商品——避險用途 — 給家人的投資課",
+    "ogDescription": "同一張合約，有現股是避險、沒有是投機。保護性賣權鎖住地板，但全年投保要約 10%——保險要買在特定時刻。"
   }
 ];
