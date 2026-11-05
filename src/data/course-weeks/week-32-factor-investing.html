@@ -1,0 +1,460 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 32</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q3 操盤手季 · Week 32</p>
+  <h1>因子投資——Fama-French 與風格的科學</h1>
+  <p class="lead" style="margin-top:.5rem">W30 拆出「選股效果」、W31 定好座標——本週給你最後一副眼鏡：你引以為傲的選股超額，會不會只是<strong>系統性地買了某種風格</strong>（便宜的、小的、會漲的）？</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 15、31 週</span><span class="chip">52 週 · 第 32 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>因子是學術界對「報酬從哪來」六十年研究的結晶，也是看穿各種 smart beta 行銷話術的解碼器——把你手工做的判斷，變成可量產的規則。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週「鋸短的尺」與櫃子稽查的結果——你查的那檔基金是真主動還是櫃子裡的指數？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">一位經理人十年年化贏大盤 2%。用 Fama-French 三因子一跑，最常見的結果是？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">α 還是 2%，真本事</button>
+    <button data-g="b">α 接近 0，超額被因子認領</button>
+    <button data-g="c">α 變得更大</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 從 CAPM 到三因子：市場解釋不完的部分</h2>
+  <p>W15 的 MPT 之後，學界用 <strong>CAPM</strong> 總結：個股期望報酬只由「對市場的敏感度（β）」決定——一個因子解釋一切。但實證不斷打臉：有兩群股票<strong>長期系統性地</strong>跑贏 CAPM 的預測——<strong>小型股</strong>（規模效應）與<strong>便宜股</strong>（帳面市值比高，即低 P/B——價值效應）。</p>
+  <p>Fama 與 French（1992／1993）把它們正式收編為因子，成為<strong>三因子模型</strong>：</p>
+  <div class="quote">R − R<sub>f</sub> ＝ α ＋ β<sub>M</sub>·MKT ＋ β<sub>S</sub>·SMB ＋ β<sub>V</sub>·HML ＋ ε</div>
+  <ul>
+    <li><strong>MKT</strong>：市場因子（股市整體超額報酬）</li>
+    <li><strong>SMB</strong>（Small Minus Big）：小型股組合 − 大型股組合</li>
+    <li><strong>HML</strong>（High Minus Low）：高帳面市值比（價值股）− 低帳面市值比（成長股）</li>
+  </ul>
+  <p><strong>讀法</strong>：一檔基金的報酬先讓三個因子「認領」，剩下的才是 α（真本事）。許多「傳奇選股人」被三因子一跑，α 縮水成雜訊——他們的超額其實是長期持有小型價值股的系統性曝險，而這個曝險你可以用低成本因子 ETF 買到。<strong>這就是本週對你的意義：把 W30 的「選股效果」再拆一層。</strong></p>
+  </div>
+
+  <div class="lab">
+    <h3>因子拆帳台：你的超額是本事，還是風格？</h3>
+    <p class="muted" style="margin-top:-.2rem">輸入一檔基金的年超額報酬（相對無風險利率）與三個因子曝險。因子年溢酬用教學假設：MKT 6%、SMB 2%、HML 3%。</p>
+    <div class="presets">
+      <button id="p-legend">傳奇選股人</button>
+      <button id="p-real">真有 α 的人</button>
+      <button id="p-index">指數基金</button>
+    </div>
+    <div class="ctl"><label>基金年超額報酬（R − Rf） <output id="o-ex">8.0%</output></label><input type="range" id="in-ex" min="0" max="14" step="0.5" value="8" aria-label="基金年超額報酬"></div>
+    <div class="ctl"><label>市場曝險 βM <output id="o-bm">1.00</output></label><input type="range" id="in-bm" min="0.5" max="1.5" step="0.05" value="1" aria-label="市場曝險"></div>
+    <div class="ctl"><label>規模曝險 βS（正＝偏小型） <output id="o-bs">0.30</output></label><input type="range" id="in-bs" min="-0.5" max="1" step="0.05" value="0.3" aria-label="規模曝險"></div>
+    <div class="ctl"><label>價值曝險 βV（正＝偏便宜） <output id="o-bv">0.50</output></label><input type="range" id="in-bv" min="-0.5" max="1" step="0.05" value="0.5" aria-label="價值曝險"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">市場認領</p><p class="sv" id="s-m">—</p><p class="sh">βM × 6%</p></div>
+      <div class="stat"><p class="sl">規模＋價值認領</p><p class="sv" id="s-sv">—</p><p class="sh">βS×2% ＋ βV×3%</p></div>
+      <div class="stat"><p class="sl">α（剩下的）</p><p class="sv" id="s-a">—</p><p class="sh">真本事</p></div>
+    </div>
+    <div class="ibox" id="fnote">拉動滑桿或按預設。</div>
+  </div>
+
+  <div class="prose">
+  <h2>2. 主要因子家族與其邏輯</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>因子</th><th>定義（做多 − 做空）</th><th>風險補償 vs 行為錯價</th></tr></thead>
+      <tbody>
+        <tr><td class="f">規模 SMB</td><td>小型 − 大型</td><td>小公司資訊少、流動性差、倒閉險高（風險）／被研究員忽略（錯價）</td></tr>
+        <tr><td class="f">價值 HML</td><td>便宜 − 昂貴</td><td>價值股常是困境公司（風險）／市場過度外推壞消息（錯價，W23 近因）</td></tr>
+        <tr><td class="f">動能 MOM</td><td>近 12 月贏家 − 輸家</td><td>幾乎純行為解釋：反應不足＋羊群追漲——學術上最尷尬也最強韌的因子</td></tr>
+        <tr><td class="f">品質 QMJ</td><td>高獲利穩健 − 低品質</td><td>市場低估「無聊的好公司」（W22 護城河的量化影子）</td></tr>
+        <tr><td class="f">低波動</td><td>低 β − 高 β</td><td>槓桿受限的投資人追逐高 β 彩券股，壓低其未來報酬</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>與你既有課程的對位</strong>：價值因子＝W19「便宜」的系統化；品質因子＝W9 ROIC 與 W22 護城河的系統化；動能＝W23 行為偏誤的鏡像。因子把手工判斷變成可量產的規則——這是它的力量，也是它的天花板（規則讀不了年報附註）。</p>
+
+  <h2>3. 因子的殘酷面：飄移的十年</h2>
+  <p>因子溢酬是<strong>長期平均</strong>，不是穩定年金。價值因子在 2007–2020 經歷漫長的失落期——成長股狂潮下 HML 累積深度回撤，長到大量價值基金清盤、教授寫論文問「價值死了嗎」——然後 2021–2022 強力回歸。</p>
+  <div class="quote">如果因子年年正報酬，套利者早把它買到消失。溢酬能長存，恰恰因為持有它痛苦到多數人拿不住——痛苦本身就是門票錢。</div>
+  <p>實務結論：買因子＝簽一張「可能落後大盤十年」的心理契約。沒讀過這段歷史就買 smart beta 的人，幾乎注定在最低點棄守（W23 全家出動）。</p>
+
+  <h2>4. Smart Beta 解碼器</h2>
+  <p>市面上的「策略型 ETF」——高股息、低波動、品質、動能、ESG 加權——本質幾乎都是<strong>因子曝險的包裝</strong>。三步解碼：①它其實在買哪個因子？②費用比純市值型貴多少？③我拿得住它的失落期嗎？</p>
+  <p><strong>台灣視角</strong>：高股息 ETF 熱潮是全球罕見的現象級規模。用因子眼鏡看：它給的是價值＋低波動曝險與「現金流的心理帳戶」（W23），代價是市值型的長期總報酬期望與較高費用。不是不能買，是要知道自己買了什麼——並回到 W31：跟正確的含息基準比。</p>
+  </div>
+
+  <div class="lab">
+    <h3>解碼四檔 smart beta</h3>
+    <p class="muted" style="margin-top:-.2rem">每檔產品，主要在買哪一種因子曝險？</p>
+    <div class="tcard"><p class="tq" id="tq">第 1 / 4 題</p><p class="tt" id="tt">—</p></div>
+    <div class="tbtnrow" id="tbtns">
+      <button data-v="1">價值＋低波動</button>
+      <button data-v="2">動能</button>
+      <button data-v="3">品質</button>
+      <button data-v="4">大型股（市值）</button>
+    </div>
+    <div id="tfeed" aria-live="polite"></div>
+    <p id="tscore">目前答對 0 題</p>
+  </div>
+
+  <div class="prose">
+  <h2>5. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「因子被發表就失效了。」</p><p>部分溢酬確實在發表後縮小（套利），但規模、價值、動能在樣本外與多國市場仍存活——縮小 ≠ 消失。倒是「新發現」的花俏因子多數是資料探勘：幾百次回測總會挖到金線。</p></div>
+  <div class="myth"><p class="say">「我信價值投資，所以買價值因子 ETF 就好。」</p><p>因子價值（機械式便宜）≠ Graham／Buffett 價值（便宜於內在價值，W19–21）。前者買「統計上的便宜組」，後者逐家判斷「為什麼便宜、是否錯殺」——互補而非等價。</p></div>
+  <div class="myth"><p class="say">「多因子組合＝穩賺。」</p><p>因子間低相關確實平滑（W15 邏輯），但 smart beta 全家也可能同時落後市值型好幾年——分散的是因子風險，不是落後風險。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>業界最會寫因子科普的機構＋原始資料</h2>
+  <div class="readitem"><div class="t">50 分鐘</div><div class="body"><b>AQR：因子投資入門＋價值因子失落期</b><p>搜 factor investing 入門篇，再加一篇談價值失落期的（如 "Is (Systematic) Value Investing Dead?"）。<a class="srclink" href="https://www.aqr.com/Insights" target="_blank" rel="noopener">AQR Insights ↗</a></p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>Ken French Data Library</b><p>實際下載 "Fama/French 3 Factors" 月資料——練習的原料。先看懂欄位：Mkt-RF、SMB、HML、RF。<a class="srclink" href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html" target="_blank" rel="noopener">Data Library ↗</a></p></div></div>
+  <div class="readitem"><div class="t">選讀</div><div class="body"><b>Fama &amp; French（1992）：The Cross-Section of Expected Stock Returns</b><p>摘要與結論——原典的口氣值得感受一次。</p></div></div>
+  <div class="readitem"><div class="t">10 分鐘</div><div class="body"><b>回顧 W16、W30</b><p>指數化的算術與選股效果——本週是兩者之間的橋。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>親手摸因子資料</h2>
+  <h3>任務 A｜失落期考古（30 分鐘）</h3>
+  <ol class="tasks">
+    <li>把 HML 月報酬累乘成淨值曲線</li>
+    <li>找出 HML 的<strong>最深回撤區間</strong>（起訖年月、深度）——親眼看那個著名的失落期</li>
+    <li>同法看 SMB：規模因子近幾十年的溢酬還明顯嗎？</li>
+    <li>寫 150 字：「如果我從＿年開始持有價值因子，要等幾年才回正？我拿得住嗎？」（對照 W14 的心理承受）</li>
+  </ol>
+  <h3>任務 B｜幫自己的組合戴眼鏡（20 分鐘）</h3>
+  <ol class="tasks"><li>把模擬組合的股票部位按大／小型、便宜／昂貴粗分類——有沒有<strong>不自覺的因子傾斜</strong>？（台股散戶常見小型＋高股息傾斜。）寫兩行：這個傾斜是刻意的嗎？</li></ol>
+  <div class="verify"><b>怎麼知道做對了：</b>Ken French 的資料是<strong>百分比</strong>單位（1.23 代表 1.23%），累乘前要先除以 100——忘了這步，淨值曲線會在幾個月內爆到天文數字。</div>
+  <ul class="checks" data-key="w32-practice">
+    <li><label><input type="checkbox"><span>HML 淨值曲線畫出、失落期找到（有起訖與深度）</span></label></li>
+    <li><label><input type="checkbox"><span>自己組合的因子傾斜檢視完成</span></label></li>
+    <li><label><input type="checkbox"><span>能說出三因子模型每個符號的意思</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 為什麼「因子溢酬的存在」反而需要它經歷痛苦的失落期？</summary><div class="ans"><p>→ 若因子穩定年年賺，理性資金會蜂擁買入，把價格推高到溢酬消失（W16 算術的因子版）。溢酬能長存的前提是<strong>持有體驗夠痛苦</strong>，讓多數資金拿不住——痛苦本身就是門票錢，也解釋了為什麼它能在發表後存活。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 經理人 10 年年化贏大盤 2%，三因子回歸後 α≈0 且 HML 曝險高——怎麼評價？該付主動費嗎？</summary><div class="ans"><p>→ 他的超額是<strong>價值因子曝險的搬運</strong>，不是選股 α。這個曝險如今可用低費用因子 ETF 取得，付 1.5% 主動費等於用私廚價買量販包。他不是騙子（確實提供了曝險與紀律），但<strong>定價錯了</strong>——這正是三因子模型對基金業最大的殺傷力。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 高股息 ETF 用因子語言拆解，大約是什麼曝險的組合？</summary><div class="ans"><p>→ 大約＝<strong>價值傾斜＋低波動傾斜＋（台灣特色）金融與傳產超配</strong>，再加一層「現金流心理帳戶」的行為包裝；代價是放棄部分成長股曝險與市值型的長期總報酬期望，費用通常也較高。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>水果攤的規律</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（醜蘋果）</p><p>「菜市場有些規律：醜蘋果比漂亮蘋果便宜，但甜度常常一樣——長期買醜蘋果的人，同樣的錢吃到更多蘋果。股市也有這種規律：<strong>長期而言，便宜的、小的、最近在漲的這幾類股票，平均多賺一點</strong>——學者花六十年證明了這件事，還因此拿了諾貝爾獎。」</p></div>
+  <div class="script"><p class="who">核心觀念（但是）</p><p>「但這個『平均多賺』有個殘酷條件：<strong>中間可能連續十年落後</strong>。撐不過去的人，剛好在最便宜的時候放棄。所以這種投資法賺的其實是『耐心財』——賺的是別人拿不住的錢。」</p></div>
+  <div class="script"><p class="who">互動（高股息解碼）</p><p>「台灣人超愛的高股息 ETF，用今天的眼鏡看，它其實是在買哪種蘋果？」</p><p class="aside">引導：偏便宜、偏穩、會固定給現金的那種——「知道自己買了什麼，比買什麼更重要」。</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那到底要不要買因子 ETF？」</b><br>「我們家的核心還是整個市場（W16 的預設）；因子是進階選配——買之前先過一個測試：你能接受它連輸大盤五年嗎？不能就別碰。」</p>
+    <p class="qa"><b>「諾貝爾獎的方法還會輸？」</b><br>「獎是頒給『解釋過去』的嚴謹，不是保證未來——這正是投資跟物理不一樣的地方。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w32-final">
+    <li><label><input type="checkbox"><span>能寫出三因子模型並解釋 SMB／HML 的建構方式</span></label></li>
+    <li><label><input type="checkbox"><span>HML 失落期考古完成（親手摸過資料）</span></label></li>
+    <li><label><input type="checkbox"><span>能用因子語言解碼一檔 smart beta ETF</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成，記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 32 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 33：衍生性商品與避險</b>——期貨與選擇權的「保險」用法：不是為了賭，是為了給組合買保單。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-31-benchmarks-tracking/">上一週：基準與追蹤誤差</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——許多「傳奇選股人」被三因子一跑，超額幾乎全被規模與價值因子認領，α 縮成雜訊。他們確實賺到了，但賺的是長期持有小型價值股的風格溢酬——那個曝險今天用低費用因子 ETF 就買得到。"
+      : "最常見的結果其實是 α 接近 0：超額幾乎全被規模與價值因子認領。他們確實賺到了，但賺的是長期持有小型價值股的風格溢酬——那個曝險今天用低費用因子 ETF 就買得到。下面的拆帳台讓你親手看。";
+  });
+
+  function pct(v, dp){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dp === undefined ? 2 : dp) + "%"; }
+
+  /* 因子拆帳台：教學假設溢酬 MKT 6%、SMB 2%、HML 3% */
+  var PM = 6, PS = 2, PV = 3;
+  var iEx = document.getElementById("in-ex"), iBm = document.getElementById("in-bm"), iBs = document.getElementById("in-bs"), iBv = document.getElementById("in-bv");
+  function runF(){
+    var ex = +iEx.value, bm = +iBm.value, bs = +iBs.value, bv = +iBv.value;
+    document.getElementById("o-ex").textContent = ex.toFixed(1) + "%";
+    document.getElementById("o-bm").textContent = bm.toFixed(2);
+    document.getElementById("o-bs").textContent = bs.toFixed(2);
+    document.getElementById("o-bv").textContent = bv.toFixed(2);
+    var m = bm * PM, sv = bs * PS + bv * PV, a = ex - m - sv;
+    document.getElementById("s-m").textContent = pct(m);
+    document.getElementById("s-sv").textContent = pct(sv);
+    var ae = document.getElementById("s-a");
+    ae.textContent = pct(a); ae.className = "sv " + (a > 0.25 ? "pos" : a < -0.25 ? "neg" : "");
+    var beat = ex - PM;
+    var n = document.getElementById("fnote");
+    if (Math.abs(a) <= 0.25 && Math.abs(sv) > 0.5) {
+      n.innerHTML = "<b>贏大盤 " + beat.toFixed(1) + "%，但 α 幾乎是零。</b>超額被風格因子認領——這是可以用低費用因子 ETF 買到的曝險，不值得付主動管理費。";
+    } else if (a > 0.25) {
+      n.innerHTML = "<b>扣掉三個因子之後還剩 " + a.toFixed(2) + "% 的 α。</b>這才是因子解釋不了的部分——但一定要看夠長的期間（W38），並確認 α 大於他收的費用。";
+    } else if (a < -0.25) {
+      n.innerHTML = "<b>α 是負的。</b>連承擔的風格曝險都沒被充分補償——選股不只沒加分，還在扣分。";
+    } else {
+      n.innerHTML = "<b>表現跟市場曝險差不多。</b>沒有明顯的風格傾斜也沒有 α——這是指數基金應該長的樣子。";
+    }
+  }
+  [iEx, iBm, iBs, iBv].forEach(function(el){ el.addEventListener("input", runF); });
+  function preset(ex, bm, bs, bv){ iEx.value = ex; iBm.value = bm; iBs.value = bs; iBv.value = bv; runF(); }
+  document.getElementById("p-legend").addEventListener("click", function(){ preset(8, 1, 0.3, 0.5); });
+  document.getElementById("p-real").addEventListener("click", function(){ preset(9, 1, 0.1, 0.2); });
+  document.getElementById("p-index").addEventListener("click", function(){ preset(6, 1, 0, 0); });
+  runF();
+
+  /* smart beta 解碼 */
+  var Q = [
+    { t: "台灣某高股息 ETF：挑殖利率最高、波動較低的成分股，季配息。", ok: 1,
+      why: "高殖利率的股票通常估值偏低（價值），再加上挑低波動——是價值＋低波動的混血，外加「現金流心理帳戶」的包裝。" },
+    { t: "某 ETF 每季把過去 12 個月漲最多的股票換進來。", ok: 2,
+      why: "買近期贏家、賣近期輸家——教科書級的動能因子。學術上最強韌，也最常在反轉時急跌。" },
+    { t: "某 ETF 挑 ROE 高、負債低、獲利穩定的公司。", ok: 3,
+      why: "高獲利＋穩健＝品質因子（QMJ）——W9 的 ROIC 與 W22 護城河的量化影子。" },
+    { t: "某「特選權值」ETF：挑市值前 30 大、行業領先的公司。", ok: 4,
+      why: "名字聽起來很主動，本質是大型股曝險——跟市值型指數高度重疊。先查費用，再想它比 0050 多給了你什麼。" }
+  ];
+  var LB = ["", "價值＋低波動", "動能", "品質", "大型股（市值）"];
+  var ti = 0, tc = 0, done = false;
+  var tt = document.getElementById("tt"), tq = document.getElementById("tq"), tf = document.getElementById("tfeed"), ts = document.getElementById("tscore"), tb = document.getElementById("tbtns");
+  function render(){
+    tq.textContent = "第 " + (ti + 1) + " / " + Q.length + " 題";
+    tt.textContent = Q[ti].t;
+    tf.classList.remove("show", "bad"); done = false;
+    tb.querySelectorAll("button").forEach(function(b){ b.style.display = ""; b.textContent = LB[+b.dataset.v]; });
+  }
+  tb.addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    if (done) { ti = (ti + 1) % Q.length; if (ti === 0) { tc = 0; ts.textContent = "重新開始——目前答對 0 題"; } render(); return; }
+    var cur = Q[ti], right = +btn.dataset.v === cur.ok;
+    if (right) tc++;
+    done = true;
+    tf.className = "show" + (right ? "" : " bad");
+    tf.innerHTML = "<b>" + (right ? "答對——" : "再想想——") + "主要是" + LB[cur.ok] + "。</b><br>" + cur.why;
+    ts.textContent = "目前答對 " + tc + " 題";
+    tb.querySelectorAll("button").forEach(function(b, i){
+      if (i === 0) b.textContent = ti + 1 < Q.length ? "下一題 →" : "再玩一次 ↺"; else b.style.display = "none";
+    });
+  });
+  render();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w32-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w32-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 因子眼鏡戴上了——下週學怎麼給組合買保單。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

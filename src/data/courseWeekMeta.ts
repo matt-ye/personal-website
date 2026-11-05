@@ -352,5 +352,12 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 31 週：好基準三條件、含息報酬指數、追蹤誤差與 Active Share，拆穿櫃子裡的指數基金。附含息尺與櫃子稽查器互動。",
     "ogTitle": "第 31 週：基準與追蹤誤差 — 給家人的投資課",
     "ogDescription": "拿不含息的加權指數比，人人都是股神。好基準三條件、TE 與 Active Share，三分鐘識破櫃子裡的指數基金。"
+  },
+  {
+    "slug": "week-32-factor-investing",
+    "title": "第 32 週：因子投資——Fama-French 與風格的科學｜給家人的投資課 · Matt Ye",
+    "description": "52 週投資課第 32 週：三因子模型、五大因子家族、價值因子的失落十年，以及 smart beta 解碼。附因子拆帳台與 ETF 解碼互動。",
+    "ogTitle": "第 32 週：因子投資——Fama-French 與風格的科學 — 給家人的投資課",
+    "ogDescription": "你的選股超額，會不會只是買了便宜股、小型股的風格？三因子一跑，傳奇選股人的 α 常縮成雜訊。"
   }
 ];

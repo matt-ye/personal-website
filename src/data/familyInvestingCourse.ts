@@ -372,4 +372,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-31-benchmarks-tracking/',
   },
+  {
+    slug: 'week-32-factor-investing',
+    title: 'W32 因子投資——Fama-French',
+    titleEn: 'W32 Factor Investing',
+    description: '你的選股超額會不會只是風格曝險？三因子模型、五大因子家族、價值因子的失落十年（痛苦就是門票錢），以及高股息等 smart beta 的因子解碼。附因子拆帳台與 ETF 解碼互動。',
+    descriptionEn: 'Is your stock-picking edge just a style tilt? The three-factor model, five factor families, value\'s lost decade, and decoding smart beta — with a factor attribution bench and an ETF quiz.',
+    tags: ['Q3 操盤手季', '互動計算機'],
+    date: '2027-02-10',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-32-factor-investing/',
+  },
 ];
