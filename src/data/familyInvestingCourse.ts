@@ -537,4 +537,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-46-financial-planning/',
   },
+  {
+    slug: 'week-47-mergers-acquisitions',
+    title: 'W47 併購——溢價、綜效與贏家的詛咒',
+    titleEn: 'W47 Mergers & Acquisitions',
+    description: '買方價值＝獨立價值＋綜效−支付價格，所以預設結果是賣方贏；綜效打折法則、支付方式的訊號、EPS 增厚只是本益比的算術。附價值方程式與 EPS 增厚機。',
+    descriptionEn: 'Buyer value equals standalone value plus synergies minus price, so sellers usually win; haircut synergies, read the payment method, and see why EPS accretion is just P/E arithmetic.',
+    tags: ['Q4 財務長季', '互動計算機'],
+    date: '2027-05-26',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-47-mergers-acquisitions/',
+  },
 ];
