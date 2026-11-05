@@ -44,7 +44,7 @@ export const MAP = {
   '開始前 10 分鐘：':
     'First 10 minutes:',
   '回顧上週飲料店的負 CCC 祕密——家人聽懂「成長自帶錢包」了嗎？':
-    'Looking back at last week\'s negative-CCC secret of the drink shop — did the family understand "growth brings its own wallet"?',
+    'Looking back at last week\'s negative-CCC secret of the drinks shop — did the family understand "growth brings its own wallet"?',
   '開始之前，先猜一題':
     'Before we start, take a guess',
   '一家公司 ROE 15%、每年把四成獲利發成股利。不借錢、不增資的話，它最快每年能成長多少？':
@@ -230,7 +230,7 @@ export const MAP = {
   '機構級的預測紀律——麥肯錫怎麼防曲棍球桿。':
     'Institutional-grade forecasting discipline — how McKinsey guards against hockey sticks.',
   '實習公司最近一次法說會簡報':
-    'Your case-study company\'s latest earnings-call deck',
+    'Your practice company\'s latest earnings-call deck',
   '找「展望」那一頁：它給了成長目標嗎？資本支出計畫？把數字抄下來，練習用 g* 檢驗。':
     'Find the "outlook" slide: does it give a growth target? A capex plan? Copy the numbers down, and practise testing them with g*.',
   '10 分鐘':
@@ -248,9 +248,9 @@ export const MAP = {
   '用試算表重建講義的迷你算例，然後改參數玩三次：①營收成長改 30%；②配發率改 80%；③讓固定資產跟著營收等比例擴張，找出餘裕恰好為零的成長率，對照 g*。':
     'Rebuild the lecture\'s mini example in a spreadsheet, then change the parameters three times: (1) change revenue growth to 30%; (2) change the payout ratio to 80%; (3) let fixed assets expand in proportion to revenue, find the growth rate at which the surplus is exactly zero, and compare it with g*.',
   '任務 B｜實習公司的 g* 檢驗（15 分鐘）':
-    'Task B | The g* test of your case-study company (15 minutes)',
+    'Task B | The g* test of your practice company (15 minutes)',
   '用 W9 算過的 ROE 與 W44 查的配發率算實習公司的 g*；對照它宣稱的成長目標與近年融資動作（W40 考古）——三者的故事一致嗎？寫三行。':
-    'Use the ROE you calculated in W9 and the payout ratio you looked up in W44 to compute your case-study company\'s g*; compare it with its claimed growth target and its recent financing moves (the W40 archaeology) — do the three tell the same story? Write three lines.',
+    'Use the ROE you calculated in W9 and the payout ratio you looked up in W44 to compute your practice company\'s g*; compare it with its claimed growth target and its recent financing moves (the W40 archaeology) — do the three tell the same story? Write three lines.',
   '怎麼知道做對了：':
     'How to know you got it right: ',
   '預測台預設餘裕 +29.0；按「成長 30%」剩 +8.0；按「配發 80%」變缺口 −17.0。資本支出固定 50 時，餘裕歸零的成長率是 35.7%——看起來很寬裕，但那是假設工廠不擴建；勾選等比例擴張後，同樣 15% 成長就變成缺口 −36.0，歸零點落在 9.4%。槓桿推演預設（成長 25%、ROE 12%、配發 50%）：g* 6.0%，5 年後負債／權益從 0.50 升到 2.42。':
@@ -258,7 +258,7 @@ export const MAP = {
   '迷你模型驗證（+29）＋三次參數實驗完成':
     'Finished the mini-model check (+29) plus the three parameter experiments',
   '實習公司 g* 檢驗三行結論完成':
-    'Finished the three-line conclusion on the case-study company\'s g* test',
+    'Finished the three-line conclusion on the practice company\'s g* test',
   '能默寫 g* 公式與它的三個用途':
     'Can write the g* formula and its three uses from memory',
   '快問快答三題（先答，再展開對答案）':
@@ -338,7 +338,7 @@ export const MAP = {
   '迷你模型與參數實驗完成':
     'Finished the mini model and the parameter experiments',
   '實習公司 g* 檢驗完成':
-    'Finished the g* test of the case-study company',
+    'Finished the g* test of the practice company',
   '分享環節完成（家庭預算＋成長速限），記錄卡住的點':
     'Finished the sharing session (family budget + the growth speed limit) and noted where I got stuck',
   '回填 curriculum/01-overview.md 第 46 週進度欄':

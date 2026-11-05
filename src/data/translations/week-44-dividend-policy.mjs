@@ -266,7 +266,7 @@ export const MAP = {
   '區塊 ② ／ 必讀導讀 · 約 2 小時':
     'Block ② / Required reading · about 2 hours',
   '原典與你的實習公司':
-    'The primary sources and your case-study company',
+    'The primary sources and your practice company',
   '50 分鐘':
     '50 min',
   '《Principles of Corporate Finance》股利政策章':
@@ -282,7 +282,7 @@ export const MAP = {
   'Berkshire 股東信 ↗':
     'Berkshire shareholder letters ↗',
   '實習公司近 10 年股利史':
-    'Your case-study company\'s dividend history for the past 10 years',
+    'Your practice company\'s dividend history for the past 10 years',
   '從 Goodinfo 抓 EPS、每股股利、配發率、除息後填息天數——本週練習的原料。':
     'From Goodinfo, pull EPS, dividend per share, payout ratio and the number of days it took to fill the gap after the ex-dividend date — the raw material for this week\'s exercise.',
   '選讀':
@@ -294,7 +294,7 @@ export const MAP = {
   '區塊 ③ ／ 練習 · 約 1 小時':
     'Block ③ / Exercise · about 1 hour',
   '實習公司的股利政策評鑑':
-    'Dividend policy review of your case-study company',
+    'Dividend policy review of your practice company',
   '建表：年度 × EPS × 每股股利 × 配發率 × 當年 ROE':
     'Build a table: year × EPS × dividend per share × payout ratio × that year\'s ROE',
   '判讀三問：配發率的':
@@ -386,7 +386,7 @@ export const MAP = {
   '能畫股利決策樹，說出唯一判準（ROIC vs WACC）':
     'Can draw the dividend decision tree and state the single test (ROIC vs WACC)',
   '實習公司十年股利體檢完成':
-    'Finished the 10-year dividend check-up of the case-study company',
+    'Finished the 10-year dividend check-up of the practice company',
   '能解釋庫藏股的 EPS 魔術與 Buffett 兩條件':
     'Can explain the EPS magic of buybacks and Buffett\'s two conditions',
   '分享環節完成（果樹＋台積電問題），記錄卡住的點':

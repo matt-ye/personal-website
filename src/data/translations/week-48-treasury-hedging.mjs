@@ -236,7 +236,7 @@ export const MAP = {
   '投資人視角':
     'The investor\'s view',
   '：翻實習公司年報的「避險會計」與「衍生工具」附註，看三件事：①避了什麼險（幣別、金額）；②工具與天期；③':
-    ': open the "hedge accounting" and "derivatives" notes in your internship company\'s annual report and look for three things: ① what is hedged (currency, amount); ② the instruments and their tenors; ③ ',
+    ': open the "hedge accounting" and "derivatives" notes in your practice company\'s annual report and look for three things: ① what is hedged (currency, amount); ② the instruments and their tenors; ③ ',
   '有沒有與曝險無關的部位':
     'any position unrelated to an exposure',
   '——紅旗。附註寫得清楚透明的公司，通常財務紀律也好。':
@@ -276,7 +276,7 @@ export const MAP = {
   '30 分鐘':
     '30 min',
   '實習公司年報的避險附註':
-    'The hedging note in your internship company\'s annual report',
+    'The hedging note in your practice company\'s annual report',
   '找「金融工具」「避險會計」附註——第一次讀會硬，用第 5 節的三件事當地圖。這是本週練習的原料。':
     'Look for the "financial instruments" and "hedge accounting" notes — the first read will be heavy going; use the three things in section 5 as your map. This is the raw material for this week\'s exercise.',
   '15 分鐘':
@@ -286,7 +286,7 @@ export const MAP = {
   '區塊 ③ ／ 練習 · 約 1 小時':
     'Block ③ / Exercise · about 1 hour',
   '實習公司的避險體檢':
-    'A hedging check-up for your internship company',
+    'A hedging check-up for your practice company',
   '外幣曝險':
     'Foreign-currency exposure',
   '：主要幣別、金額量級；附註的敏感度分析表——匯率動 1% 影響損益多少？':

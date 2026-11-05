@@ -80,7 +80,7 @@ export const MAP = {
   '決策':
     'a decision',
   '建議沿用實習公司——W40–51 的素材直接可用。兩份各 2–3 頁，':
-    'Using your internship company is recommended — the material from W40–51 is directly usable. Two reports of 2–3 pages each, ',
+    'Using your practice company is recommended — the material from W40–51 is directly usable. Two reports of 2–3 pages each, ',
   '先寫 A 再寫 B':
     'write A first, then B',
   '：當過 CFO 再當投資人，你會發現自己讀年報的眼神完全不同了。':

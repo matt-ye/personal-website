@@ -24,7 +24,7 @@ export const MAP = {
   '給家人的投資課 · Q3 操盤手季 · Week 39 · 期末專題':
     'Family Investing Course · Q3 The Portfolio Manager\'s Quarter · Week 39 · Capstone project',
   'Q3 期末專題——模擬組合風險月報':
-    'Q3 Capstone Project — the Simulated Portfolio\'s Monthly Risk Report',
+    'Q3 Capstone Project — the Paper Portfolio\'s Monthly Risk Report',
   '十二週裝的每個模組——報酬、風險、比率、歸因、基準、執行、日誌——本週組裝成':
     'Every module you built over twelve weeks — returns, risk, ratios, attribution, benchmarks, execution, the journal — gets assembled this week into ',
   '一份專業格式的月度報告':
@@ -214,7 +214,7 @@ export const MAP = {
   '任務 B｜首份月報（1.5 小時）':
     'Task B | The first report (1.5 hours)',
   '用模擬組合至今的真實數據跑齊七節。資料月數不足的指標（如年化 Sharpe）標註「期間過短，僅供追蹤」——':
-    'Run all seven sections with the simulated portfolio\'s real data so far. Mark any metric without enough months of data (such as annualized Sharpe) as "period too short, for tracking only" — ',
+    'Run all seven sections with the paper portfolio\'s real data so far. Mark any metric without enough months of data (such as annualized Sharpe) as "period too short, for tracking only" — ',
   '不要假裝有統計意義':
     'don\'t pretend it is statistically meaningful',
   '檢查勾稽：歸因加總＝超額；權重加總＝100%；最大回撤與估值頁一致':

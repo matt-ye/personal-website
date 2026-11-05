@@ -30,7 +30,7 @@ export const MAP = {
   '每天有現金可用':
     'cash to use every day',
   '。W6 埋下的營運資金、W7 的「賺錢但缺現金」，本週用一個指標收攏——現金轉換循環（CCC）。還有一個驚喜：你的飲料店，天生是「負 CCC」的好生意。':
-    '. The working capital planted in W6 and the "profitable but short of cash" of W7 come together this week in one metric — the cash conversion cycle (CCC). And there\'s a surprise: your drink shop is, by nature, a good "negative CCC" business.',
+    '. The working capital planted in W6 and the "profitable but short of cash" of W7 come together this week in one metric — the cash conversion cycle (CCC). And there\'s a surprise: your drinks shop is, by nature, a good "negative CCC" business.',
   '⏱ 預估 3–5 小時':
     '⏱ About 3–5 hours',
   '前置：第 6–7 週':
@@ -80,7 +80,7 @@ export const MAP = {
   '縮短 CCC ＝ 無償釋放現金。':
     'Shortening CCC = releasing cash for free.',
   '2. 驚喜：你的飲料店是負 CCC 生意':
-    '2. A surprise: your drink shop is a negative-CCC business',
+    '2. A surprise: your drinks shop is a negative-CCC business',
   '用第 4 週第 2 個月的數據算（以 30 天月計）：':
     'Calculated from Week 4\'s month-two data (taking a 30-day month):',
   '元件':
@@ -124,7 +124,7 @@ export const MAP = {
   '上排是錢被卡住的天數（存貨＋應收），下排是供應商借你的天數（應付）。斜線區就是要自己墊錢的缺口。':
     'The top row is the days cash is stuck (inventory + receivables); the bottom row is the days suppliers lend to you (payables). The hatched area is the gap you have to fund yourself.',
   '我們的飲料店':
-    'Our drink shop',
+    'Our drinks shop',
   '講義算例':
     'Lecture example',
   '量販店型':
@@ -302,7 +302,7 @@ export const MAP = {
   '區塊 ③ ／ 練習 · 約 1 小時':
     'Block ③ / Exercise · about 1 hour',
   '實習公司的 CCC 五年解剖':
-    'A five-year CCC dissection of your case-study company',
+    'A five-year CCC dissection of your practice company',
   '從實習公司財報取近 5 年：存貨、應收、應付、營收、銷貨成本':
     'From the company\'s financial statements take the last 5 years: inventory, receivables, payables, revenue, cost of goods sold',
   '算每年 DIO／DSO／DPO／CCC，畫成趨勢':
@@ -310,15 +310,15 @@ export const MAP = {
   '判讀三問：CCC 變長還是變短？主因是哪個元件？跟營收成長對照——「成長吃現金」的帳單有多大？':
     'Three questions to read it with: is CCC getting longer or shorter? Which component is the main cause? Set it against revenue growth — how big is the "growth eats cash" bill?',
   '手算飲料店的 −6.4 天與講義的 65 天算例':
-    'Work out the drink shop\'s −6.4 days and the lecture\'s 65-day example by hand',
+    'Work out the drinks shop\'s −6.4 days and the lecture\'s 65-day example by hand',
   '怎麼知道做對了：':
     'How to know you got it right: ',
   '時間軸按「我們的飲料店」CCC 必須是 −6.4 天、斜線區變綠（全世界幫你出營運資金）；按「講義算例」是 65.0 天，營收 10 億時要墊約 1.78 億。成長帳單預設：營運資金增加 0.60 億、明年淨利 1.04 億、被成長吃掉 57.7%；按「負 CCC 零售」，成長反而釋放現金。':
-    'On the timeline, pressing "Our drink shop" must give a CCC of −6.4 days, with the hatched area turning green (the whole world helps you fund working capital); pressing "Lecture example" gives 65.0 days, and at revenue of NT$1 billion you must advance about NT$178 million. Growth-bill defaults: working capital increase NT$60 million, next year\'s net income NT$104 million, eaten by growth 57.7%; press "Negative-CCC retail" and growth actually releases cash.',
+    'On the timeline, pressing "Our drinks shop" must give a CCC of −6.4 days, with the hatched area turning green (the whole world helps you fund working capital); pressing "Lecture example" gives 65.0 days, and at revenue of NT$1 billion you must advance about NT$178 million. Growth-bill defaults: working capital increase NT$60 million, next year\'s net income NT$104 million, eaten by growth 57.7%; press "Negative-CCC retail" and growth actually releases cash.',
   '五年 CCC 趨勢完成，且有元件歸因':
     'Finished the five-year CCC trend, with attribution to components',
   '飲料店 −6.4 天手算通過':
-    'The drink shop\'s −6.4 days worked out by hand and checked',
+    'The drinks shop\'s −6.4 days worked out by hand and checked',
   '能解釋「成長吃現金」的機制與量級':
     'Can explain the mechanism and scale of "growth eats cash"',
   '快問快答三題（先答，再展開對答案）':
@@ -350,7 +350,7 @@ export const MAP = {
   '開場（我們的店的祕密）':
     'Opening (the secret of our shop)',
   '「還記得我們的飲料店嗎？我發現它有個了不起的祕密：':
-    '"Remember our drink shop? I found it has a remarkable secret: ',
+    '"Remember our drinks shop? I found it has a remarkable secret: ',
   '客人當場付現金，但我們付供應商是月結':
     'customers pay cash on the spot, but we pay our suppliers monthly',
   '——算出來，錢平均『先進來 6 天』才要付出去。生意做越大，手上的免費週轉金越多。」':
@@ -382,11 +382,11 @@ export const MAP = {
   '能默寫 CCC 公式與三元件的分母':
     'Can write from memory the CCC formula and the denominators of the three components',
   '實習公司五年 CCC 解剖完成':
-    'Finished the five-year CCC dissection of the case-study company',
+    'Finished the five-year CCC dissection of the practice company',
   '能解釋負 CCC 模式與「成長吃現金」':
     'Can explain the negative-CCC model and "growth eats cash"',
   '分享環節完成（飲料店的祕密），記錄卡住的點':
-    'Finished the sharing session (the drink shop\'s secret) and noted where I got stuck',
+    'Finished the sharing session (the drinks shop\'s secret) and noted where I got stuck',
   '回填 curriculum/01-overview.md 第 45 週進度欄':
     'Fill in the Week 45 progress column of curriculum/01-overview.md',
   '下週預告 · Week 46：財務規劃':

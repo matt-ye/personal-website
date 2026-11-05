@@ -204,7 +204,7 @@ export const MAP = {
   '紅旗清單 v2 掃描器':
     'Red-flag checklist v2 scanner',
   '對你的實習公司逐項給分：✅ 沒問題、⚠️ 待查、🚩 亮紅旗。結果存在這個瀏覽器。':
-    'Score each item for your internship company: ✅ no problem, ⚠️ needs checking, 🚩 red flag. Results are saved in this browser.',
+    'Score each item for your practice company: ✅ no problem, ⚠️ needs checking, 🚩 red flag. Results are saved in this browser.',
   '報表層 🚩':
     'Financial-statement layer 🚩',
   '治理層 🚩':
@@ -288,9 +288,9 @@ export const MAP = {
   '，四大常備文件之一的正式升級）。':
     ', a formal upgrade of one of the four standing documents).',
   '任務 B｜實習公司治理掃描（30 分鐘）':
-    'Task B | Governance scan of your internship company (30 min)',
+    'Task B | Governance scan of your practice company (30 min)',
   '對實習公司跑 #11–15：年報查董事會運作與薪酬、重大訊息查獨董異動、財報查合併範圍與現金附註、新聞查公司如何回應質疑。每項給 ✅／⚠️／🚩＋一行證據，用上面的掃描器記錄。':
-    'Run #11–15 on the internship company: check board operations and pay in the annual report, director changes in the material-information filings, the scope of consolidation and the cash note in the financial statements, and in the news how the company responds to doubters. Give each item ✅ / ⚠️ / 🚩 plus one line of evidence, and record it in the scanner above.',
+    'Run #11–15 on the practice company: check board operations and pay in the annual report, director changes in the material-information filings, the scope of consolidation and the cash note in the financial statements, and in the news how the company responds to doubters. Give each item ✅ / ⚠️ / 🚩 plus one line of evidence, and record it in the scanner above.',
   '怎麼知道做對了：':
     'How to know you got it right: ',
   '殺信使測試六則裡，有三則是攻擊信使、三則是回應內容。掃描器：報表層與治理層各標一支 🚩，結論必須是「兩層都亮——離場不需要第三個理由」；只有一層亮，結論是「加強追蹤」。':
@@ -298,7 +298,7 @@ export const MAP = {
   '紅旗清單 v2 成形（15 項）':
     'Red-flag checklist v2 in place (15 items)',
   '實習公司治理掃描完成':
-    'Governance scan of the internship company done',
+    'Governance scan of the practice company done',
   '能各用三句話講完三大案例（病因＋紅旗＋教訓）':
     'I can explain each of the three cases in three sentences (cause + red flags + lesson)',
   '快問快答三題（先答，再展開對答案）':
@@ -370,7 +370,7 @@ export const MAP = {
   '本週完成的定義':
     'What counts as done this week',
   '紅旗清單 v2（15 項）完成並套用實習公司':
-    'Red-flag checklist v2 (15 items) done and applied to the internship company',
+    'Red-flag checklist v2 (15 items) done and applied to the practice company',
   '能講出三案例的共同四步驟模式':
     'I can state the common four-step pattern of the three cases',
   '能說出 CFO 的倫理判準（頭版測試）':

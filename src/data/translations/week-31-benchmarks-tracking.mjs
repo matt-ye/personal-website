@@ -76,7 +76,7 @@ export const MAP = {
   '不含息':
     'which excludes dividends',
   '）當基準。台股殖利率長期 3–4%，含息的「發行量加權股價報酬指數」每年天生多 3–4 個百分點——用不含息指數比，人人都是股神。你的模擬組合基準必須用':
-    ') as the benchmark. Taiwan stocks have yielded 3–4% over the long run, so the dividend-inclusive "TAIEX total return index" naturally gains an extra 3–4 percentage points a year — compare against the index without dividends and everyone is a stock-market genius. Your simulated portfolio\'s benchmark must use the ',
+    ') as the benchmark. Taiwan stocks have yielded 3–4% over the long run, so the dividend-inclusive "TAIEX total return index" naturally gains an extra 3–4 percentage points a year — compare against the index without dividends and everyone is a stock-market genius. Your paper portfolio\'s benchmark must use the ',
   '報酬指數':
     'total return index',
   '鋸短的尺：含息 vs 不含息':
@@ -170,7 +170,7 @@ export const MAP = {
   '4. 給自己的組合定座標':
     '4. Setting coordinates for your own portfolio',
   '你的模擬組合基準（依 W18 IPS，例：70% 全球股＋30% 債）應是':
-    'Your simulated portfolio\'s benchmark (per the W18 IPS, e.g. 70% global stocks + 30% bonds) should be a ',
+    'Your paper portfolio\'s benchmark (per the W18 IPS, e.g. 70% global stocks + 30% bonds) should be a ',
   '複合基準':
     'composite benchmark',
   '＝ 0.7 × 全球股票報酬指數 ＋ 0.3 × 債券指數。每月月報固定揭露':
@@ -222,7 +222,7 @@ export const MAP = {
   '座標定位三連發':
     'A three-part coordinates workout',
   '任務 A｜模擬組合的正式基準（25 分鐘）':
-    'Task A | The simulated portfolio\'s formal benchmark (25 minutes)',
+    'Task A | The paper portfolio\'s formal benchmark (25 minutes)',
   '依 IPS 權重寫下複合基準公式——成分指數要':
     'Write out the composite-benchmark formula from your IPS weights — the component indexes must be the ',
   '含息':
@@ -316,7 +316,7 @@ export const MAP = {
   '能背出好基準三條件':
     'You can recite the three conditions for a good benchmark',
   '模擬組合五數字（報酬／基準／超額／TE／IR）入月報模板':
-    'The simulated portfolio\'s five numbers (return / benchmark / excess / TE / IR) are in the monthly report template',
+    'The paper portfolio\'s five numbers (return / benchmark / excess / TE / IR) are in the monthly report template',
   '能解釋 TE 與 Active Share 各量什麼、櫃子基金為何必輸':
     'You can explain what TE and Active Share each measure, and why closet index funds must lose',
   '分享環節完成（含息尺＋櫃子防身術），記錄卡住的點':

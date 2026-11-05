@@ -274,7 +274,7 @@ export const MAP = {
   '20 分鐘':
     '20 min',
   '實習公司年報的所得稅附註':
-    'The income-tax note in your internship company\'s annual report',
+    'The income-tax note in your practice company\'s annual report',
   '找有效稅率調節表——它實際稅率幾 %？差異來自哪裡？':
     'Find the effective tax rate reconciliation — what is its actual tax rate, in %? Where do the differences come from?',
   '選讀':

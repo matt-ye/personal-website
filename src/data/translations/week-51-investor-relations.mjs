@@ -184,7 +184,7 @@ export const MAP = {
   '承諾追蹤表':
     'Commitment tracker',
   '從實習公司近三年的致股東報告書，抄下具體承諾（產能、新產品、市場目標），再查它們的下落。內容只存在這個瀏覽器；每年年報季回來更新一次。':
-    'From your internship company\'s last three years of shareholder letters, copy down concrete commitments (capacity, new products, market targets), then check what became of them. The content is stored only in this browser; come back and update it once a year during annual-report season.',
+    'From your practice company\'s last three years of shareholder letters, copy down concrete commitments (capacity, new products, market targets), then check what became of them. The content is stored only in this browser; come back and update it once a year during annual-report season.',
   '承諾':
     'Commitment',
   '年份':
@@ -252,7 +252,7 @@ export const MAP = {
   '60 分鐘':
     '60 min',
   '實習公司最近一場法說會（本週主菜）':
-    'Your internship company\'s most recent earnings call (this week\'s main course)',
+    'Your practice company\'s most recent earnings call (this week\'s main course)',
   '完整聽錄音或看簡報（公開資訊觀測站或公司 IR 網站），用第 2 節的三層框架做筆記——特別記下 Q&amp;A 的追問焦點與迴避題。':
     'Listen to the full recording or watch the slides (MOPS, the Market Observation Post System, or the company\'s IR website), and take notes with the three-layer framework from section 2 — especially note the focus of the Q&amp;A follow-ups and the questions dodged.',
   '公開資訊觀測站 ↗':
@@ -260,7 +260,7 @@ export const MAP = {
   '40 分鐘':
     '40 min',
   '實習公司近三年致股東報告書':
-    'Your internship company\'s last three years of shareholder letters',
+    'Your practice company\'s last three years of shareholder letters',
   '跑第 3 節的三個測試：承諾追蹤、歸因對稱、指標一致。':
     'Run the three tests from section 3: commitment tracking, symmetry of attribution, consistency of metrics.',
   '10 分鐘':

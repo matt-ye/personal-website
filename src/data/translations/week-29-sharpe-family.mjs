@@ -234,13 +234,13 @@ export const MAP = {
   '10 分鐘':
     '10 min',
   '回顧 W27–28 的模擬組合':
-    'Revisit the W27–28 simulated portfolio',
+    'Revisit the W27–28 paper portfolio',
   '本週練習的原料：報酬序列與風險模組都已就位——本週只是把兩個分頁的數字相除。':
     'The raw material for this week\'s exercise: the return series and the risk module are both already in place — this week you just divide the numbers on the two tabs.',
   '區塊 ③ ／ 練習 · 約 1 小時':
     'Block ③ / Exercise · about 1 hour',
   '給模擬組合裝上第三組儀表':
-    'Install the third set of gauges on the simulated portfolio',
+    'Install the third set of gauges on the paper portfolio',
   '任務 A｜三比率上線（35 分鐘）':
     'Task A | Three ratios go live (35 minutes)',
   '用 W28 的組合報酬序列（週頻即可）算年化報酬（W27 CAGR 法）與年化 σ（W28）':
@@ -268,7 +268,7 @@ export const MAP = {
   '（Sharpe A／Sortino A／IR）。手算對不上就是公式帶錯——最常見的錯是分子忘了減 R':
     ' (Sharpe A / Sortino A / IR). If your hand calculation doesn\'t match, a formula is wrong — the most common mistake is forgetting to subtract R',
   '模擬組合三比率上線（含 Rf 出處與日期）':
-    'The three ratios for the simulated portfolio are live (with the source and date of Rf noted)',
+    'The three ratios for the paper portfolio are live (with the source and date of Rf noted)',
   '講義算例手算驗證通過（0.40／0.67／0.50）':
     'The notes\' worked example passes the hand check (0.40 / 0.67 / 0.50)',
   '真實基金照妖鏡完成':
@@ -322,7 +322,7 @@ export const MAP = {
   '每冒一分險賺多少':
     'how much did you earn for each bit of risk taken',
   '』——這個分數叫 Sharpe。我們家的模擬帳戶這週開始也有這個分數了。」（秀模擬組合的三比率。）':
-    '.\' That score is called Sharpe. Our family\'s simulated account now has this score too, starting this week." (Show the simulated portfolio\'s three ratios.)',
+    '.\' That score is called Sharpe. Our family\'s simulated account now has this score too, starting this week." (Show the paper portfolio\'s three ratios.)',
   '互動（推銷防身術）':
     'Interaction (sales-pitch self-defense)',
   '「下次有人跟你推銷『這檔基金去年賺 20%！』，你要問哪兩句？」':
@@ -348,7 +348,7 @@ export const MAP = {
   '能默寫三比率公式與各自分母的意義':
     'You can write out the three ratio formulas and what each denominator means',
   '模擬組合績效模組上線':
-    'The simulated portfolio\'s performance module is live',
+    'The paper portfolio\'s performance module is live',
   '能說出四個使用陷阱':
     'You can name the four traps in using these ratios',
   '分享環節完成，記錄卡住的點':

@@ -26,7 +26,7 @@ export const MAP = {
   '風險衡量——波動率、回撤與 VaR':
     'Measuring Risk: Volatility, Drawdown, and VaR',
   '上週給模擬組合裝了報酬儀表，本週裝':
-    'Last week we gave the simulated portfolio a set of return gauges. This week we add the ',
+    'Last week we gave the paper portfolio a set of return gauges. This week we add the ',
   '風險儀表':
     'risk gauges',
   '。操盤手與散戶的分水嶺不在報酬，在能不能量化自己承擔了多少風險——只看報酬，等於開車只看時速、不看油表和煞車。':
@@ -274,7 +274,7 @@ export const MAP = {
   '區塊 ③ ／ 練習 · 約 1 小時':
     'Block ③ / Exercise · about 1 hour',
   '給模擬組合裝風險儀表':
-    'Install the risk gauges on the simulated portfolio',
+    'Install the risk gauges on the paper portfolio',
   '任務 A｜風險模組（40 分鐘）':
     'Task A | Risk module (40 minutes)',
   '匯出組合各成分近 3 年的':
@@ -360,7 +360,7 @@ export const MAP = {
   '互動（家庭風險翻譯）':
     'Interaction (a family risk translation)',
   '「我們的模擬組合 100 萬，儀表說『正常日子裡，一百天大概有五天，單日會虧超過 1.6 萬』——聽到這句你的感覺是？」':
-    '"Our simulated portfolio is NT$1,000,000, and the gauge says \'on normal days, in about five days out of a hundred, a one-day loss will be more than NT$16,000.\' How do you feel hearing that?"',
+    '"Our paper portfolio is NT$1,000,000, and the gauge says \'on normal days, in about five days out of a hundred, a one-day loss will be more than NT$16,000.\' How do you feel hearing that?"',
   '把統計翻成金額與頻率，觀察家人反應——這就是 VaR 作為溝通工具的用法。反應太大 → 回頭檢討配置是否超出全家的心理容忍。':
     'Translate the statistics into a dollar amount and a frequency, and watch how your family reacts — that\'s how VaR works as a communication tool. If the reaction is too strong, go back and check whether the allocation exceeds the whole family\'s emotional tolerance.',
   '收尾':
@@ -388,7 +388,7 @@ export const MAP = {
   '能手算年化波動與 VaR 速算':
     'You can calculate annualized volatility and a quick VaR by hand',
   '模擬組合風險模組上線＋IPS 容忍對照完成':
-    'The simulated portfolio\'s risk module is live, and the IPS tolerance check is done',
+    'The paper portfolio\'s risk module is live, and the IPS tolerance check is done',
   '能說出 VaR 三缺陷與正確用途':
     'You can name VaR\'s three flaws and its proper use',
   '分享環節完成（回本陡坡＋三儀表），記錄卡住的點':

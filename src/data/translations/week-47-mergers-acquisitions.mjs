@@ -56,7 +56,7 @@ export const MAP = {
   '開始之前，先猜一題':
     'Before we start, take a guess',
   '隔壁飲料店頂讓開價 130 萬。它自己值 100 萬；買下來共用進貨與排班，還能多出「值 20 萬」的好處。該買嗎？':
-    'The drink shop next door is up for transfer at an asking price of NT$1,300,000. It is worth NT$1,000,000 on its own; buy it and share purchasing and shift scheduling, and you\'d gain a benefit "worth NT$200,000." Should you buy?',
+    'The drinks shop next door is up for transfer at an asking price of NT$1,300,000. It is worth NT$1,000,000 on its own; buy it and share purchasing and shift scheduling, and you\'d gain a benefit "worth NT$200,000." Should you buy?',
   '該買，有綜效':
     'Buy it — there\'s synergy',
   '不該買，100 ＋ 20 還不到 130':
@@ -376,7 +376,7 @@ export const MAP = {
   '開場（頂讓的故事）':
     'Opening (the story of the shop transfer)',
   '「隔壁飲料店要頂讓，開價 130 萬。我們算過它自己值 100 萬；買下來共用進貨、共用排班，可以多出『值 20 萬』的好處。':
-    '"The drink shop next door is up for transfer, asking NT$1,300,000. We\'ve worked out it is worth NT$1,000,000 on its own; buy it and share purchasing and shift scheduling, and we\'d gain a benefit \'worth NT$200,000.\' ',
+    '"The drinks shop next door is up for transfer, asking NT$1,300,000. We\'ve worked out it is worth NT$1,000,000 on its own; buy it and share purchasing and shift scheduling, and we\'d gain a benefit \'worth NT$200,000.\' ',
   '該買嗎？':
     'Should we buy it?',
   '」（讓家人算：100 ＋ 20 ＝ 120，小於 130——不該。）「這就是併購的全部數學：好處是猜的，溢價是真金白銀。」':

@@ -144,7 +144,7 @@ export const MAP = {
   '＝ Σ（權重差 × 選股差）＝ 0.1×2% ＋ (−0.1)×1% ＝':
     ' = Σ (weight difference × selection difference) = 0.1×2% + (−0.1)×1% = ',
   '勾稽：0.70 ＋ 1.60 ＋ 0.10 ＝ 2.40pp ✓——三塊加總必等於超額。你的飲料店勾稽精神（W8），在組合層的再現。':
-    'Cross-check: 0.70 + 1.60 + 0.10 = 2.40pp ✓ — the three pieces must add up to the excess return. It\'s the same spirit as reconciling the books at your drink shop (W8), now at the portfolio level.',
+    'Cross-check: 0.70 + 1.60 + 0.10 = 2.40pp ✓ — the three pieces must add up to the excess return. It\'s the same spirit as reconciling the books at your drinks shop (W8), now at the portfolio level.',
   '判讀':
     'Reading it',
   '：這個例子裡選股貢獻（1.6）是配置（0.7）的兩倍多——這位操盤手的優勢在挑標的，不在調股債比。但':
@@ -288,7 +288,7 @@ export const MAP = {
   '第一次月度歸因':
     'Your first monthly attribution',
   '任務 A｜模擬組合歸因（40 分鐘）':
-    'Task A | Attribution for the simulated portfolio (40 minutes)',
+    'Task A | Attribution for the paper portfolio (40 minutes)',
   '兩類別簡化：股票部位 vs 債券／現金部位':
     'Two classes, simplified: the stock position vs. the bond / cash position',
   '查同期類別基準報酬（台股加權報酬指數、你 IPS 指定的債券基準）':
@@ -312,7 +312,7 @@ export const MAP = {
   '講義算例手算重現成功（0.70／1.60／0.10）':
     'The notes\' worked example reproduced by hand (0.70 / 1.60 / 0.10)',
   '模擬組合第一次歸因完成且勾稽通過':
-    'The first attribution for the simulated portfolio is done and the cross-check passes',
+    'The first attribution for the paper portfolio is done and the cross-check passes',
   '能一句話說出自己這期「贏／輸在哪」':
     'You can say in one sentence where you "won / lost" this period',
   '快問快答三題（先答，再展開對答案）':
@@ -368,7 +368,7 @@ export const MAP = {
   '帳拆得乾乾淨淨':
     'the books split up cleanly',
   '，跟我們家飲料店對帳同一個精神。」':
-    ', in the same spirit as reconciling the books at our family\'s drink shop."',
+    ', in the same spirit as reconciling the books at our family\'s drinks shop."',
   '互動（自我認識）':
     'Interaction (self-knowledge)',
   '「如果連續兩年拆帳都發現：我們挑股票其實是扣分的，只有比例調得好——你覺得該怎麼辦？」':
@@ -388,7 +388,7 @@ export const MAP = {
   '能默寫配置／選股／交互三公式並解釋直覺':
     'You can write out the allocation / selection / interaction formulas from memory and explain the intuition',
   '模擬組合月度歸因上線（此後每月隨月報跑）':
-    'Monthly attribution for the simulated portfolio is live (from now on it runs with each monthly report)',
+    'Monthly attribution for the paper portfolio is live (from now on it runs with each monthly report)',
   '能精確轉述 Brinson 1986 的真正結論':
     'You can accurately restate the real conclusion of Brinson 1986',
   '分享環節完成，記錄卡住的點':

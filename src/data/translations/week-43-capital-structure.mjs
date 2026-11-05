@@ -268,7 +268,7 @@ export const MAP = {
   '30 分鐘':
     '30 min',
   '實習公司＋兩家對照':
-    'Your case-study company plus two comparisons',
+    'Your practice company plus two comparisons',
   '抓三家不同產業的公司（例如科技／電信／傳產），算淨負債／EBITDA 與利息保障倍數——親眼看產業的槓桿哲學差異。':
     'Pick three companies from different industries (for example tech / telecom / traditional), and calculate net debt / EBITDA and the interest coverage ratio — see the industries\' different leverage philosophies with your own eyes.',
   '選讀':

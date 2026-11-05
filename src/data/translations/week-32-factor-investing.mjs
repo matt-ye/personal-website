@@ -260,7 +260,7 @@ export const MAP = {
   '任務 B｜幫自己的組合戴眼鏡（20 分鐘）':
     'Task B | Put glasses on your own portfolio (20 minutes)',
   '把模擬組合的股票部位按大／小型、便宜／昂貴粗分類——有沒有':
-    'Roughly classify the simulated portfolio\'s stock positions by large / small and cheap / expensive — is there an ',
+    'Roughly classify the paper portfolio\'s stock positions by large / small and cheap / expensive — is there an ',
   '不自覺的因子傾斜':
     'unintended factor tilt',
   '？（台股散戶常見小型＋高股息傾斜。）寫兩行：這個傾斜是刻意的嗎？':

@@ -116,7 +116,7 @@ export const MAP = {
   '全程紀錄':
     'complete record',
   '。模擬組合的交易表已經有雛形（日期／動作／理由／執行落差），本週補齊三個關鍵欄位：':
-    '. The simulated portfolio\'s trade table already has the basics (date / action / reason / execution gap); this week we add three key columns:',
+    '. The paper portfolio\'s trade table already has the basics (date / action / reason / execution gap); this week we add three key columns:',
   '情緒分（1–10）':
     'Emotion score (1–10)',
   '：下單當下的情緒強度。之後統計「高情緒決策」的品質——幾乎人人會發現系統性偏差':
@@ -272,11 +272,11 @@ export const MAP = {
   '任務 A｜日誌補齊（15 分鐘）':
     'Task A | Complete the journal (15 minutes)',
   '模擬組合交易表補上三欄：情緒分／市場環境／預期回填。回填至今所有紀錄（情緒分憑印象補，之後即時記）。':
-    'Add three columns to the simulated portfolio\'s trade table: emotion score / market conditions / expectation backfill. Backfill all records so far (estimate the emotion scores from memory; from now on record them in real time).',
+    'Add three columns to the paper portfolio\'s trade table: emotion score / market conditions / expectation backfill. Backfill all records so far (estimate the emotion scores from memory; from now on record them in real time).',
   '任務 B｜四象限審判（30 分鐘）':
     'Task B | Four-quadrant judgment (30 minutes)',
   '把模擬組合至今每筆決策（含記錄過的「不買」）列出來，':
-    'List every decision in the simulated portfolio so far (including any "didn\'t buy" you recorded), then ',
+    'List every decision in the paper portfolio so far (including any "didn\'t buy" you recorded), then ',
   '先遮住結果':
     'cover the outcome',
   '，只讀當時的論點與資訊，評決策品質（好／爛＋一句理由）':
