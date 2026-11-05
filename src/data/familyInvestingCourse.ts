@@ -559,4 +559,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-48-treasury-hedging/',
   },
+  {
+    slug: 'week-49-governance-fraud',
+    title: 'W49 公司治理與財報舞弊',
+    titleEn: 'W49 Governance & Accounting Fraud',
+    description: '治理是代理問題的防火牆；Enron、Wirecard、博達三案的共同模式；紅旗清單升級 v2，報表層看數字說謊沒、治理層看說謊成本低不低。附殺信使測試與 15 項掃描器。',
+    descriptionEn: 'Governance as a firewall against agency problems, the shared pattern behind Enron, Wirecard and Procomp, and a 15-item red-flag list that adds a governance layer to the financial one.',
+    tags: ['Q4 財務長季', '互動評估'],
+    date: '2027-06-09',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-49-governance-fraud/',
+  },
 ];
