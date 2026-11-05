@@ -581,4 +581,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-50-taxes-taiwan/',
   },
+  {
+    slug: 'week-51-investor-relations',
+    title: 'W51 投資人關係——法說會怎麼聽',
+    titleEn: 'W51 Investor Relations',
+    description: '財報、法說、報告書、重訊各自的誠實度；法說會的價值在 Q&A 的追問與迴避、量化對形容詞的比例；連讀五年報告書抓消失的承諾。附形容詞偵測器與承諾追蹤表。',
+    descriptionEn: 'How honest each IR channel is, why earnings-call Q&A carries the most information, and how reading five years of shareholder letters exposes promises that quietly disappeared.',
+    tags: ['Q4 財務長季', '互動工具'],
+    date: '2027-06-23',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-51-investor-relations/',
+  },
 ];
