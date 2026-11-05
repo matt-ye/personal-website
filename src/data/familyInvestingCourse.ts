@@ -482,4 +482,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-41-capital-budgeting/',
   },
+  {
+    slug: 'week-42-wacc-capm',
+    title: 'W42 資金成本——WACC 與 CAPM',
+    titleEn: 'W42 Cost of Capital: WACC & CAPM',
+    description: '兩種金主的加權要價：市值權重、債的稅盾、CAPM 的無風險利率、β 與 ERP 各從哪裡找；WACC 是區間不是精確值。附 WACC 組裝台、敏感度九宮格與錯用門檻的代價。',
+    descriptionEn: 'The blended price of two kinds of capital: market-value weights, the debt tax shield, where to source the risk-free rate, beta and ERP — and why WACC is a range, not a precise number.',
+    tags: ['Q4 財務長季', '互動計算機'],
+    date: '2027-04-21',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-42-wacc-capm/',
+  },
 ];

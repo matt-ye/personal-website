@@ -1,0 +1,470 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .grid9{display:grid;grid-template-columns:auto repeat(3,1fr);gap:.3rem;margin-top:1rem;font-size:.85rem;text-align:center}
+  .grid9 div{padding:.5rem .3rem;border-radius:8px;background:var(--paper);border:1px solid var(--line);font-family:ui-monospace,Menlo,monospace}
+  .grid9 .h{background:none;border:none;font-family:inherit;font-weight:800;color:var(--ink-3);font-size:.72rem}
+  .grid9 .mid{background:var(--pine);border-color:var(--pine);color:var(--on-pine);font-weight:800}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 42</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q4 財務長季 · Week 42</p>
+  <h1>資金成本——WACC 與 CAPM 實務估算</h1>
+  <p class="lead" style="margin-top:.5rem">上週 NPV 裡那個「8%」，這週要自己算了。WACC 是公司所有投資案的<strong>跨欄高度</strong>——跨不過的案子毀滅價值。它也是 W20 DCF 折現率的正式版，以及 W9「ROIC 高於 WACC ＝ 護城河」那條鐵律的分母。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 15、20、41 週</span><span class="chip">52 週 · 第 42 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>CFO 用它設定投資門檻；投資人用它判斷 ROIC 算不算好；本週你會替實習公司親手估一個 WACC，每個輸入都有出處。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的沉沒成本一課——家人接受「10 萬不該綁架決定」了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">公司跟銀行借錢要付 2.5% 利息。那用股東的錢，要付多少「利息」？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">不用付，股東的錢是免費的</button>
+    <button data-g="b">要付，而且比銀行貴</button>
+    <button data-g="c">要付，但比銀行便宜</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. WACC 的直覺：兩種金主的加權要價</h2>
+  <p>公司的錢來自兩種人：<strong>債主</strong>（要利息）與<strong>股東</strong>（要報酬）。WACC 就是兩者要價的加權平均：</p>
+  <div class="quote">WACC ＝ E／(E＋D) × 股東要求報酬 ＋ D／(E＋D) × 借款利率 ×（1 − 稅率）</div>
+  <ul>
+    <li>E ＝ 權益<strong>市值</strong>、D ＝ 有息負債（W6 的老朋友）。<strong>用市值權重，不是帳面</strong>——金主看的是現在的價，不是歷史成本</li>
+    <li>（1 − 稅率）：利息可以抵稅，所以債的真實成本比票面利率低。這個「稅盾」是下週的主角</li>
+  </ul>
+  <p><strong>完整算例</strong>：權益市值 600 億、有息負債 200 億、股東要求報酬 8.1%、借款利率 2.5%、稅率 20%。WACC ＝ 0.75 × 8.1% ＋ 0.25 × 2.5% × 0.8 ＝ 6.075% ＋ 0.5% ＝ <strong>6.575%</strong>。這家公司每用一塊錢，平均要付 6.575% 的「資金租金」。</p>
+
+  <h2>2. 借款利率：債主要多少（三個中最簡單）</h2>
+  <p>方法依序：①公司現有借款／公司債的<strong>實際利率</strong>（年報附註有）；②同信評公司債的市場殖利率；③無風險利率＋信用利差估計。台灣公司常見量級 1.5–4%，依信用與年期而定。</p>
+
+  <h2>3. 股東要求報酬：CAPM 登場</h2>
+  <p>股東的要價沒有合約寫明，要用模型估。標準工具是 <strong>CAPM</strong>——W15 現代投資組合理論的直系後代、W32 因子模型的單因子祖先：</p>
+  <div class="quote">股東要求報酬 ＝ 無風險利率 ＋ β × 股權風險溢酬（ERP）</div>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>輸入</th><th>意義</th><th>哪裡拿</th><th>量級</th></tr></thead>
+      <tbody>
+        <tr><td class="f">無風險利率</td><td>錢的基本時間價格（W1、W3）</td><td>十年期公債殖利率（台灣：央行／櫃買中心；美元估值用美債）</td><td>台灣 1–2% 上下（查當日）</td></tr>
+        <tr><td class="f">β</td><td>這檔股票對大盤的敏感度，系統性風險的量（W15）</td><td>財經網站的迴歸值，或 Damodaran 產業 β</td><td>大盤＝1；穩定公用事業 &lt;1；高波動科技 &gt;1</td></tr>
+        <tr><td class="f">ERP</td><td>整體股市高於無風險的長期要求</td><td>Damodaran ERP 資料頁（按國家更新）</td><td>成熟市場 4–6%；台灣略高（含國家風險溢酬）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>算例</strong>：無風險利率 1.5%、β 1.1、ERP 6% → 股東要求報酬 ＝ 1.5% ＋ 1.1 × 6% ＝ <strong>8.1%</strong>。直覺句：「持有這檔股票的風險是大盤的 1.1 倍，所以股東要求比無風險多 6.6 個百分點的補償。」</p>
+  </div>
+
+  <div class="lab">
+    <h3>WACC 組裝台</h3>
+    <p class="muted" style="margin-top:-.2rem">預設是講義算例。下方的九宮格會跟著你的輸入，把 β 與 ERP 各上下晃一格。</p>
+    <div class="ctl"><label>權益市值 E <output id="o-e">600 億</output></label><input type="range" id="in-e" min="100" max="1500" step="50" value="600" aria-label="權益市值"></div>
+    <div class="ctl"><label>有息負債 D <output id="o-d">200 億</output></label><input type="range" id="in-d" min="0" max="1000" step="25" value="200" aria-label="有息負債"></div>
+    <div class="ctl"><label>無風險利率 <output id="o-rf">1.50%</output></label><input type="range" id="in-rf" min="0.5" max="5" step="0.25" value="1.5" aria-label="無風險利率"></div>
+    <div class="ctl"><label>β <output id="o-b">1.10</output></label><input type="range" id="in-b" min="0.4" max="2" step="0.05" value="1.1" aria-label="beta"></div>
+    <div class="ctl"><label>ERP <output id="o-erp">6.0%</output></label><input type="range" id="in-erp" min="3" max="9" step="0.5" value="6" aria-label="股權風險溢酬"></div>
+    <div class="ctl"><label>借款利率 <output id="o-rd">2.50%</output></label><input type="range" id="in-rd" min="0.5" max="8" step="0.25" value="2.5" aria-label="借款利率"></div>
+    <div class="ctl"><label>稅率 <output id="o-t">20%</output></label><input type="range" id="in-t" min="0" max="35" step="1" value="20" aria-label="稅率"></div>
+    <div class="ctl"><label>這家公司的 ROIC <output id="o-roic">9.0%</output></label><input type="range" id="in-roic" min="0" max="30" step="0.5" value="9" aria-label="ROIC"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">股東要求報酬</p><p class="sv" id="s-re">—</p><p class="sh">CAPM</p></div>
+      <div class="stat"><p class="sl">稅後借款成本</p><p class="sv" id="s-rd">—</p><p class="sh">利率 ×（1 − 稅率）</p></div>
+      <div class="stat"><p class="sl">WACC</p><p class="sv" id="s-wacc">—</p><p class="sh">跨欄高度</p></div>
+      <div class="stat"><p class="sl">ROIC − WACC</p><p class="sv" id="s-spr">—</p><p class="sh">創造還是毀滅</p></div>
+    </div>
+    <p class="muted" style="margin:.9rem 0 0">敏感度九宮格（WACC）：β ±0.2 × ERP ±1%</p>
+    <div class="grid9" id="g9"></div>
+    <div class="ibox" id="wnote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>4. 每個輸入的爭議（誠實面對）</h2>
+  <p>WACC 看起來精密，其實每個零件都在晃：</p>
+  <ol>
+    <li><strong>β 不穩定</strong>：換個迴歸期間（2 年 vs 5 年、週資料 vs 月資料），β 就變。實務常用「產業平均 β」再按槓桿調整（unlever-relever），比單一公司的迴歸值穩</li>
+    <li><strong>ERP 是估的</strong>：歷史平均？隱含法？學界吵了五十年，4% 和 6% 都有人用——差 2 個百分點，WACC 差超過 1 個百分點，估值差一大截（W21 九宮格的根源）</li>
+    <li><strong>CAPM 本身有缺陷</strong>：W32 學過，β 對報酬的解釋力實證上很弱；但它仍是業界的標準語言</li>
+    <li><strong>結論（Damodaran 的態度）</strong>：WACC 是<strong>合理區間</strong>，不是精確值——永遠配敏感度使用。「WACC 8.7362%」是假精確的招牌</li>
+  </ol>
+
+  <h2>5. 跨欄高度的三個應用</h2>
+  <ol>
+    <li><strong>投資案門檻</strong>（W41）：NPV 的折現率、IRR 的比較基準</li>
+    <li><strong>價值創造的判官</strong>（W9）：<strong>ROIC 高於 WACC ＝ 每塊錢投入都在創造價值</strong>——護城河的財務定義，正式補完分母</li>
+    <li><strong>DCF 折現率</strong>（W20）：你當時「先用 9%」的那個位置，現在能自己算了。回去把目標公司 DCF 的折現率換成自算的 WACC，看估值變多少</li>
+  </ol>
+  <p><strong>風險對應原則</strong>：不同風險的案子該用不同的門檻。用公司整體 WACC 去評「比本業風險高很多的新事業」，會系統性高估它的價值。保守作法：新事業加碼 2–3 個百分點。</p>
+  </div>
+
+  <div class="lab">
+    <h3>錯用門檻的代價</h3>
+    <p class="muted" style="margin-top:-.2rem">一個新事業：投資 18 億，之後每年現金流 1 億、永續成長 2%。公司整體 WACC 6.5%，但這個新事業的風險高得多。</p>
+    <div class="ctl"><label>公司整體 WACC <output id="o-nw">6.5%</output></label><input type="range" id="in-nw" min="4" max="10" step="0.5" value="6.5" aria-label="公司整體 WACC"></div>
+    <div class="ctl"><label>新事業風險加碼 <output id="o-np">2.5 個百分點</output></label><input type="range" id="in-np" min="0" max="5" step="0.5" value="2.5" aria-label="風險加碼"></div>
+    <div class="ctl"><label>每年現金流 <output id="o-nc">1.0 億</output></label><input type="range" id="in-nc" min="0.5" max="2" step="0.1" value="1" aria-label="每年現金流"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">用整體 WACC 算</p><p class="sv" id="s-nv1">—</p><p class="sh">NPV（億）</p></div>
+      <div class="stat"><p class="sl">用風險對應門檻算</p><p class="sv" id="s-nv2">—</p><p class="sh">NPV（億）</p></div>
+    </div>
+    <div class="ibox" id="nnote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「債比股便宜，多借就能壓低 WACC。」</p><p>半對：稅盾確實讓債便宜，但借越多、破產風險越高，股東與債主的要價<strong>都會被推高</strong>——WACC 不會一路往下（下週 MM 理論的正題）。</p></div>
+  <div class="myth"><p class="say">「WACC 是財務部的事，投資人不用算。」</p><p>你每次判斷「這家公司 ROIC 15% 算好嗎」，都隱含在跟 WACC 比。不會算分母，那條鐵律只是口號。</p></div>
+  <div class="myth"><p class="say">「帳上現金多，資金成本就低。」</p><p>現金不是資金來源，是資金<strong>用途</strong>；囤現金的機會成本恰恰是 WACC——股東的錢閒置在 1% 的定存裡，而股東要求 8%（W44 股利政策的核心矛盾）。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>找到每個輸入的出處</h2>
+  <div class="readitem"><div class="t">50 分鐘</div><div class="body"><b>《Principles of Corporate Finance》資金成本章</b><p>WACC 與 CAPM 的正式推導。</p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>Damodaran Data 頁：各國 ERP 與產業 β</b><p>實際找到兩張表——各國 ERP（找台灣的值）與產業 β（找實習公司產業的 unlevered β）。抄下數字與更新日期。<a class="srclink" href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/data.html" target="_blank" rel="noopener">Damodaran Data ↗</a></p></div></div>
+  <div class="readitem"><div class="t">10 分鐘</div><div class="body"><b>台灣十年期公債殖利率</b><p>到中央銀行或櫃買中心查最新值，記下日期。</p></div></div>
+  <div class="readitem"><div class="t">選讀</div><div class="body"><b>Damodaran 資金成本講次</b><p>聽他親口說「cost of capital is not a precise number」。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>替實習公司估 WACC（本週交付物）</h2>
+  <p>做一張「WACC 計算單」，每一行都有出處：</p>
+  <ol class="tasks">
+    <li>E：權益市值 ＝ 今日股價 × 流通股數（查證交所）</li>
+    <li>D：有息負債 ＝ 短期借款＋一年內到期長債＋長期借款＋公司債（W6 技能，年報附註）</li>
+    <li>無風險利率：十年期公債殖利率（今日值＋出處）</li>
+    <li>β：財經網站迴歸值與 Damodaran 產業 β <strong>兩個都抄</strong>，選一個並寫理由</li>
+    <li>ERP：Damodaran 的台灣值（含出處與日期）</li>
+    <li>借款利率：年報利息費用 ÷ 平均有息負債（實際利率法），與新發債利率對照</li>
+    <li>組裝 WACC，先用講義算例重算一遍驗證手感</li>
+    <li>敏感度：β ±0.2、ERP ±1% 的四角——WACC 區間多寬？</li>
+    <li><strong>收官</strong>：拿實習公司的 ROIC（W9 算過）跟自算 WACC 比——它在創造還是毀滅價值？寫三行結論</li>
+  </ol>
+  <div class="verify"><b>怎麼知道做對了：</b>組裝台預設必須是股東要求報酬 8.10%、稅後借款成本 2.00%、WACC 6.58%（精確值 6.575%）。九宮格四角是 5.00%（β 0.9、ERP 5%）到 8.45%（β 1.3、ERP 7%）——只晃兩個輸入，WACC 就差了將近 3.5 個百分點。錯用門檻的預設：用 6.5% 算 NPV +4.22 億，用 9% 算 −3.71 億。</div>
+  <ul class="checks" data-key="w42-practice">
+    <li><label><input type="checkbox"><span>計算單每個輸入有出處與日期</span></label></li>
+    <li><label><input type="checkbox"><span>講義算例驗證通過（6.575%）</span></label></li>
+    <li><label><input type="checkbox"><span>ROIC vs WACC 的結論寫出（護城河鐵律補完分母）</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 為什麼 WACC 的權重用市值，不用帳面值？</summary><div class="ans"><p>→ WACC 回答的是「<strong>現在</strong>繼續佔用這些資本的機會成本」。金主當下要求的報酬，是基於資本的市場價值（他們此刻能賣掉的價錢），不是多年前的入帳成本；帳面權重會系統性扭曲，尤其在股價遠離淨值時。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 股東的錢為什麼比債主的錢貴？（兩個理由）</summary><div class="ans"><p>→ ①<strong>求償順位</strong>：清算時債主先拿，股東拿剩的（常常是零）——風險高、要價高。②<strong>報酬不確定</strong>：利息是合約保證，股利與資本利得全看經營成果——不確定性本身要補償（W1 折現率的本義）。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 公司整體 WACC 6.5%，新事業風險遠高於本業——用 6.5% 評估它會犯什麼錯？</summary><div class="ans"><p>→ <strong>系統性高估新事業的價值</strong>：高風險現金流用低折現率折現 → NPV 虛胖 → 通過不該通過的案子。正解是風險對應：用同業純業務公司的資金成本，或本業加碼 2–3 個百分點。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>股東的錢更貴</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（兩種金主）</p><p>「公司要錢有兩條路：跟銀行借（付利息 2.5%），或用股東的錢。問題來了——<strong>股東的錢要付多少『利息』？</strong>」（讓家人想。常見答案：不用付吧？）</p></div>
+  <div class="script"><p class="who">核心觀念</p><p>「要付，而且<strong>更貴</strong>——只是不寫在合約上。銀行有抵押品、排前面；股東排最後、賠光認賠——風險越大，要價越高（第一週的道理）。股東的要價大概 8%：無風險的 1.5% 加上『陪你冒險』的 6.6%。所以公司真正的資金成本是兩種錢的加權——我們實習的那家公司算出來是＿%。」</p></div>
+  <div class="script"><p class="who">互動（跨欄）</p><p>「這個數字是公司的『及格線』：做任何生意賺不到這個 %，等於幫金主打白工。所以聽到公司要蓋新廠、辦併購，內行人問的第一句是：<strong>報酬跨得過資金成本嗎？</strong>」</p><p class="aside">連回護城河：「之前說 ROIC 高的是好公司——現在你知道，比較的對象就是這條線。」</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「股東又沒逼公司付 8%。」</b><br>「有——用腳投票。長期賺不到要求報酬的公司，股價會跌到『便宜到值得』為止；8% 是市場的隱形合約。」</p>
+    <p class="qa"><b>「借錢比較便宜，那全用借的？」</b><br>「下週的主題！先劇透：借太多，兩種金主都會漲價。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w42-final">
+    <li><label><input type="checkbox"><span>能默寫 WACC 與 CAPM 公式，說出每個輸入的出處</span></label></li>
+    <li><label><input type="checkbox"><span>實習公司 WACC 計算單完成（含敏感度四角）</span></label></li>
+    <li><label><input type="checkbox"><span>ROIC vs WACC 結論完成</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（股東的錢更貴），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 42 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 43：資本結構</b>——債與股的最適比例存在嗎？MM 定理的優雅與現實的偏離，加上「槓桿雙面刃」的完整數字展示。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-41-capital-budgeting/">上一週：資本預算</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——只是不寫在合約上。股東排在債主後面、賠光認賠，報酬也沒保證，所以要價更高：大約 8%，是銀行利率的三倍多。長期賺不到這個數字的公司，股價會跌到便宜到值得為止。"
+      : "要付，而且比銀行貴——只是不寫在合約上。股東排在債主後面、賠光認賠，報酬也沒保證，所以要價更高：大約 8%，是銀行利率的三倍多。長期賺不到這個數字的公司，股價會跌到便宜到值得為止。";
+  });
+
+  function pc(v, dp){ return v.toFixed(dp === undefined ? 2 : dp) + "%"; }
+
+  /* WACC 組裝台 */
+  var ids = ["e","d","rf","b","erp","rd","t","roic"], el = {};
+  ids.forEach(function(k){ el[k] = document.getElementById("in-" + k); });
+  function wacc(E, D, rf, b, erp, rd, t){
+    var re = rf + b * erp;
+    return {re: re, rdt: rd * (1 - t / 100), w: E / (E + D) * re + D / (E + D) * rd * (1 - t / 100)};
+  }
+  function runW(){
+    var v = {}; ids.forEach(function(k){ v[k] = +el[k].value; });
+    document.getElementById("o-e").textContent = v.e + " 億";
+    document.getElementById("o-d").textContent = v.d + " 億";
+    document.getElementById("o-rf").textContent = pc(v.rf);
+    document.getElementById("o-b").textContent = v.b.toFixed(2);
+    document.getElementById("o-erp").textContent = pc(v.erp, 1);
+    document.getElementById("o-rd").textContent = pc(v.rd);
+    document.getElementById("o-t").textContent = v.t + "%";
+    document.getElementById("o-roic").textContent = pc(v.roic, 1);
+    var r = wacc(v.e, v.d, v.rf, v.b, v.erp, v.rd, v.t), spr = v.roic - r.w;
+    document.getElementById("s-re").textContent = pc(r.re);
+    document.getElementById("s-rd").textContent = pc(r.rdt);
+    document.getElementById("s-wacc").textContent = pc(r.w);
+    var s = document.getElementById("s-spr"); s.textContent = (spr >= 0 ? "+" : "−") + Math.abs(spr).toFixed(2); s.className = "sv " + (spr >= 0 ? "pos" : "neg");
+    var g = '<div class="h"></div><div class="h">ERP ' + (v.erp - 1).toFixed(1) + '%</div><div class="h">ERP ' + v.erp.toFixed(1) + '%</div><div class="h">ERP ' + (v.erp + 1).toFixed(1) + '%</div>', lo = 99, hi = -99;
+    [-0.2, 0, 0.2].forEach(function(db){
+      g += '<div class="h">β ' + (v.b + db).toFixed(2) + '</div>';
+      [-1, 0, 1].forEach(function(de){
+        var w = wacc(v.e, v.d, v.rf, v.b + db, v.erp + de, v.rd, v.t).w;
+        lo = Math.min(lo, w); hi = Math.max(hi, w);
+        g += '<div class="' + (db === 0 && de === 0 ? "mid" : "") + '">' + pc(w) + '</div>';
+      });
+    });
+    document.getElementById("g9").innerHTML = g;
+    var n = document.getElementById("wnote");
+    n.className = "ibox" + (spr >= 0 ? " good" : "");
+    n.innerHTML = "<b>WACC " + pc(r.w) + "，合理區間 " + pc(lo) + "–" + pc(hi) + "。</b>" +
+      (spr >= 0 ? "ROIC " + pc(v.roic, 1) + " 跨過了跨欄：每投入一塊錢都在創造價值" + (v.roic < hi ? "——但 ROIC 落在 WACC 的區間內，這個結論並不穩，別說得太篤定。" : "，而且在整個區間之上，結論很穩。")
+        : "ROIC " + pc(v.roic, 1) + " 跨不過跨欄：帳上賺錢，經濟上卻在毀滅價值（W40 的帝國建造）。");
+  }
+  ids.forEach(function(k){ el[k].addEventListener("input", runW); });
+  runW();
+
+  /* 錯用門檻 */
+  var nW = document.getElementById("in-nw"), nP = document.getElementById("in-np"), nC = document.getElementById("in-nc");
+  function runN(){
+    var w = +nW.value, p = +nP.value, c = +nC.value, g = 2, inv = 18;
+    document.getElementById("o-nw").textContent = w.toFixed(1) + "%";
+    document.getElementById("o-np").textContent = p.toFixed(1) + " 個百分點";
+    document.getElementById("o-nc").textContent = c.toFixed(1) + " 億";
+    var v1 = c / ((w - g) / 100) - inv, v2 = c / ((w + p - g) / 100) - inv;
+    function put(id, v){ var e = document.getElementById(id); e.textContent = (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2); e.className = "sv " + (v >= 0 ? "pos" : "neg"); }
+    put("s-nv1", v1); put("s-nv2", v2);
+    var n = document.getElementById("nnote");
+    if (v1 >= 0 && v2 < 0) n.innerHTML = "<b>同一個案子，換個門檻就從「該做」變「不該做」。</b>用整體 " + w.toFixed(1) + "% 算是 +" + v1.toFixed(2) + " 億，按風險對應的 " + (w + p).toFixed(1) + "% 算卻是 −" + Math.abs(v2).toFixed(2) + " 億——用低門檻評高風險事業，正是公司「多角化」踩雷的標準路徑。";
+    else if (v2 >= 0) n.innerHTML = "<b>連用加碼後的 " + (w + p).toFixed(1) + "% 都是正的——這個案子經得起風險調整，可以做。</b>";
+    else n.innerHTML = "<b>兩種門檻都是負的：不做。</b>現金流不夠撐起 18 億的投資。";
+  }
+  [nW, nP, nC].forEach(function(e){ e.addEventListener("input", runN); });
+  runN();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w42-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w42-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 跨欄高度算出來了——下週問：借多少才對？" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

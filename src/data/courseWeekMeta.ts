@@ -422,5 +422,12 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 41 週：NPV 是換了主詞的 DCF、IRR 的三個陷阱、回收期法的用途與增量現金流三原則。附擴廠案 NPV 實驗台與第二家店計算機。",
     "ogTitle": "第 41 週：資本預算——NPV 與 IRR — 給家人的投資課",
     "ogDescription": "報酬率 50% 的小案子，輸給 20% 的大案子。學會 CFO 最常用的工具，也學會讓沉沒成本閉嘴。"
+  },
+  {
+    "slug": "week-42-wacc-capm",
+    "title": "第 42 週：資金成本——WACC 與 CAPM 實務估算｜給家人的投資課 · Matt Ye",
+    "description": "52 週投資課第 42 週：WACC 的兩種金主、CAPM 三個輸入的出處與爭議、合理區間與風險對應門檻。附 WACC 組裝台、敏感度九宮格與錯用門檻計算機。",
+    "ogTitle": "第 42 週：資金成本——WACC 與 CAPM — 給家人的投資課",
+    "ogDescription": "股東的錢比銀行的錢貴，只是不寫在合約上。算出公司的跨欄高度，護城河鐵律就補完了分母。"
   }
 ];
