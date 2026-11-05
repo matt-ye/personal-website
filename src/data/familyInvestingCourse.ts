@@ -471,4 +471,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-40-cfo-overview/',
   },
+  {
+    slug: 'week-41-capital-budgeting',
+    title: 'W41 資本預算——NPV 與 IRR',
+    titleEn: 'W41 Capital Budgeting',
+    description: 'NPV 就是對準單一案子的 DCF；互斥案永遠聽 NPV、IRR 的三個陷阱、回收期回答「錢卡多久」、增量現金流與沉沒成本。附擴廠案實驗台與第二家店損益兩平計算機。',
+    descriptionEn: 'NPV is DCF aimed at one project: why mutually exclusive projects follow NPV, IRR\'s three traps, what payback is for, and incremental cash flows versus sunk costs.',
+    tags: ['Q4 財務長季', '互動計算機'],
+    date: '2027-04-14',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-41-capital-budgeting/',
+  },
 ];

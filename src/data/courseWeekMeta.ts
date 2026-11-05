@@ -415,5 +415,12 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 40 週：Q4 財務長季開場，用飲料店分錄認識投資、融資、股利三大決策與目標函數的三個「不是」。附分錄分類台與帝國建造計算機。",
     "ogTitle": "第 40 週：CFO 三大決策總覽 — 給家人的投資課",
     "ogDescription": "錢投到哪、錢從哪來、賺的錢怎麼分——你在第 4 週的飲料店早就做過。換到桌子另一邊，看懂資本配置。"
+  },
+  {
+    "slug": "week-41-capital-budgeting",
+    "title": "第 41 週：資本預算——NPV 與 IRR｜給家人的投資課 · Matt Ye",
+    "description": "52 週投資課第 41 週：NPV 是換了主詞的 DCF、IRR 的三個陷阱、回收期法的用途與增量現金流三原則。附擴廠案 NPV 實驗台與第二家店計算機。",
+    "ogTitle": "第 41 週：資本預算——NPV 與 IRR — 給家人的投資課",
+    "ogDescription": "報酬率 50% 的小案子，輸給 20% 的大案子。學會 CFO 最常用的工具，也學會讓沉沒成本閉嘴。"
   }
 ];
