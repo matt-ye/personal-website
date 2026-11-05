@@ -345,5 +345,12 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 30 週：超額 2.4pp 拆成配置、選股與交互三塊且勾稽歸零，並修正被誤用最多的「90% 來自配置」。附 Brinson 拆帳台與 90% 判讀互動。",
     "ogTitle": "第 30 週：績效歸因——Brinson 模型 — 給家人的投資課",
     "ogDescription": "贏大盤 2.4pp——押對類別還是挑對股票？配置＋選股＋交互＝超額，帳拆得乾乾淨淨。附拆帳台互動。"
+  },
+  {
+    "slug": "week-31-benchmarks-tracking",
+    "title": "第 31 週：基準與追蹤誤差｜給家人的投資課 · Matt Ye",
+    "description": "52 週投資課第 31 週：好基準三條件、含息報酬指數、追蹤誤差與 Active Share，拆穿櫃子裡的指數基金。附含息尺與櫃子稽查器互動。",
+    "ogTitle": "第 31 週：基準與追蹤誤差 — 給家人的投資課",
+    "ogDescription": "拿不含息的加權指數比，人人都是股神。好基準三條件、TE 與 Active Share，三分鐘識破櫃子裡的指數基金。"
   }
 ];

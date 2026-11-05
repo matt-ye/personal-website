@@ -361,4 +361,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-09-06',
     url: '/projects/family-investing-course/week-30-brinson-attribution/',
   },
+  {
+    slug: 'week-31-benchmarks-tracking',
+    title: 'W31 基準與追蹤誤差',
+    titleEn: 'W31 Benchmarks & Tracking Error',
+    description: '跟誰比決定一切：好基準三條件、為什麼台股要用含息報酬指數（每年差 3–4%）、追蹤誤差與 Active Share，拆穿收主動費做被動事的櫃子基金。附含息尺與櫃子稽查器。',
+    descriptionEn: 'Who you compare against decides everything: three tests of a good benchmark, why Taiwan needs the total-return index, tracking error and active share — and how to spot a closet indexer.',
+    tags: ['Q3 操盤手季', '互動計算機'],
+    date: '2027-02-03',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-31-benchmarks-tracking/',
+  },
 ];
