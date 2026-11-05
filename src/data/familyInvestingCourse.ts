@@ -460,4 +460,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-39-q3-capstone-report/',
   },
+  {
+    slug: 'week-40-cfo-overview',
+    title: 'W40 CFO 三大決策總覽',
+    titleEn: 'W40 The CFO\'s Three Decisions',
+    description: 'Q4 開場：投資、融資、股利三大決策的地圖與互鎖，目標函數不是 EPS、不是短期股價、不是規模。附分錄分類台與帝國建造計算機（ROIC 低於 WACC 時越擴張越毀滅）。',
+    descriptionEn: 'Q4 opens on the other side of the table: the investment, financing and payout decisions, why value beats EPS, share price or size, and how growth with ROIC below WACC destroys value.',
+    tags: ['Q4 財務長季', '互動計算機'],
+    date: '2027-04-07',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-40-cfo-overview/',
+  },
 ];
