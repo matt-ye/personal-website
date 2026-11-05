@@ -366,5 +366,12 @@ export const courseWeekMeta: CourseWeekMeta[] = [
     "description": "52 週投資課第 33 週：期貨保證金的內建槓桿、選擇權權利金、保護性賣權與 covered call，以及為何不常態投保。附槓桿顯微鏡與 payoff 實驗台。",
     "ogTitle": "第 33 週：衍生性商品——避險用途 — 給家人的投資課",
     "ogDescription": "同一張合約，有現股是避險、沒有是投機。保護性賣權鎖住地板，但全年投保要約 10%——保險要買在特定時刻。"
+  },
+  {
+    "slug": "week-34-execution",
+    "title": "第 34 週：交易執行——滑價與市場衝擊｜給家人的投資課 · Matt Ye",
+    "description": "52 週投資課第 34 週：交易成本四層地圖、Implementation Shortfall、市場衝擊與參與率、個人執行五紀律。附 IS 計算器與拆單規劃器。",
+    "ogTitle": "第 34 週：交易執行——滑價與市場衝擊 — 給家人的投資課",
+    "ogDescription": "一次進場就漏掉 1.16%：價差、滑價、市場衝擊，還有掛太低沒買到的機會成本——對帳單上看不到的那一半。"
   }
 ];

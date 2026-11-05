@@ -394,4 +394,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-33-derivatives-hedging/',
   },
+  {
+    slug: 'week-34-execution',
+    title: 'W34 交易執行——滑價與市場衝擊',
+    titleEn: 'W34 Execution & Slippage',
+    description: '從「決定買」到「真的買到」之間漏掉的錢：交易成本四層地圖、把沒買到也算進去的 Implementation Shortfall、大單的市場衝擊與拆單。附 IS 計算器與拆單規劃器。',
+    descriptionEn: 'The money lost between deciding to buy and actually buying: the four layers of trading cost, implementation shortfall (which counts what you failed to buy), market impact and order splitting.',
+    tags: ['Q3 操盤手季', '互動計算機'],
+    date: '2027-02-24',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-34-execution/',
+  },
 ];
