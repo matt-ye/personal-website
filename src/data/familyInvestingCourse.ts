@@ -526,4 +526,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-45-working-capital/',
   },
+  {
+    slug: 'week-46-financial-planning',
+    title: 'W46 財務規劃——三表連動預測',
+    titleEn: 'W46 Financial Planning',
+    description: '一條營收假設拉出三張表、用恆等式配平出外部資金需求；可持續成長率 g* 檢驗成長目標；藏沙袋、曲棍球桿與滾動預測。附一頁式預測台與 5 年槓桿推演。',
+    descriptionEn: 'Drive three statements from one revenue assumption, balance them to find external funding needs, and test growth plans against the sustainable growth rate.',
+    tags: ['Q4 財務長季', '互動模擬器'],
+    date: '2027-05-19',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-46-financial-planning/',
+  },
 ];
