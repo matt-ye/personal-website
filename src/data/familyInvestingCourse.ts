@@ -548,4 +548,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-47-mergers-acquisitions/',
   },
+  {
+    slug: 'week-48-treasury-hedging',
+    title: 'W48 資金調度與避險——TRF 的教訓',
+    titleEn: 'W48 Treasury & Hedging',
+    description: '交易、換算、經濟三種匯率曝險；遠期外匯把變數變常數、避險比率與自然避險；TRF 贏有上限輸沒下限的形狀測試。附遠期外匯台與 TRF 形狀測試。',
+    descriptionEn: 'Transaction, translation and economic FX exposure; forwards that turn a variable into a constant, hedge ratios and natural hedges, and the capped-upside, unlimited-downside shape of Taiwan\'s TRF disaster.',
+    tags: ['Q4 財務長季', '互動模擬器'],
+    date: '2027-06-02',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-48-treasury-hedging/',
+  },
 ];
