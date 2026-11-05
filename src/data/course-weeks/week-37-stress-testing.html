@@ -1,0 +1,468 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .sttable{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.9rem}
+  .sttable th,.sttable td{padding:.5rem .45rem;border-bottom:1px solid var(--line);text-align:right}
+  .sttable th:first-child,.sttable td:first-child{text-align:left}
+  .sttable th{font-size:.75rem;color:var(--ink-3);letter-spacing:.06em}
+  .sttable td.l{color:var(--down);font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .sttable tr.over td:first-child::after{content:" ⚠";color:var(--warn)}
+  .sttable td small{display:block;color:var(--ink-3);font-weight:400;font-size:.72rem}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 37</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q3 操盤手季 · Week 37</p>
+  <h1>壓力測試與危機案例——2008、2020、2022</h1>
+  <p class="lead" style="margin-top:.5rem">W28 的風險儀表全是「回頭看」；本週補上「往前想」：把三場歷史風暴灌進你的模擬組合，看它和你的 IPS 撐不撐得住。對個人，壓測只回答一個問題：<strong>下一次崩盤來的那天早上，我會不會做蠢事。</strong></p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 12、28、31 週</span><span class="chip">52 週 · 第 37 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>壓測是機構風控的核心儀式，也是 Q4 公司避險（W48）的前置。機構怕的是客戶贖回與監管；個人怕的是<strong>自己</strong>——「看到 −30% 的那個我」才是被測試的對象。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的家庭事前驗屍——家人提出了什麼你沒想到的原因？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">2022 年是 60/40 股債組合幾十年來最糟的一年：股票跌、債券也跌。債券為什麼沒有發揮保護作用？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">恐慌時大家搶現金，什麼都賣</button>
+    <button data-g="b">病因是通膨，升息同時砸股與債</button>
+    <button data-g="c">債券本來就沒有保護作用</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 三場風暴的解剖：每場都是不同的病</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th></th><th>2008 金融海嘯</th><th>2020 COVID</th><th>2022 股債雙殺</th></tr></thead>
+      <tbody>
+        <tr><td class="f">病因</td><td><strong>信用</strong>：槓桿與房貸衍生品連環爆</td><td><strong>流動性</strong>：經濟急停，現金奪命搶</td><td><strong>通膨</strong>：央行暴力升息</td></tr>
+        <tr><td class="f">股票</td><td>台股約 −46%、S&amp;P 約 −38%（全年）</td><td>一個月急跌約 30%（S&amp;P 峰谷 −34%）</td><td>S&amp;P 約 −19%、台股約 −22%（全年）</td></tr>
+        <tr><td class="f">投資級債</td><td><strong>約 +5%（避險成功）</strong></td><td>短暫下跌後央行救回</td><td><strong>約 −13%（避險失敗）</strong></td></tr>
+        <tr><td class="f">形狀</td><td>深且長，回前高花數年</td><td>深但極短，V 型、數月收復</td><td>溫水煮蛙式陰跌一整年</td></tr>
+        <tr><td class="f">央行</td><td>降息＋QE（救市）</td><td>無限 QE（更快更猛）</td><td><strong>升息（央行就是跌的原因）</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p class="muted">數字為公認歷史量級，練習 A 會請你查證一次原始出處。</p>
+  <p><strong>三個共同點</strong>：①<strong>相關性上升</strong>——平時分散的資產一起跌（W15 分散侷限的實戰版）；②<strong>流動性蒸發</strong>——賣得掉的先被賣，好資產也被砍，因為只有它賣得掉；③<strong>槓桿者被迫平倉</strong>——跌勢的放大器，也是「IPS 禁用槓桿」的歷史依據。</p>
+  <p><strong>最重要的差異</strong>：2022 證明<strong>股債蹺蹺板不是物理定律</strong>。當病因是通膨，央行升息同時砸股（折現率上升）與債（W3 的反向關係）。避險工具有不有效，取決於<strong>危機的類型</strong>。</p>
+
+  <h2>2. 壓力測試方法：把歷史套進你的組合</h2>
+  <div class="quote">情境損失 ＝ Σ（權重 × 該資產在情境中的報酬）</div>
+  <p>公式簡單到不需要軟體，難的是誠實面對結果。下面的壓測台預設是講義算例：70／30 股債組合，三情境假設分別是 2008 型（股 −45%／債 +5%）、2020 型（−30%／0%）、2022 型（−20%／−13%）。</p>
+  </div>
+
+  <div class="lab">
+    <h3>三場風暴壓測台</h3>
+    <p class="muted" style="margin-top:-.2rem">拉你的配置與金額；剩下的比例算現金（名目 0%）。超過你 IPS 容忍度的情境會被標記。</p>
+    <div class="presets" id="stpre"><button data-s="70" data-b="30">70／30（講義算例）</button><button data-s="40" data-b="50">40／50／10（對照組）</button><button data-s="100" data-b="0">全股票</button></div>
+    <div class="ctl"><label>股票 <output id="o-s">70%</output></label><input type="range" id="in-s" min="0" max="100" step="5" value="70" aria-label="股票比例"></div>
+    <div class="ctl"><label>債券 <output id="o-b">30%</output></label><input type="range" id="in-b" min="0" max="100" step="5" value="30" aria-label="債券比例"></div>
+    <div class="ctl"><label>組合金額 <output id="o-amt">100 萬</output></label><input type="range" id="in-amt" min="10" max="1000" step="10" value="100" aria-label="組合金額"></div>
+    <div class="ctl"><label>IPS 可承受最大虧損 <output id="o-tol">25%</output></label><input type="range" id="in-tol" min="5" max="50" step="1" value="25" aria-label="可承受最大虧損"></div>
+    <table class="sttable" id="st">
+      <thead><tr><th>情境</th><th>組合損失</th><th>剩下</th><th>回本年數</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="ibox" id="stnote"></div>
+  </div>
+
+  <div class="prose">
+  <p>用兩個預設比一比，看懂兩件事：</p>
+  <ol>
+    <li><strong>2008 型</strong>下，債多的組合損失<strong>減半</strong>（−15.5% 對 −30.0%）——債券在信用危機裡是真減震器</li>
+    <li><strong>2022 型</strong>下，兩種配置<strong>幾乎一樣痛</strong>（−14.5% 對 −17.9%）——通膨危機裡沒有傳統的躲處，而且現金的實質損失還沒算進去</li>
+  </ol>
+  <p><strong>壓測的輸出不是預測，是三個行動問題</strong>：</p>
+  <ul>
+    <li>最壞情境的<strong>金額</strong>（不是 %），我在 W14 寫下的心理承受度撐得住嗎？</li>
+    <li>回本要幾年？−30% 需要 +42.9% 才回得來，以每年 7% 約 <strong>5.3 年</strong>——這段時間我的人生用得到這筆錢嗎？</li>
+    <li>有沒有情境會迫使我「在谷底賣」？預備金夠嗎？收入穩嗎？<strong>被迫賣出是唯一不可逆的傷。</strong></li>
+  </ul>
+
+  <h2>3. 反向壓測與流動性壓測</h2>
+  <p><strong>反向壓測</strong>：不問「情境造成多少損失」，而問「<strong>什麼情境會讓我損失 40%</strong>」——我的毀滅劇本長什麼樣。這對集中持股的人特別有殺傷力：組合常有一個「單一故事」的死穴，例如台股＋科技＋出口，全綁在半導體景氣上。</p>
+  </div>
+
+  <div class="lab">
+    <h3>反向壓測：你的毀滅劇本</h3>
+    <p class="muted" style="margin-top:-.2rem">假設債券與現金不動。股票部位裡，有一塊綁在同一個故事上（同產業、同題材）。要虧到目標，那個故事得跌多少？</p>
+    <div class="ctl"><label>股票佔組合 <output id="o-rw">70%</output></label><input type="range" id="in-rw" min="10" max="100" step="5" value="70" aria-label="股票佔組合"></div>
+    <div class="ctl"><label>單一故事佔股票 <output id="o-rs">60%</output></label><input type="range" id="in-rs" min="10" max="100" step="5" value="60" aria-label="單一故事佔股票"></div>
+    <div class="ctl"><label>其他股票同時跌 <output id="o-ro">20%</output></label><input type="range" id="in-ro" min="0" max="50" step="5" value="20" aria-label="其他股票跌幅"></div>
+    <div class="ctl"><label>毀滅門檻（組合虧損） <output id="o-rt">40%</output></label><input type="range" id="in-rt" min="20" max="60" step="5" value="40" aria-label="毀滅門檻"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">股票整體需跌</p><p class="sv neg" id="s-rall">—</p><p class="sh">不分故事、全面下跌</p></div>
+      <div class="stat"><p class="sl">單一故事需跌</p><p class="sv neg" id="s-rx">—</p><p class="sh">其他股票照設定跌</p></div>
+    </div>
+    <div class="ibox" id="rnote"></div>
+  </div>
+
+  <div class="prose">
+  <p><strong>流動性壓測</strong>：假設明天必須變現 50%——哪些部位賣得掉？折價多少？這是 W34 市場衝擊的危機版：危機中成交量萎縮、買賣價差擴大好幾倍。</p>
+
+  <h2>4. 壓測後的行動選單（不是賣光）</h2>
+  <p>依嚴重度排序：</p>
+  <ol>
+    <li><strong>確認預備金</strong>（6–12 個月生活費）——第一道防線永遠是它</li>
+    <li><strong>調整配置</strong>——若最壞金額超出承受，代表 W14 的比例本來就寫錯了</li>
+    <li><strong>檢查單一死穴</strong>——反向壓測抓到的集中風險，回到 W18 的上限</li>
+    <li><strong>特定事件前的保險</strong>——W33 的 put，現在你知道什麼時候值得買了</li>
+    <li><strong>什麼都不做</strong>——壓測通過的正確獎勵。把結論寫進 IPS 附錄，下次崩盤時拿出來讀</li>
+  </ol>
+
+  <h2>5. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「壓測通過就安全了。」</p><p>歷史情境是「至少要撐過已經發生的」下限；下一場危機必然有新病因——2019 年沒人壓測過「全球封城」。所以反向壓測比重演歷史更重要。</p></div>
+  <div class="myth"><p class="say">「危機時現金為王，全現金最安全。」</p><p>2022 年現金名目 0%、實質約 −8%（美國通膨）。「安全」的資產只是把風險換成通膨風險（W2）——沒有無風險，只有選哪一種風險。</p></div>
+  <div class="myth"><p class="say">「壓測是機構的事。」</p><p>機構壓測怕的是贖回與監管；個人壓測怕的是自己。演習過的人，崩盤那天才不會踩踏。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>三場危機，各讀一篇好回顧</h2>
+  <div class="readitem"><div class="t">60 分鐘</div><div class="body"><b>三場危機的深度回顧</b><p>2008（搜「金融海嘯 回顧 成因」，選深度媒體或央行報告）、2020（「2020 三月 流動性危機」）、2022（「2022 股債雙殺」）。每場記三行：<strong>病因／傳導／誰被迫賣</strong>。</p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>Howard Marks〈Nobody Knows〉（2008 年 9 月）</b><p>雷曼倒閉那週即時寫下的判斷——不是事後諸葛。感受「資訊不全時怎麼決策」。<a class="srclink" href="https://www.oaktreecapital.com/insights/memos" target="_blank" rel="noopener">Oaktree Memos ↗</a></p></div></div>
+  <div class="readitem"><div class="t">20 分鐘</div><div class="body"><b>《掌握市場週期》危機章節（選讀）</b><p>Marks 對「週期走到極端時，人們怎麼說服自己」的描述，正好是壓測要防的心理狀態。</p></div></div>
+  <div class="readitem"><div class="t">10 分鐘</div><div class="body"><b>回顧 W12 兩次衰退檢驗＋W28 風險模組</b><p>本週把它們合體：W12 看歷史、W28 看儀表，W37 把歷史灌進儀表。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>轟炸自己的組合</h2>
+  <h3>任務 A｜量級查證（15 分鐘）</h3>
+  <p>查證講義表格的歷史量級：各指數當年／峰谷跌幅、當年債券報酬。來源可用指數官網、FRED 或年度回顧報導。修正你查到的差異並註明出處——<strong>數據紀律：講義給量級，你負責原始出處</strong>。</p>
+  <h3>任務 B｜三情境壓測（30 分鐘）</h3>
+  <ol class="tasks">
+    <li>用模擬組合<strong>現在的實際權重</strong>跑三情境；股票部位可再細分台股／全球，套用不同跌幅</li>
+    <li>輸出各情境的損失 % 與<strong>金額</strong>、對照 IPS 容忍值、回本年數</li>
+    <li>跑一次反向壓測：寫下「什麼具體劇本會讓我 −40%」——上週事前驗屍的組合版</li>
+  </ol>
+  <h3>任務 C｜行動決定（15 分鐘）</h3>
+  <p>依第 4 節的選單寫下你的行動（包括「什麼都不做」），再寫一段話存進 IPS 附錄：<strong>「給下次崩盤時的我」</strong>。</p>
+  <div class="verify"><b>怎麼知道做對了：</b>壓測台預設（70／30、100 萬）必須是 2008 型 −30.0%（剩 70.0 萬、回本約 5.3 年）、2020 型 −21.0%、2022 型 −17.9%；按「40／50／10」後必須是 −15.5%、−12.0%、−14.5%。反向壓測預設（股 70%、單一故事 60%、其他跌 20%）：股票整體需跌 57.1%，單一故事需跌 81.9%。</div>
+  <ul class="checks" data-key="w37-practice">
+    <li><label><input type="checkbox"><span>歷史量級查證有出處</span></label></li>
+    <li><label><input type="checkbox"><span>三情境＋反向壓測完成（用金額表述）</span></label></li>
+    <li><label><input type="checkbox"><span>「給崩盤時的我」一段話寫入 IPS 附錄</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 為什麼 2022 年債券沒有發揮保護作用？</summary><div class="ans"><p>→ 病因是<strong>通膨</strong>：央行升息是跌勢的源頭，而利率上升直接壓低債券價格（W3 反向關係）——股債同一個敵人，蹺蹺板失效。2008 的病因是信用崩潰，央行<strong>降息</strong>救市，債券因此上漲。保護是否有效，取決於危機類型。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 壓測和 VaR（W28）的本質差異是什麼？</summary><div class="ans"><p>→ VaR 從「歷史分布」推機率——回頭看，而且在平靜期會低估；壓測直接問「<strong>特定極端情境</strong>下虧多少」——往前想，不管機率。VaR 是日常儀表、壓測是消防演習，互補而非取代。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 「被迫賣出是唯一不可逆的傷」——哪三道防線在防它？</summary><div class="ans"><p>→ ①<strong>預備金</strong>：生活費不靠組合；②<strong>配置符合真實承受度</strong>：W14 三要素取最保守；③<strong>零槓桿</strong>：不會被追繳保證金。三道都寫在 IPS 裡——這正是 IPS 存在的意義。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>我們家的投資消防演習</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（消防演習）</p><p>「學校為什麼每年辦消防演習？不是因為快失火了，是<strong>趁沒失火時把逃生路線走熟</strong>。今天我們家的投資做一次消防演習。」</p></div>
+  <div class="script"><p class="who">核心演示</p><p>秀壓測表：「如果 2008 重演，我們的 100 萬會變 70 萬；2020 重演變 79 萬；2022 那種變 82 萬。」（停頓，讓數字沉澱。）「重點來了：<strong>這些數字我們現在看著它、討論它，跟崩盤那天早上第一次看到它，是完全不同的兩件事</strong>。演習過的人不會踩踏。」</p></div>
+  <div class="script"><p class="who">互動（家庭消防檢查）</p><p>三個檢查：①如果明年是 2008，我們家的生活費撐得住、不必賣股票嗎？（預備金）②這個數字誰會睡不著？（誠實舉手）③睡不著的話，是現在調低股票比例，還是記住「演習過了、照計畫走」？</p><p class="aside">把答案記下來——這就是家庭版的 IPS 附錄。</p></div>
+  <div class="script"><p class="who">收尾（2022 的特別教訓）</p><p>「以前說『股票跌、債券漲』互相保護——2022 年兩個一起跌，因為那次的病因是通膨。<strong>沒有永遠有效的保護，只有事先想過的家庭。</strong>」</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那還是很可怕。」</b><br>「可怕的是意外，不是數字——我們現在做的，就是把意外變成劇本。而且歷史上每一次，照計畫留在場上的人都活得很好（W12 的證據）。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w37-final">
+    <li><label><input type="checkbox"><span>能講出三場危機的病因差異，以及 2022 的特殊教訓</span></label></li>
+    <li><label><input type="checkbox"><span>模擬組合三情境＋反向壓測完成</span></label></li>
+    <li><label><input type="checkbox"><span>「給崩盤時的我」寫入 IPS 附錄；家庭消防檢查完成</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 37 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 38：交易日誌與複盤</b>——Q3 的最後一塊拼圖：怎麼區分「做得對」和「運氣好」。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-36-decision-process/">上一週：決策流程</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——2022 的病因是通膨，央行升息同時砸股票（折現率上升）與債券（利率漲、債價跌）。2008 的病因是信用崩潰，央行降息救市，債券因此上漲。保護有沒有效，取決於危機的類型。"
+      : "關鍵在病因：2022 是通膨，央行升息同時砸股票（折現率上升）與債券（利率漲、債價跌）。2008 的病因是信用崩潰，央行降息救市，債券因此上漲、成功避險。保護有沒有效，取決於危機的類型。";
+  });
+
+  /* 三場風暴壓測台 */
+  var SC = [
+    {n:"2008 型", d:"信用危機", s:-45, b:5},
+    {n:"2020 型", d:"流動性危機", s:-30, b:0},
+    {n:"2022 型", d:"通膨危機", s:-20, b:-13}
+  ];
+  var iS = document.getElementById("in-s"), iB = document.getElementById("in-b"), iA = document.getElementById("in-amt"), iT = document.getElementById("in-tol");
+  var tb = document.querySelector("#st tbody");
+  function recover(loss){ return Math.log(1 / (1 - loss / 100)) / Math.log(1.07); }
+  function runSt(src){
+    var s = +iS.value, b = +iB.value;
+    if (s + b > 100){ if (src === iS) { b = 100 - s; iB.value = b; } else { s = 100 - b; iS.value = s; } }
+    var c = 100 - s - b, amt = +iA.value, tol = +iT.value;
+    document.getElementById("o-s").textContent = s + "%";
+    document.getElementById("o-b").textContent = b + "%" + (c ? "（現金 " + c + "%）" : "");
+    document.getElementById("o-amt").textContent = amt + " 萬";
+    document.getElementById("o-tol").textContent = tol + "%";
+    var html = "", worst = null, over = [];
+    SC.forEach(function(x){
+      var r = (s * x.s + b * x.b) / 100, loss = -r;
+      var left = amt * (1 + r / 100), yrs = loss > 0 ? recover(loss) : 0;
+      if (!worst || r < worst.r) worst = {n:x.n, r:r, left:left, yrs:yrs};
+      if (loss > tol) over.push(x.n);
+      html += '<tr' + (loss > tol ? ' class="over"' : '') + '><td>' + x.n + '<small>' + x.d + '｜股 ' + x.s + '%／債 ' + (x.b > 0 ? "+" : "") + x.b + '%</small></td><td class="l">' + (r < 0 ? "−" : "+") + Math.abs(r).toFixed(1) + '%</td><td>' + left.toFixed(1) + ' 萬</td><td>' + (loss > 0 ? "約 " + yrs.toFixed(1) + " 年" : "—") + '</td></tr>';
+    });
+    tb.innerHTML = html;
+    var note = "<b>最壞是" + worst.n + "：" + amt + " 萬變 " + worst.left.toFixed(1) + " 萬，少了 " + (amt - worst.left).toFixed(1) + " 萬。</b>";
+    if (worst.r < 0) note += "以每年 7% 回本約 " + worst.yrs.toFixed(1) + " 年——這段時間，家裡用得到這筆錢嗎？";
+    if (over.length) note += "<br>⚠ " + over.join("、") + "超過你寫下的 " + tol + "% 容忍度。不是情境錯了，是配置或容忍度至少有一個要重寫。";
+    else note += "<br>三個情境都在 " + tol + "% 容忍度內——把這張表存進 IPS 附錄，崩盤那天拿出來讀。";
+    document.getElementById("stnote").innerHTML = note;
+  }
+  [iS, iB, iA, iT].forEach(function(el){ el.addEventListener("input", function(){ runSt(el); }); });
+  document.getElementById("stpre").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    iS.value = btn.dataset.s; iB.value = btn.dataset.b; runSt(iS);
+  });
+  runSt(iS);
+
+  /* 反向壓測 */
+  var iRw = document.getElementById("in-rw"), iRs = document.getElementById("in-rs"), iRo = document.getElementById("in-ro"), iRt = document.getElementById("in-rt");
+  function runRev(){
+    var w = +iRw.value / 100, sh = +iRs.value / 100, o = +iRo.value, t = +iRt.value;
+    document.getElementById("o-rw").textContent = iRw.value + "%";
+    document.getElementById("o-rs").textContent = iRs.value + "%";
+    document.getElementById("o-ro").textContent = o + "%";
+    document.getElementById("o-rt").textContent = t + "%";
+    var all = t / w, x = (all - (1 - sh) * o) / sh;
+    var ea = document.getElementById("s-rall"), ex = document.getElementById("s-rx"), n = document.getElementById("rnote");
+    ea.textContent = all > 100 ? "不可能" : "−" + all.toFixed(1) + "%";
+    if (x > 100) ex.textContent = "不可能";
+    else if (x <= 0) ex.textContent = "不必跌";
+    else ex.textContent = "−" + x.toFixed(1) + "%";
+    if (all > 100) n.innerHTML = "<b>股票全部歸零也虧不到 " + t + "%。</b>以這個配置，毀滅劇本不在市場下跌這條路上——該擔心的是通膨與被迫賣出。";
+    else if (x <= 0) n.innerHTML = "<b>其他股票跌 " + o + "% 就已經夠了。</b>股票比例太高，不需要單一故事出事，一場普通熊市就會讓你虧到 " + t + "%。";
+    else if (x > 100) n.innerHTML = "<b>單一故事歸零也到不了 " + t + "%。</b>集中度還在可控範圍——這條路上沒有毀滅劇本，但仍要看其他路。";
+    else n.innerHTML = "<b>你的毀滅劇本：那一個故事跌 " + x.toFixed(1) + "%，同時其他股票跌 " + o + "%。</b>" + (x < 85 ? "單一產業跌八成以上並非天方夜譚——2000 年科技泡沫，那斯達克峰谷跌了約 78%。把這個劇本寫下來，對照 W18 的集中度上限。" : "這需要接近歸零的崩跌，機率低——但寫下來，它就是你該監控的觸發條件。");
+  }
+  [iRw, iRs, iRo, iRt].forEach(function(el){ el.addEventListener("input", runRev); });
+  runRev();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w37-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w37-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 演習完成——下週學會分辨「做得對」和「運氣好」。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

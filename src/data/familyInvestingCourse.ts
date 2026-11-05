@@ -427,4 +427,15 @@ export const familyInvestingCourseUnits: OmsDoc[] = [
     published: '2026-11-05',
     url: '/projects/family-investing-course/week-36-decision-process/',
   },
+  {
+    slug: 'week-37-stress-testing',
+    title: 'W37 壓力測試——2008／2020／2022',
+    titleEn: 'W37 Stress Testing',
+    description: '信用、流動性、通膨三種危機的解剖；把歷史情境灌進你的組合、用金額看損失與回本年數；反向壓測找出單一故事的死穴。附三場風暴壓測台與毀滅劇本計算器。',
+    descriptionEn: 'Credit, liquidity and inflation crises compared; run historical scenarios against your portfolio in dollars and years-to-recover; reverse stress tests find the single-story weak spot.',
+    tags: ['Q3 操盤手季', '互動計算機'],
+    date: '2027-03-17',
+    published: '2026-11-05',
+    url: '/projects/family-investing-course/week-37-stress-testing/',
+  },
 ];
