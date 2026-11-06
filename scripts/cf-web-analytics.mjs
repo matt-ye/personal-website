@@ -7,6 +7,7 @@
 //
 // 指標沒有 unique visitors，只有 pageviews（count）與 visits（sum.visits），
 // users / sessions 都用 visits 代表。
+// 長區間是 Cloudflare 的抽樣估算，少量資料時各視窗的分佈可能不一致（總量仍一致）。
 
 const CF_GRAPHQL = 'https://api.cloudflare.com/client/v4/graphql';
 const DAY_MS = 86_400_000;

@@ -474,7 +474,7 @@ function siteSectionHTML(b) {
     <div class="dash-source-head">
       <span class="dash-source-title">${esc(b.name)}</span>
       ${b.site ? `<a class="dash-source-link" href="${esc(b.site)}" target="_blank" rel="noopener">${esc(b.host)} ↗</a>` : ''}
-    </div>${isCfWa ? `<p class="dash-muted">${L('來源：Cloudflare Web Analytics。Visitors 為造訪次數（非不重複人數）；最多保留約 6 個月，7 天後的資料為抽樣估算；阻擋追蹤的訪客不計。', 'Source: Cloudflare Web Analytics. Visitors means visits, not unique people; kept about 6 months, sampled after 7 days; visitors who block trackers are not counted.')}</p>` : ''}`;
+    </div>${isCfWa ? `<p class="dash-muted">${L('來源：Cloudflare Web Analytics。Visitors 為造訪次數（非不重複人數）；最多保留約 6 個月；區間較長時為抽樣估算，分佈可能與短區間略有差異；阻擋追蹤的訪客不計。', 'Source: Cloudflare Web Analytics. Visitors means visits, not unique people; kept about 6 months; longer ranges are sampled estimates, so breakdowns may differ slightly; visitors who block trackers are not counted.')}</p>` : ''}`;
 
   if (!b.configured) {
     const msg = b.error
@@ -613,7 +613,7 @@ function siteSectionHTML(b) {
         '漏斗百分比＝該階段相對「文章/整站瀏覽」的轉換率（「送出贊助」相對「開啟贊助」）。點擊專案/GitHub 為全站事件，不限文章頁。',
         'Funnel percentages are conversion vs the funnel’s first stage (“Donate start” vs “Donate open”). Project/GitHub clicks are site-wide events, not limited to articles.'
       )}</p>`;
-  } else {
+  } else if (!isCfWa) {
     const evs = forWin(d.topEvents);
     const cards = evs === null ? PENDING() : (evs.length
       ? `<div class="bento-grid">` + evs.map(e => `
