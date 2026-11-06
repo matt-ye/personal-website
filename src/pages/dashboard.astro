@@ -469,11 +469,12 @@ function leaderboardHTML(pages) {
 }
 
 function siteSectionHTML(b) {
+  const isCfWa = b.data?.source === 'cf-wa';
   const head = `
     <div class="dash-source-head">
       <span class="dash-source-title">${esc(b.name)}</span>
       ${b.site ? `<a class="dash-source-link" href="${esc(b.site)}" target="_blank" rel="noopener">${esc(b.host)} ↗</a>` : ''}
-    </div>`;
+    </div>${isCfWa ? `<p class="dash-muted">${L('來源：Cloudflare Web Analytics。Visitors 為造訪次數（非不重複人數）；最多保留約 6 個月，7 天後的資料為抽樣估算；阻擋追蹤的訪客不計。', 'Source: Cloudflare Web Analytics. Visitors means visits, not unique people; kept about 6 months, sampled after 7 days; visitors who block trackers are not counted.')}</p>` : ''}`;
 
   if (!b.configured) {
     const msg = b.error
@@ -488,9 +489,13 @@ function siteSectionHTML(b) {
   /* KPI */
   let kpis =
     tile('Visitors', t?.users, winLabel()) +
-    tile('Page Views', t?.views, winLabel()) +
-    tile('Sessions', t?.sessions, t ? L(`新訪客 ${fmtNum(t.newUsers ?? 0)}`, `${fmtNum(t.newUsers ?? 0)} new`) : '—') +
-    tile('Engagement', t ? `${Math.round((t.engagementRate ?? 0) * 100)}%` : null, L('互動率', 'Engagement rate'));
+    tile('Page Views', t?.views, winLabel());
+  // Web Analytics 沒有新訪客與互動率，顯示 0 會誤導，直接不出這兩張。
+  if (!isCfWa) {
+    kpis +=
+      tile('Sessions', t?.sessions, t ? L(`新訪客 ${fmtNum(t.newUsers ?? 0)}`, `${fmtNum(t.newUsers ?? 0)} new`) : '—') +
+      tile('Engagement', t ? `${Math.round((t.engagementRate ?? 0) * 100)}%` : null, L('互動率', 'Engagement rate'));
+  }
   if (b.isMain) {
     const reads = (d.events ?? []).find(e => e.name === 'read_complete');
     kpis += tile('Read Completes', eventWin(reads) ?? (reads ? null : undefined), L('文章完讀', 'Articles read'));

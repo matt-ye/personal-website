@@ -56,6 +56,17 @@ export const MAIN_STREAM_ID = '14990442923';
 //   - 沒有         → 與主站同一個 property，靠 streamId + hostName 切分
 // 兩種都與主站共用 GA4_SA_KEY，不需要額外 secret；但**獨立 property 必須
 // 把同一個 service account 加為該 property 的檢視者**，否則 API 回 403。
+// 用 Cloudflare Web Analytics 量的網站（沒有 GA4）。siteTag 是後台 Manage site 網址裡的 ID，
+// 不是貼在頁面上的 site token；查錯會回零筆而不是錯誤。需要 secret CF_WA_TOKEN。
+export const CF_WA_SITES = [
+  {
+    key: 'opengsa',
+    label: { zh: 'OpenGSA 碩博士獎助', en: 'OpenGSA' },
+    site: 'https://opengsa.mattye.dev',
+    siteTag: 'a76e152268cf4ac2a377da1c8b8476fe',
+  },
+];
+
 export const GA4_EXTRA_SITES = [
   {
     key: 'dreamcatcher',
