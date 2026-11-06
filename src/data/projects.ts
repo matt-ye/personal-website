@@ -92,4 +92,16 @@ export const projects: Project[] = [
     tagsEn: ['Health Tool', 'Evidence-Based'],
     internal: false,
   },
+  {
+    slug: 'opengsa',
+    title: 'OpenGSA 碩博士獎助資訊',
+    titleEn: 'OpenGSA: Grants for Taiwan Grad Students',
+    description: '整理臺灣碩博士獎助與權益資訊的開源工具：用甘特圖一次看截止時間，未明資訊導回官方來源。把時間留給研究，把獎助檢索交給 OpenGSA。',
+    descriptionEn: 'An open-source guide to grants and rights for graduate students in Taiwan. See deadlines on a single Gantt chart, with unclear details linked back to official sources.',
+    status: 'live',
+    url: 'https://opengsa.mattye.dev',
+    tags: ['開源', '研究生資源'],
+    tagsEn: ['Open Source', 'Grad Students'],
+    internal: false,
+  },
 ];
