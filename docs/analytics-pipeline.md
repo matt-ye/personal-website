@@ -60,6 +60,7 @@ repo Settings → Secrets and variables → Actions → New repository secret：
 | `GIST_ID` | 首次執行後補（見下一步） |
 | `CF_DEPLOY_TOKEN` | 自動化 token：Workers Scripts:Edit + D1:Edit + Workers Routes:Edit（第 10 步） |
 | `CF_ACCOUNT_ID` | Cloudflare Account ID（第 10 步） |
+| `CF_WA_TOKEN` | Cloudflare token，權限僅 Account Analytics:Read（第 9 步之後的 Web Analytics 網站） |
 | `CF_D1_DB_ID` | D1 `telaaurea-auth` 的 Database ID（第 10 步） |
 | `GH_DISPATCH_TOKEN` | fine-grained PAT，僅 personal-website、Actions:RW（第 10 步） |
 
@@ -189,6 +190,18 @@ telaaurealab.com 上），而不是回頭改 pipeline。
 > - 這個設定是**串流層級**的，**不會從舊串流繼承**——日後再建新串流要重設一次
 > - 它**只對設定之後的流量生效，不回溯**。所以新資源在 2026-08-14 之前的流量
 >   來源報表可能把付款商列為參照來源，那是已知的、不會再變的歷史，不用去查
+
+### 9b. 用 Cloudflare Web Analytics 量的網站（OpenGSA）
+
+OpenGSA 不放 GA4（隱私立場），改用 Web Analytics。設定在 `CF_WA_SITES`（`analytics-config.mjs`），
+抓取在 `scripts/cf-web-analytics.mjs`，結果併進 `summary.ga4Sites`，以 `source: 'cf-wa'` 區分。
+
+- `siteTag` 是後台 Manage site 網址裡的 ID，**不是**頁面 snippet 裡的 token；填錯回零筆而不是錯誤。
+- 帳戶限制（2026-11 實測）：單次查詢最多 93 天、資料保留 184 天。d365 視窗實際只有 180 天。
+- 只有 pageviews 與 visits，沒有不重複人數、新訪客、互動率。
+- 測試分支：Actions → analytics → Run workflow，選分支並勾 `dry_run`，只產 artifact、不寫 gist。
+- `opengsa.mattye.dev` 走 Cloudflare 代理，zone 上有一條 Configuration Rule 關掉 RUM 自動注入，
+  否則主站的 beacon 會被注入進去、流量混進 mattye.dev。
 
 ### 10. dashboard-api worker（真一鍵更新 + 註冊用戶數，~15 分鐘）
 

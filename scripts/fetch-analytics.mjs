@@ -18,8 +18,9 @@ import { createSign } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import {
   GA4_EVENTS, FEATURED, EXCLUDE, INCLUDE_FORKS, INCLUDE_ARCHIVED, HOSTS,
-  MAIN_STREAM_ID, GA4_EXTRA_SITES,
+  MAIN_STREAM_ID, GA4_EXTRA_SITES, CF_WA_SITES,
 } from './analytics-config.mjs';
+import { fetchCfWebAnalytics } from './cf-web-analytics.mjs';
 
 // v2：維度報表（topPages/channels/devices/countries/hosts/topEvents）從單一 28 天陣列
 // 改為「視窗 → 陣列」物件（{d7:[…],d28:[…],…}）。dashboard 兩種形狀都能讀。
@@ -801,6 +802,17 @@ for (const site of GA4_EXTRA_SITES) {
   ga4Sites.push({ key: site.key, label: site.label, site: site.site, ...result });
 }
 
+// Cloudflare Web Analytics 的網站併進同一個陣列：形狀相同，dashboard 與 history 都不用分流。
+for (const site of CF_WA_SITES) {
+  const result = await runSource(
+    `CF-WA:${site.key}`, process.env.CF_WA_TOKEN && CF_ACCOUNT_ID,
+    () => fetchCfWebAnalytics(site, { token: process.env.CF_WA_TOKEN, accountTag: CF_ACCOUNT_ID })
+  );
+  const t28 = result.totals?.d28;
+  if (t28) console.log(`  ${site.key} 近 28 天：visits ${t28.users} / views ${t28.views}`);
+  ga4Sites.push({ key: site.key, label: site.label, site: site.site, ...result });
+}
+
 let prevHistory = null;
 try {
   prevHistory = await gistRead();
@@ -830,4 +842,8 @@ writeFileSync('out/summary.json', summaryJson);
 writeFileSync('out/history.ndjson', history);
 console.log(`- out/: summary.json ${summaryJson.length} bytes, history ${history.split('\n').filter(Boolean).length} 天`);
 
-await gistWrite(summaryJson, history);
+if (process.env.ANALYTICS_DRY_RUN === 'true') {
+  console.log('- gist: dry run，未寫入（看 out/ artifact）');
+} else {
+  await gistWrite(summaryJson, history);
+}
