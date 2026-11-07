@@ -496,7 +496,7 @@ async function fetchRegUsers() {
     .map((r) => r.name)
     .filter((t) => !t.startsWith('sqlite_') && !t.startsWith('_cf_') && !t.startsWith('d1_'));
   const table = pickUsersTable(tables);
-  console.log(`  D1 tables: ${tables.join(', ')} → 使用「${table}」`);
+  console.log(`  D1: 使用「${table}」`);
   const count = num((await d1Query(`SELECT COUNT(*) AS n FROM "${table}"`))[0]?.n);
   // siteKey：dashboard 把這張卡掛在哪個網站區塊
   return { configured: true, count, table, siteKey: 'dreamcatcher', fetchedAt: new Date().toISOString() };
@@ -675,8 +675,9 @@ async function gistWrite(summaryJson, historyNdjson) {
     const gist = await res.json();
     console.log('');
     console.log('  ★ 已建立 secret gist，請完成兩件事：');
-    console.log(`    1. repo Actions secret 新增 GIST_ID = ${gist.id}`);
-    console.log(`    2. Cloudflare Pages 環境變數 PUBLIC_ANALYTICS_DATA_BASE = https://gist.githubusercontent.com/${gist.owner.login}/${gist.id}/raw`);
+    console.log('    1. 到 gist.github.com 找到它，把 ID 存成 repo Actions secret GIST_ID');
+    console.log('    2. 把 raw base URL 存成 repo secret ANALYTICS_DATA_BASE，再重跑 deploy-worker');
+    // repo 是 public，Actions log 人人可讀：ID 與網址絕不能印出來
     console.log('');
   }
 }
@@ -798,7 +799,6 @@ for (const site of GA4_EXTRA_SITES) {
      錯誤，兩者在 log 上長得一模一樣。有了這行，光看 log 就能判斷資料是不是
      真的進來了，不必去翻 summary.json 或開 dashboard。 */
   const t28 = result.totals?.d28;
-  if (t28) console.log(`  ${site.key} 近 28 天：users ${t28.users} / views ${t28.views} / sessions ${t28.sessions}`);
   ga4Sites.push({ key: site.key, label: site.label, site: site.site, ...result });
 }
 
@@ -809,7 +809,6 @@ for (const site of CF_WA_SITES) {
     () => fetchCfWebAnalytics(site, { token: process.env.CF_WA_TOKEN, accountTag: CF_ACCOUNT_ID })
   );
   const t28 = result.totals?.d28;
-  if (t28) console.log(`  ${site.key} 近 28 天：visits ${t28.users} / views ${t28.views}`);
   ga4Sites.push({ key: site.key, label: site.label, site: site.site, ...result });
 }
 
@@ -843,7 +842,7 @@ writeFileSync('out/history.ndjson', history);
 console.log(`- out/: summary.json ${summaryJson.length} bytes, history ${history.split('\n').filter(Boolean).length} 天`);
 
 if (process.env.ANALYTICS_DRY_RUN === 'true') {
-  console.log('- gist: dry run，未寫入（看 out/ artifact）');
+  console.log('- gist: dry run，未寫入');
 } else {
   await gistWrite(summaryJson, history);
 }

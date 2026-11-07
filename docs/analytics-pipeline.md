@@ -2,14 +2,18 @@
 
 `/dashboard` 儀表板的資料管線：GitHub Actions **每 6 小時**（09:30 / 15:30 / 21:30 / 03:30 台北）
 執行 `scripts/fetch-analytics.mjs`，抓取 GA4 + Cloudflare + GitHub 數據後寫入 secret gist，
-dashboard 頁面在瀏覽器端讀取 gist 渲染。（public repo 的 Actions 免費不限量，頻率無成本壓力）
+dashboard 頁面透過 Access 保護的 `dashboard-api` worker 取資料渲染。（public repo 的 Actions 免費不限量，頻率無成本壓力）
 
 ```
 GA4 Data API ─┐
 Cloudflare  ──┼─→ fetch-analytics.mjs ─→ secret gist（summary.json + history.ndjson）
 GitHub API  ──┘        (GitHub Actions)         ↑ 每日 upsert，長期累積
-                                                └─← /dashboard 瀏覽器端 fetch
+                                                └─← dashboard-api worker ─← /dashboard 瀏覽器端 fetch
 ```
+
+**資料紅線（repo 是 public）：** gist 網址任何人拿到就能讀，所以它只能存在 repo secret 與 worker secret。
+不可寫進 build 環境變數、HTML、Actions log；pipeline 不上傳 artifact（public repo 的 artifact
+登入任何 GitHub 帳號都能下載），log 也不印流量數字。`/dashboard` 的 HTML 必須是外流也無妨的空殼。
 
 任一 secret 未設定時，該來源自動跳過、其餘照常；dashboard 對缺少的區塊顯示「尚未設定」。
 所以以下步驟**可以分次做**，不會擋住任何功能。
@@ -67,16 +71,15 @@ repo Settings → Secrets and variables → Actions → New repository secret：
 ### 5. 首次執行（~3 分鐘）
 
 1. Actions → **analytics** → Run workflow
-2. 看 log：首跑會自動建立 secret gist 並印出兩行指示——
-   - `GIST_ID = <id>` → 存成 Actions secret
-   - `PUBLIC_ANALYTICS_DATA_BASE = https://gist.githubusercontent.com/<user>/<id>/raw` → 下一步用
+2. 首跑會自動建立 secret gist（log 不印 ID）。到 gist.github.com 找到它——
+   - gist ID → 存成 Actions secret `GIST_ID`
+   - `https://gist.githubusercontent.com/<user>/<id>/raw` → 存成 Actions secret `ANALYTICS_DATA_BASE`
 3. 再手動跑一次確認 gist 正常 upsert（history 不會出現重複日期）
 
-### 6. Cloudflare Pages 環境變數（~2 分鐘）
+### 6. 把資料網址交給 worker（~2 分鐘）
 
-Pages 專案 → Settings → Environment variables →
-新增 `PUBLIC_ANALYTICS_DATA_BASE`（Production 與 Preview 都加），值為上一步的 raw base URL。
-下次 deploy 後 `/dashboard` 就會讀到資料。
+Actions → **deploy-worker** → Run workflow，把 `ANALYTICS_DATA_BASE` 同步成 worker secret。
+不要設 Cloudflare Pages 環境變數，build 內容不該碰資料網址。
 
 ### 7. 私人子網域三件組（~15 分鐘）
 
@@ -199,7 +202,7 @@ OpenGSA 不放 GA4（隱私立場），改用 Web Analytics。設定在 `CF_WA_S
 - `siteTag` 是後台 Manage site 網址裡的 ID，**不是**頁面 snippet 裡的 token；填錯回零筆而不是錯誤。
 - 帳戶限制（2026-11 實測）：單次查詢最多 93 天、資料保留 184 天。d365 視窗實際只有 180 天。
 - 只有 pageviews 與 visits，沒有不重複人數、新訪客、互動率。
-- 測試分支：Actions → analytics → Run workflow，選分支並勾 `dry_run`，只產 artifact、不寫 gist。
+- 測試分支：Actions → analytics → Run workflow，選分支並勾 `dry_run`，只看各來源 ok/error，不寫 gist（要看資料請在本機跑腳本，檔案在 `out/`）。
 - `opengsa.mattye.dev` 走 Cloudflare 代理，zone 上有一條 Configuration Rule 關掉 RUM 自動注入，
   否則主站的 beacon 會被注入進去、流量混進 mattye.dev。
 
@@ -207,8 +210,10 @@ OpenGSA 不放 GA4（隱私立場），改用 Web Analytics。設定在 `CF_WA_S
 
 `workers/dashboard-api/` 是獨立的小 worker（與金流/AI worker 隔離），由
 `.github/workflows/deploy-worker.yml` 自動部署——**不需要地端 wrangler**。
-提供兩個同源端點（`mattye.dev/api/dashboard/*`，Cloudflare Access 保護）：
-`POST /trigger`（一鍵觸發 analytics workflow）、`GET /users`（D1 即時用戶數）。
+提供同源端點（`mattye.dev/api/dashboard/*`，Cloudflare Access 保護，worker 另驗 JWT 簽章與 aud）：
+`POST /trigger`（一鍵觸發 analytics workflow）、`GET /users`（D1 即時用戶數）、
+`GET /data/summary.json`、`GET /data/history.ndjson`（代讀 gist）。
+Access app 重建後 AUD 會變，要更新 `wrangler.toml` 的 `ACCESS_AUD`，否則全部回 403。
 
 1. **建自動化 token**：dash.cloudflare.com → My Profile → API Tokens → Create Custom Token，
    權限三條：**Account → Workers Scripts → Edit**、**Account → D1 → Edit**、

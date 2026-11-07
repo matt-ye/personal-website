@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 只產生 artifact，不寫入 gist（測試分支用）
+        description: 只檢查各來源，不寫入 gist（測試分支用）
         type: boolean
         default: false
 
@@ -51,11 +51,3 @@ jobs:
           # 自動沿用舊的那把，設好之後下一次執行就自動切過去。切換完成後可以拿掉後半。
           CF_D1_TOKEN: ${{ secrets.CF_D1_TOKEN || secrets.CF_DEPLOY_TOKEN }}
         run: node scripts/fetch-analytics.mjs
-      - name: Upload snapshot artifact (debug)
-        if: always()
-        uses: actions/upload-artifact@v5
-        with:
-          name: analytics-snapshot
-          path: out/
-          retention-days: 7
-          if-no-files-found: ignore

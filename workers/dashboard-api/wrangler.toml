@@ -14,6 +14,12 @@ routes = [
   { pattern = "mattye.dev/api/dashboard/*", zone_name = "mattye.dev" }
 ]
 
+# Access app（mattye.dev/dashboard + /api/dashboard/*）的身分驗證參數。
+# AUD 本來就公開在 Access 登入轉址的 kid 參數裡，不是機密。Access app 重建時要更新。
+[vars]
+ACCESS_TEAM_DOMAIN = "super-disk-a2cb.cloudflareaccess.com"
+ACCESS_AUD = "99984f4857b12d75b16f439d39119cd2d68f7351245402d6ff7490a7450bd003"
+
 [observability]
 enabled = true
 
