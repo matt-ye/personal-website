@@ -44,7 +44,7 @@ GitHub API  ──┘        (GitHub Actions)         ↑ 每日 upsert，長期
 1. **fine-grained PAT**（[github.com/settings/personal-access-tokens](https://github.com/settings/personal-access-tokens)）：
    - Repository access：**All repositories**（pipeline 會自動發現 owner 名下所有 repo）
    - Permissions：**Administration: Read-only** + **Metadata: Read-only**
-     + **Pull requests / Issues / Checks: Read-only**（dashboard「需要處理」清單用；少了私有 repo 會顯示「—」）
+     + **Pull requests / Issues / Actions: Read-only**（dashboard「需要處理」清單用；少了私有 repo 會顯示「—」）
      （traffic API 需要 push-level access，Administration read 即可）
    - 注意：fine-grained PAT 最長一年，到期要重發並更新 secret
 2. **classic PAT**（[github.com/settings/tokens](https://github.com/settings/tokens)）：
