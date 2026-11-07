@@ -13,6 +13,18 @@
   },
   {
     "排序": "2",
+    "icon": "🎓",
+    "org_zh": "國立臺灣大學研究生協會",
+    "org_en": "National Taiwan University Graduate Student Association",
+    "title": "第58屆 學術事務長",
+    "title_eng": "The 58th Director of Academic Affairs",
+    "description": "負責研究生協會的學術事務，整理與研究生學習、研究相關的校園資訊，例如<a href=\"https://www.instagram.com/ntugsa.taiwan/p/De_99O0EzNe/\" target=\"_blank\">臺大 EndNote 校園授權終止後的備份與轉移指引</a>。活動與學權資訊請見 <a href=\"https://www.instagram.com/ntugsa.taiwan/\" target=\"_blank\">IG</a>、<a href=\"https://www.facebook.com/NTUGSA\" target=\"_blank\">FB</a>。",
+    "description_eng": "Responsible for the association's academic affairs, compiling campus information relevant to graduate students' study and research, such as a <a href=\"https://www.instagram.com/ntugsa.taiwan/p/De_99O0EzNe/\" target=\"_blank\">backup and migration guide for the end of NTU's EndNote campus license</a>. For events and student rights updates, see <a href=\"https://www.instagram.com/ntugsa.taiwan/\" target=\"_blank\">Instagram</a> and <a href=\"https://www.facebook.com/NTUGSA\" target=\"_blank\">Facebook</a>.",
+    "period": "2026.09 – present",
+    "show": "TRUE"
+  },
+  {
+    "排序": "3",
     "icon": "🕸️",
     "org_zh": "黃金畫布工作室",
     "org_en": "Tela Aurea Lab",
@@ -21,18 +33,6 @@
     "description": "出於對捕夢網手工藝的熱愛創立 <a href=\"https://telaaurealab.com/\" target=\"_blank\">Tela Aurea Lab</a>，理解捕夢網走線數學規則後，開發網頁捕夢網設計工具，未來計畫無償提供給北美原住民的文化教育機構使用，希望能協助保存文化遺產。歡迎體驗互動式網站入口 <a href=\"https://telaaurealab.com/?dd=1\" target=\"_blank\">每日一網 (Daily Dose)</a>",
     "description_eng": "Driven by a passion for dreamcatcher craftsmanship, <a href=\"https://telaaurealab.com/\" target=\"_blank\">Tela Aurea Lab</a> was founded. After understanding the mathematical rules governing dreamcatcher weaving, a web-based dreamcatcher design tool was developed. The plan is to provide this tool free of charge to Native American cultural and educational institutions in North America, hoping to help preserve cultural heritage. Welcome to experience the interactive website: <a href=\"https://telaaurealab.com/?dd=1\" target=\"_blank\">Daily Dose</a>.",
     "period": "2026 – present",
-    "show": "TRUE"
-  },
-  {
-    "排序": "3",
-    "icon": "🎤",
-    "org_zh": "自由講師",
-    "org_en": "Freelance Speaker",
-    "title": "講師",
-    "title_eng": "Lecturer",
-    "description": "已受邀於企業、學術機構、非營利組織進行 150+ 場<a href=\"https://mattye.dev/coaching/\" target=\"_blank\">演講與工作坊</a>。利用職能治療專業背景分析簡報表達技能，並設計系統化訓課程。",
-    "description_eng": "I have been invited to give over 150 <a href=\"https://mattye.dev/coaching/\" target=\"_blank\"> lectures and workshops</a> at businesses, academic institutions, and non-profit organizations. I utilize my occupational therapy background to analyze presentation skills and design systematic training courses.",
-    "period": "2020 – present",
     "show": "TRUE"
   },
   {
@@ -49,6 +49,18 @@
   },
   {
     "排序": "5",
+    "icon": "🎤",
+    "org_zh": "自由講師",
+    "org_en": "Freelance Speaker",
+    "title": "講師",
+    "title_eng": "Lecturer",
+    "description": "已受邀於企業、學術機構、非營利組織進行 150+ 場<a href=\"https://mattye.dev/coaching/\" target=\"_blank\">演講與工作坊</a>。利用職能治療專業背景分析簡報表達技能，並設計系統化訓課程。",
+    "description_eng": "I have been invited to give over 150 <a href=\"https://mattye.dev/coaching/\" target=\"_blank\"> lectures and workshops</a> at businesses, academic institutions, and non-profit organizations. I utilize my occupational therapy background to analyze presentation skills and design systematic training courses.",
+    "period": "2020 – present",
+    "show": "TRUE"
+  },
+  {
+    "排序": "6",
     "icon": "🍎",
     "org_zh": "Straight A 晶盛科技｜Apple優質教育合作夥伴",
     "org_en": "Straight A × Apple Premium Education Partner",
@@ -60,7 +72,7 @@
     "show": "TRUE"
   },
   {
-    "排序": "6",
+    "排序": "7",
     "icon": "🌍",
     "org_zh": "Falling Walls Lab Taipei",
     "org_en": "Falling Walls Lab Taipei",
@@ -72,7 +84,7 @@
     "show": "TRUE"
   },
   {
-    "排序": "7",
+    "排序": "8",
     "icon": "⚗️",
     "org_zh": "財團法人遠哲科學教育基金會",
     "org_en": "Yuan T. Lee Foundation Science Education",
@@ -84,7 +96,7 @@
     "show": "TRUE"
   },
   {
-    "排序": "8",
+    "排序": "9",
     "icon": "🗣️",
     "org_zh": "華視文教基金會訓練中心",
     "org_en": "CCEF TRAINING CENTER",
@@ -96,7 +108,7 @@
     "show": "TRUE"
   },
   {
-    "排序": "9",
+    "排序": "10",
     "icon": "✈️",
     "org_zh": "啟夢股份有限公司",
     "org_en": "Enlighten-Dream Social Enterprise",
@@ -108,15 +120,51 @@
     "show": "FALSE"
   },
   {
-    "排序": "10",
+    "排序": "11",
     "icon": "",
     "org_zh": "OT學會",
-    "org_en": "ISW PEERS 等等",
+    "org_en": "",
     "title": "",
     "title_eng": "",
     "description": "",
     "description_eng": "",
     "period": "",
     "show": "FALSE"
+  },
+  {
+    "排序": "12",
+    "icon": "",
+    "org_zh": "ISW",
+    "org_en": "",
+    "title": "",
+    "title_eng": "",
+    "description": "",
+    "description_eng": "",
+    "period": "",
+    "show": ""
+  },
+  {
+    "排序": "13",
+    "icon": "",
+    "org_zh": "PEERS",
+    "org_en": "",
+    "title": "",
+    "title_eng": "",
+    "description": "",
+    "description_eng": "",
+    "period": "",
+    "show": ""
+  },
+  {
+    "排序": "14",
+    "icon": "",
+    "org_zh": "",
+    "org_en": "",
+    "title": "",
+    "title_eng": "",
+    "description": "",
+    "description_eng": "",
+    "period": "",
+    "show": ""
   }
 ]
