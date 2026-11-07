@@ -30,6 +30,11 @@ export const FEATURED = [
     site: 'https://brain-exposome.mattye.dev',
   },
   {
+    repo: 'matt-ye/opengsa',
+    label: { zh: 'OpenGSA 碩博士獎助', en: 'OpenGSA' },
+    site: 'https://opengsa.mattye.dev',
+  },
+  {
     repo: 'matt-ye/The-Golden-Lag-Engine',
     label: { zh: 'The Golden Lag Engine', en: 'The Golden Lag Engine' },
     site: null,
