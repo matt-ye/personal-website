@@ -21,6 +21,7 @@ import {
   MAIN_STREAM_ID, GA4_EXTRA_SITES, CF_WA_SITES,
 } from './analytics-config.mjs';
 import { fetchCfWebAnalytics } from './cf-web-analytics.mjs';
+import { fetchRepoHealth } from './repo-health.mjs';
 
 // v2：維度報表（topPages/channels/devices/countries/hosts/topEvents）從單一 28 天陣列
 // 改為「視窗 → 陣列」物件（{d7:[…],d28:[…],…}）。dashboard 兩種形狀都能讀。
@@ -591,6 +592,7 @@ async function fetchGithub() {
       watchers: null,
       openIssues: num(meta.open_issues_count),
       pushedAt: meta.pushed_at,
+      health: await fetchRepoHealth(name, meta.default_branch, (path) => ghGet(path, GH_TRAFFIC_TOKEN)),
     };
     // traffic 需要 push-level access；403 時保留 stars 區塊
     try {

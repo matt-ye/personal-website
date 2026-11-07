@@ -81,6 +81,7 @@ import T from '../components/T.astro';
             <button class="chip active" data-tab="public"><T zh="公開作品" en="Public" /> <span id="count-public"></span></button>
             <button class="chip" data-tab="private"><T zh="私人" en="Private" /> <span id="count-private"></span></button>
           </div>
+          <div class="dash-attention" id="repos-attention"></div>
           <div class="dash-repos" id="repos-grid"></div>
         </div>
         <div class="dash-note" style="display:none"></div>
@@ -762,6 +763,26 @@ function renderCf() {
 }
 
 /* ══ GitHub 專案 ═══════════════════════════════════════ */
+/* 需要處理的 repo：跨公開／私有分頁一次列出。null 代表 token 讀不到，顯示「—」而不是 0 */
+function renderRepoAttention(all) {
+  const el = document.getElementById('repos-attention');
+  const rows = all.filter(r => r.health).filter(({ health: h }) => h.prs || h.botPrs || h.issues || h.ci === 'failure');
+  const unknown = all.filter(({ health: h }) => h && (h.prs === null || h.issues === null || h.ci === null)).length;
+  const n = v => v === null || v === undefined ? '—' : (v ? `<b>${v}</b>` : '0');
+  const ci = v => v === 'failure' ? `<b class="dash-ci-fail">${L('失敗', 'failed')}</b>` : (v === null || v === undefined ? '—' : L('正常', 'ok'));
+  const score = ({ health: h }) => (h.ci === 'failure' ? 1000 : 0) + (h.prs ?? 0) * 10 + (h.issues ?? 0) * 10 + (h.botPrs ?? 0);
+  el.innerHTML = `
+    <div class="dash-attention-title">${L('需要處理', 'Needs attention')} (${rows.length})</div>
+    ${rows.length ? `<div class="dash-attention-scroll"><table>
+      <thead><tr><th>Repo</th><th>PR</th><th>${L('自動更新 PR', 'Bot PRs')}</th><th>Issues</th><th>CI</th></tr></thead>
+      <tbody>${rows.slice().sort((a, b) => score(b) - score(a)).map(r => `<tr>
+        <td><a href="https://github.com/${esc(r.repo)}/pulls" target="_blank" rel="noopener">${r.private ? '🔒 ' : ''}${esc(r.repo.split('/')[1] ?? r.repo)}</a></td>
+        <td>${n(r.health.prs)}</td><td>${n(r.health.botPrs)}</td><td>${n(r.health.issues)}</td><td>${ci(r.health.ci)}</td>
+      </tr>`).join('')}</tbody></table></div>` : `<div class="dash-muted">${L('目前沒有待處理項目', 'Nothing to handle')}</div>`}
+    ${unknown ? `<div class="dash-muted dash-attention-note">${L(`${unknown} 個 repo 有欄位讀不到（token 權限不足），不代表沒問題`, `${unknown} repos have unreadable fields (token permissions); this does not mean they are clear`)}</div>` : ''}
+    <div class="dash-muted dash-attention-note">${L('不含 draft PR 與機器人開的 issue', 'Excludes draft PRs and bot-opened issues')}</div>`;
+}
+
 function renderRepos() {
   const gh = summary.github;
   if (!sectionOk('sec-gh', !!(gh && gh.configured && gh.repos && !gh.error), ...NOT_CONFIGURED)) return;
@@ -782,6 +803,8 @@ function renderRepos() {
   const list = (repoTab === 'public' ? pub : priv).slice().sort((a, b) =>
     ((b.views14?.count ?? -1) - (a.views14?.count ?? -1)) || ((b.stars ?? 0) - (a.stars ?? 0))
   );
+
+  renderRepoAttention(all);
 
   const grid = document.getElementById('repos-grid');
   grid.innerHTML = list.map((r, i) => {
@@ -898,6 +921,15 @@ init();
 .dash-funnel-n { font-variant-numeric: tabular-nums; min-width: 34px; text-align: right; }
 .dash-funnel-pct { color: var(--color-accent); font-size: 0.75rem; min-width: 36px; text-align: right; }
 
+.dash-attention { border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.85rem; margin: 12px 0 16px; padding: 14px 16px; }
+.dash-attention:empty { display: none; }
+.dash-attention-title { font-weight: 600; margin-bottom: 8px; }
+.dash-attention-scroll { overflow-x: auto; }
+.dash-attention table { border-collapse: collapse; width: 100%; }
+.dash-attention th, .dash-attention td { padding: 4px 10px 4px 0; text-align: left; white-space: nowrap; }
+.dash-attention th { color: var(--color-text-muted); font-weight: 500; }
+.dash-attention-note { font-size: 0.78rem; margin-top: 8px; }
+.dash-ci-fail { color: #dc2626; }
 .dash-repos { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); margin-top: 8px; }
 .dash-repos > * { min-width: 0; }
 .dash-repo-card {

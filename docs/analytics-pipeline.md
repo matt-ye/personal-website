@@ -44,6 +44,7 @@ GitHub API  ──┘        (GitHub Actions)         ↑ 每日 upsert，長期
 1. **fine-grained PAT**（[github.com/settings/personal-access-tokens](https://github.com/settings/personal-access-tokens)）：
    - Repository access：**All repositories**（pipeline 會自動發現 owner 名下所有 repo）
    - Permissions：**Administration: Read-only** + **Metadata: Read-only**
+     + **Pull requests / Issues / Checks: Read-only**（dashboard「需要處理」清單用；少了私有 repo 會顯示「—」）
      （traffic API 需要 push-level access，Administration read 即可）
    - 注意：fine-grained PAT 最長一年，到期要重發並更新 secret
 2. **classic PAT**（[github.com/settings/tokens](https://github.com/settings/tokens)）：
@@ -277,6 +278,7 @@ Access app 重建後 AUD 會變，要更新 `wrangler.toml` 的 `ACCESS_AUD`，�
     "repos": [{
       "repo": "matt-ye/dreamcatcher", "label": { "zh": "捕夢網產生器", "en": "Dreamcatcher" },
       "site": "https://...", "stars": 5, "forks": 1, "watchers": 2, "openIssues": 0,
+      "health": { "prs": 1, "drafts": 0, "botPrs": 2, "issues": 0, "ci": "success" }, // null＝token 讀不到
       "views14": { "count": 40, "uniques": 12 }, "clones14": { "count": 3, "uniques": 2 },
       "referrers": [{ "referrer": "mattye.dev", "count": 10, "uniques": 4 }]
     }]
