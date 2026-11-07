@@ -5,12 +5,21 @@
 const isBot = (x) => x?.user?.type === 'Bot';
 const FAILED = new Set(['failure', 'timed_out', 'startup_failure']);
 
-export function summarizeHealth({ pulls, issues, checkRuns }) {
+// API 由新到舊排序。每個 workflow 只看最新一次：舊的失敗後來修好了就不該再報。
+// ponytail: 只看 GitHub Actions；fine-grained token 沒有 Checks 權限，外部檢查
+// （如 Cloudflare Pages）的失敗看不到。
+function latestPerWorkflow(runs) {
+  const seen = new Set();
+  return runs.filter((r) => !seen.has(r.workflow_id) && seen.add(r.workflow_id));
+}
+
+export function summarizeHealth({ pulls, issues, runs }) {
   const ciState = () => {
-    if (!checkRuns) return null;
-    if (!checkRuns.length) return 'none';
-    if (checkRuns.some((c) => FAILED.has(c.conclusion))) return 'failure';
-    if (checkRuns.some((c) => c.status !== 'completed')) return 'pending';
+    if (!runs) return null;
+    if (!runs.length) return 'none';
+    const latest = latestPerWorkflow(runs);
+    if (latest.some((r) => FAILED.has(r.conclusion))) return 'failure';
+    if (latest.some((r) => r.status !== 'completed')) return 'pending';
     return 'success';
   };
   return {
@@ -25,10 +34,10 @@ export function summarizeHealth({ pulls, issues, checkRuns }) {
 // ponytail: 每項只讀第一頁 100 筆，個人 repo 夠用；超過時數字會偏低。
 export async function fetchRepoHealth(name, branch, get) {
   const safe = (path) => get(path).catch(() => null);
-  const [pulls, issues, checks] = await Promise.all([
+  const [pulls, issues, actions] = await Promise.all([
     safe(`/repos/${name}/pulls?state=open&per_page=100`),
     safe(`/repos/${name}/issues?state=open&per_page=100`),
-    branch ? safe(`/repos/${name}/commits/${encodeURIComponent(branch)}/check-runs?per_page=100`) : null,
+    branch ? safe(`/repos/${name}/actions/runs?branch=${encodeURIComponent(branch)}&per_page=30`) : null,
   ]);
-  return summarizeHealth({ pulls, issues, checkRuns: checks?.check_runs ?? null });
+  return summarizeHealth({ pulls, issues, runs: actions?.workflow_runs ?? null });
 }
