@@ -1,7 +1,8 @@
 ---
 // 私人流量儀表板（unlisted：noindex、不進導覽列與 sitemap）。
-// 資料來源：GitHub Actions 每 6 小時快照 → secret gist（見 docs/analytics-pipeline.md）。
-// 資料網址由 Cloudflare Pages 環境變數注入，不寫死在 repo。
+// 資料來源：GitHub Actions 每 6 小時快照 → secret gist → dashboard-api worker（見 docs/analytics-pipeline.md）。
+// 這頁的 HTML 不含任何資料或資料網址：Access 只保護 mattye.dev，擋不住 pages.dev 與預覽網址，
+// 所以 HTML 必須是外流也無妨的空殼，資料一律經 Access 保護的同源 API 取得。
 //
 // 版型原則：每個「網站」（主站、捕夢網…）是一個標準區塊，由同一個 siteSectionHTML()
 // 渲染——KPI → 趨勢 → 分佈 → 子頁面成效 → 事件/轉換。新站只要進 GA4_EXTRA_SITES
@@ -9,8 +10,6 @@
 // 各區無外框，以分隔線 + 大標題（.dash-source）區隔。
 import BaseLayout from '../layouts/BaseLayout.astro';
 import T from '../components/T.astro';
-
-const DATA_BASE = import.meta.env.PUBLIC_ANALYTICS_DATA_BASE ?? '';
 ---
 <BaseLayout title="Dashboard" description="流量儀表板（私人頁面）">
   <script slot="head" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -98,7 +97,8 @@ const DATA_BASE = import.meta.env.PUBLIC_ANALYTICS_DATA_BASE ?? '';
   </div>
 </BaseLayout>
 
-<script define:vars={{ DATA_BASE }}>
+<script is:inline>
+const DATA_API = '/api/dashboard/data';
 /* ── helpers（骨架沿用 speeches.astro）─────────────── */
 const lang = () => document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
 const L = (zh, en) => lang() === 'en' ? en : zh;
@@ -198,11 +198,9 @@ const RUNS_API = `https://api.github.com/repos/${GH_REPO}/actions/workflows/anal
 let watching = false;
 
 async function refetchData() {
-  const base = DATA_BASE.replace(/\/+$/, '');
-  const bust = Date.now();
   const [sRes, hRes] = await Promise.all([
-    fetch(`${base}/summary.json?t=${bust}`, { cache: 'no-store' }),
-    fetch(`${base}/history.ndjson?t=${bust}`, { cache: 'no-store' }),
+    fetch(`${DATA_API}/summary.json`, { cache: 'no-store' }),
+    fetch(`${DATA_API}/history.ndjson`, { cache: 'no-store' }),
   ]);
   if (sRes.ok) summary = await sRes.json();
   if (hRes.ok) history = (await hRes.text()).split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
@@ -312,23 +310,10 @@ function regUsersDelta(key) {
 /* ── init ───────────────────────────────────────────── */
 async function init() {
   const state = document.getElementById('dash-state');
-  if (!DATA_BASE) {
-    state.className = 'data-error';
-    state.innerHTML = L(
-      '⚠️ 尚未設定資料來源。<br><small>請依 docs/analytics-pipeline.md 完成 pipeline 首跑，並在 Cloudflare Pages 設定 PUBLIC_ANALYTICS_DATA_BASE 環境變數。</small>',
-      '⚠️ Data source not configured.<br><small>Run the pipeline once and set the PUBLIC_ANALYTICS_DATA_BASE env var on Cloudflare Pages (see docs/analytics-pipeline.md).</small>'
-    );
-    return;
-  }
   try {
-    // cache-buster 用毫秒級時間戳：gist raw CDN 對同一 URL 快取約 5 分鐘、
-    // 瀏覽器再疊一層 HTTP cache——先前用「日期」當 buster，剛跑完 workflow
-    // 重新整理會看到最多 5–10 分鐘前的舊資料（更新時間對不上）
-    const bust = Date.now();
-    const base = DATA_BASE.replace(/\/+$/, '');
     const [sRes, hRes] = await Promise.all([
-      fetch(`${base}/summary.json?t=${bust}`, { cache: 'no-store' }),
-      fetch(`${base}/history.ndjson?t=${bust}`, { cache: 'no-store' }),
+      fetch(`${DATA_API}/summary.json`, { cache: 'no-store' }),
+      fetch(`${DATA_API}/history.ndjson`, { cache: 'no-store' }),
     ]);
     if (!sRes.ok) throw new Error(`summary HTTP ${sRes.status}`);
     summary = await sRes.json();
