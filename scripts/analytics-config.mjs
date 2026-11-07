@@ -74,6 +74,14 @@ export const CF_WA_SITES = [
 
 export const GA4_EXTRA_SITES = [
   {
+    // 2026-11-07 起與 Cloudflare Web Analytics 並行；與主站同一個 property，靠串流與網域切分。
+    key: 'opengsa-ga4',
+    label: { zh: 'OpenGSA（GA4）', en: 'OpenGSA (GA4)' },
+    site: 'https://opengsa.mattye.dev',
+    streamId: '16291327860',
+    hosts: ['opengsa.mattye.dev'],
+  },
+  {
     key: 'dreamcatcher',
     label: { zh: '捕夢網 Tela Aurea', en: 'Dreamcatcher · Tela Aurea' },
     site: 'https://telaaurealab.com',

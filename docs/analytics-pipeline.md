@@ -112,6 +112,10 @@ GA4 帳戶 `Ching-Wei Ye`（396606977）底下目前有**兩個 property**：
 | 個人網站流量 | 539989003 | `Matt的個人網站` | 14990442923 | G-1RKL72DPPW |
 | 捕夢網網站流量 | 549920338 | `Tela Aurea Lab` | 15435291446 | G-KGQQ7E4JLG |
 
+OpenGSA 是主站 property 底下的第二個串流：`OpenGSA`，串流 ID 16291327860，評估 ID G-GEFSZXE0RE。
+**這個串流的「遮蓋資料」必須涵蓋所有網址參數、加強型評估必須維持關閉**：載入時的第一筆 page_view 一律帶原始網址，
+學生的搜尋條件會進 GA4（2026-11-07 攔截實測，只有遮蓋資料擋得住）。細節見 opengsa repo 的 `docs/DEPLOYMENT.md`。
+
 **2026-08-14 之前**捕夢網是掛在主站 property 底下的第二個 stream
 （舊 stream 15024877509），靠 streamId + hostName 切分。之後拆成獨立資源。
 
@@ -197,7 +201,7 @@ telaaurealab.com 上），而不是回頭改 pipeline。
 
 ### 9b. 用 Cloudflare Web Analytics 量的網站（OpenGSA）
 
-OpenGSA 不放 GA4（隱私立場），改用 Web Analytics。設定在 `CF_WA_SITES`（`analytics-config.mjs`），
+OpenGSA 同時用 Web Analytics 與 GA4（2026-11-07 起）。Web Analytics 的設定在 `CF_WA_SITES`（`analytics-config.mjs`），
 抓取在 `scripts/cf-web-analytics.mjs`，結果併進 `summary.ga4Sites`，以 `source: 'cf-wa'` 區分。
 
 - `siteTag` 是後台 Manage site 網址裡的 ID，**不是**頁面 snippet 裡的 token；填錯回零筆而不是錯誤。
