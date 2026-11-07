@@ -2,19 +2,19 @@
   "site": "https://mattye.dev",
   "pages": {
     "https://mattye.dev/about/": {
-      "hash": "0384ccb8639095e9",
-      "lastChanged": "2026-08-30"
+      "hash": "68828d60e9406d16",
+      "lastChanged": "2026-11-07"
     },
     "https://mattye.dev/coaching/": {
       "hash": "34c9ad48f31d6c61",
       "lastChanged": "2026-08-30"
     },
     "https://mattye.dev/en/about/": {
-      "hash": "78c927e8d2307cc8",
+      "hash": "fdd9e3fa00181011",
       "lastChanged": "2026-11-07"
     },
     "https://mattye.dev/en/coaching/": {
-      "hash": "faa226b899021266",
+      "hash": "5326a89219d158cb",
       "lastChanged": "2026-11-07"
     },
     "https://mattye.dev/en/projects/agent-skills/": {
@@ -206,7 +206,7 @@
       "lastChanged": "2026-11-07"
     },
     "https://mattye.dev/en/speeches/": {
-      "hash": "8643fc517d4e1d52",
+      "hash": "48c14839a7c1e126",
       "lastChanged": "2026-11-07"
     },
     "https://mattye.dev/en/sponsor/": {
@@ -274,11 +274,11 @@
       "lastChanged": "2026-09-07"
     },
     "https://mattye.dev/en/": {
-      "hash": "5f520ddf8afd169d",
+      "hash": "bf522e5db2a37e5f",
       "lastChanged": "2026-11-07"
     },
     "https://mattye.dev/": {
-      "hash": "8ab6c97b2fdcf83d",
+      "hash": "fea0197d4bc8699c",
       "lastChanged": "2026-11-07"
     },
     "https://mattye.dev/projects/agent-skills/": {
@@ -470,8 +470,8 @@
       "lastChanged": "2026-11-07"
     },
     "https://mattye.dev/speeches/": {
-      "hash": "d853a48da128fddb",
-      "lastChanged": "2026-10-28"
+      "hash": "6c38ac5df197eed6",
+      "lastChanged": "2026-11-07"
     },
     "https://mattye.dev/sponsor/": {
       "hash": "376068ec47efdf32",
