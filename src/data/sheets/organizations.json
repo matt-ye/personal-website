@@ -522,9 +522,17 @@
   {
     "單位名稱": "国立大学法人秋田大学",
     "單位名稱_eng": "Akita University",
+    "官網URL": "https://www.akita-u.ac.jp/eng/",
+    "類型": "學校",
+    "簡稱": "",
+    "別名": "秋田大学"
+  },
+  {
+    "單位名稱": "南山人壽保險股份有限公司鑫勁德通訊處",
+    "單位名稱_eng": "Xinjinde Communications Department, Nanshan Life Insurance Co., Ltd.",
     "官網URL": "https://www.facebook.com/p/%E5%8D%97%E5%B1%B1%E4%BA%BA%E5%A3%BD%E9%91%AB%E5%8B%81%E5%BE%B7%E9%80%9A%E8%A8%8A%E8%99%95-100064783714133/",
     "類型": "企業",
     "簡稱": "",
-    "別名": "秋田大学"
+    "別名": "鑫勁德通訊處"
   }
 ]
