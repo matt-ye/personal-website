@@ -1043,7 +1043,7 @@
     "協辦單位_1": "國立臺灣大學教務處數位學習中心",
     "協辦單位_2": "",
     "主題": "(Instructional Skills Workshops, ISW)教學技巧工作坊 - 微型教學 - 聲音變化",
-    "主題_eng": "(Instructional Skills Workshops, ISW) Teaching Skills Workshop - Micro-teaching - Voice Variation",
+    "主題_eng": "Instructional Skills Workshops (ISW) - Micro-teaching - Voice Variation",
     "場次類型": "分享",
     "形式": "實體",
     "語言": "中文",
@@ -1604,7 +1604,7 @@
     "協辦單位_1": "國立臺灣大學EMI教學資源中心",
     "協辦單位_2": "國立臺灣大學寫作教學中心",
     "主題": "112-2 EMITA 訓練 【討論可以這樣帶：課堂討論帶領技巧 】 英文，跨校培訓",
-    "主題_eng": "112-2 EMITA Training: [Discussion Leadership Techniques: Classroom Discussion Guidance] (English, Inter-school Training)",
+    "主題_eng": "112-2 EMITA Training: [Discussion Leadership Techniques] (English, Inter-school Training)",
     "場次類型": "工作坊",
     "形式": "實體",
     "語言": "英文",
@@ -2607,7 +2607,7 @@
     "協辦單位_1": "國立臺灣大學教務處數位學習中心",
     "協辦單位_2": "神戶大學",
     "主題": "NTU x KobeU 台大神戶大學 台日交流 實體海報設計工作坊 (中文)",
-    "主題_eng": "NTU x KobeU Taiwan-Japan Exchange: Physical Poster Design Workshop (Chinese)",
+    "主題_eng": "NTU x Kobe University Taiwan-Japan Exchange Physical Poster Design Workshop (Chinese)",
     "場次類型": "工作坊",
     "形式": "實體",
     "語言": "中文",
@@ -3282,6 +3282,23 @@
   },
   {
     "序號": "183",
+    "日期": "2026/11/14",
+    "主辦單位": "國立臺灣大學雙語教育中心",
+    "協辦單位_1": "國立臺灣大學EMI教學資源中心",
+    "協辦單位_2": "國立臺灣大學寫作教學中心",
+    "主題": "115-1 台大校內場3 EMITA 訓練 【討論可以這樣帶：課堂討論帶領技巧 】 英文",
+    "主題_eng": "115-1 NTU Campus Session 3 EMITA Training [How to Lead a Discussion: Classroom Discussion Leadership Techniques] (English)",
+    "場次類型": "工作坊",
+    "形式": "實體",
+    "語言": "英文",
+    "聽眾教育程度": "碩士和以上",
+    "人數": "",
+    "小時": "1.00",
+    "影片URL": "",
+    "報導URL": ""
+  },
+  {
+    "序號": "184",
     "日期": "2026/11/27",
     "主辦單位": "台大國際英語演講社",
     "協辦單位_1": "",
@@ -3298,7 +3315,7 @@
     "報導URL": ""
   },
   {
-    "序號": "184",
+    "序號": "185",
     "日期": "2026/12/2",
     "主辦單位": "台大OT AI導入課程",
     "協辦單位_1": "",
@@ -3315,7 +3332,7 @@
     "報導URL": ""
   },
   {
-    "序號": "185",
+    "序號": "186",
     "日期": "",
     "主辦單位": "國立臺灣大學雙語教育中心",
     "協辦單位_1": "國立臺灣大學EMI教學資源中心",
@@ -3332,7 +3349,7 @@
     "報導URL": ""
   },
   {
-    "序號": "186",
+    "序號": "187",
     "日期": "",
     "主辦單位": "財團法人遠哲科學教育基金會",
     "協辦單位_1": "新北市立樹林高中",
