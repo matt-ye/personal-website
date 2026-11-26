@@ -1,0 +1,465 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .tl{margin-top:1rem;font-size:.75rem;color:var(--ink-3)}
+  .tl .row{position:relative;height:1.6rem;margin:.3rem 0;background:var(--paper);border-radius:6px;border:1px solid var(--line-soft)}
+  .tl .seg{position:absolute;top:0;bottom:0;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--on-pine);font-weight:700;white-space:nowrap;overflow:hidden}
+  .tl .inv{background:var(--pine)}.tl .ar{background:var(--cool)}.tl .ap{background:var(--coin)}
+  .tl .gap{background:repeating-linear-gradient(45deg,var(--warn),var(--warn) 4px,transparent 4px,transparent 8px);color:var(--ink);opacity:.85}
+  .tl .gap.neg{background:repeating-linear-gradient(45deg,var(--ok),var(--ok) 4px,transparent 4px,transparent 8px)}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 45</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q4 財務長季 · Week 45</p>
+  <h1>營運資金管理——現金轉換循環</h1>
+  <p class="lead" style="margin-top:.5rem">三大決策之外，CFO 的日常主戰場：讓公司<strong>每天有現金可用</strong>。W6 埋下的營運資金、W7 的「賺錢但缺現金」，本週用一個指標收攏——現金轉換循環（CCC）。還有一個驚喜：你的飲料店，天生是「負 CCC」的好生意。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 6–7 週</span><span class="chip">52 週 · 第 45 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>CFO 用 CCC 管現金；投資人用它的五年趨勢抓營運失控的早期訊號——常比損益表早一到兩季。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的果樹選擇——「台積電改發九成」，家人答對了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">一家公司營收暴增 30%、帳面大賺，卻跑去跟銀行借錢。這代表什麼？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">一定是作帳，賺錢怎麼會缺錢</button>
+    <button data-g="b">不一定：成長本身很吃現金</button>
+    <button data-g="c">管理層亂花錢</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. CCC：錢出去到錢回來，繞一圈幾天</h2>
+  <div class="quote">CCC ＝ 存貨天數（DIO）＋ 應收天數（DSO）− 應付天數（DPO）</div>
+  <ul>
+    <li><strong>DIO</strong> ＝ 存貨 ÷ 銷貨成本 × 365：進貨到賣掉，貨在倉庫躺幾天（分母是成本——W9 的提醒）</li>
+    <li><strong>DSO</strong> ＝ 應收 ÷ 營收 × 365：賣掉到收到錢，等幾天</li>
+    <li><strong>DPO</strong> ＝ 應付 ÷ 銷貨成本 × 365：拿貨到付錢，拖幾天——<strong>這是減項</strong>，供應商借你的免費資金</li>
+  </ul>
+  <p><strong>算例</strong>：DIO 60 ＋ DSO 45 − DPO 40 ＝ <strong>CCC 65 天</strong>。這家公司每一塊營運的錢，付出去後要 65 天才轉回來；這 65 天的缺口，就是營運資金要墊的錢（W6）。<strong>縮短 CCC ＝ 無償釋放現金。</strong></p>
+
+  <h2>2. 驚喜：你的飲料店是負 CCC 生意</h2>
+  <p>用第 4 週第 2 個月的數據算（以 30 天月計）：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>元件</th><th>計算</th><th>天數</th></tr></thead>
+      <tbody>
+        <tr><td class="f">DIO</td><td>存貨 25,000 ÷ 月成本 55,000 × 30</td><td>13.6 天</td></tr>
+        <tr><td class="f">DSO</td><td>應收 50,000 ÷ 月營收 150,000 × 30</td><td>10.0 天</td></tr>
+        <tr><td class="f">DPO</td><td>應付 60,000 ÷ 月進貨 60,000 × 30</td><td>30.0 天</td></tr>
+        <tr><td class="f">CCC</td><td>13.6 ＋ 10.0 − 30.0</td><td><strong>−6.4 天</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>負的</strong>——客人大多付現（應收天數低）、原料週轉快（存貨天數低）、供應商月結（應付天數長）：<strong>錢還沒付給供應商，就已經從客人手上收回來了</strong>。生意越大，供應商借你的免費資金越多。</p>
+  <p><strong>負 CCC 的巨人們</strong>：好市多、全聯（先收現金後付貨款）、預收制的健身房與訂閱軟體（W4 的預收收入）——它們的成長<strong>自帶融資</strong>。W6 快問快答「超商流動比小於 1 也健康」的原因，就是這個。</p>
+  </div>
+
+  <div class="lab">
+    <h3>現金轉換循環時間軸</h3>
+    <p class="muted" style="margin-top:-.2rem">上排是錢被卡住的天數（存貨＋應收），下排是供應商借你的天數（應付）。斜線區就是要自己墊錢的缺口。</p>
+    <div class="presets" id="ccpre"><button data-i="13.6" data-s="10" data-p="30">我們的飲料店</button><button data-i="60" data-s="45" data-p="40">講義算例</button><button data-i="30" data-s="3" data-p="35">量販店型</button><button data-i="20" data-s="120" data-p="60">承包工程型</button></div>
+    <div class="ctl"><label>存貨天數 DIO <output id="o-dio">60.0 天</output></label><input type="range" id="in-dio" min="0" max="150" step="0.1" value="60" aria-label="存貨天數"></div>
+    <div class="ctl"><label>應收天數 DSO <output id="o-dso">45.0 天</output></label><input type="range" id="in-dso" min="0" max="150" step="0.1" value="45" aria-label="應收天數"></div>
+    <div class="ctl"><label>應付天數 DPO <output id="o-dpo">40.0 天</output></label><input type="range" id="in-dpo" min="0" max="150" step="0.1" value="40" aria-label="應付天數"></div>
+    <div class="ctl"><label>年營收 <output id="o-rv">10 億</output></label><input type="range" id="in-rv" min="1" max="100" step="1" value="10" aria-label="年營收"></div>
+    <div class="tl" id="tl" aria-hidden="true"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">CCC</p><p class="sv" id="s-ccc">—</p><p class="sh">天</p></div>
+      <div class="stat"><p class="sl">要墊的營運資金</p><p class="sv" id="s-wc">—</p><p class="sh">約 營收 ÷ 365 × CCC</p></div>
+      <div class="stat"><p class="sl">縮短 10 天可釋放</p><p class="sv pos" id="s-10">—</p><p class="sh">一次性的現金</p></div>
+    </div>
+    <div class="ibox" id="ccnote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>3. 成長的隱藏帳單：營運資金會吃現金</h2>
+  <p>正 CCC 公司的殘酷數學：<strong>營收成長，營運資金同比例膨脹</strong>。算例：營收 10 億、營運資金佔營收 20%、今年成長 30%——營運資金需求增加 10 億 × 30% × 20% ＝ <strong>6,000 萬</strong>。若淨利率 8%（當年淨利約 1.04 億），<strong>成長本身吃掉當年淨利的 58%</strong>。</p>
+  <p>這就是 W7「賺錢但現金流出」的定量版：損益表越漂亮、現金越緊。CFO 的功課是預測成長所需的營運資金（W46 的預測模型必含這條），並用 CCC 管理把帳單壓小。</p>
+  </div>
+
+  <div class="lab">
+    <h3>成長帳單計算機</h3>
+    <p class="muted" style="margin-top:-.2rem">營運資金佔營收的比例可以是負的——那就是負 CCC 生意。</p>
+    <div class="presets" id="grpre"><button data-w="20">講義算例（佔 20%）</button><button data-w="35">重資本製造（佔 35%）</button><button data-w="-5">負 CCC 零售（佔 −5%）</button></div>
+    <div class="ctl"><label>今年營收 <output id="o-gr">10 億</output></label><input type="range" id="in-gr" min="1" max="100" step="1" value="10" aria-label="今年營收"></div>
+    <div class="ctl"><label>營收成長 <output id="o-gg">30%</output></label><input type="range" id="in-gg" min="0" max="100" step="5" value="30" aria-label="營收成長"></div>
+    <div class="ctl"><label>營運資金佔營收 <output id="o-gw">20%</output></label><input type="range" id="in-gw" min="-15" max="50" step="1" value="20" aria-label="營運資金佔營收"></div>
+    <div class="ctl"><label>淨利率 <output id="o-gm">8%</output></label><input type="range" id="in-gm" min="1" max="30" step="1" value="8" aria-label="淨利率"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">營運資金增加</p><p class="sv" id="s-dwc">—</p><p class="sh">成長要墊的錢</p></div>
+      <div class="stat"><p class="sl">明年淨利</p><p class="sv" id="s-ni">—</p><p class="sh">成長後營收 × 淨利率</p></div>
+      <div class="stat"><p class="sl">被成長吃掉</p><p class="sv" id="s-eat">—</p><p class="sh">佔淨利</p></div>
+    </div>
+    <div class="ibox" id="grnote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>4. 三個元件的管理槓桿（與其代價）</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>想縮短</th><th>手段</th><th>隱藏代價</th></tr></thead>
+      <tbody>
+        <tr><td class="f">存貨天數</td><td>精實庫存、以銷定產</td><td>缺貨風險、供應鏈韌性下降（疫情的教訓）</td></tr>
+        <tr><td class="f">應收天數</td><td>縮短帳期、預收、催收紀律</td><td>客戶關係，可能輸給帳期寬鬆的對手</td></tr>
+        <tr><td class="f">拉長應付天數</td><td>談判月結天數</td><td>壓榨供應商的極限＝供應商倒閉或漲價；大企業拖小供應商帳期有道德與法規邊界</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>投資人視角</strong>（W8 紅旗的深化）：CCC <strong>逐年惡化</strong>——尤其應收與存貨天數同步拉長——是營運失控的早期訊號，常早於損益表惡化一到兩季。把 CCC 三元件的五年趨勢加進你的健檢流程。</p>
+
+  <h2>5. 現金管理的最後一塊：水位與階梯</h2>
+  <p>CFO 的現金政策三層：①<strong>營運水位</strong>：付薪水、貨款的週轉底線，通常以「月支出的 N 倍」設定；②<strong>緩衝</strong>：對應 W37 壓測的情境準備；③<strong>超額現金</strong>：這一層該回到 W44 的決策樹——有 ROIC 高於 WACC 的案子就投，沒有就還股東。閒置現金的短期去處是定存階梯與貨幣市場工具，安全與流動性優先——<strong>財務部不是利潤中心</strong>（W48 的預告）。</p>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「應付帳款拖越久越聰明。」</p><p>應付天數是免費資金沒錯，但供應商不是傻子：長期壓榨會反映在報價、品質順位、缺貨時的配貨順序上。把供應鏈當提款機的公司，危機時最先斷鏈。</p></div>
+  <div class="myth"><p class="say">「營運資金是財務部的事。」</p><p>存貨天數在生產部手上、應收在業務手上、應付在採購手上——CCC 是<strong>全公司的營運紀律</strong>，CFO 只是記分員。</p></div>
+  <div class="myth"><p class="say">「CCC 短就是好公司。」</p><p>要配商業模式看：精品業存貨天數天生長（存貨是陳列資產）、承包工程應收天數天生長。跟同業比、跟自己的歷史比——W9 的鐵律永遠適用。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>從定義到負 CCC 巨頭</h2>
+  <div class="readitem"><div class="t">50 分鐘</div><div class="body"><b>《Principles of Corporate Finance》營運資金章</b><p>本週主幹。</p></div></div>
+  <div class="readitem"><div class="t">25 分鐘</div><div class="body"><b>Investopedia：Cash Conversion Cycle 與 Days Payable Outstanding</b><p><a class="srclink" href="https://www.investopedia.com/terms/c/cashconversioncycle.asp" target="_blank" rel="noopener">Cash Conversion Cycle ↗</a></p></div></div>
+  <div class="readitem"><div class="t">25 分鐘</div><div class="body"><b>負 CCC 案例一篇</b><p>搜「Costco 負營運資金」或「Amazon negative cash conversion cycle」的分析文章——看巨頭怎麼把 CCC 變成成長引擎。</p></div></div>
+  <div class="readitem"><div class="t">10 分鐘</div><div class="body"><b>回顧 W6–7 自己的產出</b><p>營運資金與三線表，是本週的地基。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>實習公司的 CCC 五年解剖</h2>
+  <ol class="tasks">
+    <li>從實習公司財報取近 5 年：存貨、應收、應付、營收、銷貨成本</li>
+    <li>算每年 DIO／DSO／DPO／CCC，畫成趨勢</li>
+    <li>判讀三問：CCC 變長還是變短？主因是哪個元件？跟營收成長對照——「成長吃現金」的帳單有多大？</li>
+    <li>手算飲料店的 −6.4 天與講義的 65 天算例</li>
+  </ol>
+  <div class="verify"><b>怎麼知道做對了：</b>時間軸按「我們的飲料店」CCC 必須是 −6.4 天、斜線區變綠（全世界幫你出營運資金）；按「講義算例」是 65.0 天，營收 10 億時要墊約 1.78 億。成長帳單預設：營運資金增加 0.60 億、明年淨利 1.04 億、被成長吃掉 57.7%；按「負 CCC 零售」，成長反而釋放現金。</div>
+  <ul class="checks" data-key="w45-practice">
+    <li><label><input type="checkbox"><span>五年 CCC 趨勢完成，且有元件歸因</span></label></li>
+    <li><label><input type="checkbox"><span>飲料店 −6.4 天手算通過</span></label></li>
+    <li><label><input type="checkbox"><span>能解釋「成長吃現金」的機制與量級</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 兩家公司淨利率一樣，A 的 CCC −10 天、B +80 天——高速成長期誰活得舒服？</summary><div class="ans"><p>→ <strong>A 舒服得多</strong>。負 CCC 下，成長越快，供應商與預付的客戶「借」你的免費資金越多——成長自帶融資；B 每成長一分，就要先墊 80 天的營運資金，高速成長期反而最容易資金斷鏈。同一個指標的兩端：成長把 B 勒死、把 A 餵肥。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 應收天數突然從 45 天跳到 75 天，給三個假設（一好兩壞）與查證方法</summary><div class="ans"><p>→ 好的：①接了付款條件較長的大單或新市場（查：營收是否同步跳、客戶結構說明）。壞的：②塞貨衝業績（W8 紅旗——查：季底集中出貨？次季退貨？）；③大客戶財務惡化付不出來（查：集中度、該客戶的新聞與財報）。三個都從年報附註的<strong>帳齡分析表</strong>入手。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 為什麼說「預收收入是最美的負債」？</summary><div class="ans"><p>→ 它同時是：W4 的「已收現金、未計收入」（會計上最誠實的負債）、W6 的無息負債（免費資金），以及本週壓低應收天數、甚至讓 CCC 轉負的引擎。客戶預先付錢＝產品搶手＋營運資金別人出——三重好消息藏在「負債」科目裡。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>我們的店的祕密</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（我們的店的祕密）</p><p>「還記得我們的飲料店嗎？我發現它有個了不起的祕密：<strong>客人當場付現金，但我們付供應商是月結</strong>——算出來，錢平均『先進來 6 天』才要付出去。生意做越大，手上的免費週轉金越多。」</p></div>
+  <div class="script"><p class="who">核心觀念（三段水管的時間差）</p><p>「做生意的現金像三段水管：貨躺倉庫幾天（存貨）＋客人欠幾天（應收）－我們欠供應商幾天（應付）。加起來是正的，就要自己墊錢；<strong>是負的，等於全世界幫你出營運資金</strong>——全聯、好市多、健身房年費，全是這一招。」</p></div>
+  <div class="script"><p class="who">互動（識破成長陷阱）</p><p>「反過來：一家公司生意暴增 30%，帳面大賺，卻跑來借錢——有問題嗎？」（引導：不一定！墊在貨和帳款上的錢跟著暴增，成長本身很花錢。）「所以聽到『那家公司成長超快』，我們家多問一句：<strong>它的成長是自帶錢包，還是一路要人養？</strong>」</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「欠供應商錢還算優點？」</b><br>「月結是產業慣例、雙方同意的信用，不是賴帳——重點是這個模式讓誰墊錢。當然，拖到供應商活不下去，就是另一回事了（W49 治理課有反例）。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w45-final">
+    <li><label><input type="checkbox"><span>能默寫 CCC 公式與三元件的分母</span></label></li>
+    <li><label><input type="checkbox"><span>實習公司五年 CCC 解剖完成</span></label></li>
+    <li><label><input type="checkbox"><span>能解釋負 CCC 模式與「成長吃現金」</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（飲料店的祕密），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 45 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 46：財務規劃</b>——把三表接起來往前推：「明年的報表長什麼樣」，以及成長超過可持續成長率時，錢從哪來。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-44-dividend-policy/">上一週：股利政策</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——營收成長 30%，卡在存貨與應收帳款裡的錢也跟著膨脹。營收 10 億、營運資金佔兩成的公司，光是這次成長就要多墊 6,000 萬，吃掉當年淨利的將近六成。損益表越漂亮，現金可能越緊。"
+      : "不一定是壞事：成長本身很吃現金。營收成長 30%，卡在存貨與應收帳款裡的錢也跟著膨脹——營收 10 億、營運資金佔兩成的公司，要多墊 6,000 萬，吃掉當年淨利的將近六成。";
+  });
+
+  function sg(v, dp){ return (v < 0 ? "−" : "") + Math.abs(v).toFixed(dp); }
+  function yi(v){ return Math.abs(v) >= 1 ? sg(v, 2) + " 億" : sg(v * 10000, 0) + " 萬"; }
+
+  /* CCC 時間軸 */
+  var iI = document.getElementById("in-dio"), iS = document.getElementById("in-dso"), iP = document.getElementById("in-dpo"), iV = document.getElementById("in-rv");
+  function runC(){
+    var dio = +iI.value, dso = +iS.value, dpo = +iP.value, rv = +iV.value;
+    document.getElementById("o-dio").textContent = dio.toFixed(1) + " 天";
+    document.getElementById("o-dso").textContent = dso.toFixed(1) + " 天";
+    document.getElementById("o-dpo").textContent = dpo.toFixed(1) + " 天";
+    document.getElementById("o-rv").textContent = rv + " 億";
+    var ccc = dio + dso - dpo, top = dio + dso, span = Math.max(top, dpo, 1);
+    function pct(d){ return (d / span * 100).toFixed(2) + "%"; }
+    var gapL = Math.min(top, dpo), gapW = Math.abs(ccc);
+    document.getElementById("tl").innerHTML =
+      '<div class="row"><div class="seg inv" style="left:0;width:' + pct(dio) + '">存貨 ' + dio.toFixed(0) + '</div><div class="seg ar" style="left:' + pct(dio) + ';width:' + pct(dso) + '">應收 ' + dso.toFixed(0) + '</div></div>' +
+      '<div class="row"><div class="seg ap" style="left:0;width:' + pct(dpo) + '">應付 ' + dpo.toFixed(0) + '</div>' + (gapW > 0 ? '<div class="seg gap' + (ccc < 0 ? " neg" : "") + '" style="left:' + pct(gapL) + ';width:' + pct(gapW) + '"></div>' : "") + '</div>' +
+      '<div>0 天　→　' + span.toFixed(0) + ' 天</div>';
+    var e = document.getElementById("s-ccc"); e.textContent = sg(ccc, 1); e.className = "sv " + (ccc < 0 ? "pos" : ccc > 60 ? "neg" : "");
+    var wc = rv / 365 * ccc;
+    document.getElementById("s-wc").textContent = yi(wc);
+    document.getElementById("s-10").textContent = yi(rv / 365 * 10);
+    var n = document.getElementById("ccnote");
+    n.className = "ibox" + (ccc < 0 ? " good" : "");
+    n.innerHTML = ccc < 0
+      ? "<b>CCC " + sg(ccc, 1) + " 天：錢還沒付給供應商，就已經從客人手上收回來了。</b>營收 " + rv + " 億的規模，等於供應商免費借你約 " + yi(-wc) + "——生意越大，借得越多。"
+      : "<b>CCC " + ccc.toFixed(1) + " 天：每一塊錢付出去，要 " + ccc.toFixed(0) + " 天才轉回來。</b>營收 " + rv + " 億的規模，要長期墊著約 " + yi(wc) + "。每縮短 10 天，就無償釋放約 " + yi(rv / 365 * 10) + " 現金。";
+  }
+  [iI, iS, iP, iV].forEach(function(x){ x.addEventListener("input", runC); });
+  document.getElementById("ccpre").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    iI.value = btn.dataset.i; iS.value = btn.dataset.s; iP.value = btn.dataset.p; runC();
+  });
+  runC();
+
+  /* 成長帳單 */
+  var gR = document.getElementById("in-gr"), gG = document.getElementById("in-gg"), gW = document.getElementById("in-gw"), gM = document.getElementById("in-gm");
+  function runG(){
+    var r = +gR.value, g = +gG.value / 100, w = +gW.value / 100, m = +gM.value / 100;
+    document.getElementById("o-gr").textContent = r + " 億";
+    document.getElementById("o-gg").textContent = gG.value + "%";
+    document.getElementById("o-gw").textContent = gW.value + "%";
+    document.getElementById("o-gm").textContent = gM.value + "%";
+    var dwc = r * g * w, ni = r * (1 + g) * m, eat = dwc / ni * 100;
+    document.getElementById("s-dwc").textContent = sg(dwc, 2) + " 億";
+    document.getElementById("s-ni").textContent = ni.toFixed(2) + " 億";
+    var e = document.getElementById("s-eat"); e.textContent = eat >= 0 ? eat.toFixed(1) + "%" : "釋放 " + Math.abs(eat).toFixed(1) + "%"; e.className = "sv " + (eat > 50 ? "neg" : eat < 0 ? "pos" : "");
+    var n = document.getElementById("grnote");
+    n.className = "ibox" + (w < 0 ? " good" : "");
+    if (w < 0) n.innerHTML = "<b>負營運資金：成長反而送錢來。</b>營收多 " + (r * g).toFixed(1) + " 億，供應商與預付的客戶多借你 " + Math.abs(dwc).toFixed(2) + " 億——成長自帶融資。";
+    else if (g === 0) n.innerHTML = "<b>不成長，就沒有這張帳單。</b>營運資金只在營收擴大時才需要追加。";
+    else n.innerHTML = "<b>成長 " + gG.value + "%，要多墊 " + dwc.toFixed(2) + " 億營運資金，吃掉淨利的 " + eat.toFixed(1) + "%。</b>" + (eat > 100 ? "成長吃掉的比賺到的還多：帳面獲利，現金卻在流失，只能借錢或增資——這就是成長型公司常缺錢的原因。" : "損益表上的淨利，有一大塊根本拿不出來用。");
+  }
+  [gR, gG, gW, gM].forEach(function(x){ x.addEventListener("input", runG); });
+  document.getElementById("grpre").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    gW.value = btn.dataset.w; gR.value = 10; gG.value = 30; gM.value = 8; runG();
+  });
+  runG();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w45-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w45-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 看得見錢卡在哪了——下週把三表接起來往前推。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

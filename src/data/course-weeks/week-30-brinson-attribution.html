@@ -1,0 +1,574 @@
+<!-- W27 起照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 30</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q3 操盤手季 · Week 30</p>
+  <h1>績效歸因——Brinson 模型</h1>
+  <p class="lead" style="margin-top:.5rem">W29 算出「贏基準 2.4 個百分點」，本週回答「<strong>贏在哪</strong>」——是把錢押對類別（配置），還是在類別裡挑對標的（選股）？歸因是操盤手的復盤 X 光。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-27-returns-portfolio/">第 27</a>–<a href="/projects/family-investing-course/week-29-sharpe-family/">29 週</a></span><span class="chip">52 週 · 第 30 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>知道自己真正的優勢來源，才知道該加強什麼、放掉什麼。這也是把專欄引用的 Brinson 研究「還原成工具」的一週——順便修正那個被誤用最多的 90%。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週「兩個司機」家人買不買單——他們學會問「晃得多兇」了嗎？
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">小孩月考總分贏了全班平均 24 分。你最想知道的下一件事是什麼？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">贏在哪一科</button>
+    <button data-g="b">全班平均是幾分</button>
+    <button data-g="c">下次還會不會贏</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 歸因要回答的問題</h2>
+  <p>你的組合贏了基準——但「贏」可能來自完全不同的技能：</p>
+  <ul>
+    <li><strong>配置（allocation）</strong>：你把比基準更多的錢放在表現好的<strong>類別</strong>（如加碼股票、減碼債券）</li>
+    <li><strong>選股（selection）</strong>：在每個類別<strong>裡面</strong>，你挑的標的贏過該類別的指數</li>
+  </ul>
+  <p>兩種是不同的能力、不同的職涯（資產配置者 vs 選股者），也對應你這門課的兩條技能樹（W14–18 vs W19–26）。歸因把它們拆開計量。</p>
+
+  <h2>2. Brinson 模型：完整算例</h2>
+  <p>設定（兩類別簡化版；數字為教學設計）：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th></th><th>組合權重</th><th>基準權重</th><th>組合報酬</th><th>類別基準報酬</th></tr></thead>
+      <tbody>
+        <tr><td class="f">股票</td><td class="num">70%</td><td class="num">60%</td><td class="num">10%</td><td class="num">8%</td></tr>
+        <tr><td class="f">債券</td><td class="num">30%</td><td class="num">40%</td><td class="num">2%</td><td class="num">1%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>第一步｜總報酬</strong>：組合 R<sub>p</sub> ＝ 0.7×10% ＋ 0.3×2% ＝ <strong>7.60%</strong>；基準 R<sub>b</sub> ＝ 0.6×8% ＋ 0.4×1% ＝ <strong>5.20%</strong>；超額 ＝ <strong>2.40pp</strong>——現在來拆。</p>
+  <p><strong>第二步｜配置效果</strong>＝ Σ（權重差 × 該類別基準報酬相對整體基準的優劣）：</p>
+  <ul>
+    <li>股票：(70%−60%) × (8%−5.2%) ＝ <strong>+0.28pp</strong>（加碼了跑贏整體的類別 → 加分）</li>
+    <li>債券：(30%−40%) × (1%−5.2%) ＝ <strong>+0.42pp</strong>（減碼了跑輸整體的類別 → 也是加分！）</li>
+    <li>小計 <strong>+0.70pp</strong></li>
+  </ul>
+  <p class="muted">注意債券那行的巧思：<strong>減碼爛類別跟加碼好類別一樣是功勞</strong>——公式裡兩個負號相乘，負負得正。</p>
+  <p><strong>第三步｜選股效果</strong>＝ Σ（基準權重 × 你在該類別內的超額）：</p>
+  <ul>
+    <li>股票：60% × (10%−8%) ＝ <strong>+1.20pp</strong>；債券：40% × (2%−1%) ＝ <strong>+0.40pp</strong>；小計 <strong>+1.60pp</strong></li>
+  </ul>
+  <p><strong>第四步｜交互項</strong>＝ Σ（權重差 × 選股差）＝ 0.1×2% ＋ (−0.1)×1% ＝ <strong>+0.10pp</strong>。</p>
+  <div class="quote">勾稽：0.70 ＋ 1.60 ＋ 0.10 ＝ 2.40pp ✓——三塊加總必等於超額。你的飲料店勾稽精神（W8），在組合層的再現。</div>
+  <p><strong>判讀</strong>：這個例子裡選股貢獻（1.6）是配置（0.7）的兩倍多——這位操盤手的優勢在挑標的，不在調股債比。但<strong>連續 4–8 季的歸因才能分辨技能與運氣</strong>——單季什麼都證明不了（W38 的 resulting）。</p>
+  </div>
+
+  <!-- 互動 1：Brinson 拆帳台 -->
+  <div class="lab">
+    <h3>Brinson 拆帳台</h3>
+    <p class="muted" style="margin-top:-.2rem">基準固定：股 60%／債 40%，類別基準報酬 8%／1%。拉你的權重與報酬，看三塊怎麼分帳、勾稽怎麼永遠成立。</p>
+    <div class="presets">
+      <button id="p-lect">講義算例</button>
+      <button id="p-alloc">純配置型（選股平手）</button>
+      <button id="p-pick">純選股型（權重貼基準）</button>
+    </div>
+    <div class="ctl">
+      <label>你的股票權重 <output id="o-wp">70%</output></label>
+      <input type="range" id="in-wp" min="40" max="90" step="5" value="70" aria-label="股票權重">
+    </div>
+    <div class="ctl">
+      <label>你的股票部位報酬 <output id="o-rs">10%</output></label>
+      <input type="range" id="in-rs" min="0" max="16" step="1" value="10" aria-label="股票部位報酬">
+    </div>
+    <div class="ctl">
+      <label>你的債券部位報酬 <output id="o-rb">2%</output></label>
+      <input type="range" id="in-rb" min="-2" max="6" step="1" value="2" aria-label="債券部位報酬">
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="sl">組合報酬</p><p class="sv" id="s-rp">—</p><p class="sh">基準 5.20%</p></div>
+      <div class="stat"><p class="sl">超額</p><p class="sv" id="s-ex">—</p><p class="sh">要拆的帳</p></div>
+      <div class="stat"><p class="sl">配置效果</p><p class="sv" id="s-al">—</p><p class="sh">押對類別</p></div>
+      <div class="stat"><p class="sl">選股效果</p><p class="sv" id="s-se">—</p><p class="sh">類別裡挑對</p></div>
+      <div class="stat"><p class="sl">交互項</p><p class="sv" id="s-in">—</p><p class="sh">兩個決策的加乘</p></div>
+    </div>
+    <div class="ibox good" id="attrnote">拉動滑桿或按預設。</div>
+  </div>
+
+  <div class="prose">
+  <h2>3. 重讀 Brinson 1986：那個被誤用最多的 90%</h2>
+  <p>現在你有工具了，回頭把專欄引用的研究讀精確：</p>
+  <ul>
+    <li>它說的是：退休基金報酬的<strong>時間序列變異</strong>（波動）約 90% 由「政策配置」解釋</li>
+    <li>它<strong>不是</strong>說：報酬的「高低」90% 來自配置，也不是說選股無用</li>
+    <li>正確的白話：<strong>你的組合「晃動的樣子」主要由股債比決定</strong>；但兩個同配置的組合，最終財富仍可因選股與成本差很多</li>
+  </ul>
+  <p>對個人的含義不變（配置是地基），但別再說「報酬的 90% 來自配置」——你現在是能分辨這兩句話差異的人了。</p>
+  </div>
+
+  <!-- 互動 2：90% 判讀 -->
+  <div class="lab">
+    <h3>90% 判讀：這句話是原研究說的嗎？</h3>
+    <p class="muted" style="margin-top:-.2rem">三句常見引用，判斷哪句忠於 Brinson 1986 的原意。</p>
+    <div class="tcard">
+      <p class="tq" id="tq">第 1 / 3 題</p>
+      <p class="tt" id="tt">—</p>
+    </div>
+    <div class="tbtnrow" id="tbtns">
+      <button data-v="1">✓ 忠於原研究</button>
+      <button data-v="0">✕ 誤用</button>
+    </div>
+    <div id="tfeed" aria-live="polite"></div>
+    <p id="tscore">目前答對 0 題</p>
+  </div>
+
+  <div class="prose">
+  <h2>4. 歸因的實務細節</h2>
+  <ol>
+    <li><strong>類別內基準要選對</strong>——股票部位對台股就用加權報酬指數、對全球用世界指數；選錯類別基準，選股效果會被灌水或冤枉</li>
+    <li><strong>多期歸因</strong>——單期公式直接相加會有複利誤差，實務有連結法（Carino 等）；個人使用知道「逐期算、趨勢看」即可</li>
+    <li><strong>交互項的處理</strong>——有些機構把它併入選股效果（Brinson-Fachler 慣例不同）；重點是三塊加總勾稽，歸類方式註明即可</li>
+    <li><strong>費用也要歸因</strong>——毛報酬歸因完，記得超額還要扣掉交易成本（W10）；很多「有選股能力」的人，扣費後歸零</li>
+  </ol>
+
+  <h2>5. 常見誤解闢謠</h2>
+  <div class="myth">
+    <p class="say">「超額為正＝有技能。」</p>
+    <p>可能只是風格順風——W32 的因子會給更鋒利的透鏡：你的「選股 alpha」可能只是價值／小型股曝險。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「配置效果小＝配置不重要。」</p>
+    <p>若你的配置<strong>貼著基準</strong>（權重差小），配置效果自然小——那是「沒下注」不是「沒能力」。效果大小要對照主動偏離的幅度（下週的 active share）。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「歸因是機構才需要的。」</p>
+    <p>個人版的價值更直接：發現自己選股效果長期為負的人，理性的行動是把選股外包給指數（W16）、保留配置決策——歸因就是找出「你該外包哪一半」的工具。</p>
+  </div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>第三次遇到 Brinson——這次讀原文</h2>
+  <div class="readitem">
+    <div class="t">40 分鐘</div>
+    <div class="body"><b>Brinson, Hood &amp; Beebower (1986)：Determinants of Portfolio Performance</b>
+      <p>找到原文或詳細摘要，<strong>親自確認「90% 解釋的是變異」</strong>——把關鍵句抄進筆記。這是你第三次遇到這研究：專欄引用它、W14 用它、本週精讀它。</p>
+    </div>
+  </div>
+  <div class="readitem">
+    <div class="t">25 分鐘</div>
+    <div class="body"><b>Investopedia：Attribution Analysis</b>
+      <p>歸因的一般框架與術語。<a class="srclink" href="https://www.investopedia.com/terms/a/attribution-analysis.asp" target="_blank" rel="noopener">Attribution Analysis ↗</a></p>
+    </div>
+  </div>
+  <div class="readitem">
+    <div class="t">5 分鐘</div>
+    <div class="body"><b>回顧 W18 IPS 的基準設定</b>
+      <p>歸因的前提是基準明確——「跟誰比」下週正式深化。</p>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>第一次月度歸因</h2>
+
+  <h3>任務 A｜模擬組合歸因（40 分鐘）</h3>
+  <ol class="tasks">
+    <li>兩類別簡化：股票部位 vs 債券／現金部位</li>
+    <li>查同期類別基準報酬（台股加權報酬指數、你 IPS 指定的債券基準）</li>
+    <li>跑四步驟：總報酬 → 配置 → 選股 → 交互 → <strong>勾稽</strong>（加總必須等於超額，差 0.01pp 內可接受）</li>
+    <li><strong>驗證手感</strong>：先用講義算例手算一遍，確認能重現 0.70／1.60／0.10</li>
+    <li>寫三行：這期超額主要來自哪裡？符合你對自己的預期嗎？</li>
+  </ol>
+
+  <div class="verify">
+    <b>怎麼知道做對了：</b>拿上面的拆帳台當對答案機——講義算例必須出現 0.70／1.60／0.10、勾稽 2.40；你自己的歸因，三塊加總與超額的差要在 0.01pp 內。
+  </div>
+
+  <ul class="checks" data-key="w30-practice">
+    <li><label><input type="checkbox"><span>講義算例手算重現成功（0.70／1.60／0.10）</span></label></li>
+    <li><label><input type="checkbox"><span>模擬組合第一次歸因完成且勾稽通過</span></label></li>
+    <li><label><input type="checkbox"><span>能一句話說出自己這期「贏／輸在哪」</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 減碼表現差的類別，在配置效果裡是加分還是扣分？公式怎麼做到的？</summary>
+      <div class="ans"><p>→ <strong>加分</strong>。公式（權重差）×（類別相對報酬）：減碼是負的權重差、爛類別是負的相對報酬——<strong>負負得正</strong>。直覺：把錢從爛類別移走，跟把錢放進好類別是同一枚硬幣的兩面。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 你的「選股效果」連續八季為負——理性的結論與行動是什麼？</summary>
+      <div class="ans"><p>→ 結論：你在「類別內挑標的」上<strong>沒有可辨識的優勢</strong>（八季已扣除運氣的合理觀察期）。行動：類別內改用指數工具（W16），把時間投入你有正貢獻的環節（配置紀律、成本控制）。這不是認輸，是把自己當成一項資產來歸因後的理性配置。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 「報酬波動的 90% 由配置決定」與「報酬高低的 90% 來自配置」差在哪？</summary>
+      <div class="ans"><p>→ 前者（正確版）講的是<strong>淨值曲線起伏的形狀</strong>九成由股債比決定——波動的來源。後者（誤用版）暗示選股與成本幾乎不影響最終報酬——原研究沒有支持這個說法：長期財富差異裡，選股、成本、行為都有重大貢獻。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>考卷拆分</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（考卷拆分）</p>
+    <p>「小孩月考總分贏了全班平均 24 分。你想知道的下一件事是什麼？」（哪一科贏的。）「投資也一樣：這個月我們的模擬帳戶贏了大盤——但要拆開看：是因為我們<strong>股票放得比較多</strong>（押對科目），還是<strong>挑的股票比較強</strong>（該科考得好）？兩種是完全不同的本事。」</p>
+  </div>
+  <div class="script">
+    <p class="who">核心演示</p>
+    <p>用講義算例的表格講一遍四步驟（家人只需要聽懂「押對類別」和「類別裡挑對」兩塊），最後亮出勾稽：「0.7 加 1.6 加 0.1，剛好等於 2.4——<strong>帳拆得乾乾淨淨</strong>，跟我們家飲料店對帳同一個精神。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動（自我認識）</p>
+    <p>「如果連續兩年拆帳都發現：我們挑股票其實是扣分的，只有比例調得好——你覺得該怎麼辦？」</p>
+    <p class="aside">引導出：挑股票的部分交給 ETF，專心顧比例——「承認自己哪裡不行，是投資裡最賺錢的誠實」。</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「一個月的成績能看出什麼？」</b><br>「看不出來，跟一次月考看不出實力一樣——要連續拆一兩年才知道是實力還是運氣。所以我們每個月拆、每季回顧。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w30-final">
+    <li><label><input type="checkbox"><span>能默寫配置／選股／交互三公式並解釋直覺</span></label></li>
+    <li><label><input type="checkbox"><span>模擬組合月度歸因上線（此後每月隨月報跑）</span></label></li>
+    <li><label><input type="checkbox"><span>能精確轉述 Brinson 1986 的真正結論</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成，記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 30 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 31：基準與追蹤誤差</b>——歸因的地基是「跟誰比」；選錯基準，整套歸因都是對空氣揮拳。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-29-sharpe-family/">上一週：Sharpe 家族</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "a"
+      ? "對——贏在哪一科。總分只告訴你「贏了」，拆科目才知道「本事在哪」。投資的版本：贏大盤 2.4pp，是押對類別（配置）還是類別裡挑對（選股）？Brinson 模型就是那把拆考卷的刀。"
+      : "都想知道，但最有行動價值的是「贏在哪一科」——總分只說「贏了」，拆科目才知道本事在哪、該補哪。投資的版本：超額 2.4pp 要拆成配置與選股兩塊，Brinson 模型就是那把刀。";
+  });
+
+  /* ---------- Brinson 拆帳台 ---------- */
+  var WB = 0.6, RBS = 8, RBB = 1;                 // 基準：股 60%、8%；債 40%、1%
+  var RB = WB * RBS + (1 - WB) * RBB;             // 5.2
+  var inWp = document.getElementById("in-wp"), inRs = document.getElementById("in-rs"), inRb = document.getElementById("in-rb");
+  function setV(id, v, dp){
+    var el = document.getElementById(id);
+    el.textContent = (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dp === undefined ? 2 : dp) + (id === "s-rp" ? "%" : "pp");
+    el.classList.remove("pos","neg");
+    if (v > 0.004) el.classList.add("pos"); else if (v < -0.004) el.classList.add("neg");
+  }
+  function runAttr(){
+    var wp = +inWp.value / 100, rs = +inRs.value, rb = +inRb.value;
+    document.getElementById("o-wp").textContent = (+inWp.value) + "%";
+    document.getElementById("o-rs").textContent = rs + "%";
+    document.getElementById("o-rb").textContent = rb + "%";
+    var rp = wp * rs + (1 - wp) * rb;
+    var ex = rp - RB;
+    var alloc = (wp - WB) * (RBS - RB) + ((1 - wp) - (1 - WB)) * (RBB - RB);
+    var sel = WB * (rs - RBS) + (1 - WB) * (rb - RBB);
+    var inter = (wp - WB) * (rs - RBS) + ((1 - wp) - (1 - WB)) * (rb - RBB);
+    var rpEl = document.getElementById("s-rp");
+    rpEl.textContent = rp.toFixed(2) + "%"; rpEl.classList.remove("pos","neg");
+    setV("s-ex", ex); setV("s-al", alloc); setV("s-se", sel); setV("s-in", inter);
+    var v = document.getElementById("attrnote");
+    var sum = alloc + sel + inter;
+    var lead = "勾稽：" + alloc.toFixed(2) + " ＋ " + sel.toFixed(2) + " ＋ " + inter.toFixed(2) + " ＝ " + sum.toFixed(2) + "pp ✓。";
+    if (Math.abs(alloc) < 0.05 && Math.abs(sel) < 0.05) {
+      v.innerHTML = "<b>" + lead + "</b>權重貼基準、選股也平手——沒有下注就沒有超額。歸因不會獎勵「什麼都沒做」，它只是誠實。";
+    } else if (Math.abs(sel) > Math.abs(alloc) * 1.5) {
+      v.innerHTML = "<b>" + lead + "</b>這一期的本事主要在<strong>選股</strong>——類別裡挑的標的贏過類別指數。注意：連續 4–8 季都這樣，才能說是技能不是運氣。";
+    } else if (Math.abs(alloc) > Math.abs(sel) * 1.5) {
+      v.innerHTML = "<b>" + lead + "</b>這一期的本事主要在<strong>配置</strong>——押對（或躲對）了類別。減碼爛類別跟加碼好類別一樣是功勞：公式裡負負得正。";
+    } else {
+      v.innerHTML = "<b>" + lead + "</b>配置與選股貢獻相當——兩條技能樹都有出力。單期先別下結論，逐月拆、看趨勢。";
+    }
+  }
+  [inWp, inRs, inRb].forEach(function(el){ el.addEventListener("input", runAttr); });
+  function preset(wp, rs, rb){ inWp.value = wp; inRs.value = rs; inRb.value = rb; runAttr(); }
+  document.getElementById("p-lect").addEventListener("click", function(){ preset(70, 10, 2); });
+  document.getElementById("p-alloc").addEventListener("click", function(){ preset(80, 8, 1); });
+  document.getElementById("p-pick").addEventListener("click", function(){ preset(60, 12, 3); });
+  runAttr();
+
+  /* ---------- 90% 判讀 ---------- */
+  var CLAIMS = [
+    { t: "「退休基金淨值曲線的起伏（變異），約九成由股債配置政策解釋。」", ok: true,
+      why: "這是原研究的結論：90% 解釋的是報酬的「時間序列變異」——組合晃動的樣子主要由配置決定。" },
+    { t: "「你的報酬高低，90% 來自資產配置，選股幾乎不重要。」", ok: false,
+      why: "最常見的誤用。原研究量的是波動的來源，不是報酬的高低；兩個同配置的組合，最終財富仍可因選股與成本差很多。" },
+    { t: "「配置是地基——先決定股債比，再談其他。」", ok: true,
+      why: "這是合理的引申（W14 也是這樣用的）：配置決定你組合的風險樣貌，先把地基打對。注意它與「報酬九成來自配置」是兩回事——前者講風險形狀，後者是誤用。" }
+  ];
+  var ti = 0, tcorrect = 0, tanswered = false;
+  var ttEl = document.getElementById("tt"), tqEl = document.getElementById("tq");
+  var tfeed = document.getElementById("tfeed"), tscore = document.getElementById("tscore");
+  var tbtns = document.getElementById("tbtns");
+  function renderClaim(){
+    var cur = CLAIMS[ti];
+    tqEl.textContent = "第 " + (ti + 1) + " / " + CLAIMS.length + " 題";
+    ttEl.textContent = cur.t;
+    tfeed.classList.remove("show", "bad");
+    tanswered = false;
+    tbtns.querySelectorAll("button").forEach(function(b){
+      b.disabled = false; b.style.display = "";
+      b.textContent = b.dataset.v === "1" ? "✓ 忠於原研究" : "✕ 誤用";
+    });
+  }
+  tbtns.addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    if (tanswered) {
+      ti = (ti + 1) % CLAIMS.length;
+      if (ti === 0) { tcorrect = 0; tscore.textContent = "重新開始——目前答對 0 題"; }
+      renderClaim();
+      return;
+    }
+    var cur = CLAIMS[ti];
+    var right = (btn.dataset.v === "1") === cur.ok;
+    if (right) tcorrect++;
+    tanswered = true;
+    tfeed.className = "show" + (cur.ok ? "" : " bad");
+    tfeed.innerHTML = "<b>" + (right ? "答對——" : "再想想——") + (cur.ok ? "這句忠於原研究。" : "這句是誤用。") + "</b><br>" + cur.why +
+      (ti + 1 < CLAIMS.length
+        ? "<br><span style=\"font-size:.85em;color:var(--ink-3)\">（點上面的「下一題」繼續）</span>"
+        : "<br><span style=\"font-size:.85em;color:var(--ink-3)\">（三題結束——想再練就點「再玩一次」）</span>");
+    tscore.textContent = "目前答對 " + tcorrect + " 題";
+    tbtns.querySelectorAll("button").forEach(function(b, i){
+      if (i === 0) { b.textContent = ti + 1 < CLAIMS.length ? "下一題 →" : "再玩一次 ↺"; }
+      else { b.style.display = "none"; }
+    });
+  });
+  renderClaim();
+
+  /* ---------- 檢核清單持久化 ---------- */
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w30-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w30-final") {
+        var all = state.every(Boolean);
+        document.getElementById("checkdone").textContent = all
+          ? "✓ 復盤 X 光就位——下週回到地基：跟誰比（基準與追蹤誤差）。"
+          : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

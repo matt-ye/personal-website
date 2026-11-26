@@ -1,0 +1,520 @@
+<!-- W27 起照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 28</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q3 操盤手季 · Week 28</p>
+  <h1>風險衡量——波動率、回撤與 VaR</h1>
+  <p class="lead" style="margin-top:.5rem">上週給模擬組合裝了報酬儀表，本週裝<strong>風險儀表</strong>。操盤手與散戶的分水嶺不在報酬，在能不能量化自己承擔了多少風險——只看報酬，等於開車只看時速、不看油表和煞車。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-15-mpt/">第 15</a>、<a href="/projects/family-investing-course/week-27-returns-portfolio/">27 週</a></span><span class="chip">52 週 · 第 28 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>操盤手的第二組儀表。本週的產出（波動、MDD）直接餵給 W29 的 Sharpe 家族與 W37 的壓力測試——風險量不出來，後面整季都沒得算。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週教家人「兩種報酬率」的反應——他們記住「策略的成績 vs 你的錢的成績」了嗎？
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">投資虧了一半（−50%），要賺多少 % 才回得了本？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">賺 50% 就回來了</button>
+    <button data-g="b">大概 75%</button>
+    <button data-g="c">要賺 100%——整整翻倍</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 波動率：風險的第一個（不完美）代理</h2>
+  <p>W15 已經定義過 σ；本週補上實務計算，三步：</p>
+  <ol>
+    <li>取每日報酬 r ＝ P<sub>t</sub> ÷ P<sub>t−1</sub> − 1</li>
+    <li>算日報酬的標準差 σ<sub>日</sub></li>
+    <li><strong>年化</strong>：σ<sub>年</sub> ＝ σ<sub>日</sub> × √252（一年約 252 個交易日；√ 來自「變異數隨時間線性相加」的假設。用週資料就 ×√52、月資料 ×√12）</li>
+  </ol>
+  <p><strong>基準感</strong>：日波動 1% → 年化 <strong>15.9%</strong>——恰好是成熟股市的常態量級（W14 的表）。</p>
+  <p>σ 的正確定位（收攏 W15 與 W25）：它衡量的是「<strong>顛簸程度</strong>」不是「虧錢機率」——但顛簸程度仍然重要，因為①它透過波動拖累直接吃掉幾何報酬（W27）②它決定你會不會在半路被甩下車（行為風險，W23）。</p>
+
+  <h2>2. 最大回撤（MDD）：最有體感的風險指標</h2>
+  <p>MDD ＝ 從<strong>歷史最高點</strong>摔下來最深的那一跤。它比 σ 有體感，因為它正是你帳戶上看到的那個慘綠數字。</p>
+  <p>而它連著一張每個投資人都該背下來的表——<strong>回本的不對稱</strong>：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>回撤</th><th>回本需要</th></tr></thead>
+      <tbody>
+        <tr><td class="f num">−10%</td><td class="num">+11.1%</td></tr>
+        <tr><td class="f num">−20%</td><td class="num">+25.0%</td></tr>
+        <tr><td class="f num">−30%</td><td class="num">+42.9%</td></tr>
+        <tr><td class="f num">−40%</td><td class="num">+66.7%</td></tr>
+        <tr><td class="f num">−50%</td><td class="num"><strong>+100%</strong></td></tr>
+        <tr><td class="f num">−60%</td><td class="num">+150%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>跌得越深，回本的坡越陡——<strong>非線性地陡</strong>。控制回撤不是膽小：它保護的是幾何報酬（W27 的拖累）和你自己的心理（W23）。同時要看<strong>回本時間</strong>：2000 年科技泡沫後，那斯達克花了約 15 年才回到前高——「長期會回來」的長期，可能超過你的耐心甚至人生階段。</p>
+  </div>
+
+  <!-- 互動 1：回本陡坡 -->
+  <div class="lab">
+    <h3>回本陡坡</h3>
+    <p class="muted" style="margin-top:-.2rem">拉回撤深度，看爬出來要多陡。以 100 萬本金為例。</p>
+    <div class="ctl">
+      <label>回撤深度 <output id="o-dd">−50%</output></label>
+      <input type="range" id="in-dd" min="5" max="70" step="5" value="50" aria-label="回撤深度">
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="sl">帳戶剩下</p><p class="sv neg" id="s-left">—</p><p class="sh">100 萬本金</p></div>
+      <div class="stat"><p class="sl">回本需要</p><p class="sv" id="s-need">—</p><p class="sh">剩餘資金要漲的幅度</p></div>
+      <div class="stat"><p class="sl">陡峭倍率</p><p class="sv" id="s-ratio">—</p><p class="sh">回本幅度 ÷ 回撤幅度</p></div>
+    </div>
+    <div class="ibox" id="ddnote">拉動滑桿。</div>
+  </div>
+
+  <div class="prose">
+  <h2>3. VaR：機構的語言，連同它的三個缺陷</h2>
+  <p><strong>VaR（風險值）</strong>：「在 95% 信心水準下，單日最多虧 X。」常態假設下的速算：VaR<sub>95%</sub> ≈ 1.645 × σ<sub>日</sub>、VaR<sub>99%</sub> ≈ 2.326 × σ<sub>日</sub>。</p>
+  <p>例：組合 100 萬、日波動 1% → 95% 單日 VaR ≈ <strong>16,450 元</strong>——白話是「一百天裡約有五天，單日虧損會超過 1.6 萬」。</p>
+  <p><strong>三個缺陷</strong>（2008 年後人盡皆知，但它仍是機構的標準語言）：</p>
+  <ol>
+    <li><strong>尾部之外不管</strong>——VaR 說「5% 機率虧超過 X」，但沒說超過時虧多少（可能是 X 的三倍）。補丁是 CVaR／預期短缺，概念知道即可</li>
+    <li><strong>常態假設</strong>——真實市場肥尾（W15），極端日遠比鐘形曲線預測的多。「25 個標準差事件連續三天」（2007 年 Goldman 的名言）其實是模型錯了，不是宇宙異常</li>
+    <li><strong>回頭看</strong>——用平靜期資料算的 VaR，在風暴來時必然低估；風險最大的時候（W25），儀表讀數最溫和</li>
+  </ol>
+  <div class="quote">本課的用法：VaR 當作溝通工具——把風險講成一個金額，家人和委員會都聽得懂——不當作安全保證。</div>
+  </div>
+
+  <!-- 互動 2：風險翻譯機 -->
+  <div class="lab">
+    <h3>風險翻譯機：把 σ 翻成家人聽得懂的句子</h3>
+    <p class="muted" style="margin-top:-.2rem">拉組合市值與日波動，看年化波動與 VaR 金額——以及那句該講給家人聽的白話。</p>
+    <div class="ctl">
+      <label>組合市值 <output id="o-mv">100 萬</output></label>
+      <input type="range" id="in-mv" min="50" max="500" step="50" value="100" aria-label="組合市值">
+    </div>
+    <div class="ctl">
+      <label>日波動 σ <output id="o-sd">1.0%</output></label>
+      <input type="range" id="in-sd" min="0.4" max="3" step="0.2" value="1" aria-label="日波動">
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="sl">年化波動</p><p class="sv" id="s-ann">—</p><p class="sh">σ日 × √252</p></div>
+      <div class="stat"><p class="sl">95% 單日 VaR</p><p class="sv" id="s-var95">—</p><p class="sh">1.645 × σ日 × 市值</p></div>
+      <div class="stat"><p class="sl">99% 單日 VaR</p><p class="sv" id="s-var99">—</p><p class="sh">2.326 × σ日 × 市值</p></div>
+    </div>
+    <div class="ibox good" id="varnote">拉動滑桿。</div>
+    <p class="muted" style="margin-top:.7rem">提醒：這三個數字全是「回頭看」的統計——儀表讀數最安心的時候，往往最接近它失效的環境（缺陷 3）。</p>
+  </div>
+
+  <div class="prose">
+  <h2>4. 下行風險：只懲罰往下的波動</h2>
+  <p>σ 有個哲學缺陷：大漲也算「波動」。<strong>下行偏差（downside deviation）</strong>只計算低於門檻（通常 0 或無風險利率）那些報酬的離散度——「只懲罰跌，不懲罰漲」。</p>
+  <p>本週只需建立概念：兩個組合同樣的 σ，一個的波動來自偶爾暴漲、一個來自頻繁下跌——下行偏差會把它們區分開，σ 不會。它是下週 <strong>Sortino 比率</strong>的分母。</p>
+
+  <h2>5. 組合風險儀表板 v1（本週交付物）</h2>
+  <p>在模擬組合試算表加一個「風險模組」分頁：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>指標</th><th>算法</th><th>更新頻率</th></tr></thead>
+      <tbody>
+        <tr><td class="f">組合年化波動</td><td>成分近 3 年（或可得期間）日／週報酬 → 組合報酬序列 → σ×√252</td><td>季</td></tr>
+        <tr><td class="f">歷史 MDD</td><td>組合價值序列對歷史新高的最大跌幅</td><td>週（隨估值頁自動）</td></tr>
+        <tr><td class="f">95% 單日 VaR</td><td>1.645 × σ日 × 組合市值</td><td>季</td></tr>
+        <tr><td class="f">IPS 容忍對照</td><td>上述指標 vs W14 寫下的「−X% 我會＿＿」</td><td>季</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p class="muted">成分歷史價格從 Goodinfo 或券商軟體匯出；組合報酬用權重加權即可，先不做共變異數矩陣——那是選讀進階。</p>
+
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth">
+    <p class="say">「風險指標低＝安全。」</p>
+    <p>三個指標全是<strong>回頭看</strong>的統計；風暴前夕讀數最漂亮（W25）。儀表告訴你「過去的顛簸」，不預告前方的懸崖——所以還需要 W37 的壓力測試（往前想）。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「控制回撤＝少賺。」</p>
+    <p>回本不對稱表說明：避開深坑對<strong>幾何報酬</strong>是加分。犧牲的是牛市的相對排名，換到的是複利的連續性。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「VaR 蓋掉 95% 就夠了。」</p>
+    <p>毀掉投資人的從來是那 5%——以及 5% 裡沒說的深度。VaR 是日常儀表，極端情境要用壓測。</p>
+  </div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>統計工具＋哲學上蓋</h2>
+  <div class="readitem">
+    <div class="t">40 分鐘</div>
+    <div class="body"><b>Investopedia：VaR、Maximum Drawdown、Downside Deviation 三條目</b>
+      <p>把定義與算例啃熟。<a class="srclink" href="https://www.investopedia.com/terms/v/var.asp" target="_blank" rel="noopener">Value at Risk ↗</a>、<a class="srclink" href="https://www.investopedia.com/terms/m/maximum-drawdown-mdd.asp" target="_blank" rel="noopener">Maximum Drawdown ↗</a>、<a class="srclink" href="https://www.investopedia.com/terms/d/downside-deviation.asp" target="_blank" rel="noopener">Downside Deviation ↗</a></p>
+    </div>
+  </div>
+  <div class="readitem">
+    <div class="t">40 分鐘</div>
+    <div class="body"><b>《投資最重要的事》（Howard Marks）風險三章</b>
+      <p>Marks 對「可測 vs 不可測風險」的完整論述——本週所有統計工具的哲學上蓋：算得出來的是過去的顛簸，算不出來的才是真正該敬畏的。</p>
+    </div>
+  </div>
+  <div class="readitem">
+    <div class="t">10 分鐘</div>
+    <div class="body"><b>回顧 W15 與 W25</b>
+      <p>σ 的侷限（W15 肥尾）與風險的真義（W25 本金永久損失）——本週把兩條線全部收攏進儀表板。</p>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>給模擬組合裝風險儀表</h2>
+
+  <h3>任務 A｜風險模組（40 分鐘）</h3>
+  <ol class="tasks">
+    <li>匯出組合各成分近 3 年的<strong>週</strong>價格（量小好處理；年化改 ×√52 ≈ ×7.2）</li>
+    <li>算各成分報酬序列 → 按目前權重合成組合報酬序列</li>
+    <li>算三個數：組合年化波動、期間 MDD、95% 單週 VaR 金額</li>
+    <li><strong>對照 IPS</strong>：算出的 MDD 若明天重演，金額是多少？在你 W14 寫的容忍範圍內嗎？寫兩行結論</li>
+  </ol>
+
+  <h3>任務 B｜手感練習（10 分鐘）</h3>
+  <ol class="tasks">
+    <li>不查表心算：−35% 回本要幾 %？（先想公式 dd ÷ (1−dd)，再拿上面的陡坡驗算）</li>
+  </ol>
+
+  <div class="verify">
+    <b>怎麼知道做對了：</b>−35% 的答案是 +53.8%（0.35 ÷ 0.65）。風險模組的三個數字用「風險翻譯機」抽查：日 σ 1% 的年化必須是 15.9%、100 萬的 95% VaR 必須是 16,450 元——對不上就是公式帶錯。
+  </div>
+
+  <ul class="checks" data-key="w28-practice">
+    <li><label><input type="checkbox"><span>風險模組三指標算出且方法正確</span></label></li>
+    <li><label><input type="checkbox"><span>IPS 容忍對照完成（用金額表述）</span></label></li>
+    <li><label><input type="checkbox"><span>回本不對稱表能默寫三行以上</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> 為什麼年化要乘 √252 而不是 252？</summary>
+      <div class="ans"><p>→ 因為（假設報酬獨立）<strong>變異數</strong>才隨期數線性相加：σ²年 ＝ 252 × σ²日，開根號後 σ年 ＝ σ日 × √252。直接乘 252 是把標準差當變異數用——經典錯誤。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 兩組合同樣年化 σ＝15%：A 的 MDD −18%、B 的 −45%——可能嗎？</summary>
+      <div class="ans"><p>→ <strong>完全可能</strong>。σ 只量平均顛簸，不管路徑順序：B 的下跌集中連續出現（滾成深坑），A 的漲跌交錯（坑淺）。這說明 σ 與 MDD 互補、缺一不可——也預示了下行偏差的價值。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> VaR 在什麼時候最危險？</summary>
+      <div class="ans"><p>→ <strong>市場最平靜的時候</strong>。平靜期資料估出的 σ 小、VaR 讀數溫和，誘使你加大部位；而平靜期常是槓桿與估值累積的時期（W25 的信貸週期）——儀表最安心時，往往最接近它失效的環境。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>開車三儀表</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（回本的陡坡）</p>
+    <p>「猜謎：投資虧了一半，要賺多少 % 才回本？」（多數人答 50%。）「答案是 <strong>100%</strong>——虧掉一半，剩下的錢要翻倍才回得來。跌 10% 只要賺 11% 回本，跌 50% 要賺 100%——<strong>坑越深，爬出來越不成比例地難</strong>。」</p>
+  </div>
+  <div class="script">
+    <p class="who">核心比喻（開車三儀表）</p>
+    <p>「看投資組合像開車：報酬率是<strong>時速</strong>，波動是<strong>路面顛簸</strong>，最大回撤是<strong>這趟摔過最深的坑</strong>。只看時速的駕駛最危險——我們家的模擬帳戶這週裝好了全套儀表板。」</p>
+  </div>
+  <div class="script">
+    <p class="who">互動（家庭風險翻譯）</p>
+    <p>「我們的模擬組合 100 萬，儀表說『正常日子裡，一百天大概有五天，單日會虧超過 1.6 萬』——聽到這句你的感覺是？」</p>
+    <p class="aside">把統計翻成金額與頻率，觀察家人反應——這就是 VaR 作為溝通工具的用法。反應太大 → 回頭檢討配置是否超出全家的心理容忍。</p>
+  </div>
+  <div class="script">
+    <p class="who">收尾</p>
+    <p>「記住那張陡坡表就好：<strong>跌一半、賺一倍</strong>。所以我們的策略永遠先想『最深會摔多深』，再想『能跑多快』。」</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那乾脆都不要跌，全放定存？」</b><br>回 W2 與 W14：通膨的坑是每年必跌的慢性坑；重點是把回撤控制在「撐得住」，不是「零」。</p>
+    <p class="qa"><b>「儀表能預測下一次大跌嗎？」</b><br>誠實：「不能，它只記錄過去的顛簸。預想懸崖是另一個工具（壓力測試），過幾週會裝上。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w28-final">
+    <li><label><input type="checkbox"><span>能手算年化波動與 VaR 速算</span></label></li>
+    <li><label><input type="checkbox"><span>模擬組合風險模組上線＋IPS 容忍對照完成</span></label></li>
+    <li><label><input type="checkbox"><span>能說出 VaR 三缺陷與正確用途</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（回本陡坡＋三儀表），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 28 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 29：風險調整績效——Sharpe 家族</b>——報酬儀表（W27）除以風險儀表（W28），得到 Sharpe／Sortino／IR：「同樣賺 8%，誰賺得比較高明」終於有了答案。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-27-returns-portfolio/">上一週：報酬衡量 TWR/MWR</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "c"
+      ? "答對了——虧一半，剩下的錢要翻倍才回得來。回本需要的幅度是 dd÷(1−dd)：跌 10% 只要 11%，跌 50% 要 100%，跌 60% 要 150%——坑越深，爬出來越不成比例地難。下面的陡坡讓你拉給自己看。"
+      : "多數人都這樣猜——但 100 萬虧 50% 剩 50 萬，50 萬要漲 100% 才回到 100 萬。回本需要的幅度是 dd÷(1−dd)，非線性地陡：跌 10% 只要 11%，跌 50% 要 100%。下面的陡坡讓你拉給自己看。";
+  });
+
+  /* ---------- 回本陡坡 ---------- */
+  var inDd = document.getElementById("in-dd");
+  function runDd(){
+    var dd = +inDd.value / 100;
+    document.getElementById("o-dd").textContent = "−" + (+inDd.value) + "%";
+    var left = 100 * (1 - dd);
+    var need = dd / (1 - dd) * 100;
+    document.getElementById("s-left").textContent = left.toFixed(0);
+    document.getElementById("s-need").textContent = "+" + need.toFixed(1) + "%";
+    document.getElementById("s-ratio").textContent = (need / (+inDd.value)).toFixed(2) + "×";
+    var note = document.getElementById("ddnote");
+    if (dd <= 0.15) {
+      note.innerHTML = "<b>淺坑好爬。</b>回本幅度只比回撤大一點——這也是為什麼 W14 的配置要把「你撐得住的回撤」放在報酬之前決定。";
+    } else if (dd <= 0.35) {
+      note.innerHTML = "<b>坡開始變陡了。</b>回本需要的幅度已經明顯大於跌幅——複利的懲罰是非線性的（W27 的波動拖累就是同一件事的另一面）。";
+    } else {
+      note.innerHTML = "<b>深坑區。</b>這裡不只是數學問題：2000 年科技泡沫後那斯達克花了約 15 年回到前高——「長期會回來」的長期，可能超過你的耐心甚至人生階段。控制回撤保護的是複利的連續性。";
+    }
+  }
+  inDd.addEventListener("input", runDd);
+  runDd();
+
+  /* ---------- 風險翻譯機 ---------- */
+  var inMv = document.getElementById("in-mv"), inSd = document.getElementById("in-sd");
+  function runVar(){
+    var mv = +inMv.value;              // 萬
+    var sd = +inSd.value;              // %／日
+    document.getElementById("o-mv").textContent = mv + " 萬";
+    document.getElementById("o-sd").textContent = sd.toFixed(1) + "%";
+    var ann = sd * Math.sqrt(252);
+    var v95 = mv * 10000 * sd / 100 * 1.645;
+    var v99 = mv * 10000 * sd / 100 * 2.326;
+    document.getElementById("s-ann").textContent = ann.toFixed(1) + "%";
+    document.getElementById("s-var95").textContent = Math.round(v95).toLocaleString() + " 元";
+    document.getElementById("s-var99").textContent = Math.round(v99).toLocaleString() + " 元";
+    var lvl = ann < 10 ? "偏低（債券型的量級）" : ann < 22 ? "成熟股市的常態量級" : "偏高（單一個股或集中組合的量級）";
+    document.getElementById("varnote").innerHTML =
+      "<b>講給家人聽：</b>「正常日子裡，一百天大概有五天，單日會虧超過 " + Math.round(v95/1000).toLocaleString() + " 千元。」" +
+      "年化波動 " + ann.toFixed(1) + "% 屬於" + lvl + "——對照 W14 你寫下的容忍度，這個量級全家撐得住嗎？";
+  }
+  inMv.addEventListener("input", runVar);
+  inSd.addEventListener("input", runVar);
+  runVar();
+
+  /* ---------- 檢核清單持久化 ---------- */
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w28-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w28-final") {
+        var all = state.every(Boolean);
+        document.getElementById("checkdone").textContent = all
+          ? "✓ 風險儀表就位——下週把報酬除以風險，得到 Sharpe 家族。"
+          : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

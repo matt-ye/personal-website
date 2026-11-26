@@ -258,6 +258,17 @@ if (ONLY_INTERNAL) {
   const ok = externalResults.length - broken.length - warn.length - known.length - unverifiable.length;
   lines.push(`外部連結：${externalResults.length} 個｜正常 ${ok}｜需人工確認 ${warn.length}｜機器驗不到（已確認正常）${unverifiable.length}｜已知待修 ${known.length}｜新失效 ${broken.length}`);
   lines.push('');
+  // 新失效摘要放在逐條清單「之前」：GitHub Actions 的 step log 超過上限時從尾端截斷，
+  // 全站 500+ 條的逐條清單足以撞上限——❌ 混在清單裡就會跟著被吃掉，CI 紅了卻查不到
+  // 兇手（2026-09-06 實際發生）。讓判定失效的行先於大部隊輸出，截斷才吃不到它。
+  if (broken.length) {
+    lines.push(`── 新失效（❌）摘要 ──`);
+    for (const r of broken) {
+      lines.push(`  ❌ ${r.text.padEnd(28)} ${r.url}`);
+      lines.push(`      使用於：${pagesLabel(r.pages)}`);
+    }
+    lines.push('');
+  }
   for (const r of externalResults) {
     lines.push(`  ${r.icon} ${r.text.padEnd(28)} ${r.url}`);
     lines.push(`      使用於：${pagesLabel(r.pages)}`);

@@ -1,0 +1,568 @@
+<!-- W27 起照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 29</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q3 操盤手季 · Week 29</p>
+  <h1>風險調整績效——Sharpe 家族</h1>
+  <p class="lead" style="margin-top:.5rem">W27 裝了報酬儀表、W28 裝了風險儀表，本週把兩者<strong>相除</strong>——回答操盤手的核心問題：「同樣賺 8%，誰賺得比較高明？」</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：<a href="/projects/family-investing-course/week-27-returns-portfolio/">第 27</a>–<a href="/projects/family-investing-course/week-28-risk-measurement/">28 週</a></span><span class="chip">52 週 · 第 29 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>Sharpe／Sortino／IR 是基金業的通用語言（Q3 月報的必備欄位），也是你評估任何金融商品的照妖鏡——「不看分母的比較都是行銷」。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週教家人「回本陡坡」的反應——「跌一半、賺一倍」他們記住了嗎？
+  </div>
+</header>
+
+<!-- Hero 猜謎 -->
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">C 基金一年賺 12%、A 基金只賺 8%。什麼情況下，專業投資人反而會說 A 比較高明？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">不可能，賺得多就是比較強</button>
+    <button data-g="b">A 承擔的風險少很多的時候</button>
+    <button data-g="c">A 的手續費比較低的時候</button>
+  </div>
+  <div id="reveal" aria-live="polite">
+    <p id="verdict"></p>
+  </div>
+</div>
+
+<!-- ① 講義 -->
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 為什麼報酬要除以風險</h2>
+  <p>兩檔基金都賺 8%，A 波動 15%、B 波動 25%——B 承擔了更多顛簸才換到同樣報酬，等於「花更多油錢跑同樣距離」。<strong>風險調整績效＝每承擔一單位風險，換到多少超額報酬</strong>。沒有這一步，所有績效比較都是不公平的。</p>
+
+  <h2>2. Sharpe 比率：業界第一通用指標</h2>
+  <p>Sharpe ＝ (R<sub>p</sub> − R<sub>f</sub>) ÷ σ<sub>p</sub>。分子是<strong>超額報酬</strong>（超過無風險利率的部分——冒險才有的報酬），分母是總波動。</p>
+  <p>算例（R<sub>f</sub> ＝ 2%）：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>基金</th><th>報酬</th><th>σ</th><th>Sharpe</th></tr></thead>
+      <tbody>
+        <tr><td class="f">A</td><td class="num">8%</td><td class="num">15%</td><td class="num"><strong>0.40</strong></td></tr>
+        <tr><td class="f">B</td><td class="num">8%</td><td class="num">25%</td><td class="num">0.24</td></tr>
+        <tr><td class="f">C</td><td class="num">12%</td><td class="num">30%</td><td class="num">0.33</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>判讀：A ＞ C ＞ B——<strong>C 報酬最高但不是最高明</strong>：它多賺的 4 個百分點是用加倍的顛簸換的，效率反而輸 A。用 W15 的話說：同樣的 Sharpe 之下，你可以放大 A 的部位調到 C 的報酬、卻承受更低風險——這就是「效率」的意義。</p>
+  <p><strong>量級感</strong>：長期而言 &gt;0.5 已屬不錯、&gt;1 很優秀、宣稱長期 &gt;2 的要高度警戒（見第 5 節）。</p>
+  </div>
+
+  <!-- 互動 1：Sharpe 對決台 -->
+  <div class="lab">
+    <h3>Sharpe 對決台</h3>
+    <p class="muted" style="margin-top:-.2rem">兩檔基金各拉報酬與波動，看誰的每單位風險賺得多。R<sub>f</sub> 固定 2%。</p>
+    <div class="presets">
+      <button id="p-ab">A vs B（同報酬不同波動）</button>
+      <button id="p-ac">A vs C（高報酬 vs 高效率）</button>
+    </div>
+    <div class="ctl">
+      <label>甲：報酬 <output id="o-r1">8%</output></label>
+      <input type="range" id="in-r1" min="-5" max="20" step="1" value="8" aria-label="甲報酬">
+    </div>
+    <div class="ctl">
+      <label>甲：年化波動 <output id="o-s1">15%</output></label>
+      <input type="range" id="in-s1" min="5" max="40" step="1" value="15" aria-label="甲波動">
+    </div>
+    <div class="ctl">
+      <label>乙：報酬 <output id="o-r2">12%</output></label>
+      <input type="range" id="in-r2" min="-5" max="20" step="1" value="12" aria-label="乙報酬">
+    </div>
+    <div class="ctl">
+      <label>乙：年化波動 <output id="o-s2">30%</output></label>
+      <input type="range" id="in-s2" min="5" max="40" step="1" value="30" aria-label="乙波動">
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="sl">甲 Sharpe</p><p class="sv" id="s-sh1">—</p><p class="sh">(報酬 − 2%) ÷ σ</p></div>
+      <div class="stat"><p class="sl">乙 Sharpe</p><p class="sv" id="s-sh2">—</p><p class="sh">(報酬 − 2%) ÷ σ</p></div>
+    </div>
+    <div class="ibox" id="duelnote">拉動滑桿或按預設。</div>
+  </div>
+
+  <div class="prose">
+  <h2>3. Sortino 比率：只懲罰下跌的 Sharpe</h2>
+  <p>W28 鋪好的下行偏差在此登場：Sortino ＝ (R<sub>p</sub> − R<sub>f</sub>) ÷ 下行偏差。</p>
+  <p>算例：A 基金總 σ 15%，但其中大半波動來自偶爾暴漲，下行偏差只有 9% → Sortino ＝ 6 ÷ 9 ＝ <strong>0.67</strong>（Sharpe 只有 0.40）。</p>
+  <p>Sharpe 與 Sortino 的<strong>差距本身就是資訊</strong>：Sortino 明顯高於 Sharpe ＝ 波動偏「往上跳」（投資人喜歡的那種）；兩者接近 ＝ 上下對稱。對「絕對報酬」型策略（目標是不虧錢），Sortino 更貼近本意。</p>
+
+  <h2>4. 資訊比率（IR）：相對基準的 Sharpe</h2>
+  <p>前兩個比率對照「無風險利率」；當你的目標是<strong>打敗基準</strong>（下週主題），對照物換成基準指數：IR ＝ 超額報酬 ÷ 追蹤誤差（追蹤誤差＝超額報酬的標準差）。</p>
+  <p>算例：年超額報酬 1.5%、追蹤誤差 3% → IR ＝ <strong>0.50</strong>——「每偏離基準一單位，換到 0.5 單位超額」。</p>
+  <p>三個比率的分工（背下來）：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>比率</th><th>分母（風險的定義）</th><th>適用</th></tr></thead>
+      <tbody>
+        <tr><td class="f">Sharpe</td><td>總波動</td><td>整體組合、跨資產比較</td></tr>
+        <tr><td class="f">Sortino</td><td>下行偏差</td><td>絕對報酬目標、不對稱策略</td></tr>
+        <tr><td class="f">IR</td><td>追蹤誤差</td><td>主動管理 vs 基準（經理人的成績單）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+  <h2>5. 使用陷阱（比公式更重要）</h2>
+  <ol>
+    <li><strong>期間敏感</strong>——牛市尾段人人 Sharpe 漂亮；至少看含一次完整下跌循環（5 年以上）的數字</li>
+    <li><strong>平滑化假象</strong>——不常估值的資產（私募、部分債券基金、不動產）報酬序列被人為平滑 → σ 假低 → Sharpe 假高。「低波動高報酬」的另類基金，先查它多久估值一次</li>
+    <li><strong>尾部風險不入帳</strong>——賣保險型策略（如賣選擇權）平時月月小賺（σ 小、Sharpe 極高），直到某月一次還清。Sharpe 對「壓路機前撿鋼板」的策略系統性高估（W28 VaR 缺陷的親戚）</li>
+    <li><strong>負值時失義</strong>——兩檔都虧損時，Sharpe 的大小比較會反直覺（虧 5%、σ 30% 的 Sharpe「優於」虧 5%、σ 10%）。負 Sharpe 區間別排名，直接看回撤與原因</li>
+  </ol>
+  </div>
+
+  <!-- 互動 2：陷阱照妖鏡 -->
+  <div class="lab">
+    <h3>陷阱照妖鏡：這個漂亮數字有什麼問題？</h3>
+    <p class="muted" style="margin-top:-.2rem">四個情境，各對應一個使用陷阱。先判斷，再展開看解析。</p>
+    <div class="tcard">
+      <p class="tq" id="tq">第 1 / 4 題</p>
+      <p class="tt" id="tt">—</p>
+    </div>
+    <div class="tbtnrow" id="tbtns">
+      <button data-v="1">① 期間敏感</button>
+      <button data-v="2">② 平滑化假象</button>
+      <button data-v="3">③ 尾部風險</button>
+      <button data-v="4">④ 負值失義</button>
+    </div>
+    <div id="tfeed" aria-live="polite"></div>
+    <p id="tscore">目前答對 0 題</p>
+  </div>
+
+  <div class="prose">
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth">
+    <p class="say">「報酬最高的就是最好的。」</p>
+    <p>本週的存在理由——不看分母的比較都是行銷。</p>
+  </div>
+  <div class="myth">
+    <p class="say">「Sharpe 高就可以買。」</p>
+    <p>先問三件事：期間多長？含下跌循環嗎？策略有沒有尾部風險？（陷阱 1–3 的檢查順序。）</p>
+  </div>
+  <div class="myth">
+    <p class="say">「散戶不用算這些。」</p>
+    <p>你每次在「高股息 vs 市值型」「這檔基金 vs 0050」之間比較時，其實都在做風險調整判斷——差別只在有沒有算對。</p>
+  </div>
+  </div>
+</section>
+
+<!-- ② 導讀 -->
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>定義啃熟＋機構視角</h2>
+  <div class="readitem">
+    <div class="t">40 分鐘</div>
+    <div class="body"><b>Investopedia：Sharpe、Sortino、Information Ratio 三條目</b>
+      <p>啃熟定義與例子。<a class="srclink" href="https://www.investopedia.com/terms/s/sharperatio.asp" target="_blank" rel="noopener">Sharpe Ratio ↗</a>、<a class="srclink" href="https://www.investopedia.com/terms/s/sortinoratio.asp" target="_blank" rel="noopener">Sortino Ratio ↗</a>、<a class="srclink" href="https://www.investopedia.com/terms/i/informationratio.asp" target="_blank" rel="noopener">Information Ratio ↗</a></p>
+    </div>
+  </div>
+  <div class="readitem">
+    <div class="t">30 分鐘</div>
+    <div class="body"><b>AQR Insights：Sharpe 誤用／平滑化主題文章</b>
+      <p>機構視角的陷阱清單——特別找談 return smoothing 或 Sharpe 誤用的一篇精讀。<a class="srclink" href="https://www.aqr.com/Insights" target="_blank" rel="noopener">AQR Insights ↗</a></p>
+    </div>
+  </div>
+  <div class="readitem">
+    <div class="t">10 分鐘</div>
+    <div class="body"><b>回顧 W27–28 的模擬組合</b>
+      <p>本週練習的原料：報酬序列與風險模組都已就位——本週只是把兩個分頁的數字相除。</p>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ③ 練習 -->
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>給模擬組合裝上第三組儀表</h2>
+
+  <h3>任務 A｜三比率上線（35 分鐘）</h3>
+  <ol class="tasks">
+    <li>用 W28 的組合報酬序列（週頻即可）算年化報酬（W27 CAGR 法）與年化 σ（W28）</li>
+    <li>R<sub>f</sub> 用一年期定存利率的量級（查台銀牌告，約 1.5–2%，<strong>註明查詢日</strong>）</li>
+    <li>算 Sharpe；用「只取負報酬週」算下行偏差 → Sortino</li>
+    <li>基準先用 W18 IPS 指定的基準（下週正式深化），算超額報酬序列 → 追蹤誤差 → IR</li>
+    <li><strong>驗證手感</strong>：用講義算例手算一次三個比率，確認公式沒帶錯</li>
+  </ol>
+
+  <h3>任務 B｜照妖鏡實戰（15 分鐘）</h3>
+  <ol class="tasks">
+    <li>挑一檔你或家人持有（或被推銷過）的基金：從月報／官網找它的三年報酬與 σ（或自算），算 Sharpe，跟同期大盤 ETF 比。寫兩行結論</li>
+  </ol>
+
+  <div class="verify">
+    <b>怎麼知道做對了：</b>講義算例的三個答案是 <strong>0.40／0.67／0.50</strong>（Sharpe A／Sortino A／IR）。手算對不上就是公式帶錯——最常見的錯是分子忘了減 R<sub>f</sub>。
+  </div>
+
+  <ul class="checks" data-key="w29-practice">
+    <li><label><input type="checkbox"><span>模擬組合三比率上線（含 Rf 出處與日期）</span></label></li>
+    <li><label><input type="checkbox"><span>講義算例手算驗證通過（0.40／0.67／0.50）</span></label></li>
+    <li><label><input type="checkbox"><span>真實基金照妖鏡完成</span></label></li>
+  </ul>
+
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus">
+      <summary><b>Q1</b> C 基金報酬 12% 遠勝 A 的 8%，為什麼 Sharpe 反而說 A 較好？這個結論對誰沒用？</summary>
+      <div class="ans"><p>→ 因為 A 的<strong>單位風險報酬</strong>較高——想要 12% 的人可以持有 A 並適度放大部位，比直接持有 C 更有效率。<strong>對誰沒用</strong>：不能用槓桿、且必須達到 12% 報酬目標的人，可能仍得選 C——比率是效率指標，不能代替目標設定（W14 的風險需求）。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q2</b> 一檔基金 Sortino 遠高於 Sharpe，說明什麼？</summary>
+      <div class="ans"><p>→ 它的波動<strong>不對稱地偏向上漲</strong>——下跌溫和、上漲劇烈（投資人樂見的偏態），也可能是策略特性（如趨勢跟蹤）。反過來 Sortino ≈ Sharpe 表示漲跌對稱。</p></div>
+    </details>
+    <details class="bonus">
+      <summary><b>Q3</b> 「連續 36 個月正報酬、Sharpe 2.5」的策略，你的第一個問題是什麼？</summary>
+      <div class="ans"><p>→ 「<strong>這個策略的虧損長什麼樣子？</strong>」36 個月不虧＋超高 Sharpe 最常見的解釋是賣尾部風險（平時穩定小賺、極端時一次巨虧）或平滑化估值——歷史上多起爆雷基金，出事前正是這種完美曲線。</p></div>
+    </details>
+  </div>
+  </div>
+</section>
+
+<!-- ④ 分享 -->
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>兩個司機</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script">
+    <p class="who">開場（兩個司機）</p>
+    <p>「兩個計程車司機都在 30 分鐘內把你送到目的地。A 平穩開到；B 一路超車、急煞、闖黃燈。你下次搭誰的車？」（一樣快，但你會選 A。）「投資也一樣：<strong>同樣賺 8%，平穩賺到的比驚險賺到的高明</strong>——因為驚險的那種，總有一天翻車。」</p>
+  </div>
+  <div class="script">
+    <p class="who">核心觀念</p>
+    <p>「所以專業投資人比的不是『賺多少』，是『<strong>每冒一分險賺多少</strong>』——這個分數叫 Sharpe。我們家的模擬帳戶這週開始也有這個分數了。」（秀模擬組合的三比率。）</p>
+  </div>
+  <div class="script">
+    <p class="who">互動（推銷防身術）</p>
+    <p>「下次有人跟你推銷『這檔基金去年賺 20%！』，你要問哪兩句？」</p>
+    <p class="aside">引導出：①「它晃得多兇？」②「跌的年份表現如何？」——問完對方答不出來，就不用再談了。</p>
+  </div>
+  <div class="script">
+    <p class="who">預期反應與應對</p>
+    <p class="qa"><b>「分數多少算好？」</b><br>「長期超過 0.5 不錯、超過 1 很強；有人跟你說長期 2 以上——先懷疑，天上掉的通常不是餡餅。」</p>
+    <p class="qa"><b>「太複雜了記不住。」</b><br>「記比喻就好：<strong>別只問車多快，要問開得穩不穩</strong>。」</p>
+  </div>
+  </div>
+</section>
+
+<!-- ⑤ 檢核 -->
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w29-final">
+    <li><label><input type="checkbox"><span>能默寫三比率公式與各自分母的意義</span></label></li>
+    <li><label><input type="checkbox"><span>模擬組合績效模組上線</span></label></li>
+    <li><label><input type="checkbox"><span>能說出四個使用陷阱</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成，記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 29 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit">
+    <b>下週預告 · Week 30：績效歸因——Brinson 模型</b>——超額報酬算出來了，但它是「押對市場」還是「挑對股票」賺的？Brinson 模型幫你把帳拆得乾乾淨淨。
+  </footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-28-risk-measurement/">上一週：風險衡量</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  /* ---------- Hero ---------- */
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——比較績效要先除以風險。C 的 12% 若是用 30% 的波動換來的，Sharpe 只有 0.33；A 的 8% 配 15% 波動，Sharpe 0.40——每冒一分險，A 賺得比較多。這就是本週的主角：風險調整績效。"
+      : "費用確實重要（W10、W16），但本週的答案更根本：比較績效要先除以風險。C 的 12% 用 30% 波動換來，Sharpe 0.33；A 的 8% 配 15% 波動，Sharpe 0.40——每冒一分險，A 賺得比較多。";
+  });
+
+  /* ---------- Sharpe 對決台 ---------- */
+  var RF = 2;
+  var ins = ["in-r1","in-s1","in-r2","in-s2"].map(function(id){ return document.getElementById(id); });
+  function runDuel(){
+    var r1 = +ins[0].value, s1 = +ins[1].value, r2 = +ins[2].value, s2 = +ins[3].value;
+    document.getElementById("o-r1").textContent = r1 + "%";
+    document.getElementById("o-s1").textContent = s1 + "%";
+    document.getElementById("o-r2").textContent = r2 + "%";
+    document.getElementById("o-s2").textContent = s2 + "%";
+    var sh1 = (r1 - RF) / s1, sh2 = (r2 - RF) / s2;
+    var e1 = document.getElementById("s-sh1"), e2 = document.getElementById("s-sh2");
+    e1.textContent = sh1.toFixed(2); e2.textContent = sh2.toFixed(2);
+    e1.className = "sv" + (sh1 >= sh2 ? " pos" : ""); e2.className = "sv" + (sh2 > sh1 ? " pos" : "");
+    var v = document.getElementById("duelnote");
+    if (r1 - RF < 0 && r2 - RF < 0) {
+      v.innerHTML = "<b>兩邊都是負超額——這個區間 Sharpe 失義（陷阱④）。</b>負值時波動大的反而分數「好看」，別在這裡排名；直接看回撤與虧損原因。";
+    } else if (Math.abs(sh1 - sh2) < 0.03) {
+      v.innerHTML = "<b>效率打平。</b>Sharpe 相同時，理論上可以用部位大小把兩者調成同樣的報酬與風險——差異要再看 Sortino（波動的形狀）與費用。";
+    } else {
+      var w = sh1 > sh2 ? "甲" : "乙", l = sh1 > sh2 ? "乙" : "甲";
+      v.innerHTML = "<b>" + w + "比較高明。</b>不是因為賺得多，是<strong>每承擔一單位波動換到的超額報酬</strong>比較多。想要更高報酬的人，放大 " + w + " 的部位比直接持有 " + l + " 更有效率——這就是「效率」勝過「絕對報酬」的意義。";
+    }
+  }
+  ins.forEach(function(el){ el.addEventListener("input", runDuel); });
+  function preset(r1,s1,r2,s2){ ins[0].value=r1; ins[1].value=s1; ins[2].value=r2; ins[3].value=s2; runDuel(); }
+  document.getElementById("p-ab").addEventListener("click", function(){ preset(8,15,8,25); });
+  document.getElementById("p-ac").addEventListener("click", function(){ preset(8,15,12,30); });
+  runDuel();
+
+  /* ---------- 陷阱照妖鏡 ---------- */
+  var TRAPS = [
+    { t: "「本基金近五年 Sharpe 1.8」——而這五年大盤只跌過一季。", ok: 1,
+      why: "期間敏感。牛市尾段人人 Sharpe 漂亮——沒有經歷完整下跌循環的數字，只證明了它在順風時會走路。至少看含一次熊市的 5 年以上資料。" },
+    { t: "某私募房地產基金：年化 9%、波動只有 4%，Sharpe 高達 1.75。", ok: 2,
+      why: "平滑化假象。不常估值的資產（私募、不動產）報酬序列被人為抹平——σ 假低、Sharpe 假高。先問它多久估值一次、由誰估。" },
+    { t: "某選擇權策略連續 36 個月正報酬、Sharpe 2.5，號稱「絕對報酬」。", ok: 3,
+      why: "尾部風險不入帳。賣保險型策略平時月月小賺（σ 小、Sharpe 極高），直到某月一次還清——壓路機前撿鋼板。Sharpe 對這類策略系統性高估。" },
+    { t: "熊市裡：X 基金虧 5%（σ 30%）、Y 基金虧 5%（σ 10%）——X 的 Sharpe 比較「好」。", ok: 4,
+      why: "負值失義。分子為負時，分母越大商越接近零、看起來越「好」——但那只是虧得比較顛簸。負 Sharpe 區間不要排名，直接看回撤與原因。" }
+  ];
+  var ti = 0, tcorrect = 0, tanswered = false;
+  var ttEl = document.getElementById("tt"), tqEl = document.getElementById("tq");
+  var tfeed = document.getElementById("tfeed"), tscore = document.getElementById("tscore");
+  var tbtns = document.getElementById("tbtns");
+  var LABELS = ["", "① 期間敏感", "② 平滑化假象", "③ 尾部風險", "④ 負值失義"];
+  function renderTrap(){
+    var cur = TRAPS[ti];
+    tqEl.textContent = "第 " + (ti + 1) + " / " + TRAPS.length + " 題";
+    ttEl.textContent = cur.t;
+    tfeed.classList.remove("show", "bad");
+    tanswered = false;
+    tbtns.querySelectorAll("button").forEach(function(b, i){
+      b.disabled = false; b.style.display = "";
+      b.textContent = LABELS[+b.dataset.v];
+    });
+  }
+  tbtns.addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    if (tanswered) {
+      ti = (ti + 1) % TRAPS.length;
+      if (ti === 0) { tcorrect = 0; tscore.textContent = "重新開始——目前答對 0 題"; }
+      renderTrap();
+      return;
+    }
+    var cur = TRAPS[ti];
+    var right = +btn.dataset.v === cur.ok;
+    if (right) tcorrect++;
+    tanswered = true;
+    tfeed.className = "show" + (right ? "" : " bad");
+    tfeed.innerHTML = "<b>" + (right ? "答對——" : "再想想——") + "這是" + LABELS[cur.ok] + "。</b><br>" + cur.why +
+      (ti + 1 < TRAPS.length
+        ? "<br><span style=\"font-size:.85em;color:var(--ink-3)\">（點上面的「下一題」繼續）</span>"
+        : "<br><span style=\"font-size:.85em;color:var(--ink-3)\">（四題結束——想再練就點「再玩一次」）</span>");
+    tscore.textContent = "目前答對 " + tcorrect + " 題";
+    tbtns.querySelectorAll("button").forEach(function(b, i){
+      if (i === 0) { b.textContent = ti + 1 < TRAPS.length ? "下一題 →" : "再玩一次 ↺"; }
+      else { b.style.display = "none"; }
+    });
+  });
+  renderTrap();
+
+  /* ---------- 檢核清單持久化 ---------- */
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w29-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w29-final") {
+        var all = state.every(Boolean);
+        document.getElementById("checkdone").textContent = all
+          ? "✓ 三組儀表齊了——下週用 Brinson 模型拆帳：超額到底贏在哪。"
+          : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

@@ -1,0 +1,453 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));gap:.6rem .8rem;margin-top:.8rem}
+  .fgrid label{display:flex;flex-direction:column;font-size:.78rem;font-weight:700;color:var(--ink-2);gap:.25rem}
+  .fgrid input,.fgrid select{font:inherit;font-size:.9rem;padding:.38rem .55rem;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);min-width:0;width:100%}
+  .fgrid .wide{grid-column:1/-1}
+  .chk{list-style:none;padding:0;margin:1rem 0 0}
+  .chk li{padding:.45rem .2rem;border-bottom:1px dashed var(--line-soft);font-size:.9rem}
+  .chk li .ok{color:var(--ok);font-weight:800}.chk li .ng{color:var(--warn);font-weight:800}
+  .summary39{margin-top:1rem;padding:1rem 1.1rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:.93rem;line-height:1.85}
+  .rb{display:grid;grid-template-columns:1fr auto;gap:.5rem;align-items:center;padding:.55rem 0;border-bottom:1px dashed var(--line-soft);font-size:.9rem}
+  .rb .seg{display:flex;gap:.25rem}
+  .rb .seg button{font:inherit;font-size:.82rem;width:2.2rem;padding:.3rem 0;border-radius:8px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .rb .seg button.on{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 39</span>
+    <a class="sec" href="#lecture">① 手冊</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q3 操盤手季 · Week 39 · 期末專題</p>
+  <h1>Q3 期末專題——模擬組合風險月報</h1>
+  <p class="lead" style="margin-top:.5rem">十二週裝的每個模組——報酬、風險、比率、歸因、基準、執行、日誌——本週組裝成<strong>一份專業格式的月度報告</strong>。這是基金經理人每月對投資人交代的文件，也是你之後每月固定產出的紀律儀式。寫得出這份報告，「操盤手」三個字就從志向變成了技能。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 27–38 週全部</span><span class="chip">52 週 · 第 39 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>Q3 的期末考。操盤手交出月報；投資人學會讀懂任何一份基金月報；說書人第一次以「經理人」身分向家人做正式報告。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的四象限審判——你找到自己的僥倖格了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">一份好的基金月報，第一頁最上面應該放什麼？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">績效最好看的數字</button>
+    <button data-g="b">一段話摘要，壞消息先講</button>
+    <button data-g="c">完整的持股明細</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 月報組裝手冊 · 約 1 小時</p>
+  <div class="prose">
+  <h2>月報的定位：對投資人的誠實交代</h2>
+  <p>這裡的投資人，是家人，也是未來的自己。專業月報的靈魂不是炫耀績效，是<strong>讓讀者三分鐘內知道：錢怎麼樣了、為什麼、接下來看什麼</strong>。壞月報報喜藏憂、堆砌術語；好月報壞消息先講，每個數字都有對照——對基準、對上月、對容忍值。</p>
+
+  <h2>七節結構：全部是舊零件</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>節</th><th>內容</th><th>模組來源</th></tr></thead>
+      <tbody>
+        <tr><td class="f">① 組合快照</td><td>目前配置 vs IPS 目標（表＋偏離百分點）；偏離超限了嗎？再平衡了嗎？</td><td>W18</td></tr>
+        <tr><td class="f">② 績效</td><td>本月／累積報酬（時間加權）、基準、超額；五數字表（報酬／基準／超額／追蹤誤差／資訊比率）</td><td>W27、W31</td></tr>
+        <tr><td class="f">③ 風險</td><td>年化波動、最大回撤、95% VaR 金額，對照 IPS 容忍值</td><td>W28</td></tr>
+        <tr><td class="f">④ 風險調整</td><td>Sharpe／Sortino（累積期間）</td><td>W29</td></tr>
+        <tr><td class="f">⑤ 歸因</td><td>本月超額 ＝ 配置 ＋ 選股 ＋ 交互（要勾稽）</td><td>W30</td></tr>
+        <tr><td class="f">⑥ 操作與日誌摘要</td><td>本月交易清單（含執行落差）、違規標記、四象限增量</td><td>W34、W36、W38</td></tr>
+        <tr><td class="f">⑦ 展望與觀察清單</td><td>溫度計讀數、下月觀察 3 件事、觸發條件監控狀態</td><td>W25、W26、W37</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>格式紀律</strong>：2–3 頁、每節先結論後數字、壞消息不縮排不藏尾。第一頁頂部放<strong>一段話摘要</strong>：本月組合 ＿%（基準 ＿%），主因 ＿＿；風險狀態 ＿＿；下月關注 ＿＿。</p>
+  <p>下面這台工具做兩件事：檢查最容易出錯的<strong>勾稽</strong>（數字之間必須對得起來），並替你起草那段摘要。</p>
+  </div>
+
+  <div class="lab">
+    <h3>月報勾稽台＋摘要起草</h3>
+    <p class="muted" style="margin-top:-.2rem">預設是一份範例月報的數字。換成你自己的，看哪一項對不起來。（單位：%，金額：萬）</p>
+    <div class="fgrid" id="rpt">
+      <label>本月組合報酬<input type="number" step="0.01" data-f="r" value="1.8"></label>
+      <label>本月基準報酬<input type="number" step="0.01" data-f="b" value="1.2"></label>
+      <label>配置效果<input type="number" step="0.01" data-f="ae" value="0.25"></label>
+      <label>選股效果<input type="number" step="0.01" data-f="se" value="0.4"></label>
+      <label>交互效果<input type="number" step="0.01" data-f="ie" value="-0.05"></label>
+      <label>股票權重<input type="number" step="1" data-f="ws" value="68"></label>
+      <label>債券權重<input type="number" step="1" data-f="wb" value="22"></label>
+      <label>現金權重<input type="number" step="1" data-f="wc" value="10"></label>
+      <label>IPS 股票目標<input type="number" step="1" data-f="tg" value="70"></label>
+      <label>95% VaR（月，萬）<input type="number" step="0.1" data-f="var" value="6.5"></label>
+      <label>最大回撤（%）<input type="number" step="0.1" data-f="mdd" value="-8.4"></label>
+      <label>IPS 回撤容忍（%）<input type="number" step="1" data-f="tol" value="-20"></label>
+      <label class="wide">主因（一句話）<input type="text" data-f="why" value="選股貢獻為主，半導體持股優於大盤"></label>
+      <label class="wide">下月關注（一句話）<input type="text" data-f="next" value="兩檔持股財報、股票比例是否回到目標"></label>
+    </div>
+    <ul class="chk" id="chk"></ul>
+    <div class="summary39" id="sum"></div>
+  </div>
+
+  <div class="prose">
+  <h2>自評 Rubric（10 分制）</h2>
+  <p>每項 0／1／2 分，<strong>8 分以上＝Q3 畢業</strong>。分數會存在這個瀏覽器，下個月可以回來比較。</p>
+  </div>
+
+  <div class="lab">
+    <h3>Rubric 自評表</h3>
+    <div id="rub">
+      <div class="rb"><span>七節齊全、數字互相勾稽（歸因加總＝超額；權重加總＝100%）</span><span class="seg"></span></div>
+      <div class="rb"><span>每個數字都有對照物（基準／上月／容忍值），沒有裸數字</span><span class="seg"></span></div>
+      <div class="rb"><span>壞消息出現在第一頁（若有）</span><span class="seg"></span></div>
+      <div class="rb"><span>家人測試通過（見分享環節的三題）</span><span class="seg"></span></div>
+      <div class="rb"><span>30 分鐘內可重複產出（模板化完成，下月不用重新發明）</span><span class="seg"></span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="sl">總分</p><p class="sv" id="s-rub">0／10</p><p class="sh">8 分以上畢業</p></div>
+    </div>
+    <div class="ibox" id="rubnote">逐項給分。</div>
+  </div>
+
+  <div class="prose">
+  <h2>之後的節奏（寫進行事曆）</h2>
+  <ul>
+    <li><strong>每月固定日</strong>（建議月初第一個週末）：更新估值 → 跑模組 → 產出月報 → 月度小複盤（W38）→ 向家人 10 分鐘報告</li>
+    <li><strong>每季</strong>：加跑大複盤（W38）＋溫度計更新（W25）＋壓測複驗（W37）</li>
+    <li>這個節奏持續到 W52 年度驗收——屆時你手上會有一疊自己的月報，那是任何課程都給不了的資產</li>
+  </ul>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>組裝前的盤點</h2>
+  <div class="readitem"><div class="t">20 分鐘</div><div class="body"><b>回顧自己 W27–38 的所有模組</b><p>逐一確認可用：報酬序列、風險模組、比率、歸因表、五數字、日誌——本週是組裝，不是新建。</p></div></div>
+  <div class="readitem"><div class="t">10 分鐘</div><div class="body"><b>找一份真實基金月報當範本</b><p>從任一投信官網下載一檔基金的月報，看它的版面節奏——也順便用 W31 與 W35 的眼睛挑毛病：基準誠實嗎？費用揭露了嗎？</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 2.5 小時</p>
+  <div class="prose">
+  <h2>產出第一份月報</h2>
+  <h3>任務 A｜模板化（40 分鐘）</h3>
+  <p>建立月報模板（文件或試算表匯出）：七節框架＋固定表格。<strong>目標是下個月只需要填數字。</strong></p>
+  <h3>任務 B｜首份月報（1.5 小時）</h3>
+  <ol class="tasks">
+    <li>用模擬組合至今的真實數據跑齊七節。資料月數不足的指標（如年化 Sharpe）標註「期間過短，僅供追蹤」——<strong>不要假裝有統計意義</strong></li>
+    <li>檢查勾稽：歸因加總＝超額；權重加總＝100%；最大回撤與估值頁一致</li>
+    <li>寫一段話摘要（最後才寫）</li>
+    <li>Rubric 自評</li>
+  </ol>
+  <h3>任務 C｜行事曆（10 分鐘）</h3>
+  <p>設定每月產出日＋每季大複盤日的重複提醒。<strong>紀律的最後一哩是行事曆，不是意志力。</strong></p>
+  <div class="verify"><b>怎麼知道做對了：</b>勾稽台預設的範例數字必須全部打勾：超額 +0.60%、歸因加總 +0.60%、權重 100%、股票偏離目標 −2 個百分點。把選股效果改成 0.5，歸因那一項必須亮紅燈（差 0.10 個百分點）。</div>
+  <ul class="checks" data-key="w39-practice">
+    <li><label><input type="checkbox"><span>模板完成（下月可 30 分鐘重複產出）</span></label></li>
+    <li><label><input type="checkbox"><span>月報 v1 完成且勾稽通過</span></label></li>
+    <li><label><input type="checkbox"><span>Rubric ≥ 8</span></label></li>
+    <li><label><input type="checkbox"><span>行事曆節奏設定完成</span></label></li>
+  </ul>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>第一次基金經理人報告</h2>
+  <p class="muted" style="margin-top:-.3rem">Q3 的總驗收：用月報第一頁，向家人做 10 分鐘正式報告。</p>
+  <div class="script"><p class="who">開場定位</p><p>「我現在是我們家模擬基金的經理人，這是第一份月報。以後每個月一次。」</p></div>
+  <div class="script"><p class="who">報告順序</p><p>一段話摘要 → 五數字表（翻譯成：賺多少／大盤多少／贏輸多少）→ 風險狀態（<strong>用金額講</strong>）→ 本月做了什麼、為什麼 → 下月看什麼。</p></div>
+  <div class="script"><p class="who">家人測試（Rubric 的一項）</p><p>報告完請家人回答三題：①這個月是贏還是輸「那把尺」？②最大的風險數字是多少錢？③經理人下個月在關注什麼？</p><p class="aside">三題全答對＝報告合格；答不出的部分＝你講太快或用了行話，重講。</p></div>
+  <div class="script"><p class="who">結尾</p><p>「有任何問題，隨時可以查帳——日誌全部都在。」透明是經理人對投資人的第一美德；W35 的反面教材看多了，正面示範從自家開始。</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「才一個月看得出什麼？」</b><br>「完全正確！所以報告裡短期指標都標了『僅供追蹤』——我們看的是十二個月後那疊報告的趨勢。這個月的重點是流程跑通。」</p>
+    <p class="qa"><b>「什麼時候用真錢？」</b><br>「等這套流程連續跑順幾個月，而且 Q4 學完稅務（W50）——工具都在了，剩下的是驗證紀律。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w39-final">
+    <li><label><input type="checkbox"><span>月報 v1 完成（七節勾稽、Rubric ≥ 8）</span></label></li>
+    <li><label><input type="checkbox"><span>模板化完成＋行事曆節奏設定</span></label></li>
+    <li><label><input type="checkbox"><span>家人測試三題通過</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 39 週進度欄＋里程碑打勾</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>Q3 畢業 · 下週進入 Q4 財務長季</b>——換到桌子的另一邊：從「評價公司的人」，變成「替公司做財務決策的人」。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-38-journal-review/">上一週：日誌與複盤</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——讀者三分鐘內要知道：錢怎麼樣了、為什麼、接下來看什麼。壞消息先講、每個數字有對照，是好月報和行銷文件的分水嶺。"
+      : "好月報的第一頁是一段話摘要：錢怎麼樣了、為什麼、接下來看什麼——而且壞消息先講。把最好看的數字放最上面，那是行銷文件，不是月報。";
+  });
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+  function sg(v, dp){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dp === undefined ? 2 : dp); }
+
+  /* 勾稽台 */
+  var rpt = document.getElementById("rpt");
+  function runRpt(){
+    var f = {};
+    rpt.querySelectorAll("[data-f]").forEach(function(el){ f[el.dataset.f] = el.type === "number" ? (parseFloat(el.value) || 0) : el.value.trim(); });
+    var ex = f.r - f.b, at = f.ae + f.se + f.ie, ws = f.ws + f.wb + f.wc, dev = f.ws - f.tg;
+    var items = [
+      {ok: Math.abs(at - ex) < 0.005, t: "歸因勾稽：配置 ＋ 選股 ＋ 交互 ＝ " + sg(at) + "%，超額 ＝ " + sg(ex) + "%" + (Math.abs(at - ex) < 0.005 ? "" : "——差 " + Math.abs(at - ex).toFixed(2) + " 個百分點，回頭查歸因表")},
+      {ok: Math.abs(ws - 100) < 0.01, t: "權重加總 ＝ " + ws + "%" + (Math.abs(ws - 100) < 0.01 ? "" : "——快照表必須是 100%")},
+      {ok: Math.abs(dev) <= 5, t: "股票偏離 IPS 目標 " + sg(dev, 0) + " 個百分點" + (Math.abs(dev) <= 5 ? "（再平衡帶 ±5 內）" : "——超出 ±5 再平衡帶，報告要寫是否已再平衡")},
+      {ok: f.mdd >= f.tol, t: "最大回撤 " + f.mdd + "%，IPS 容忍 " + f.tol + "%" + (f.mdd >= f.tol ? "" : "——已超過容忍值，這是第一頁的壞消息")}
+    ];
+    document.getElementById("chk").innerHTML = items.map(function(it){
+      return "<li><span class=\"" + (it.ok ? "ok\">✓" : "ng\">✗") + "</span> " + esc(it.t) + "</li>";
+    }).join("");
+    var bad = items.filter(function(it){ return !it.ok; });
+    var risk = f.mdd < f.tol ? "最大回撤 " + f.mdd + "% 已超過 IPS 容忍值 " + f.tol + "%" : "最大回撤 " + f.mdd + "%，在 IPS 容忍值 " + f.tol + "% 之內";
+    var s = "<b>一段話摘要：</b>本月組合 " + sg(f.r) + "%（基準 " + sg(f.b) + "%），" + (ex >= 0 ? "超額 " : "落後 ") + Math.abs(ex).toFixed(2) + " 個百分點，主因" + esc(f.why || "＿＿") + "。風險狀態：" + risk + "；月 95% VaR 約 " + f["var"] + " 萬。下月關注：" + esc(f.next || "＿＿") + "。";
+    if (bad.length) s += "<br><span class=\"muted\">⚠ 還有 " + bad.length + " 項勾稽沒過——數字對不起來的月報，摘要寫得再好也不能發。</span>";
+    document.getElementById("sum").innerHTML = s;
+  }
+  rpt.addEventListener("input", runRpt);
+  runRpt();
+
+  /* Rubric */
+  var RK = "fic-w39-rubric", rub = [0,0,0,0,0];
+  try { var sv = JSON.parse(localStorage.getItem(RK)); if (sv && sv.length === 5) rub = sv; } catch(e){}
+  document.querySelectorAll("#rub .rb").forEach(function(row, i){
+    var seg = row.querySelector(".seg");
+    [0,1,2].forEach(function(v){
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = v; b.dataset.v = v;
+      b.setAttribute("aria-label", "第 " + (i + 1) + " 項給 " + v + " 分");
+      seg.appendChild(b);
+    });
+    seg.addEventListener("click", function(e){
+      var b = e.target.closest("button"); if(!b) return;
+      rub[i] = +b.dataset.v; runRub();
+    });
+  });
+  function runRub(){
+    try { localStorage.setItem(RK, JSON.stringify(rub)); } catch(e){}
+    document.querySelectorAll("#rub .rb").forEach(function(row, i){
+      row.querySelectorAll("button").forEach(function(b){ b.classList.toggle("on", +b.dataset.v === rub[i]); });
+    });
+    var t = rub.reduce(function(a, b){ return a + b; }, 0);
+    var el = document.getElementById("s-rub"); el.textContent = t + "／10"; el.className = "sv " + (t >= 8 ? "pos" : "");
+    var low = []; rub.forEach(function(v, i){ if (v < 2) low.push(i + 1); });
+    var n = document.getElementById("rubnote");
+    n.className = "ibox" + (t >= 8 ? " good" : "");
+    n.innerHTML = t >= 8
+      ? "<b>" + t + " 分——Q3 畢業。</b>" + (low.length ? "第 " + low.join("、") + " 項還有進步空間，下個月的月報先補它。" : "滿分。下個月的挑戰是：30 分鐘內再做一次。")
+      : (t === 0 ? "逐項給分。" : "<b>" + t + " 分，還差 " + (8 - t) + " 分。</b>先補分數最低的項目：第 " + low.join("、") + " 項。");
+  }
+  runRub();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w39-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w39-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ Q3 畢業——你已具備管理一個組合的完整衡量與紀律體系。下週進入 Q4。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

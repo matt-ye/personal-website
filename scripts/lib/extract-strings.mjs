@@ -370,6 +370,10 @@ const PUNCT = new Map([
 ]);
 
 export function normalizeFullwidthPunctuation(s, KEEP = []) {
+  /* 沒有全形標點就原樣回傳。下面的空白清理是為了收拾「轉換製造的」多餘空白，
+     對沒轉換過的字串套用會改壞程式碼：JS 的 CSS 選擇器 '.quad .q[data-q="'
+     被收成 '.quad.q[…'，英文頁的 querySelector 回傳 null（week-38 實測）。 */
+  if (![...PUNCT.keys()].some((zh) => s.includes(zh))) return s;
   /* KEEP 的詞可能含全形字（書名號、人名括號），先換成不會被碰到的哨兵 */
   const marks = [];
   let out = s;

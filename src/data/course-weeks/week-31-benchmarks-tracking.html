@@ -1,0 +1,439 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 31</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q3 操盤手季 · Week 31</p>
+  <h1>基準與追蹤誤差——跟誰比，決定一切</h1>
+  <p class="lead" style="margin-top:.5rem">W29 的 IR、W30 的歸因，全部建立在一個前提上：「跟誰比」選對了。選錯基準，好成績是假的、壞成績也是冤的。本週也拆穿基金業最隱蔽的產品——<strong>櫃子裡的指數基金</strong>。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 29–30 週</span><span class="chip">52 週 · 第 31 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>基準是操盤手的座標原點。本週交付的「月報五數字」（報酬／基準／超額／TE／IR），會讓兩三年後的你，第一次誠實面對「我的主動操作付不付得起自己的機會成本」。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週「考卷拆分」——家人聽懂「押對科目」和「該科考得好」是兩種本事了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">某人說：「我的台股組合今年贏加權指數 3%。」他最可能其實……？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">真的很會選股</button>
+    <button data-g="b">只是剛好打平</button>
+    <button data-g="c">運氣好，明年會輸</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 好基準的三個條件</h2>
+  <ol>
+    <li><strong>可投資</strong>——你能用低成本工具直接買到它。「打敗一個買不到的東西」沒有意義</li>
+    <li><strong>事先指定</strong>——開始操作前就寫進 IPS（W18 已做）。事後挑一個輸給自己的指數來比，是自欺的第一名手法</li>
+    <li><strong>與策略一致</strong>——投資全球股票卻拿台股加權比，漲跌全是匯率與市場差異的雜訊，不是你的能力</li>
+  </ol>
+  <div class="example">
+    <p class="tag">台灣投資人的經典陷阱</p>
+    <p>拿「加權指數」（<strong>不含息</strong>）當基準。台股殖利率長期 3–4%，含息的「發行量加權股價報酬指數」每年天生多 3–4 個百分點——用不含息指數比，人人都是股神。你的模擬組合基準必須用<strong>報酬指數</strong>（total return）。</p>
+  </div>
+  </div>
+
+  <div class="lab">
+    <h3>鋸短的尺：含息 vs 不含息</h3>
+    <p class="muted" style="margin-top:-.2rem">拉殖利率與年數，看「不含息指數」把真實報酬低估多少——以及一份「贏大盤 3%」的成績單，換成正版尺還剩多少。</p>
+    <div class="ctl"><label>價格年報酬 <output id="o-pr">6%</output></label><input type="range" id="in-pr" min="-5" max="15" step="1" value="6" aria-label="價格年報酬"></div>
+    <div class="ctl"><label>殖利率 <output id="o-dy">3.5%</output></label><input type="range" id="in-dy" min="0" max="6" step="0.5" value="3.5" aria-label="殖利率"></div>
+    <div class="ctl"><label>期間 <output id="o-yr">10 年</output></label><input type="range" id="in-yr" min="1" max="20" step="1" value="10" aria-label="期間"></div>
+    <div class="ctl"><label>你宣稱「贏加權指數」（每年） <output id="o-cl">3.0%</output></label><input type="range" id="in-cl" min="0" max="8" step="0.5" value="3" aria-label="宣稱超額"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">不含息累積</p><p class="sv" id="s-px">—</p><p class="sh">被鋸短的尺</p></div>
+      <div class="stat"><p class="sl">含息累積</p><p class="sv" id="s-tr">—</p><p class="sh">正版尺</p></div>
+      <div class="stat"><p class="sl">對正版尺的真實超額</p><p class="sv" id="s-real">—</p><p class="sh">每年</p></div>
+    </div>
+    <div class="ibox" id="trnote">拉動滑桿。</div>
+  </div>
+
+  <div class="prose">
+  <h2>2. 追蹤誤差：主動程度的尺</h2>
+  <p>追蹤誤差（TE）＝超額報酬序列的標準差（年化）。算例：某組合 12 個月的月超額報酬（%）0.3、−0.2、0.5、0.1、−0.4、0.2、0.6、−0.1、0.3、0.0、−0.3、0.4——月標準差 ≈ 0.32%，年化 TE ＝ 0.32% × √12 ≈ <strong>1.11%</strong>；全年累積超額 ≈ +1.4%，IR ≈ 1.4 ÷ 1.11 ≈ <strong>1.26</strong>（相當漂亮——但只有一年，先別頒獎）。</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>年化 TE</th><th>這是什麼</th></tr></thead>
+      <tbody>
+        <tr><td class="f num">&lt; 0.5%</td><td>指數基金（追蹤品質好壞看這裡）</td></tr>
+        <tr><td class="f num">0.5–2%</td><td>增強指數／「櫃子裡的指數基金」出沒區</td></tr>
+        <tr><td class="f num">2–6%</td><td>一般主動基金</td></tr>
+        <tr><td class="f num">&gt; 6%</td><td>高度主動／集中持股／風格強烈</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>TE 本身<strong>無關好壞</strong>——它量的是「你偏離地圖多遠」；偏離得值不值，要配 IR 看（每單位偏離換到多少超額）。</p>
+
+  <h2>3. Active Share：另一把主動尺</h2>
+  <p>TE 看<strong>結果</strong>的偏離，Active Share 看<strong>持股</strong>的偏離：組合持股與基準成分的不重疊比例（0% ＝ 完全複製、100% ＝ 完全不同）。</p>
+  <p><strong>櫃子裡的指數基金（closet indexer）</strong>＝ Active Share 低（如 &lt;60%）＋ TE 低，卻收 1.5% 主動管理費。它的數學宿命：報酬 ≈ 指數 − 高費用 ＝ 長期必輸（W16 的算術）；投資人付費買到的只是心理安慰。檢查方法：打開基金月報的前十大持股，跟指數前十大對照——重疊率一眼可見。</p>
+  <div class="quote">核心真被動、衛星真主動——最該避開的是中間：半主動的費用、被動的成績。</div>
+  </div>
+
+  <div class="lab">
+    <h3>櫃子稽查器</h3>
+    <p class="muted" style="margin-top:-.2rem">輸入一檔基金的 Active Share、追蹤誤差與經理費，看它落在光譜的哪一格——以及十年下來費用吃掉多少。</p>
+    <div class="ctl"><label>Active Share <output id="o-as">45%</output></label><input type="range" id="in-as" min="0" max="100" step="5" value="45" aria-label="Active Share"></div>
+    <div class="ctl"><label>年化追蹤誤差 <output id="o-te">1.5%</output></label><input type="range" id="in-te" min="0" max="10" step="0.5" value="1.5" aria-label="追蹤誤差"></div>
+    <div class="ctl"><label>年費用率 <output id="o-fee">1.5%</output></label><input type="range" id="in-fee" min="0" max="2.5" step="0.1" value="1.5" aria-label="年費用率"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">判定</p><p class="sv" id="s-kind">—</p><p class="sh">光譜位置</p></div>
+      <div class="stat"><p class="sl">10 年費用拖累</p><p class="sv neg" id="s-drag">—</p><p class="sh">100 萬、指數年 7% 為例</p></div>
+    </div>
+    <div class="ibox" id="asnote">拉動滑桿。</div>
+  </div>
+
+  <div class="prose">
+  <h2>4. 給自己的組合定座標</h2>
+  <p>你的模擬組合基準（依 W18 IPS，例：70% 全球股＋30% 債）應是<strong>複合基準</strong>：R<sub>b</sub> ＝ 0.7 × 全球股票報酬指數 ＋ 0.3 × 債券指數。每月月報固定揭露<strong>五個數字</strong>：組合報酬、複合基準報酬、超額、累積 TE、IR——讓「自我感覺」無所遁形。</p>
+  <p>個人投資者做這件事的真正目的：兩三年後，你會有一份誠實的紀錄回答「我的主動操作，到底有沒有付得起自己的機會成本」——絕大多數人一輩子沒讓自己面對這個數字。</p>
+
+  <h2>5. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「贏大盤就是厲害。」</p><p>先問：哪個大盤？含息嗎？同幣別嗎？風險調整後呢（W29）？連續幾年（W38）？五關全過才算數。</p></div>
+  <div class="myth"><p class="say">「TE 低＝安全。」</p><p>TE 量的是相對基準的偏離，不是絕對風險；基準本身崩 40% 時，TE 0.1% 的指數基金一樣崩 40%。相對安穩 ≠ 絕對安穩——絕對風險歸 W28 的 MDD 管。</p></div>
+  <div class="myth"><p class="say">「高 Active Share＝會贏。」</p><p>它只是「有贏的可能」的必要條件（不偏離就不可能超額），不是充分條件——偏離的方向還得對。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>持續性才是稀有財</h2>
+  <div class="readitem"><div class="t">35 分鐘</div><div class="body"><b>Investopedia：Tracking Error、Active Share、Closet Indexing</b><p><a class="srclink" href="https://www.investopedia.com/terms/t/trackingerror.asp" target="_blank" rel="noopener">Tracking Error ↗</a>、<a class="srclink" href="https://www.investopedia.com/terms/a/active-share.asp" target="_blank" rel="noopener">Active Share ↗</a>、<a class="srclink" href="https://www.investopedia.com/terms/c/closetindexing.asp" target="_blank" rel="noopener">Closet Indexing ↗</a></p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>S&amp;P SPIVA：Persistence Scorecard</b><p>專看「持續性」：過去五年前 25% 的基金，之後五年還留在前 25% 的比例——接近隨機。「連續贏」比「贏過」稀有得多。<a class="srclink" href="https://www.spglobal.com/spdji/en/research-insights/spiva/" target="_blank" rel="noopener">SPIVA ↗</a></p></div></div>
+  <div class="readitem"><div class="t">15 分鐘</div><div class="body"><b>證交所指數頁：找到「發行量加權股價報酬指數」</b><p>對照普通加權指數同期差距，親眼確認含息差 3–4 個百分點／年的量級。<a class="srclink" href="https://www.twse.com.tw/" target="_blank" rel="noopener">臺灣證券交易所 ↗</a></p></div></div>
+  <div class="readitem"><div class="t">選讀</div><div class="body"><b>Cremers &amp; Petajisto（2009）：How Active Is Your Fund Manager?</b><p>Active Share 的原始研究——它把「主動」拆成選股與因子押注兩個維度。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>座標定位三連發</h2>
+  <h3>任務 A｜模擬組合的正式基準（25 分鐘）</h3>
+  <ol class="tasks">
+    <li>依 IPS 權重寫下複合基準公式——成分指數要<strong>含息</strong>版本，註明代號與查詢處</li>
+    <li>回算組合上線以來的累積超額、TE（資料短就用週頻）、IR</li>
+    <li>用講義算例的 12 個月序列手算一次，重現 TE ≈ 1.11%、IR ≈ 1.26</li>
+    <li>把五個數字加進月報模板</li>
+  </ol>
+  <h3>任務 B｜櫃子稽查（20 分鐘）</h3>
+  <ol class="tasks"><li>挑一檔台灣的主動型台股基金：月報抓前十大持股，與台灣 50 指數前十大對照重疊度、查經理費，丟進上面的稽查器，寫三行判決</li></ol>
+  <div class="verify"><b>怎麼知道做對了：</b>算例用樣本標準差：0.3215% × √12 ＝ 1.114%；1.4 ÷ 1.114 ＝ 1.257。用母體標準差會得到 1.07%——差異不大，但要知道自己用的是哪個。</div>
+  <ul class="checks" data-key="w31-practice">
+    <li><label><input type="checkbox"><span>複合基準寫入月報模板（含息指數、有出處）</span></label></li>
+    <li><label><input type="checkbox"><span>講義 TE／IR 算例手算重現</span></label></li>
+    <li><label><input type="checkbox"><span>櫃子稽查完成且有判決理由</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 為什麼「事先指定」是基準的鐵律？</summary><div class="ans"><p>→ 因為<strong>事後</strong>永遠找得到一個輸給自己的指數——比較就失去證偽能力。事先寫進 IPS 的基準是「賭注下定」：贏了才算數、輸了逃不掉。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 一檔 TE 5%、IR −0.3，另一檔 TE 0.8%、IR 0.2——各說明什麼？</summary><div class="ans"><p>→ 前者：<strong>大幅偏離且偏錯方向</strong>——主動而無能，最貴的組合。後者：幾乎不偏離、小贏——可能是優秀的增強指數，也可能只是低費率加一點運氣；先查費用與期間再判斷。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 為什麼台股績效比較必須用報酬指數？差多少量級？</summary><div class="ans"><p>→ 現金股利在除息日從價格指數中消失（W10 的除息機制），但投資人實際拿到了——不含息指數系統性低估真實報酬。每年 3–4 個百分點，十年複利下來是 34–48 個百分點的差距。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>量身高的尺</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（量身高的尺）</p><p>「小孩說『我籃球贏了隔壁小學的』——你會先問什麼？」（對方幾年級？）「比較要有意義，<strong>對手要選對</strong>。投資成績也一樣：說『我贏大盤』的人，要先看他拿哪把尺量。」</p></div>
+  <div class="script"><p class="who">核心揭祕（含息的把戲）</p><p>「台股有兩個大盤指數：一個不算股利、一個算。差多少？<strong>每年差 3 到 4%</strong>。所以有人拿不含股利的那個來比，年年『打敗大盤』——其實只是把尺鋸短了。我們家的模擬帳戶，用的是算股利的那把正版尺。」</p></div>
+  <div class="script"><p class="who">互動（櫃子裡的指數基金）</p><p>「還有一種基金：收你昂貴的『主動管理費』，但打開一看，買的跟大盤前十名幾乎一樣。這像什麼？」</p><p class="aside">讓家人接——像付私廚的錢吃到便利商店便當。防身術：看基金前十大持股，跟 0050 對一下，三分鐘識破。</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「那基金經理人都在騙？」</b><br>「不是都，但結構誘因存在：貼著指數不會大輸（保住工作），費用照收——所以要自己看，不能只聽。」</p>
+    <p class="qa"><b>「我們的模擬帳戶現在贏還輸？」</b><br>誠實揭露五數字，並強調「一個月看不出什麼，我們看的是兩年後的累積紀錄」。</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w31-final">
+    <li><label><input type="checkbox"><span>能背出好基準三條件</span></label></li>
+    <li><label><input type="checkbox"><span>模擬組合五數字（報酬／基準／超額／TE／IR）入月報模板</span></label></li>
+    <li><label><input type="checkbox"><span>能解釋 TE 與 Active Share 各量什麼、櫃子基金為何必輸</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（含息尺＋櫃子防身術），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 31 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 32：因子投資</b>——你的「選股 alpha」有沒有可能只是「買了便宜股／小型股」的系統性曝險？Fama-French 給你一副更鋒利的眼鏡。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-30-brinson-attribution/">上一週：Brinson 歸因</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——「加權指數」不含股利，而台股殖利率長期 3–4%。拿不含息的指數來比，3% 的「超額」幾乎就是股利本身。換成含息的報酬指數，他大概只是打平。"
+      : "先別急著下結論：「加權指數」不含股利，而台股殖利率長期 3–4%。拿不含息的指數比，3% 的「超額」幾乎就是股利本身——換成含息的報酬指數，他大概只是打平。尺錯了，什麼結論都不成立。";
+  });
+
+  function pct(v, dp){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dp === undefined ? 1 : dp) + "%"; }
+
+  /* 鋸短的尺 */
+  var iPr = document.getElementById("in-pr"), iDy = document.getElementById("in-dy"), iYr = document.getElementById("in-yr"), iCl = document.getElementById("in-cl");
+  function runTr(){
+    var pr = +iPr.value, dy = +iDy.value, yr = +iYr.value, cl = +iCl.value;
+    document.getElementById("o-pr").textContent = pr + "%";
+    document.getElementById("o-dy").textContent = dy.toFixed(1) + "%";
+    document.getElementById("o-yr").textContent = yr + " 年";
+    document.getElementById("o-cl").textContent = cl.toFixed(1) + "%";
+    var px = (Math.pow(1 + pr/100, yr) - 1) * 100;
+    var tr = (Math.pow(1 + (pr + dy)/100, yr) - 1) * 100;
+    var real = cl - dy;
+    document.getElementById("s-px").textContent = pct(px);
+    document.getElementById("s-tr").textContent = pct(tr);
+    var r = document.getElementById("s-real");
+    r.textContent = pct(real); r.className = "sv " + (real > 0.05 ? "pos" : real < -0.05 ? "neg" : "");
+    var n = document.getElementById("trnote");
+    if (dy === 0) n.innerHTML = "<b>沒有股利時兩把尺一樣長。</b>把殖利率拉上去，看差距怎麼複利放大。";
+    else n.innerHTML = "<b>" + yr + " 年下來，兩把尺差了 " + (tr - px).toFixed(1) + " 個百分點。</b>" +
+      (real > 0.05 ? "扣掉股利後仍有 " + real.toFixed(1) + "% 的真實超額——這才是能拿出來講的成績。"
+       : real < -0.05 ? "宣稱的「贏 " + cl.toFixed(1) + "%」換成正版尺其實是輸 " + Math.abs(real).toFixed(1) + "%——只是把尺鋸短了。"
+       : "宣稱的超額幾乎全部是股利——換成正版尺，大概只是打平。");
+  }
+  [iPr, iDy, iYr, iCl].forEach(function(el){ el.addEventListener("input", runTr); });
+  runTr();
+
+  /* 櫃子稽查器 */
+  var iAs = document.getElementById("in-as"), iTe = document.getElementById("in-te"), iFee = document.getElementById("in-fee");
+  function runAs(){
+    var as = +iAs.value, te = +iTe.value, fee = +iFee.value;
+    document.getElementById("o-as").textContent = as + "%";
+    document.getElementById("o-te").textContent = te.toFixed(1) + "%";
+    document.getElementById("o-fee").textContent = fee.toFixed(1) + "%";
+    var kind, note;
+    if (as < 20 && te < 0.5) {
+      kind = fee <= 0.3 ? "真被動" : "貴的被動";
+      note = fee <= 0.3 ? "<b>好的核心持股長這樣。</b>幾乎完全複製、費用低廉——你買到的就是指數本身。"
+                        : "<b>複製得很像，費用卻偏高。</b>同樣的指數暴露，市面上通常有更便宜的版本。";
+    } else if (as < 60 && te < 2) {
+      kind = fee >= 0.8 ? "櫃子指數" : "增強指數";
+      note = fee >= 0.8 ? "<b>收主動的費、做被動的事。</b>持股跟指數大量重疊、偏離又小——報酬 ≈ 指數 − 費用，長期的數學宿命是輸。這是光譜上最該避開的中間地帶。"
+                        : "<b>偏離小、費用也低——可以接受的增強指數。</b>它不承諾大贏，也沒收大錢。";
+    } else {
+      kind = "真主動";
+      note = "<b>大幅偏離指數——至少給了自己贏的可能。</b>但高 Active Share 只是必要條件不是充分條件：偏離的方向對不對，要看 IR 與多年的紀錄（W38）。適合放在衛星部位。";
+    }
+    var fv = 100 * Math.pow(1.07, 10), fvFee = 100 * Math.pow(1.07 - fee/100, 10);
+    document.getElementById("s-kind").textContent = kind;
+    document.getElementById("s-drag").textContent = "−" + (fv - fvFee).toFixed(1) + " 萬";
+    document.getElementById("asnote").innerHTML = note;
+  }
+  [iAs, iTe, iFee].forEach(function(el){ el.addEventListener("input", runAs); });
+  runAs();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w31-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w31-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 座標定好了——下週戴上因子眼鏡，看你的 alpha 是不是只是風格。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

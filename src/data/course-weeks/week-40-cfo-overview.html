@@ -1,0 +1,484 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .map40{margin-top:1.2rem;display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;font-size:.86rem}
+  .map40 .top{grid-column:1/-1;text-align:center;padding:.6rem;border-radius:10px;background:var(--pine);color:var(--on-pine);font-weight:800}
+  .map40 .col{padding:.8rem .9rem;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+  .map40 .col b{display:block;color:var(--pine);font-size:.95rem}
+  .map40 .col i{display:block;font-style:normal;color:var(--ink-3);font-size:.8rem;margin-bottom:.35rem}
+  .map40 .bot{grid-column:1/-1;text-align:center;padding:.55rem;border:1.5px dashed var(--line);border-radius:10px;color:var(--ink-2);font-size:.82rem}
+  @media (max-width:560px){.map40{grid-template-columns:1fr}}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 40</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q4 財務長季 · Week 40</p>
+  <h1>CFO 三大決策總覽——投資、融資、股利</h1>
+  <p class="lead" style="margin-top:.5rem">Q4 開場：換到桌子的另一邊。前 39 週你是「評價公司的人」，這一季你是「<strong>被評價的人</strong>」——替公司決定錢投到哪、錢從哪來、賺的錢還多少。有趣的是，這三個決策你<strong>早就做過</strong>：它們全藏在第 4 週飲料店的分錄裡。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：Q1–Q3 完成</span><span class="chip">52 週 · 第 40 週</span>
+  </div>
+  <div class="position">
+    <b>本季在三個角色中的定位：</b>投資人看資本配置的結果，操盤手看它反映在股價上，財務長則是<strong>做出那些配置的人</strong>。知道好 CFO 怎麼想，就看得出哪家公司的錢被聰明地用。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的第一次經理人報告——家人的三題測試過了嗎？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">一家公司帳上現金很多。財務長第一個該問的問題是什麼？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">要發多少股利給股東</button>
+    <button data-g="b">有沒有報酬高過資金成本的投資機會</button>
+    <button data-g="c">買回庫藏股，把 EPS 推高</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. 驚喜開場：你的飲料店早就做過這三個決策</h2>
+  <p>回看第 4 週第 1 個月的分錄，用 CFO 的眼睛重讀：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>分錄</th><th>當時的名字</th><th>CFO 的名字</th></tr></thead>
+      <tbody>
+        <tr><td class="f">借：現金 500,000／貸：股本 500,000</td><td>老闆投入開店</td><td><strong>融資決策</strong>：100% 權益、0 負債——資本結構的選擇</td></tr>
+        <tr><td class="f">借：設備 200,000／貸：現金 200,000</td><td>買製茶設備</td><td><strong>投資決策</strong>：這 20 萬投下去，回收得來嗎？——資本預算</td></tr>
+        <tr><td class="f">淨利 26,667 → 保留盈餘</td><td>月底結帳</td><td><strong>股利決策</strong>：配發率 0%——全數留下來擴店？</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p><strong>公司金融的全部，就是把這三個決策做大、做嚴謹。</strong>飲料店憑感覺，上市公司用 NPV（W41）、WACC（W42）、資本結構理論（W43）、股利政策（W44）。你在 Q1 練的三表功力、Q2 練的估值功力，本季全部換邊使用。</p>
+
+  <h2>2. 三大決策地圖：本季的目錄</h2>
+  </div>
+  <div class="map40" aria-label="三大決策地圖">
+    <div class="top">目標函數：極大化公司長期價值</div>
+    <div class="col"><b>投資決策</b><i>錢投到哪裡？</i>W41 資本預算 NPV／IRR<br>W45 營運資金<br>W47 併購</div>
+    <div class="col"><b>融資決策</b><i>錢從哪裡來？</i>W42 資金成本 WACC<br>W43 資本結構<br>W48 資金調度與避險</div>
+    <div class="col"><b>股利決策</b><i>賺的錢怎麼分？</i>W44 現金股利 vs 庫藏股</div>
+    <div class="bot">W46 財務規劃把三者串成預算　·　W49 治理、W50 稅務、W51 投資人關係＝三大決策的邊界條件</div>
+  </div>
+  <div class="prose">
+  <p><strong>三者互鎖</strong>：投資案值不值得做，取決於資金成本（融資決定的）；能配多少股利，取決於投資需要留多少錢。<strong>順序上投資決策優先</strong>——先看有沒有報酬高於 WACC 的案子，融資與股利配合它。</p>
+  </div>
+
+  <div class="lab">
+    <h3>分錄分類台：這是哪一種決策？</h3>
+    <p class="muted" style="margin-top:-.2rem">七筆飲料店後來的交易。每一筆背後，都是三大決策之一。</p>
+    <div class="tcard"><p class="tq" id="cnum">第 1／7 筆</p><p class="tt" id="ctext"></p></div>
+    <div class="tbtnrow" id="cbtns"><button data-v="inv">投資決策</button><button data-v="fin">融資決策</button><button data-v="div">股利決策</button><button id="cnext" style="display:none">下一筆 →</button></div>
+    <div id="tfeed" aria-live="polite"></div>
+    <p id="tscore">目前答對 0 題</p>
+  </div>
+
+  <div class="prose">
+  <h2>3. 目標函數：極大化「長期價值」，不是別的</h2>
+  <p>CFO 教科書的第一原則，也是實務中最常被違反的：</p>
+  <ul>
+    <li><strong>不是極大化 EPS</strong>——買回庫藏股、砍研發都能推高 EPS，卻可能毀滅價值（W5 的 EPS 操縱，換邊看就是誘惑）</li>
+    <li><strong>不是極大化短期股價</strong>——市場先生的報價（W21）不該指揮公司經營；為了本季財測砍長期投資，是代理問題的經典款</li>
+    <li><strong>不是極大化規模</strong>——帝國建造（W47 併購動機的黑暗面）：營收翻倍但 ROIC 低於 WACC，等於越大越毀滅價值（W9 的鐵律，現在是你的經營約束）</li>
+  </ul>
+  <p>第三個「不是」最反直覺：帳上明明每年都賺錢，怎麼會是在毀滅價值？因為帳上的淨利沒有扣掉<strong>股東資金的成本</strong>。用下面的計算機看一次：</p>
+  </div>
+
+  <div class="lab">
+    <h3>帝國建造計算機</h3>
+    <p class="muted" style="margin-top:-.2rem">一家公司投入資本 100 億，每年把資本擴張 g%。經濟利潤 ＝（ROIC − WACC）× 投入資本，累計 5 年。</p>
+    <div class="presets" id="empre"><button data-r="6" data-g="15">ROIC 6%・快速擴張</button><button data-r="6" data-g="0">ROIC 6%・不擴張</button><button data-r="12" data-g="15">ROIC 12%・快速擴張</button></div>
+    <div class="ctl"><label>ROIC <output id="o-roic">6%</output></label><input type="range" id="in-roic" min="2" max="20" step="1" value="6" aria-label="ROIC"></div>
+    <div class="ctl"><label>WACC <output id="o-wacc">8%</output></label><input type="range" id="in-wacc" min="4" max="12" step="0.5" value="8" aria-label="WACC"></div>
+    <div class="ctl"><label>每年資本擴張 <output id="o-g">15%</output></label><input type="range" id="in-g" min="0" max="30" step="1" value="15" aria-label="每年資本擴張"></div>
+    <div class="stats">
+      <div class="stat"><p class="sl">5 年後規模</p><p class="sv" id="s-size">—</p><p class="sh">投入資本（億）</p></div>
+      <div class="stat"><p class="sl">5 年帳面獲利</p><p class="sv" id="s-acc">—</p><p class="sh">ROIC × 資本（億）</p></div>
+      <div class="stat"><p class="sl">5 年經濟利潤</p><p class="sv" id="s-eva">—</p><p class="sh">扣掉資金成本後（億）</p></div>
+    </div>
+    <div class="ibox" id="emnote"></div>
+  </div>
+
+  <div class="prose">
+  <p><strong>投資人視角的翻譯</strong>：一家公司的資本配置紀律，全寫在「ROIC 對 WACC」與「現金流向」裡。Buffett 說 CEO 最重要的工作是資本配置（W24）——本季你學的，就是這門手藝的技術規格。</p>
+
+  <h2>4. CFO 的職能全景：不只三大決策</h2>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>職能</th><th>內容</th><th>對應週</th></tr></thead>
+      <tbody>
+        <tr><td class="f">財務規劃（FP&amp;A）</td><td>預算、預測、滾動修正</td><td>W46</td></tr>
+        <tr><td class="f">資金（Treasury）</td><td>現金水位、銀行關係、匯率利率避險</td><td>W45、W48</td></tr>
+        <tr><td class="f">會計與控制</td><td>財報產出、內控——你在 Q1 讀的報表就是這裡做的</td><td>Q1 換邊</td></tr>
+        <tr><td class="f">稅務</td><td>合法節稅結構</td><td>W50</td></tr>
+        <tr><td class="f">投資人關係</td><td>法說會、年報、跟你這種分析師過招</td><td>W51</td></tr>
+        <tr><td class="f">治理介面</td><td>對董事會、審計委員會負責</td><td>W49</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <div class="quote">CEO 講故事，CFO 負責讓故事對得起數字——同時是煞車（風控），也是變速箱（資源配置）。</div>
+
+  <h2>5. 雙面視角：本季的學習方法</h2>
+  <p>每個主題都用兩面讀——這是 W52 雙報告期末專題的預演：</p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>主題</th><th>CFO 問</th><th>投資人問（你已經會的）</th></tr></thead>
+      <tbody>
+        <tr><td class="f">資本預算</td><td>這案子 NPV 大於 0 嗎？</td><td>它過去的大投資回收了嗎？（W7 資本支出 vs 折舊）</td></tr>
+        <tr><td class="f">資本結構</td><td>借多少最適？</td><td>它的槓桿撐得住衰退嗎？（W6 有息負債）</td></tr>
+        <tr><td class="f">股利</td><td>該留還是該發？</td><td>留下的錢有賺到高於 WACC 嗎？（W9 ROIC）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <h2>6. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「CFO 就是會計主管。」</p><p>會計是看後照鏡（記錄已發生），CFO 的主業是看擋風玻璃（配置未來資源）；會計只是其中一個部門。</p></div>
+  <div class="myth"><p class="say">「公司現金多，就該發股利。」</p><p>要先過投資決策這關：有 ROIC 高於 WACC 的機會就該留（台積電模式）；沒有才輪到還錢給股東（W44 詳談）。順序錯了，就是資本配置失能。</p></div>
+  <div class="myth"><p class="say">「財務長只對老闆負責。」</p><p>法律上對<strong>公司與全體股東</strong>負責（受託義務，W35 的公司版）。歷史上最大的財報弊案，幾乎都始於 CFO 對老闆的過度忠誠——W49 案例課的預告。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>公司金融的地圖與你的實習公司</h2>
+  <div class="readitem"><div class="t">50 分鐘</div><div class="body"><b>《Principles of Corporate Finance》第 1 章</b><p>Brealey、Myers、Allen 的經典教科書：公司金融的目標函數與三大決策。本季正式開讀。</p></div></div>
+  <div class="readitem"><div class="t">40 分鐘</div><div class="body"><b>Damodaran：Corporate Finance 課程第 1 講</b><p>他的「corporate finance in one picture」框架圖值得抄進筆記——本季所有週次都掛在那張圖上。<a class="srclink" href="https://pages.stern.nyu.edu/~adamodar/" target="_blank" rel="noopener">Damodaran Online ↗</a></p></div></div>
+  <div class="readitem"><div class="t">20 分鐘</div><div class="body"><b>選定 Q4 實習公司</b><p>建議沿用你的目標公司（W13 到 W26 一路分析的那家），或台積電。翻開最新年報的「致股東報告書」與「營運概況」，標出它去年做的三大決策各一例。</p></div></div>
+  <div class="readitem"><div class="t">選讀</div><div class="body"><b>一篇台灣上市公司財務長的深度訪談</b><p>搜「財務長 專訪」，聽實務者自述工作內容。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>實習公司的三大決策考古</h2>
+  <ol class="tasks">
+    <li><strong>投資決策</strong>：年報裡找出去年最大的資本支出項目（蓋廠？併購？）——金額多少？公司給的理由是什麼？W41 起你會學怎麼驗證它划不划算</li>
+    <li><strong>融資決策</strong>：資產負債表看資金結構（W6 的技能）——有息負債／權益比？去年有沒有發債、增資、還款？</li>
+    <li><strong>股利決策</strong>：去年 EPS 與每股股利 → 配發率 ＿%；跟五年前比，趨勢如何？</li>
+    <li>寫 200 字：「如果我是這家公司的 CFO，三個決策裡我最想重新檢視的是＿＿，因為＿＿」</li>
+    <li><strong>飲料店複習</strong>（10 分鐘）：把第 4 週的分錄用 CFO 語言重新標註一遍（講義第 1 節的表，自己做一次）</li>
+  </ol>
+  <div class="verify"><b>怎麼知道做對了：</b>帝國建造計算機預設（ROIC 6%、WACC 8%、每年擴張 15%）：5 年後規模 201.1 億（翻倍）、帳面累計獲利 40.5 億，經濟利潤卻是 −13.5 億；按「不擴張」，經濟利潤是 −10.0 億——<strong>擴張得越快，毀滅得越多</strong>。按「ROIC 12%」則是 +27.0 億。</div>
+  <ul class="checks" data-key="w40-practice">
+    <li><label><input type="checkbox"><span>實習公司三大決策各有一個具體實例（含金額）</span></label></li>
+    <li><label><input type="checkbox"><span>200 字 CFO 視角短評完成</span></label></li>
+    <li><label><input type="checkbox"><span>能畫出三大決策地圖與互鎖關係</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 為什麼說三大決策裡「投資決策優先」？</summary><div class="ans"><p>→ 融資的目的是替好案子找錢、股利是把用不完的錢還給股東——兩者都在回應「有沒有 ROIC 高於 WACC 的案子」。先決定配息再找投資機會，等於先把彈藥發掉再看要不要打仗。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 公司每年都有淨利，為什麼還可能在毀滅價值？</summary><div class="ans"><p>→ 淨利只扣了債權人的利息，沒扣<strong>股東資金的機會成本</strong>。ROIC 低於 WACC 時，每多投入一塊錢，賺的都不夠付資金成本——帳上賺錢、經濟上虧錢；擴張越快，毀得越多。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 買回庫藏股推高了 EPS，股東一定受益嗎？</summary><div class="ans"><p>→ 不一定。EPS 上升可能只是分母變小；如果買回價格高於內在價值，等於拿留下來的股東的錢，高價買走離開的股東的股份——價值反而轉移出去。W44 會詳談判斷方法。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>我們家的財務長</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（家庭財務長）</p><p>「我們家其實一直有一位 CFO——就是管三個問題的人：<strong>錢投到哪</strong>（買房？裝修？進修？）、<strong>錢從哪來</strong>（存款？房貸？）、<strong>賺的錢怎麼分</strong>（存起來？花掉？孝親？）。公司的財務長，管的是一模一樣的三個問題，只是多幾個零。」</p></div>
+  <div class="script"><p class="who">核心演示（飲料店回歸）</p><p>「還記得我們的飲料店嗎？第一個月就做了全部三個決策：老闆掏 50 萬（錢從哪來）、花 20 萬買設備（投到哪）、賺的 26,667 全留著（怎麼分）。<strong>接下來三個月，我會學怎麼把這三個決定做得像上市公司一樣嚴謹</strong>——然後你會發現，我們家的財務決定也能用同一套方法。」</p></div>
+  <div class="script"><p class="who">互動（家庭三決策盤點）</p><p>「來當一次家庭 CFO：我們家現在最大的『投資決策』是什麼？『融資結構』——房貸佔比健康嗎？每月結餘的『配發政策』——多少進投資、多少當生活品質？」</p><p class="aside">把答案記下來。Q4 結束時回頭看，家人會發現自己已經在用公司金融的語言思考。</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「學這個對投資有什麼用？」</b><br>「知道好 CFO 怎麼想，就看得出哪家公司的錢被聰明地用——Buffett 說，挑公司挑的就是挑資本配置的人。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w40-final">
+    <li><label><input type="checkbox"><span>能默寫三大決策地圖，以及目標函數的三個「不是」</span></label></li>
+    <li><label><input type="checkbox"><span>實習公司三決策考古完成</span></label></li>
+    <li><label><input type="checkbox"><span>飲料店分錄的 CFO 重標註完成</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（家庭三決策盤點），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 40 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 41：資本預算</b>——三大決策的第一個：NPV 與 IRR，「這個案子該不該投」的數學。你會發現它就是 W20 的 DCF 換了主詞。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-39-q3-capstone-report/">上一週：Q3 期末專題</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——投資決策優先。有報酬高於資金成本（ROIC > WACC）的機會就該留著用；沒有，才輪到用股利或庫藏股把錢還給股東。順序錯了，就是資本配置失能。"
+      : "財務長第一個該問的是：有沒有報酬高於資金成本（ROIC > WACC）的投資機會？有就該留著用；沒有，才輪到用股利或庫藏股還給股東。只為推高 EPS 而買回，可能反而毀滅價值。";
+  });
+
+  /* 分錄分類台 */
+  var NM = {inv:"投資決策", fin:"融資決策", div:"股利決策"};
+  var CS = [
+    {t:"向銀行借款 30 萬，年利率 3%。", a:"fin", w:"錢從哪裡來——借款改變了資本結構（負債從 0 變成 30 萬），這是 W42–43 的主題。"},
+    {t:"花 80 萬頂下隔壁的店面，開第二家分店。", a:"inv", w:"錢投到哪裡——擴點就是一個資本預算案：未來的現金流折現回來，值不值 80 萬？（W41；若是買下別人的公司，就是 W47 併購。）"},
+    {t:"年底宣布：每股發放現金股利 2 元。", a:"div", w:"賺的錢怎麼分——發出去，就代表公司判斷手上沒有更好的投資機會（W44）。"},
+    {t:"夏天前多進一批茶葉與杯子，存貨從 3 萬增加到 8 萬。", a:"inv", w:"投資決策——而且是最常被忽略的一種：營運資金。錢被卡在存貨裡，跟買設備一樣是在「投資」（W45）。"},
+    {t:"找朋友入股 20 萬，對方取得兩成股權。", a:"fin", w:"融資決策——用權益而不是負債籌錢。代價是未來的獲利要分兩成出去（W42 的權益成本）。"},
+    {t:"用公司的閒錢，向一位小股東買回他持有的股份。", a:"div", w:"股利決策的另一種形式：庫藏股。把現金還給股東，只是方式不同——W44 會比較兩者。"},
+    {t:"提前還清銀行借款，省下利息。", a:"fin", w:"融資決策——降低負債比例。省利息是好事，但也放棄了槓桿的稅盾（W43 的取捨）。"}
+  ];
+  var ci = 0, cok = 0;
+  var ctext = document.getElementById("ctext"), cnum = document.getElementById("cnum"), cbtns = document.getElementById("cbtns"), cnext = document.getElementById("cnext");
+  var tfeed = document.getElementById("tfeed"), tscore = document.getElementById("tscore");
+  function showC(){
+    cnum.textContent = "第 " + (ci + 1) + "／" + CS.length + " 筆";
+    ctext.textContent = CS[ci].t;
+    tfeed.className = ""; tfeed.innerHTML = "";
+    cbtns.querySelectorAll("button[data-v]").forEach(function(b){ b.disabled = false; });
+    cnext.style.display = "none";
+  }
+  cbtns.addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    if (btn === cnext){
+      ci++;
+      if (ci >= CS.length){ ci = 0; cok = 0; tscore.textContent = "重新開始——目前答對 0 題"; }
+      showC(); return;
+    }
+    var c = CS[ci], right = btn.dataset.v === c.a;
+    if (right) cok++;
+    tfeed.className = "show" + (right ? "" : " bad");
+    tfeed.innerHTML = "<b>" + (right ? "答對——" : "再想想——") + "這是" + NM[c.a] + "。</b>" + c.w;
+    cbtns.querySelectorAll("button[data-v]").forEach(function(b){ b.disabled = true; });
+    cnext.style.display = "";
+    cnext.textContent = ci === CS.length - 1 ? "重新開始 ↺" : "下一筆 →";
+    tscore.textContent = "目前答對 " + cok + "／" + (ci + 1) + " 題";
+  });
+  showC();
+
+  /* 帝國建造計算機 */
+  var iR = document.getElementById("in-roic"), iW = document.getElementById("in-wacc"), iG = document.getElementById("in-g");
+  function sg(v){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1); }
+  function runEm(){
+    var r = +iR.value / 100, w = +iW.value / 100, g = +iG.value / 100;
+    document.getElementById("o-roic").textContent = iR.value + "%";
+    document.getElementById("o-wacc").textContent = (+iW.value).toFixed(1).replace(/\.0$/, "") + "%";
+    document.getElementById("o-g").textContent = iG.value + "%";
+    var cap = 100, acc = 0, eva = 0;
+    for (var t = 0; t < 5; t++){ acc += cap * r; eva += cap * (r - w); cap *= 1 + g; }
+    document.getElementById("s-size").textContent = cap.toFixed(1);
+    document.getElementById("s-acc").textContent = sg(acc);
+    var e = document.getElementById("s-eva"); e.textContent = sg(eva); e.className = "sv " + (eva >= 0 ? "pos" : "neg");
+    var n = document.getElementById("emnote");
+    if (r < w) n.innerHTML = "<b>帳上 5 年賺了 " + acc.toFixed(1) + " 億，扣掉資金成本卻毀掉 " + Math.abs(eva).toFixed(1) + " 億。</b>" + (g > 0 ? "規模變成 " + (cap / 100).toFixed(2) + " 倍——ROIC 低於 WACC 時，擴張越快，毀滅越多。報紙會寫「營收創新高」。" : "不擴張也在流失價值；這時候最好的資本配置，可能是把錢還給股東。");
+    else if (r === w) n.innerHTML = "<b>ROIC 剛好等於 WACC：怎麼擴張都不創造、也不毀滅價值。</b>成長本身沒有意義，成長的「品質」才有。";
+    else n.innerHTML = "<b>ROIC 高於 WACC：每投入一塊錢都在創造價值，5 年累計 +" + eva.toFixed(1) + " 億。</b>" + (g > 0 ? "這時候擴張是對的——這就是台積電把錢留著蓋廠、而不是全部發掉的理由。" : "這時候不擴張反而可惜——有好案子卻把錢閒著，也是資本配置失能。");
+  }
+  [iR, iW, iG].forEach(function(el){ el.addEventListener("input", runEm); });
+  document.getElementById("empre").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    iR.value = btn.dataset.r; iG.value = btn.dataset.g; iW.value = 8; runEm();
+  });
+  runEm();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w40-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w40-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 換好位子了——下週學 CFO 的第一個工具：NPV。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

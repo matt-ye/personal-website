@@ -1,0 +1,477 @@
+<!-- 照新管線手寫：只含 body 內容＋本頁樣式與互動 script，head 由 CourseWeekLayout 產生。 -->
+<style is:global>
+:root, :root[data-theme="light"]{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#1A2620; --ink-2:#4A5A52; --ink-3:#7A867F;
+    --pine:#17573F; --pine-soft:#E3EDE7; --coin:#8F6A1B; --coin-soft:#F4ECDA;
+    --line:#DCE2DC; --line-soft:#E9EDE8;
+    --up:#1F8A5F; --down:#B4552D; --cool:#3E6E8E; --on-pine:#FFFFFF; --warn:#B4552D;
+    --ok:#1F7A4D; --shadow:0 1px 2px rgba(23,38,31,.05),0 8px 28px -12px rgba(23,38,31,.14);
+  }
+  :root[data-theme="dark"]{
+    --paper:#101713; --card:#17211B; --ink:#E7ECE7; --ink-2:#A9B6AD; --ink-3:#76837B;
+    --pine:#7FC0A4; --pine-soft:#1B2C24; --coin:#D0A544; --coin-soft:#2A2415;
+    --line:#28332B; --line-soft:#1F2922;
+    --up:#35A878; --down:#E08054; --cool:#6FA8CC; --on-pine:#0D1410; --warn:#E08054;
+    --ok:#4CAF7D; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper); color:var(--ink); font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; font-size:16.5px; line-height:1.85; -webkit-font-smoothing:antialiased}
+  .num, .fx{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums }
+
+  #topnav{position:sticky; top:0; z-index:50; background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  #progress{height:2px;background:var(--pine);width:0%;transition:width .1s linear}
+  .navrow{max-width:52rem;margin:0 auto;padding:.55rem 1.2rem;display:flex;gap:.35rem;align-items:center;overflow-x:auto}
+  .navrow .back{font-size:.8rem;color:var(--ink-3);text-decoration:none;white-space:nowrap;margin-right:.3rem}
+  .navrow .back:hover{color:var(--pine)}
+  .navrow .brand{font-weight:900;font-size:.8rem;color:var(--pine);letter-spacing:.08em;white-space:nowrap;margin-right:.4rem}
+  .navrow a.sec{font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:.28rem .7rem;border-radius:99px;white-space:nowrap}
+  .navrow a.sec:hover{background:var(--pine-soft);color:var(--pine)}
+  .navrow a:focus-visible,#themeToggle:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--pine);outline-offset:1px}
+  #themeToggle{margin-left:auto;flex:none;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;background:none;border:1px solid var(--line);border-radius:99px;padding:.32rem .6rem;color:var(--ink-2)}
+  #themeToggle:hover{border-color:var(--pine);color:var(--pine)}
+
+  main{max-width:52rem;margin:0 auto;padding:0 1.2rem 5rem}
+  .prose{max-width:40rem}
+  section{padding-top:1rem}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:900;line-height:1.3;letter-spacing:.01em;text-wrap:balance}
+  h2{font-size:1.35rem;font-weight:900;margin:3.2rem 0 1rem;letter-spacing:.02em}
+  h3{font-size:1.05rem;font-weight:700;margin:2.2rem 0 .7rem}
+  p{margin:.8rem 0;color:var(--ink)}
+  strong{font-weight:700}
+  .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--coin);text-transform:uppercase}
+  .blocknum{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--pine)}
+  .blocknum::before{content:"";width:1.6rem;height:1px;background:var(--pine)}
+  .lead{color:var(--ink-2)}
+  .muted{color:var(--ink-3);font-size:.85rem}
+
+  header.unit{padding:3rem 0 1.5rem;border-bottom:1px solid var(--line)}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .chip{font-size:.75rem;padding:.22rem .7rem;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--card)}
+  .chip a{color:var(--pine);text-decoration:none}.chip a:hover{text-decoration:underline}
+  .position{margin-top:1.3rem;padding:.9rem 1.1rem;background:var(--pine-soft);border-radius:10px;font-size:.92rem;color:var(--ink-2);border-left:3px solid var(--pine)}
+  .position b{color:var(--pine)}
+  .recall{margin-top:.8rem;padding:.7rem 1.1rem;background:var(--coin-soft);border-radius:10px;font-size:.88rem;color:var(--ink-2)}
+  .recall b{color:var(--coin)}
+
+  .hero{margin:2.2rem 0 0;padding:1.6rem 1.5rem 1.8rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .hero .q{font-size:1.12rem;font-weight:700;line-height:1.7;text-wrap:balance}
+  .guessrow{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.1rem 0 .3rem}
+  .guessrow button{font:inherit;font-size:.9rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .guessrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .guessrow button.picked{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+  #reveal{display:none;margin-top:1.2rem;border-top:1px dashed var(--line);padding-top:1.1rem}
+  #reveal.show{display:block}
+  #verdict{font-size:.95rem;color:var(--ink-2)}
+
+  /* 互動元件 kit（滑桿、統計卡、預設鈕、判讀框）——與 W27 同一套 class */
+  .lab{margin-top:1.4rem;padding:1.3rem 1.4rem;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .lab h3{margin-top:0}
+  .presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}
+  .presets button{font:inherit;font-size:.82rem;padding:.35rem .9rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+  .presets button:hover{border-color:var(--pine);color:var(--pine)}
+  .ctl{margin-top:.9rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-2);font-weight:700}
+  .ctl label output{color:var(--pine);font-family:ui-monospace,Menlo,monospace}
+  .ctl input[type=range]{width:100%;margin-top:.3rem;accent-color:var(--pine)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-top:1.2rem}
+  .stat{padding:.8rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+  .stat .sl{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--ink-3)}
+  .stat .sv{font-size:1.25rem;font-weight:900;font-family:ui-monospace,Menlo,monospace;margin-top:.15rem}
+  .stat .sv.pos{color:var(--up)}.stat .sv.neg{color:var(--down)}
+  .stat .sh{font-size:.75rem;color:var(--ink-3);margin-top:.1rem}
+  .ibox{margin-top:1rem;padding:.85rem 1.1rem;border-radius:10px;font-size:.93rem;background:var(--coin-soft);color:var(--ink-2)}
+  .ibox b{color:var(--coin)}
+  .ibox.good{background:var(--pine-soft)}.ibox.good b{color:var(--pine)}
+  /* 測驗卡（照妖鏡／判讀題）——沿用 W26 的樣式 */
+  .tcard{margin:.9rem 0;padding:1.1rem 1.2rem;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;text-align:center}
+  .tcard .tq{font-size:.78rem;color:var(--ink-3);font-weight:700;letter-spacing:.08em}
+  .tcard .tt{font-size:1.02rem;font-weight:800;margin:.45rem 0 .1rem;line-height:1.75;text-wrap:balance}
+  .tbtnrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tbtnrow button{font:inherit;font-size:.88rem;padding:.5rem 1rem;border-radius:99px;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+  .tbtnrow button:hover{border-color:var(--pine);color:var(--pine)}
+  .tbtnrow button:disabled{opacity:.5;cursor:default}
+  #tfeed{margin-top:.9rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.92rem;background:var(--pine-soft);color:var(--ink-2);display:none}
+  #tfeed.show{display:block}
+  #tfeed b{color:var(--pine)}
+  #tfeed.bad{background:var(--coin-soft)}#tfeed.bad b{color:var(--coin)}
+  #tscore{margin-top:.8rem;font-size:.85rem;color:var(--ink-3)}
+  .tablewrap{overflow-x:auto;margin:1.1rem 0}
+  table.data{border-collapse:collapse;width:100%;font-size:.9rem}
+  table.data th{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-align:left;padding:.45rem .7rem;border-bottom:1.5px solid var(--line)}
+  table.data td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data td.f{font-weight:700}
+  table.data tr:last-child td{border-bottom:none}
+
+  .example{margin:1.3rem 0;padding:1.1rem 1.3rem;background:var(--coin-soft);border-radius:12px}
+  .example .tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:var(--coin)}
+  .example p{margin:.5rem 0 0}
+  .quote{margin:1.2rem 0;padding:1rem 1.3rem;border-left:3px solid var(--pine);background:var(--pine-soft);border-radius:0 10px 10px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+  .myth{margin:1rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .myth .say{font-weight:700}.myth .say::before{content:"✕ ";color:var(--warn);font-weight:900}
+  .myth p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink-2)}
+  .readitem{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .readitem:last-child{border-bottom:none}
+  .readitem .t{font-size:.72rem;font-weight:800;color:var(--coin);white-space:nowrap;letter-spacing:.06em}
+  .readitem .body b{font-weight:700}.readitem .body p{margin:.25rem 0 0;font-size:.92rem;color:var(--ink-2)}
+  a.srclink{color:var(--pine);text-decoration:none}a.srclink:hover{text-decoration:underline}
+  .script{margin:1.1rem 0;padding:1.1rem 1.3rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .script .who{font-size:.72rem;font-weight:800;letter-spacing:.14em;color:var(--pine)}
+  .script p{margin:.45rem 0 0;font-size:.97rem}.script p.aside{font-size:.85rem;color:var(--ink-3)}
+  .qa{margin:.8rem 0 0;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.92rem}.qa b{color:var(--coin)}
+
+  ol.tasks{padding-left:1.3rem}ol.tasks li{margin:.55rem 0}
+  .verify{background:var(--pine-soft);border-radius:10px;padding:.8rem 1.1rem;margin:1rem 0;font-size:.95rem}.verify b{color:var(--pine)}
+  .checks{list-style:none;padding:0;margin:1rem 0}
+  .checks li{margin:.3rem 0}
+  .checks label{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .8rem;border-radius:10px;cursor:pointer;font-size:.95rem}
+  .checks label:hover{background:var(--pine-soft)}
+  .checks input{margin-top:.35rem;accent-color:var(--pine);width:1.05rem;height:1.05rem;flex:none}
+  .checks input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line)}
+  #checkdone{font-size:.85rem;color:var(--ok);font-weight:700;min-height:1.4em}
+  details.bonus{margin:1.2rem 0;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  details.bonus summary{cursor:pointer;font-weight:700}
+  details.bonus .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.93rem}
+  details.bonus .ans p{margin:.5rem 0}
+  .qalabel{margin:1.3rem 0 .5rem;font-size:.92rem;font-weight:700;color:var(--ink-2)}
+  .qagroup details.bonus{margin:.5rem 0}
+  .qagroup summary b{color:var(--coin);margin-right:.25rem}
+
+  footer.unit{margin-top:4rem;padding:1.4rem 1.5rem;background:var(--pine-soft);border-radius:14px;font-size:.95rem;color:var(--ink-2)}
+  footer.unit b{color:var(--pine)}
+  footer.site{max-width:52rem;margin:0 auto;padding:0 1.2rem 3rem;font-size:.82rem;color:var(--ink-3)}
+  footer.site a{color:var(--pine);text-decoration:none}footer.site a:hover{text-decoration:underline}
+</style>
+
+<style>
+  .bars{display:flex;align-items:flex-end;gap:.4rem;height:140px;margin-top:1rem;padding:0 .2rem;border-bottom:1px solid var(--line)}
+  .bars .bc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .bars .b{width:100%;max-width:3rem;border-radius:6px 6px 0 0;position:relative}
+  .bars .b.raw{background:var(--line)}
+  .bars .b.pv{background:var(--pine);position:absolute;bottom:0;left:0;right:0}
+  .bars .bw{position:relative;width:100%;max-width:3rem}
+  .bars .v{font-size:.7rem;color:var(--ink-2);font-family:ui-monospace,Menlo,monospace;margin-bottom:.15rem}
+  .barx{display:flex;gap:.4rem;padding:0 .2rem;font-size:.72rem;color:var(--ink-3)}
+  .barx span{flex:1;text-align:center}
+  .legend{font-size:.75rem;color:var(--ink-3);margin-top:.4rem}
+  .legend i{display:inline-block;width:.7rem;height:.7rem;border-radius:2px;vertical-align:-.05rem;margin:0 .25rem 0 .6rem}
+  .sunk{display:flex;gap:.5rem;align-items:center;margin-top:.8rem;font-size:.88rem;color:var(--ink-2)}
+  .sunk input{accent-color:var(--pine)}
+</style>
+<nav id="topnav" aria-label="單元導航">
+  <div id="progress"></div>
+  <div class="navrow">
+    <a class="back" href="/projects/family-investing-course/">← 課程首頁</a>
+    <span class="brand">WEEK 41</span>
+    <a class="sec" href="#lecture">① 講義</a><a class="sec" href="#reading">② 導讀</a><a class="sec" href="#practice">③ 練習</a><a class="sec" href="#family">④ 分享</a><a class="sec" href="#checklist">⑤ 檢核</a>
+    <button id="themeToggle" aria-label="切換深淺主題">◐</button>
+  </div>
+</nav>
+
+<main>
+<header class="unit">
+  <p class="eyebrow">給家人的投資課 · Q4 財務長季 · Week 41</p>
+  <h1>資本預算——NPV 與 IRR</h1>
+  <p class="lead" style="margin-top:.5rem">三大決策的第一個：「這個案子該不該投？」你會發現 NPV 就是 W20 的 DCF <strong>換了主詞</strong>——DCF 替整家公司估值，NPV 替單一投資案估值，同一套折現數學。</p>
+  <div class="meta">
+    <span class="chip">⏱ 預估 3–5 小時</span><span class="chip">前置：第 1、20、40 週</span><span class="chip">52 週 · 第 41 週</span>
+  </div>
+  <div class="position">
+    <b>本週在三個角色中的定位：</b>這是 CFO 最常用的工具，也是投資人驗證「公司有沒有亂花錢」的透鏡。
+  </div>
+  <div class="recall">
+    <b>開始前 10 分鐘：</b>回顧上週的家庭三決策盤點——我們家最大的「投資決策」是什麼？
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <p class="eyebrow" style="color:var(--pine)">開始之前，先猜一題</p>
+  <p class="q">兩個只能選一個的案子：A 投 1 億、報酬率 50%；B 投 10 億、報酬率 20%。資金成本都是 8%。公司該選哪個？</p>
+  <div class="guessrow" id="guesses" role="group" aria-label="猜一個答案">
+    <button data-g="a">A，報酬率高得多</button>
+    <button data-g="b">B，創造的價值金額比較大</button>
+    <button data-g="c">兩個差不多</button>
+  </div>
+  <div id="reveal" aria-live="polite"><p id="verdict"></p></div>
+</div>
+
+<section id="lecture">
+  <p class="blocknum" style="margin-top:3rem">區塊 ① ／ 講義 · 約 2 小時</p>
+  <div class="prose">
+  <h2>1. NPV：把 W20 的 DCF 對準單一案子</h2>
+  <div class="quote">NPV ＝ Σ 第 t 年現金流 ÷（1 ＋ r）<sup>t</sup>　（第 0 年通常是負的投資額；r ＝ WACC）</div>
+  <p><strong>決策規則</strong>：NPV 大於 0 → 做（創造價值）；小於 0 → 不做；互斥案選 NPV 最大的。</p>
+  <p><strong>完整算例｜擴廠案</strong>：投資 10 億，未來 5 年增量現金流 2.5／3.0／3.0／2.5／2.0 億，WACC 8%。逐年折現加總後，NPV ＝ <strong>+0.467 億</strong> → 該做。這案子在還清 8% 的資金成本之後，還替股東多創造了 4,670 萬的今日價值。</p>
+  </div>
+
+  <div class="lab">
+    <h3>擴廠案 NPV 實驗台</h3>
+    <p class="muted" style="margin-top:-.2rem">灰色是名目現金流，綠色是折現後的今日價值。拉現金流與 WACC，看 NPV 有多脆。</p>
+    <div class="presets" id="xpre"><button data-m="100" data-w="8" data-i="10">講義算例</button><button data-m="90" data-w="8" data-i="10">現金流打 9 折</button><button data-m="100" data-w="10" data-i="10">WACC 升到 10%</button></div>
+    <div class="ctl"><label>投資額 <output id="o-i">10.0 億</output></label><input type="range" id="in-i" min="6" max="14" step="0.5" value="10" aria-label="投資額"></div>
+    <div class="ctl"><label>現金流達成率 <output id="o-m">100%</output></label><input type="range" id="in-m" min="60" max="130" step="5" value="100" aria-label="現金流達成率"></div>
+    <div class="ctl"><label>WACC <output id="o-w">8.0%</output></label><input type="range" id="in-w" min="4" max="14" step="0.5" value="8" aria-label="WACC"></div>
+    <div class="bars" id="bars" aria-hidden="true"></div>
+    <div class="barx" id="barx"></div>
+    <p class="legend"><i style="background:var(--line)"></i>名目現金流<i style="background:var(--pine)"></i>折現後</p>
+    <div class="stats">
+      <div class="stat"><p class="sl">NPV</p><p class="sv" id="s-npv">—</p><p class="sh">億，今日價值</p></div>
+      <div class="stat"><p class="sl">IRR</p><p class="sv" id="s-irr">—</p><p class="sh">讓 NPV＝0 的折現率</p></div>
+      <div class="stat"><p class="sl">回收期</p><p class="sv" id="s-pb">—</p><p class="sh">不折現</p></div>
+    </div>
+    <div class="ibox" id="xnote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>2. 先回家一趟：飲料店第二家店</h2>
+  <p>裝潢＋設備投資 60 萬，估計每月淨現金流 1.5 萬、經營 5 年（月折現率 0.75%，年約 9%）。60 個月的現金流折回今天值 <strong>72.3 萬</strong>，減掉 60 萬，NPV ＝ <strong>+12.3 萬 → 開！</strong></p>
+  <p>W40 說飲料店「憑感覺」做投資決策——現在它有了 NPV。上市公司的百億擴廠案，骨架跟這個一模一樣。</p>
+  </div>
+
+  <div class="lab">
+    <h3>第二家店計算機</h3>
+    <p class="muted" style="margin-top:-.2rem">找出「損益兩平的月現金流」——那就是給店長的最低業績目標。</p>
+    <div class="ctl"><label>投資額 <output id="o-si">60 萬</output></label><input type="range" id="in-si" min="30" max="120" step="5" value="60" aria-label="分店投資額"></div>
+    <div class="ctl"><label>每月淨現金流 <output id="o-sc">1.50 萬</output></label><input type="range" id="in-sc" min="0.5" max="3" step="0.05" value="1.5" aria-label="每月淨現金流"></div>
+    <div class="ctl"><label>經營年數 <output id="o-sy">5 年</output></label><input type="range" id="in-sy" min="2" max="10" step="1" value="5" aria-label="經營年數"></div>
+    <div class="ctl"><label>年折現率 <output id="o-sr">9%</output></label><input type="range" id="in-sr" min="3" max="15" step="1" value="9" aria-label="年折現率"></div>
+    <label class="sunk"><input type="checkbox" id="in-sunk">已經花了 10 萬請人做評估報告</label>
+    <div class="stats">
+      <div class="stat"><p class="sl">未來現金流今日值</p><p class="sv" id="s-spv">—</p><p class="sh">萬</p></div>
+      <div class="stat"><p class="sl">NPV</p><p class="sv" id="s-snpv">—</p><p class="sh">萬</p></div>
+      <div class="stat"><p class="sl">損益兩平月現金流</p><p class="sv" id="s-sbe">—</p><p class="sh">店長的最低目標</p></div>
+    </div>
+    <div class="ibox" id="snote"></div>
+  </div>
+
+  <div class="prose">
+  <h2>3. IRR：同一個案子的另一種說法</h2>
+  <p><strong>IRR ＝ 讓 NPV 恰好為 0 的折現率</strong>，也就是案子的「內建報酬率」。擴廠案的 IRR ＝ <strong>9.82%</strong>，高於 WACC 8% → 做。單一、正常的案子，IRR 與 NPV 必然同向，不會打架。</p>
+  <p>IRR 的好處是直覺——「這案子賺 9.8%」人人聽得懂。但它有三個著名陷阱：</p>
+  <p><strong>陷阱一｜規模忽視（互斥案的經典錯誤）</strong></p>
+  </div>
+  <div class="tablewrap">
+    <table class="data">
+      <thead><tr><th>互斥案</th><th>投資</th><th>一年後回收</th><th>IRR</th><th>NPV（8%）</th></tr></thead>
+      <tbody>
+        <tr><td class="f">A 小而美</td><td>1 億</td><td>1.5 億</td><td><strong>50%</strong></td><td>0.39 億</td></tr>
+        <tr><td class="f">B 大而穩</td><td>10 億</td><td>12 億</td><td>20%</td><td><strong>1.11 億</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+  <p>IRR 說選 A、NPV 說選 B——<strong>選 B</strong>。公司的目標是極大化價值的<strong>金額</strong>，不是報酬率的百分比（W40 目標函數）。<strong>鐵律：互斥案永遠聽 NPV 的。</strong></p>
+  <p><strong>陷阱二｜多重解</strong>：現金流正負號變換多次（先投入 → 賺錢 → 期末大額復原成本）時，IRR 可能有兩個以上的解——挖礦、核電除役這類案子常見。</p>
+  <p><strong>陷阱三｜再投資假設</strong>：IRR 隱含「期中收到的現金能再以 IRR 的報酬率投資出去」。IRR 50% 的案子，中途收到的錢真找得到 50% 的去處嗎？NPV 只假設再投資於 WACC，保守而誠實。</p>
+
+  <h2>4. 回收期法：粗糙，但有存在的理由</h2>
+  <p><strong>回收期</strong>＝幾年回本。擴廠案的累計現金流在第 3.6 年跨過 10 億 → 回收期 <strong>3.6 年</strong>。缺陷明顯：不折現，也不管回收後的現金流（砍掉第 5 年的 2 億，回收期不變）。但它回答另一個問題：<strong>「錢卡多久」</strong>。流動性緊、環境變化快的公司，用它當 NPV 的輔助門檻（例：NPV 大於 0 且回收期短於 4 年）合情合理。</p>
+
+  <h2>5. 增量現金流：最容易做錯的一步</h2>
+  <p>NPV 公式簡單，難在<strong>現金流放什麼進去</strong>。三條原則：</p>
+  <ol>
+    <li><strong>沉沒成本不管</strong>：已花的可行性研究費 5,000 萬，不管做不做都拿不回來，<strong>不進現金流</strong>。心理上最難——人會想「都花這麼多了」，這是 W23 損失趨避的公司版，叫沉沒成本謬誤</li>
+    <li><strong>機會成本要管</strong>：用自家閒置土地蓋廠「不用錢」？錯——土地若能賣 3 億，這 3 億就是案子的成本</li>
+    <li><strong>外溢效果要管</strong>：新產品吃掉自家舊產品的營收（自食效果）要扣掉；帶動周邊產品的銷售要加上</li>
+  </ol>
+  <div class="quote">「做 vs 不做，公司整體現金流的差異」才是增量——不是案子自己的損益表。</div>
+
+  <h2>6. 投資人視角：事後查核</h2>
+  <p>CFO 算 NPV 給董事會看；投資人看不到內部模型，但能驗證<strong>事後成績</strong>：</p>
+  <ul>
+    <li>公司歷年大型資本支出之後，ROIC 上升還是下降？（W9——擴產擴出價值，還是擴出產能過剩？）</li>
+    <li>管理層口中的「策略性投資」有沒有量化的回收說法？年報裡的擴廠理由是 NPV 語言，還是形容詞？</li>
+    <li>這正是 W22 護城河趨勢與 W40「資本配置紀律」的檢驗現場</li>
+  </ul>
+
+  <h2>7. 常見誤解闢謠</h2>
+  <div class="myth"><p class="say">「IRR 高的案子比較好。」</p><p>互斥案的陷阱一：IRR 是比率，公司吃的是金額。</p></div>
+  <div class="myth"><p class="say">「NPV 是精確科學。」</p><p>它繼承 DCF 的所有毛病（W21 的假設放大器）：現金流是估的、WACC 也是估的。上面的實驗台已經示範——現金流打 9 折，NPV 就翻負。所以公司內部也要做敏感度與情境分析。</p></div>
+  <div class="myth"><p class="say">「回收期短就是好案子。」</p><p>回收期偏好短期、懲罰長期布局（研發、品牌）；只用回收期的公司，會系統性地放棄最有價值的長線投資。</p></div>
+  </div>
+</section>
+
+<section id="reading">
+  <p class="blocknum" style="margin-top:3rem">區塊 ② ／ 必讀導讀 · 約 2 小時</p>
+  <div class="prose">
+  <h2>從教科書到年報</h2>
+  <div class="readitem"><div class="t">60 分鐘</div><div class="body"><b>《Principles of Corporate Finance》資本預算章</b><p>NPV／IRR 的正式推導與增量現金流原則——本週主幹。</p></div></div>
+  <div class="readitem"><div class="t">30 分鐘</div><div class="body"><b>MIT 15.401 Finance Theory I：資本預算講次（選讀）</b><p>MIT OpenCourseWare 的公開課程。<a class="srclink" href="https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/" target="_blank" rel="noopener">MIT OCW 15.401 ↗</a></p></div></div>
+  <div class="readitem"><div class="t">20 分鐘</div><div class="body"><b>實習公司年報：去年最大的投資案</b><p>W40 已經標出來了。讀管理層的說明，用第 6 節的眼睛評分：有沒有回收期或報酬率的量化語言？</p></div></div>
+  <div class="readitem"><div class="t">10 分鐘</div><div class="body"><b>回顧 W20 自己的 DCF</b><p>確認你看得出 NPV 與 DCF 是同一條公式。</p></div></div>
+  </div>
+</section>
+
+<section id="practice">
+  <p class="blocknum" style="margin-top:3rem">區塊 ③ ／ 練習 · 約 1 小時</p>
+  <div class="prose">
+  <h2>三題實戰</h2>
+  <h3>任務 A｜擴廠案全套（25 分鐘）</h3>
+  <p>用試算表重建講義的擴廠案：驗證 NPV ＝ +0.467 億、IRR ≈ 9.82%（用 IRR 函數）、回收期 3.6 年。再做敏感度：現金流全部打 9 折、WACC 升到 10%——NPV 還是正的嗎？親手體會「小案子的 NPV 很脆」。</p>
+  <h3>任務 B｜飲料店第二家店（15 分鐘）</h3>
+  <p>重算分店 NPV（+12.3 萬）；再問：如果月現金流只有 1.2 萬呢？找出 NPV ＝ 0 的那個月現金流——資本預算直接變成管理工具。</p>
+  <div class="verify"><b>怎麼知道做對了：</b>擴廠案實驗台預設必須是 NPV +0.47 億、IRR 9.82%、回收期 3.6 年；按「現金流打 9 折」NPV 變 −0.58 億，按「WACC 升到 10%」NPV 變 −0.04 億——兩個小變動都讓好案子翻負。第二家店預設 NPV +12.3 萬、損益兩平月現金流 1.25 萬；月現金流拉到 1.2 萬，NPV 是 −2.2 萬。勾選「已花 10 萬評估費」，NPV 必須<strong>完全不變</strong>。</div>
+  <ul class="checks" data-key="w41-practice">
+    <li><label><input type="checkbox"><span>擴廠案三指標驗證通過＋敏感度做完</span></label></li>
+    <li><label><input type="checkbox"><span>分店損益兩平現金流算出</span></label></li>
+    <li><label><input type="checkbox"><span>能背出增量現金流三原則</span></label></li>
+  </ul>
+  <p class="qalabel">快問快答三題（先答，再展開對答案）</p>
+  <div class="qagroup">
+    <details class="bonus"><summary><b>Q1</b> 互斥案 IRR 與 NPV 打架時聽誰的？為什麼？</summary><div class="ans"><p>→ <strong>聽 NPV</strong>。公司的目標是極大化股東價值的「金額」，不是報酬率的「百分比」；高 IRR 的小案子創造的絕對價值，可能遠小於中 IRR 的大案子。IRR 適合當「單一案子過不過門檻」的溝通語言，不適合排序互斥案。</p></div></details>
+    <details class="bonus"><summary><b>Q2</b> 「可行性研究已經花了 5,000 萬，不做太可惜」——錯在哪？</summary><div class="ans"><p>→ 錯在讓<strong>沉沒成本</strong>參與決策：那 5,000 萬不管做不做都拿不回來，唯一該問的是「從今天起的增量現金流 NPV 是否為正」。行為版本是損失趨避＋承諾升級（W23）——不想讓已投入的損失「定案」，於是加碼爛案。</p></div></details>
+    <details class="bonus"><summary><b>Q3</b> 投資人怎麼從公開資訊「事後查核」一家公司的資本預算紀律？</summary><div class="ans"><p>→ 三個線索：①大型資本支出後 2–3 年的 <strong>ROIC 軌跡</strong>（上升＝投資有理，持續下滑＝擴產毀值）；②資本支出／折舊比與營收成長的對照（狂投資但營收不動＝錢進了無底洞）；③管理層溝通的語言（有沒有回收率或年限的量化承諾，事後有沒有追蹤交代）。</p></div></details>
+  </div>
+  </div>
+</section>
+
+<section id="family">
+  <p class="blocknum" style="margin-top:3rem">區塊 ④ ／ 分享這個概念 · 費曼學習法 · 約 30 分鐘</p>
+  <div class="prose">
+  <h2>要不要開第二家店？</h2>
+  <p class="muted" style="margin-top:-.3rem">講到別人聽懂，才算真的懂。以下腳本以家人為對象設計，講給朋友、同事聽同樣適用。</p>
+  <div class="script"><p class="who">開場（第二家店）</p><p>「我們的飲料店生意不錯，店長問：要不要開第二家？裝潢加設備 60 萬。你怎麼決定？」（讓家人先憑感覺表態。）</p></div>
+  <div class="script"><p class="who">核心演示</p><p>「上市公司的作法是三步：①估每月能淨賺多少（我們估 1.5 萬）②折現加總未來五年（記得第一週的『未來的錢打折』嗎？）③跟 60 萬比。答案：未來現金流今天值 72 萬，減 60 萬——<strong>淨賺 12 萬的『今日價值』，開！</strong>台積電蓋千億晶圓廠，算法跟這個一模一樣，只是多幾個零。」</p></div>
+  <div class="script"><p class="who">互動（沉沒成本）</p><p>「換個情境：我們已經花 10 萬請人做了評估報告，結果算出來 NPV 是負的。有人說『都花 10 萬了，不開太浪費』——這句話對嗎？」（引導：那 10 萬不管開不開都回不來了。）「<strong>已經沉下去的錢，不該綁架未來的決定。</strong>這招學會了，人生到處用得上：看到一半的爛電影、投入很深的錯誤方向……」</p></div>
+  <div class="script"><p class="who">預期反應與應對</p>
+    <p class="qa"><b>「未來每月 1.5 萬是猜的吧？」</b><br>「對！所以要做第二步：如果只有 1.2 萬還划算嗎？算出『至少要做到多少』——這就是給店長的目標。承認是猜的，然後量化猜錯的後果，就是專業和賭博的差別。」</p></div>
+  </div>
+</section>
+
+<section id="checklist">
+  <p class="blocknum" style="margin-top:3rem">區塊 ⑤ ／ 完成檢核</p>
+  <div class="prose">
+  <h2>本週完成的定義</h2>
+  <ul class="checks" data-key="w41-final">
+    <li><label><input type="checkbox"><span>能默寫 NPV 公式與決策規則、IRR 三陷阱</span></label></li>
+    <li><label><input type="checkbox"><span>三題實戰完成（含敏感度與損益兩平）</span></label></li>
+    <li><label><input type="checkbox"><span>能解釋 NPV 與 W20 DCF 的關係</span></label></li>
+    <li><label><input type="checkbox"><span>分享環節完成（沉沒成本一課），記錄卡住的點</span></label></li>
+    <li><label><input type="checkbox"><span>回填 curriculum/01-overview.md 第 41 週進度欄</span></label></li>
+  </ul>
+  <p id="checkdone" aria-live="polite"></p>
+  </div>
+  <footer class="unit"><b>下週預告 · Week 42：資金成本</b>——NPV 裡那個 8% 從哪來？WACC 與 CAPM 的實務估算，你會替實習公司親手算一個。</footer>
+</main>
+
+<footer class="site">
+  <a href="/projects/family-investing-course/">← 給家人的投資課</a> ·
+  <a href="/projects/family-investing-course/week-40-cfo-overview/">上一週：CFO 三大決策</a> ·
+  <a href="/writing/">專欄文章</a> ·
+  本頁為個人學習教材，非投資建議。© Matt Ye
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    var html = document.documentElement;
+    var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch(e){}
+  });
+  var prog = document.getElementById("progress");
+  addEventListener("scroll", function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, {passive:true});
+
+  var reveal = document.getElementById("reveal"), verdict = document.getElementById("verdict");
+  document.getElementById("guesses").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    this.querySelectorAll("button").forEach(function(b){ b.classList.remove("picked"); });
+    btn.classList.add("picked");
+    reveal.classList.add("show");
+    verdict.textContent = btn.dataset.g === "b"
+      ? "答對了——A 的 NPV 是 0.39 億，B 是 1.11 億。50% 的報酬率乘在 1 億上，不如 20% 乘在 10 億上。公司要極大化的是價值的金額，互斥案永遠聽 NPV 的。"
+      : "選 B。A 的 NPV 是 0.39 億，B 是 1.11 億——50% 的報酬率乘在 1 億上，不如 20% 乘在 10 億上。公司要極大化的是價值的金額，不是報酬率的百分比：互斥案永遠聽 NPV 的。";
+  });
+
+  function sg(v, dp){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dp); }
+
+  /* 擴廠案 */
+  var BASE = [2.5, 3.0, 3.0, 2.5, 2.0];
+  var iI = document.getElementById("in-i"), iM = document.getElementById("in-m"), iW = document.getElementById("in-w");
+  function npv(r, inv, cf){ var s = -inv; cf.forEach(function(c, t){ s += c / Math.pow(1 + r, t + 1); }); return s; }
+  function irr(inv, cf){
+    var lo = -0.99, hi = 1;
+    if (npv(hi, inv, cf) > 0 || npv(lo, inv, cf) < 0) return null;
+    for (var k = 0; k < 200; k++){ var m = (lo + hi) / 2; if (npv(m, inv, cf) > 0) lo = m; else hi = m; }
+    return (lo + hi) / 2;
+  }
+  function runX(){
+    var inv = +iI.value, m = +iM.value / 100, w = +iW.value / 100;
+    document.getElementById("o-i").textContent = inv.toFixed(1) + " 億";
+    document.getElementById("o-m").textContent = iM.value + "%";
+    document.getElementById("o-w").textContent = (+iW.value).toFixed(1) + "%";
+    var cf = BASE.map(function(c){ return c * m; });
+    var v = npv(w, inv, cf), r = irr(inv, cf);
+    var cum = 0, pb = null;
+    for (var t = 0; t < cf.length; t++){ if (pb === null && cum + cf[t] >= inv){ pb = t + (inv - cum) / cf[t]; } cum += cf[t]; }
+    var e = document.getElementById("s-npv"); e.textContent = sg(v, 2); e.className = "sv " + (v >= 0 ? "pos" : "neg");
+    document.getElementById("s-irr").textContent = r === null ? "—" : (r * 100).toFixed(2) + "%";
+    document.getElementById("s-pb").textContent = pb === null ? "回不了本" : pb.toFixed(1) + " 年";
+    var max = 3.9, bars = "", lab = "";
+    cf.forEach(function(c, t){
+      var pv = c / Math.pow(1 + w, t + 1);
+      bars += '<div class="bc"><span class="v">' + pv.toFixed(2) + '</span><div class="bw" style="height:' + (c / max * 100).toFixed(1) + '%"><div class="b raw" style="height:100%"></div><div class="b pv" style="height:' + (pv / c * 100).toFixed(1) + '%"></div></div></div>';
+      lab += "<span>第 " + (t + 1) + " 年</span>";
+    });
+    document.getElementById("bars").innerHTML = bars;
+    document.getElementById("barx").innerHTML = lab;
+    var n = document.getElementById("xnote");
+    n.className = "ibox" + (v >= 0 ? " good" : "");
+    n.innerHTML = v >= 0
+      ? "<b>NPV " + sg(v, 2) + " 億：做。</b>還清 " + (w * 100).toFixed(1) + "% 的資金成本後，替股東多創造 " + Math.round(v * 10000).toLocaleString() + " 萬的今日價值。" + (v < 1 ? "但注意，緩衝很薄——試試把現金流打 9 折。" : "")
+      : "<b>NPV " + sg(v, 2) + " 億：不做。</b>" + (r !== null ? "IRR " + (r * 100).toFixed(2) + "% 低於 WACC " + (w * 100).toFixed(1) + "%——" : "") + "賺的錢不夠付資金成本。原本 +0.47 億的好案子，一個小假設就能讓它翻負：這就是要做敏感度分析的原因。";
+  }
+  [iI, iM, iW].forEach(function(el){ el.addEventListener("input", runX); });
+  document.getElementById("xpre").addEventListener("click", function(e){
+    var btn = e.target.closest("button"); if(!btn) return;
+    iI.value = btn.dataset.i; iM.value = btn.dataset.m; iW.value = btn.dataset.w; runX();
+  });
+  runX();
+
+  /* 第二家店 */
+  var sI = document.getElementById("in-si"), sC = document.getElementById("in-sc"), sY = document.getElementById("in-sy"), sR = document.getElementById("in-sr"), sK = document.getElementById("in-sunk");
+  function runS(){
+    var inv = +sI.value, c = +sC.value, n = +sY.value * 12, mr = +sR.value / 100 / 12;
+    document.getElementById("o-si").textContent = inv + " 萬";
+    document.getElementById("o-sc").textContent = c.toFixed(2) + " 萬";
+    document.getElementById("o-sy").textContent = sY.value + " 年";
+    document.getElementById("o-sr").textContent = sR.value + "%";
+    var a = (1 - Math.pow(1 + mr, -n)) / mr, pv = c * a, v = pv - inv, be = inv / a;
+    document.getElementById("s-spv").textContent = pv.toFixed(1);
+    var e = document.getElementById("s-snpv"); e.textContent = sg(v, 1); e.className = "sv " + (v >= 0 ? "pos" : "neg");
+    document.getElementById("s-sbe").textContent = be.toFixed(2) + " 萬";
+    var t = v >= 0
+      ? "<b>NPV " + sg(v, 1) + " 萬：開。</b>只要每月至少做到 " + be.toFixed(2) + " 萬的淨現金流，這家店就不虧股東的錢——這個數字直接交給店長當目標。"
+      : "<b>NPV " + sg(v, 1) + " 萬：不開。</b>每月淨現金流至少要 " + be.toFixed(2) + " 萬才划算；做不到這個業績，60 個月的辛苦換不回投資加上資金成本。";
+    if (sK.checked) t += "<br><b>評估費 10 萬已經花掉了——NPV 一塊錢都沒變。</b>不管開不開，那 10 萬都拿不回來，所以它不進現金流。「都花了 10 萬，不開太浪費」是沉沒成本謬誤。";
+    document.getElementById("snote").innerHTML = t;
+  }
+  [sI, sC, sY, sR].forEach(function(el){ el.addEventListener("input", runS); });
+  sK.addEventListener("change", runS);
+  runS();
+
+  document.querySelectorAll("ul.checks").forEach(function(ul){
+    var key = "fic-w41-" + ul.dataset.key;
+    var boxes = ul.querySelectorAll("input");
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e){}
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function sync(){
+      var state = [];
+      boxes.forEach(function(b){ state.push(b.checked); });
+      try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+      if (ul.dataset.key === "w41-final") {
+        document.getElementById("checkdone").textContent = state.every(Boolean)
+          ? "✓ 會算 NPV 了——下週追問那個 8% 從哪裡來。" : "";
+      }
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", sync); });
+    sync();
+  });
+})();
+</script>

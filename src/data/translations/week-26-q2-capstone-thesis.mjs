@@ -245,9 +245,9 @@ export const MAP = {
   '下一題 →': 'Next question →',
   '再玩一次 ↺': 'Play again ↺',
   '<br><span style=\\"font-size:.85em;color:var(--ink-3)\\">（點上面的「下一題」繼續）</span>':
-    '<br><span style=\\"font-size:.85em;color:var(--ink-3)\\">(tap "Next question" above to carry on)</span>',
+    '<br><span style="font-size:.85em;color:var(--ink-3)">(tap "Next question" above to carry on)</span>',
   '<br><span style=\\"font-size:.85em;color:var(--ink-3)\\">（六題結束——想再練一次就點「再玩一次」）</span>':
-    '<br><span style=\\"font-size:.85em;color:var(--ink-3)\\">(that is all six — tap "Play again" for another run)</span>',
+    '<br><span style="font-size:.85em;color:var(--ink-3)">(that is all six — tap "Play again" for another run)</span>',
   '股價從我的成本價下跌 20%': 'The share price falls 20% below what I paid',
   '純價格。價格下跌不是論點錯誤的證據——可能只是市場先生鬧脾氣，而那正是該考慮加碼的時候。用它認錯，等於把裁判權交給你原本要利用的情緒。':
     'Pure price. A falling price is not evidence that the argument is wrong — it may just be Mr Market in a mood, and that is exactly when you should be thinking about adding. Using it to concede hands the whistle to the very emotion you meant to exploit.',
